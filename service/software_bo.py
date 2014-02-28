@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'Shine Huang'
 
+from PyQt4.QtCore import *
 import data
 from backend.ibackend import get_backend
 from backend.backend_apt import BackendApt
@@ -9,13 +10,31 @@ from backend.backend_worker import BackendWorker
 from model.software import Software
 
 
-class SoftwareBO:
+class SoftwareBO(QObject):
 
     def get_all_software(self):
-        return data.backend.get_all_packages()
+        # return data.backend.get_all_packages()
+        sl = data.backend.get_all_packages()
+        self.emit(SIGNAL("getallpackagesover"), sl)
 
     def get_software_by_name(self, softwareName):
         return data.backend.get_package_by_name(softwareName)
+
+    def count_installed_software(self):
+        n = 0
+        for software in data.softwareList:
+            if(software.is_installed):
+                n += 1
+        data.installedCount = n
+        self.emit(SIGNAL("countiover"))
+
+    def count_upgradable_software(self):
+        n = 0
+        for software in data.softwareList:
+            if(software.is_upgradable):
+                n += 1
+        data.upgradableCount = n
+        self.emit(SIGNAL("countuover"))
 
     def install_software(self, itemWidget):
         # software = self.get_software_by_name(softwareName.ui.name.text())

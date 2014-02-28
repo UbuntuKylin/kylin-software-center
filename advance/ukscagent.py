@@ -334,7 +334,7 @@ if __name__ == "__main__":
 
 
    test = RatingsAndReviewsAgent()
-   piston_reviews = test.start_get_reviews('gedit',_reviews_ready_callback)
+   piston_reviews = test.start_get_reviews(str_pkgname='gedit',_reviews_ready_callback)
 
 #   piston_reviews = test.get_reviews('gimp',_reviews_ready_callback)
 #   print piston_reviews

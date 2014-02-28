@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ukliw.ui'
 #
-# Created: Thu Feb 27 14:53:27 2014
+# Created: Fri Feb 28 15:00:48 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -44,9 +44,17 @@ class Ui_Ukliw(object):
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.btn = QtGui.QPushButton(Ukliw)
-        self.btn.setGeometry(QtCore.QRect(595, 23, 47, 20))
+        self.btn.setGeometry(QtCore.QRect(593, 23, 47, 20))
         self.btn.setText(_fromUtf8(""))
         self.btn.setObjectName(_fromUtf8("btn"))
+        self.installedVersion = QtGui.QLabel(Ukliw)
+        self.installedVersion.setGeometry(QtCore.QRect(368, 14, 120, 18))
+        self.installedVersion.setText(_fromUtf8(""))
+        self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
+        self.candidateVersion = QtGui.QLabel(Ukliw)
+        self.candidateVersion.setGeometry(QtCore.QRect(368, 34, 120, 18))
+        self.candidateVersion.setText(_fromUtf8(""))
+        self.candidateVersion.setObjectName(_fromUtf8("candidateVersion"))
 
         self.retranslateUi(Ukliw)
         QtCore.QMetaObject.connectSlotsByName(Ukliw)

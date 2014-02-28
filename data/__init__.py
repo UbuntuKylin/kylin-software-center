@@ -2,18 +2,19 @@
 __author__ = 'Shine Huang'
 import threading
 
+print "db init..."
+
 # used backend package manager
 backend_type = 'apt'
 # all software in sourcelist
 softwareList = []
-print "db init..."
+# counts
+installedCount = -1
+upgradableCount = -1
 # how many softwares show in a setp
 showSoftwareStep = 20
-
 # package backend work pool
 workPool = []
-# ui processPool
-# processPool = []
 # True : when pool not empty, thread stop
 isWorking = False
 

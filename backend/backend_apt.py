@@ -30,12 +30,22 @@ class BackendApt(QObject):
 
     # get all packages
     def get_all_packages(self):
+        sl = []
         self.ca.open()
         for pkg in self.ca:
             software = Software()
             software.package = pkg
-            softwareList.append(software)
-        return softwareList
+            sl.append(software)
+        # return sl
+        self.emit(SIGNAL("getallpackagesover"), sl)
+
+    # def get_all_packages(self):
+    #     self.ca.open()
+    #     for pkg in self.ca:
+    #         software = Software()
+    #         software.package = pkg
+    #         softwareList.append(software)
+    #     return softwareList
 
     # get package by pkgName
     def get_package_by_name(self, pkgName):

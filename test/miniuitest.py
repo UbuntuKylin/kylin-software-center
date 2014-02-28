@@ -35,6 +35,18 @@ class myw(QtGui.QWidget):
         print self.psmap[self.l]
         print self.psmap[self.b]
 
+    def hehe(self, a):
+        for i in a:
+            print i
+
+    def hoho(self, f, *args):
+        parm = ''
+        for one in args:
+            parm += str(one)
+            parm += ","
+        parm = parm[:-1]
+        # print parm
+        f(parm)
 
 def main():
 
@@ -42,6 +54,11 @@ def main():
 
     w = myw()
     w.show()
+
+    w.hoho(w.hehe, ['a','b','c'])
+
+    # a = ('1')
+    # print ",".join(a)
 
     sys.exit(app.exec_())
     # import webbrowser

@@ -11,9 +11,13 @@ from ui.recommenditem import RecommendItem
 from ui.listitemwidget import ListItemWidget
 from ui.adwidget import *
 from backend.backend_worker import BackendWorker
+from util.async_thread import AsyncThread
+from util.async_process import AsyncProcess
+from util.check_software_thread import CheckSoftwareThread
 from model.advertisement import AD
 import data
 from util import log
+from util import vfs
 
 
 class SoftwareCenter(QMainWindow):
@@ -36,19 +40,59 @@ class SoftwareCenter(QMainWindow):
         # logic
         self.tmp_get_category()
         self.tmp_get_category_software()
-        self.check_software()
+
+        # from backend.ibackend import get_backend
+        # self.bk = get_backend()
+        # sl = self.bk.get_all_packages()
+        # # self.check_software()
+
 
         self.psmap[self.ui.allsListWidget] = []
         self.psmap[self.ui.upListWidget] = []
         self.psmap[self.ui.unListWidget] = []
 
         # test
+        self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
+        self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("UK软件中心:")
         self.ui.bottomText2.setText("1.0.12")
-        self.tmp_fill_recommend_softwares()
-        self.tmp_get_ads()
+        # self.tmp_fill_recommend_softwares()
+        # self.tmp_get_ads()
+
+        self.ui.categoryView.setEnabled(False)
+        self.ui.btnUp.setEnabled(False)
+        self.ui.btnUn.setEnabled(False)
+        self.ui.btnTask.setEnabled(False)
 
         self.slot_goto_homepage()
+
+
+        # from backend.ibackend import get_backend
+        # self.bk = get_backend()
+        self.connect(data.backend, SIGNAL("getallpackagesover"), self.slot_get_all_packages_over)
+        at = AsyncThread(data.backend.get_all_packages)
+        at.setDaemon(True)
+        at.start()
+
+
+        # from multiprocessing import Process,Queue
+        # q = Queue()
+        # q.put(data.softwareList)
+        # p = Process(target=self.check_software,args=(q,))
+        # p.start()
+        # data.softwareList = q.get()
+        # print len(data.softwareList)
+        # p.join()
+
+        # self.connect(data.sbo, SIGNAL("countiover"), self.slot_count_installed_over)
+        # at = AsyncThread(data.sbo.count_installed_software)
+        # at.setDaemon(True)
+        # at.start()
+        #
+        # self.connect(data.sbo, SIGNAL("countuover"), self.slot_count_upgradable_over)
+        # at = AsyncThread(data.sbo.count_upgradable_software)
+        # at.setDaemon(True)
+        # at.start()
 
     def ui_init(self):
         self.ui = Ui_MainWindow()
@@ -85,8 +129,6 @@ class SoftwareCenter(QMainWindow):
         img = QPixmap("res/foot.png")
         palette.setBrush(QPalette.Window, QBrush(img))
         self.ui.bottomWidget.setPalette(palette)
-
-        self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
 
         self.ui.categoryView.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDay.setFocusPolicy(Qt.NoFocus)
@@ -150,9 +192,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;}")
-        self.ui.upMSGBar.setStyleSheet("QLabel{background-color:white;}")
-        self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;}")
+        self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
+        self.ui.upMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
+        self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
         self.ui.allsHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
         self.ui.upHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
         self.ui.unHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
@@ -180,13 +222,22 @@ class SoftwareCenter(QMainWindow):
 
     def tmp_get_category(self):
         for c in os.listdir("res/category"):
+            if(c == 'ubuntukylin'):
+                oneitem = QListWidgetItem('Ubuntu Kylin')
+                icon = QIcon()
+                icon.addFile("res/" + c + ".png", QSize(), QIcon.Normal, QIcon.Off)
+                oneitem.setIcon(icon)
+                oneitem.setWhatsThis(c)
+                self.ui.categoryView.addItem(oneitem)
+        for c in os.listdir("res/category"):
             zhcnc = ''
             if(c == 'devel'):
                 zhcnc = '编程开发'
             if(c == 'game'):
                 zhcnc = '游戏娱乐'
             if(c == 'ubuntukylin'):
-                zhcnc = 'Ubuntu Kylin'
+                continue
+                # zhcnc = 'Ubuntu Kylin'
             if(c == 'office'):
                 zhcnc = '办公软件'
             if(c == 'internet'):
@@ -248,7 +299,29 @@ class SoftwareCenter(QMainWindow):
                 self.recommendNumber += 1
 
     # delete packages from apt backend which not in category file
-    def check_software(self):
+    def check_software(self, sl):
+        slist = []
+        for c in os.listdir("res/category"):
+            file = open(os.path.abspath("res/category/"+c), 'r')
+            for line in file:
+                slist.append(line[:-1])
+
+        i = 0
+        while i < len(sl):
+            name = sl[i].name
+            for name_ in slist:
+                if name == name_:
+                    sl[i].category = self.scmap[name]
+                    break
+            else:
+                sl.pop(i)
+                i -= 1
+
+            i += 1
+
+        self.emit(SIGNAL("chksoftwareover"), sl)
+
+    def _check_software(self):
         slist = []
         for c in os.listdir("res/category"):
             file = open(os.path.abspath("res/category/"+c), 'r')
@@ -269,6 +342,8 @@ class SoftwareCenter(QMainWindow):
                 i -= 1
 
             i += 1
+
+        self.emit(SIGNAL("chksoftwareover"))
 
     def show_more_software(self, listWidget):
         theRange = 0
@@ -429,6 +504,66 @@ class SoftwareCenter(QMainWindow):
             print ad.urlorpkgid
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
+
+    def slot_get_all_packages_over(self, sl):
+        print len(sl)
+        self.connect(self, SIGNAL("chksoftwareover"), self.slot_check_software_over)
+        at = AsyncThread(self.check_software, sl)
+        at.setDaemon(True)
+        at.start()
+        # at = CheckSoftwareThread(sl, self.scmap)
+        # at.setDaemon(True)
+        # at.start()
+
+        from multiprocessing import Process, Queue, Pipe
+        # q = Queue()
+        # q.put(sl)
+        # ap = AsyncProcess(self.check_software)
+        # ap.start()
+        # from multiprocessing import Process,Queue
+        # q = Queue()
+        # q.put(sl)
+        # sll = ['1','2','3','1','2','3']
+        # one = sl[0]
+        # print one
+        # pipe = Pipe()
+        # p = Process(target=self.check_software,args=(pipe[1],))
+        # pipe[0].send(one)
+        # p.start()
+        # print q.get()
+        # data.softwareList = q.get()
+        # print len(data.softwareList)
+        # p.join()
+
+    def slot_check_software_over(self, sl):
+        print len(sl)
+        data.softwareList = sl
+        self.tmp_fill_recommend_softwares()
+        self.tmp_get_ads()
+        self.ui.categoryView.setEnabled(True)
+        self.ui.btnUp.setEnabled(True)
+        self.ui.btnUn.setEnabled(True)
+        self.ui.btnTask.setEnabled(True)
+
+        self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(len(data.softwareList)) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+
+        self.connect(data.sbo, SIGNAL("countiover"), self.slot_count_installed_over)
+        at = AsyncThread(data.sbo.count_installed_software)
+        at.setDaemon(True)
+        at.start()
+
+        self.connect(data.sbo, SIGNAL("countuover"), self.slot_count_upgradable_over)
+        at = AsyncThread(data.sbo.count_upgradable_software)
+        at.setDaemon(True)
+        at.start()
+
+    def slot_count_installed_over(self):
+        print "iover..."
+        self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(data.installedCount) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+
+    def slot_count_upgradable_over(self):
+        print "uover..."
+        self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(data.upgradableCount) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
     def slot_backend_msg(self, msg):
         print msg

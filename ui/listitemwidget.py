@@ -23,6 +23,8 @@ class ListItemWidget(QWidget):
         self.ui.icon.setStyleSheet("QLabel{background-image:url('res/tmpicons/" + software.name + ".png')}")
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.descr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
+        self.ui.installedVersion.setStyleSheet("QLabel{font-size:13px;}")
+        self.ui.candidateVersion.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.btn.setStyleSheet("QPushButton{background-image:url('res/btn-small-1.png');border:0px;color:#497FAB;}QPushButton:hover{background:url('res/btn-small-2.png');}QPushButton:pressed{background:url('res/btn-small-3.png');}")
 
         self.ui.name.setText(software.name)
@@ -31,7 +33,13 @@ class ListItemWidget(QWidget):
             des = des[:30]
             des += "..."
         self.ui.descr.setText(des)
-        self.ui.size.setText(str(software.packageSize))
+
+        size = software.packageSize
+        sizek = size / 1000
+        self.ui.size.setText(str(sizek) + " K")
+
+        self.ui.installedVersion.setText("已装: " + software.installed_version)
+        self.ui.candidateVersion.setText("最新: <font color='#FF7D15'>" + software.candidate_version + "</font>")
 
         if(nowpage == 'homepage'):
             if(software.is_installed):

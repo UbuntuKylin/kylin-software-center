@@ -60,3 +60,27 @@ class Software:
             return self.package.is_upgradable
         if(data.backend_type == 'packagekit'):
             return self.package.XXXX
+
+    @property
+    def installed_size(self):
+        if(data.backend_type == 'apt'):
+            return self.package.candidate.installed_size
+        if(data.backend_type == 'packagekit'):
+            return self.package.XXXX
+
+    @property
+    def candidate_version(self):
+        if(data.backend_type == 'apt'):
+            return self.package.candidate.version
+        if(data.backend_type == 'packagekit'):
+            return self.package.XXXX
+
+    @property
+    def installed_version(self):
+        if(data.backend_type == 'apt'):
+            if(self.package.installed != None):
+                return self.package.installed.version
+            else:
+                return ""
+        if(data.backend_type == 'packagekit'):
+            return self.package.XXXX

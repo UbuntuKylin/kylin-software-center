@@ -68,10 +68,36 @@
   <widget class="QPushButton" name="btn">
    <property name="geometry">
     <rect>
-     <x>595</x>
+     <x>593</x>
      <y>23</y>
      <width>47</width>
      <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="installedVersion">
+   <property name="geometry">
+    <rect>
+     <x>368</x>
+     <y>14</y>
+     <width>120</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="candidateVersion">
+   <property name="geometry">
+    <rect>
+     <x>368</x>
+     <y>34</y>
+     <width>120</width>
+     <height>18</height>
     </rect>
    </property>
    <property name="text">
