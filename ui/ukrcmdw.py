@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ukrcmdw.ui'
 #
-# Created: Mon Feb 24 16:08:57 2014
+# Created: Thu Mar  6 12:42:19 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -42,6 +42,10 @@ class Ui_UKrcmdw(object):
         self.softDescr.setGeometry(QtCore.QRect(73, 34, 100, 17))
         self.softDescr.setText(_fromUtf8(""))
         self.softDescr.setObjectName(_fromUtf8("softDescr"))
+        self.btnDetail = QtGui.QPushButton(UKrcmdw)
+        self.btnDetail.setGeometry(QtCore.QRect(24, 35, 40, 18))
+        self.btnDetail.setText(_fromUtf8(""))
+        self.btnDetail.setObjectName(_fromUtf8("btnDetail"))
 
         self.retranslateUi(UKrcmdw)
         QtCore.QMetaObject.connectSlotsByName(UKrcmdw)

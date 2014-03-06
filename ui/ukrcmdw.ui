@@ -65,6 +65,19 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="btnDetail">
+   <property name="geometry">
+    <rect>
+     <x>24</x>
+     <y>35</y>
+     <width>40</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

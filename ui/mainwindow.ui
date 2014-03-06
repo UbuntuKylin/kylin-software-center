@@ -276,78 +276,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="item1Widget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>107</y>
-      <width>56</width>
-      <height>134</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QWidget" name="item2Widget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>262</y>
-      <width>40</width>
-      <height>90</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnClose">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>241</y>
-      <width>40</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnMin">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>271</y>
-      <width>40</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnSkin">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>301</y>
-      <width>40</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnConf">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>331</y>
-      <width>40</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QWidget" name="upWidget" native="true">
     <property name="geometry">
      <rect>
@@ -505,6 +433,78 @@
       </rect>
      </property>
     </widget>
+   </widget>
+   <widget class="QWidget" name="item1Widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>107</y>
+      <width>56</width>
+      <height>134</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="item2Widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>262</y>
+      <width>40</width>
+      <height>90</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnClose">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>241</y>
+      <width>40</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnMin">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>271</y>
+      <width>40</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnSkin">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>301</y>
+      <width>40</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnConf">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>331</y>
+      <width>40</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
    <widget class="QWidget" name="headerWidget" native="true">
     <property name="geometry">

@@ -26,69 +26,7 @@
       <file leaf-file-name="software_center.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/test/software_center.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="196" column="99" selection-start="10631" selection-end="10631" vertical-scroll-proportion="-14.747525" vertical-offset="9290" max-vertical-offset="10302">
-              <folding>
-                <element signature="e#42#52#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sizetest.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test/sizetest.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="9" selection-start="78" selection-end="78" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="vfs.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/util/vfs.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="30" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="340">
-              <folding>
-                <element signature="e#69#78#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="log.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/util/log.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="612">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="recommenditem.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ui/recommenditem.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="18" selection-start="343" selection-end="343" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="799">
-              <folding>
-                <element signature="e#69#94#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="async_thread.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/util/async_thread.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="8" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="544">
-              <folding>
-                <element signature="e#70#79#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="listitemwidget.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="68" selection-start="1595" selection-end="1617" vertical-scroll-proportion="0.0" vertical-offset="310" max-vertical-offset="1496">
+            <state line="89" column="33" selection-start="3124" selection-end="3124" vertical-scroll-proportion="0.26450512" vertical-offset="1052" max-vertical-offset="10727">
               <folding />
             </state>
           </provider>
@@ -97,8 +35,82 @@
       <file leaf-file-name="software.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/software.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="46" selection-start="1976" selection-end="1976" vertical-scroll-proportion="0.0" vertical-offset="1079" max-vertical-offset="1547">
+            <state line="22" column="8" selection-start="322" selection-end="322" vertical-scroll-proportion="0.0" vertical-offset="396" max-vertical-offset="1547">
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="adwidget.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/adwidget.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="130" column="25" selection-start="4518" selection-end="4518" vertical-scroll-proportion="0.0" vertical-offset="1785" max-vertical-offset="2805">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="detailscrollwidget.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/detailscrollwidget.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="93" column="0" selection-start="5867" selection-end="5867" vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="2448">
+              <folding>
+                <element signature="e#69#94#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="detailw.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/detailw.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="100" column="38" selection-start="4951" selection-end="4951" vertical-scroll-proportion="0.0" vertical-offset="1501" max-vertical-offset="2584">
+              <folding>
+                <marker date="1394086683568" expanded="true" signature="7373:7535" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="miniuitest.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/miniuitest.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1258">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="miniuitest2.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/miniuitest2.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="0" selection-start="161" selection-end="161" vertical-scroll-proportion="0.0" vertical-offset="119" max-vertical-offset="731">
+              <folding>
+                <marker date="1393983339860" expanded="true" signature="181:432" placeholder="..." />
+                <marker date="1393983339860" expanded="true" signature="205:432" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="listitemwidget.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="36" column="28" selection-start="1687" selection-end="1687" vertical-scroll-proportion="0.0" vertical-offset="162" max-vertical-offset="1717">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="recommenditem.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/recommenditem.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="48" column="0" selection-start="1783" selection-end="1783" vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1139">
+              <folding>
+                <marker date="1394075090968" expanded="true" signature="199:2358" placeholder="..." />
+                <marker date="1394075090968" expanded="true" signature="263:1535" placeholder="..." />
+                <marker date="1394075090968" expanded="true" signature="1675:1888" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -106,18 +118,7 @@
       <file leaf-file-name="backend_apt.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/backend/backend_apt.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="23" selection-start="739" selection-end="739" vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="3757">
-              <folding>
-                <element signature="e#70#80#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file:///usr/lib/python2.7/dist-packages/apt/package.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="905" column="37" selection-start="29265" selection-end="29274" vertical-scroll-proportion="0.0" vertical-offset="15084" max-vertical-offset="24310">
+            <state line="65" column="0" selection-start="1578" selection-end="1578" vertical-scroll-proportion="0.0" vertical-offset="595" max-vertical-offset="3621">
               <folding />
             </state>
           </provider>
@@ -133,21 +134,21 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/ui/ukliw.py" />
-        <option value="$PROJECT_DIR$/backend/backend_worker.py" />
-        <option value="$PROJECT_DIR$/data/__init__.py" />
-        <option value="$PROJECT_DIR$/advance/ukscagent.py" />
-        <option value="$PROJECT_DIR$/test/miniuitest.py" />
         <option value="$PROJECT_DIR$/util/async_thread.py" />
         <option value="$PROJECT_DIR$/service/software_bo.py" />
         <option value="$PROJECT_DIR$/util/async_process.py" />
         <option value="$PROJECT_DIR$/test/pipetest.py" />
         <option value="$PROJECT_DIR$/util/check_software_thread.py" />
-        <option value="$PROJECT_DIR$/backend/backend_apt.py" />
         <option value="$PROJECT_DIR$/model/software.py" />
-        <option value="$PROJECT_DIR$/ui/listitemwidget.py" />
         <option value="$PROJECT_DIR$/test/sizetest.py" />
         <option value="$PROJECT_DIR$/util/vfs.py" />
+        <option value="$PROJECT_DIR$/test/miniuitest2.py" />
+        <option value="$PROJECT_DIR$/ui/detailwidget.py" />
+        <option value="$PROJECT_DIR$/backend/backend_apt.py" />
+        <option value="$PROJECT_DIR$/ui/recommenditem.py" />
+        <option value="$PROJECT_DIR$/ui/listitemwidget.py" />
+        <option value="$PROJECT_DIR$/ui/adwidget.py" />
+        <option value="$PROJECT_DIR$/ui/detailscrollwidget.py" />
         <option value="$PROJECT_DIR$/test/software_center.py" />
       </list>
     </option>
@@ -203,7 +204,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -274,20 +274,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="service" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ubuntukylin-software-center" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ubuntukylin-software-center" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="model" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -336,16 +322,17 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="options.lastSelected" value="preferences.externalTools" />
     <property name="recentsLimit" value="5" />
+    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors" />
     <property name="last_opened_file_path" value="/usr/bin/designer-qt4" />
     <property name="FullScreen" value="false" />
-    <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -354,10 +341,10 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/util" />
-      <recent name="$PROJECT_DIR$/ui" />
-      <recent name="$PROJECT_DIR$/model" />
       <recent name="$PROJECT_DIR$/test" />
+      <recent name="$PROJECT_DIR$/ui" />
+      <recent name="$PROJECT_DIR$/util" />
+      <recent name="$PROJECT_DIR$/model" />
       <recent name="$PROJECT_DIR$/backend" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -366,7 +353,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.vfs">
+  <component name="RunManager" selected="Python.miniuitest2">
     <configuration default="false" name="miniuitest" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -380,24 +367,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="ubuntukylin-software-center" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/miniuitest.py" />
-      <option name="PARAMETERS" value="" />
-      <RunnerSettings RunnerId="PythonRunner" />
-      <ConfigurationWrapper RunnerId="PythonRunner" />
-      <method />
-    </configuration>
-    <configuration default="false" name="ukscagent" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/advance" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="ubuntukylin-software-center" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/advance/ukscagent.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
@@ -452,6 +421,24 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="ubuntukylin-software-center" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/util/vfs.py" />
+      <option name="PARAMETERS" value="" />
+      <RunnerSettings RunnerId="PythonRunner" />
+      <ConfigurationWrapper RunnerId="PythonRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="miniuitest2" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="ubuntukylin-software-center" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test/miniuitest2.py" />
       <option name="PARAMETERS" value="" />
       <RunnerSettings RunnerId="PythonRunner" />
       <ConfigurationWrapper RunnerId="PythonRunner" />
@@ -599,18 +586,18 @@
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Python.adwidget" />
       <item index="1" class="java.lang.String" itemvalue="Python.miniuitest" />
-      <item index="2" class="java.lang.String" itemvalue="Python.ukscagent" />
-      <item index="3" class="java.lang.String" itemvalue="Python.pipetest" />
-      <item index="4" class="java.lang.String" itemvalue="Python.sizetest" />
-      <item index="5" class="java.lang.String" itemvalue="Python.vfs" />
+      <item index="2" class="java.lang.String" itemvalue="Python.pipetest" />
+      <item index="3" class="java.lang.String" itemvalue="Python.sizetest" />
+      <item index="4" class="java.lang.String" itemvalue="Python.vfs" />
+      <item index="5" class="java.lang.String" itemvalue="Python.miniuitest2" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.vfs" />
-        <item index="1" class="java.lang.String" itemvalue="Python.sizetest" />
-        <item index="2" class="java.lang.String" itemvalue="Python.pipetest" />
-        <item index="3" class="java.lang.String" itemvalue="Python.miniuitest" />
-        <item index="4" class="java.lang.String" itemvalue="Python.ukscagent" />
+        <item index="0" class="java.lang.String" itemvalue="Python.miniuitest2" />
+        <item index="1" class="java.lang.String" itemvalue="Python.vfs" />
+        <item index="2" class="java.lang.String" itemvalue="Python.sizetest" />
+        <item index="3" class="java.lang.String" itemvalue="Python.pipetest" />
+        <item index="4" class="java.lang.String" itemvalue="Python.miniuitest" />
       </list>
     </recent_temporary>
   </component>
@@ -668,16 +655,16 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32888147" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32888147" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24942264" sideWeight="0.67111856" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16986933" sideWeight="0.7191358" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17140661" sideWeight="0.76080245" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35778442" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.20833333" sideWeight="0.50038433" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2808642" sideWeight="0.49961567" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2808642" sideWeight="0.49961567" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3287037" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23919754" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -697,132 +684,120 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file:///usr/lib/python2.7/dist-packages/apt/package.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1059" column="8" selection-start="34229" selection-end="34229" vertical-scroll-proportion="0.0" vertical-offset="18003" max-vertical-offset="24429">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/service/software_bo.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="41" column="25" selection-start="1270" selection-end="1270" vertical-scroll-proportion="0.0" vertical-offset="362" max-vertical-offset="1360" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="0" selection-start="318" selection-end="318" vertical-scroll-proportion="0.0" vertical-offset="73" max-vertical-offset="731" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/backend/backend_worker.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="51" selection-start="221" selection-end="262" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="697">
+        <state line="31" column="25" selection-start="1146" selection-end="1146" vertical-scroll-proportion="0.0" vertical-offset="98" max-vertical-offset="697" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/miniuitest.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1224">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/async_process.py">
+    <entry file="file://$PROJECT_DIR$/test/miniuitest2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="27" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="442">
+        <state line="7" column="0" selection-start="161" selection-end="161" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="731">
           <folding>
-            <element signature="e#70#79#0" expanded="false" />
-            <marker date="1393556175281" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1393556175281" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1393983339860" expanded="true" signature="181:432" placeholder="..." />
+            <marker date="1393983339860" expanded="true" signature="205:432" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/pipetest.py">
+    <entry file="file://$PROJECT_DIR$/model/software.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="34" selection-start="217" selection-end="228" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="493">
+        <state line="22" column="8" selection-start="322" selection-end="322" vertical-scroll-proportion="0.0" vertical-offset="396" max-vertical-offset="1547">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/check_software_thread.py">
+    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/-2066100796/PyQt4/QtGui.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="46" column="35" selection-start="1133" selection-end="1133" vertical-scroll-proportion="0.0" vertical-offset="535" max-vertical-offset="952">
-          <folding>
-            <element signature="e#70#79#0" expanded="true" />
-            <marker date="1393565907365" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model/advertisement.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="417">
+        <state line="23624" column="8" selection-start="907078" selection-end="907078" vertical-scroll-proportion="0.3327645" vertical-offset="401413" max-vertical-offset="661419">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/backend/backend_apt.py">
+    <entry file="file://$PROJECT_DIR$/ui/detailw.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="23" selection-start="739" selection-end="739" vertical-scroll-proportion="0.0" vertical-offset="408" max-vertical-offset="3757">
+        <state line="100" column="38" selection-start="4951" selection-end="4951" vertical-scroll-proportion="0.0" vertical-offset="1501" max-vertical-offset="2584">
           <folding>
-            <element signature="e#70#80#0" expanded="true" />
+            <marker date="1394086683568" expanded="true" signature="7373:7535" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file:///usr/lib/python2.7/dist-packages/apt/package.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="905" column="37" selection-start="29265" selection-end="29274" vertical-scroll-proportion="0.0" vertical-offset="15084" max-vertical-offset="24310">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model/software.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="46" selection-start="1976" selection-end="1976" vertical-scroll-proportion="0.0" vertical-offset="1079" max-vertical-offset="1547">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/async_thread.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="8" selection-start="247" selection-end="247" vertical-scroll-proportion="0.0" vertical-offset="116" max-vertical-offset="544">
-          <folding>
-            <element signature="e#70#79#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="68" selection-start="1595" selection-end="1617" vertical-scroll-proportion="0.0" vertical-offset="361" max-vertical-offset="1496">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python2.7/statvfs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="417">
+        <state line="20" column="40" selection-start="884" selection-end="884" vertical-scroll-proportion="0.0" vertical-offset="21661" max-vertical-offset="24310">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui/recommenditem.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="18" selection-start="343" selection-end="343" vertical-scroll-proportion="0.0" vertical-offset="167" max-vertical-offset="748">
+        <state line="48" column="0" selection-start="1783" selection-end="1783" vertical-scroll-proportion="0.0" vertical-offset="510" max-vertical-offset="1139">
+          <folding>
+            <marker date="1394075090968" expanded="true" signature="199:2358" placeholder="..." />
+            <marker date="1394075090968" expanded="true" signature="263:1535" placeholder="..." />
+            <marker date="1394075090968" expanded="true" signature="1675:1888" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="28" selection-start="1687" selection-end="1687" vertical-scroll-proportion="0.0" vertical-offset="162" max-vertical-offset="1717">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/adwidget.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="130" column="25" selection-start="4518" selection-end="4518" vertical-scroll-proportion="0.0" vertical-offset="1785" max-vertical-offset="2805">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/detailscrollwidget.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="93" column="0" selection-start="5867" selection-end="5867" vertical-scroll-proportion="0.0" vertical-offset="153" max-vertical-offset="2448">
           <folding>
             <element signature="e#69#94#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test/sizetest.py">
+    <entry file="file://$PROJECT_DIR$/backend/backend_apt.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="9" selection-start="78" selection-end="78" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="323">
+        <state line="65" column="0" selection-start="1578" selection-end="1578" vertical-scroll-proportion="0.0" vertical-offset="595" max-vertical-offset="3621">
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/log.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="612">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/vfs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="30" selection-start="250" selection-end="250" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="340">
-          <folding>
-            <element signature="e#69#78#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/software_center.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="196" column="99" selection-start="10631" selection-end="10631" vertical-scroll-proportion="-14.747525" vertical-offset="9290" max-vertical-offset="10302">
-          <folding>
-            <element signature="e#42#52#0" expanded="true" />
-          </folding>
+        <state line="89" column="33" selection-start="3124" selection-end="3124" vertical-scroll-proportion="0.26450512" vertical-offset="1052" max-vertical-offset="10727">
+          <folding />
         </state>
       </provider>
     </entry>

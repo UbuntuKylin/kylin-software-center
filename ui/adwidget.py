@@ -111,7 +111,7 @@ class ADWidget(QWidget):
         self.distance = self.adi * 663 - self.adContentWidget.x()
         # self.adtimer.stop()
         self.admtimer.stop()
-        self.admtimer.start(13)
+        self.admtimer.start(12)
 
     def slot_adtimer_timeout(self):
         if(self.adi == (self.adl - 1)):
@@ -128,7 +128,7 @@ class ADWidget(QWidget):
             self.admtimer.stop()
             self.adtimer.start(3000)
         else:
-            self.adx -= 5
+            self.adx -= 8
             self.adContentWidget.move(self.adx, 0)
 
 

@@ -10,6 +10,7 @@ from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
 from ui.listitemwidget import ListItemWidget
 from ui.adwidget import *
+from ui.detailscrollwidget import DetailScrollWidget
 from backend.backend_worker import BackendWorker
 from util.async_thread import AsyncThread
 from util.async_process import AsyncProcess
@@ -36,6 +37,24 @@ class SoftwareCenter(QMainWindow):
 
         # ui
         self.ui_init()
+
+        self.ui.headerWidget.installEventFilter(self)
+
+        self.ui.categoryView.itemClicked.connect(self.slot_change_category)
+        self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.unListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.allsListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
+        self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
+        self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
+        self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
+        self.ui.btnClose.clicked.connect(self.slot_close)
+        self.ui.btnMin.clicked.connect(self.slot_min)
+        self.connect(self, SIGNAL("clickitem"), self.slot_show_detail)
+        self.connect(data.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
 
         # logic
         self.tmp_get_category()
@@ -74,7 +93,6 @@ class SoftwareCenter(QMainWindow):
         at.setDaemon(True)
         at.start()
 
-
         # from multiprocessing import Process,Queue
         # q = Queue()
         # q.put(data.softwareList)
@@ -102,20 +120,8 @@ class SoftwareCenter(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
-        self.ui.headerWidget.installEventFilter(self)
-
-        self.ui.categoryView.itemClicked.connect(self.slot_change_category)
-        self.ui.allsListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
-        self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
-        self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
-        self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
-        self.ui.btnClose.clicked.connect(self.slot_close)
-        self.ui.btnMin.clicked.connect(self.slot_min)
-
-        self.connect(data.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
+        self.detailScrollWidget = DetailScrollWidget(self.ui.centralwidget)
+        self.detailScrollWidget.stackUnder(self.ui.item1Widget)
 
         # style by code
         self.ui.headerWidget.setAutoFillBackground(True)
@@ -123,6 +129,17 @@ class SoftwareCenter(QMainWindow):
         img = QPixmap("res/header.png")
         palette.setBrush(QPalette.Window, QBrush(img))
         self.ui.headerWidget.setPalette(palette)
+
+        self.ui.userWidget.setAutoFillBackground(True)
+        palette = QPalette()
+        img = QPixmap("res/categorybg.png")
+        palette.setBrush(QPalette.Window, QBrush(img))
+        self.ui.userWidget.setPalette(palette)
+
+        self.ui.recommendWidget.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, Qt.white)
+        self.ui.recommendWidget.setPalette(palette)
 
         self.ui.bottomWidget.setAutoFillBackground(True)
         palette = QPalette()
@@ -167,7 +184,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         self.ui.searchicon.setStyleSheet("QLabel{background-image:url('res/search.png')}")
         self.ui.leSearch.setStyleSheet("QLineEdit{border:1px solid #C3E0F4;border-radius:2px;padding-left:15px;color:#497FAB;font-size:13px;}")
-        self.ui.userWidget.setStyleSheet("QWidget{background-color:#DDE4EA}")
         self.ui.userLabel.setStyleSheet("QLabel{background-image:url('res/item3')}")
         self.ui.item1Widget.setStyleSheet("QWidget{background-image:url('res/item1.png')}")
         self.ui.item2Widget.setStyleSheet("QWidget{background-image:url('res/item2.png')}")
@@ -178,7 +194,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-image:url('res/categorybg.png');}QListWidget::item{height:35px;padding-left:20px;margin-top:0px;border:0px;}QListWidget::item:hover{background:#CAD4E2;}QListWidget::item:selected{background-color:#6BB8DD;color:black;}")
         self.ui.categorytext.setStyleSheet("QLabel{background-image:url('res/categorybg.png');color:#7E8B97;font-weight:bold;padding-left:5px;}")
         self.ui.hline1.setStyleSheet("QLabel{background-image:url('res/hline1.png')}")
-        self.ui.recommendWidget.setStyleSheet("QWidget{background-color:white}")
         self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
         self.ui.rankWidget.setStyleSheet("QWidget{background-color:white}")
         self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
@@ -202,6 +217,15 @@ class SoftwareCenter(QMainWindow):
         self.ui.upListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
         self.ui.unListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
         self.ui.taskListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}")
+        self.ui.allsListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
+                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
+                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
+        self.ui.upListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
+                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
+                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
+        self.ui.unListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
+                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
+                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
     def eventFilter(self, obj, event):
         if (obj == self.ui.headerWidget):
@@ -283,6 +307,7 @@ class SoftwareCenter(QMainWindow):
                 x = 0
                 y = 0
                 recommend = RecommendItem(software,self.ui.recommendWidget)
+                self.connect(recommend, SIGNAL("btnshowdetail"), self.slot_show_detail)
                 if(self.recommendNumber in (0, 1, 2)):
                     y = 0
                 elif(self.recommendNumber in (3, 4, 5)):
@@ -356,6 +381,7 @@ class SoftwareCenter(QMainWindow):
             software = self.psmap[listWidget].pop(0)
             oneitem = QListWidgetItem()
             liw = ListItemWidget(software, self.nowPage)
+            self.connect(liw, SIGNAL("btnshowdetail"), self.slot_show_detail)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
 
@@ -425,6 +451,7 @@ class SoftwareCenter(QMainWindow):
         self.nowPage = 'homepage'
         self.ui.categoryView.setEnabled(True)
         self.switch_category()
+        self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(True)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -443,6 +470,7 @@ class SoftwareCenter(QMainWindow):
         self.nowPage = 'uppage'
         self.ui.categoryView.setEnabled(True)
         self.switch_category()
+        self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(True)
@@ -461,6 +489,7 @@ class SoftwareCenter(QMainWindow):
         self.nowPage = 'unpage'
         self.ui.categoryView.setEnabled(True)
         self.switch_category()
+        self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -479,6 +508,7 @@ class SoftwareCenter(QMainWindow):
         self.nowPage = 'taskpage'
         self.ui.categoryView.setEnabled(False)
         self.ui.categoryView.clearSelection()
+        self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -564,6 +594,19 @@ class SoftwareCenter(QMainWindow):
     def slot_count_upgradable_over(self):
         print "uover..."
         self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(data.upgradableCount) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+
+    def slot_click_item(self, item):
+        liw = ''
+        if(self.nowPage == 'homepage'):
+            liw = self.ui.allsListWidget.itemWidget(item)
+        if(self.nowPage == 'uppage'):
+            liw = self.ui.upListWidget.itemWidget(item)
+        if(self.nowPage == 'unpage'):
+            liw = self.ui.unListWidget.itemWidget(item)
+        self.emit(SIGNAL("clickitem"), liw.software)
+
+    def slot_show_detail(self, software):
+        self.detailScrollWidget.showSimple(software)
 
     def slot_backend_msg(self, msg):
         print msg
