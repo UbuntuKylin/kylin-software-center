@@ -97,6 +97,10 @@ class SoftwareCenter(QMainWindow):
         self.connect(self, SIGNAL("clickitem"), self.slot_show_app_detail) #????
         self.connect(self.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
 
+        self.connect(self.detailScrollWidget, SIGNAL("clickinstall"), self.slot_click_install)
+        self.connect(self.detailScrollWidget, SIGNAL("clickupdate"), self.slot_click_update)
+        self.connect(self.detailScrollWidget, SIGNAL("clickremove"), self.slot_click_remove)
+
 
 #????        self.psmap[self.ui.allsListWidget] = []
 #????        self.psmap[self.ui.upListWidget] = []
@@ -877,4 +881,4 @@ def main():
 
 
 if __name__ == '__main__':
-   main()
+    main()

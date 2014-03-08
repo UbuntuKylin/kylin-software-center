@@ -8,11 +8,10 @@ from ui.listitemwidget import ListItemWidget
 
 
 class DetailScrollWidget(QScrollArea):
-    mainWindow = ''
+    app = ''
 
     def __init__(self, parent=None):
         QScrollArea.__init__(self,parent)
-        self.mainWindow = parent
         self.detailWidget = QWidget()
         self.ui_init()
 
@@ -35,6 +34,9 @@ class DetailScrollWidget(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
+        self.ui.btnInstall.clicked.connect(self.slot_click_install)
+        self.ui.btnUpdate.clicked.connect(self.slot_click_update)
+        self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
 
         # style
         self.detailWidget.setAutoFillBackground(True)
@@ -79,6 +81,7 @@ class DetailScrollWidget(QScrollArea):
 
     # fill fast property, show ui, request remote property
     def showSimple(self, software):
+        self.app = software
         self.ui.name.setText(software.name)
         self.ui.installedVersion.setText("当前版本: " + software.installed_version)
         self.ui.candidateVersion.setText("最新版本: " + software.candidate_version)
@@ -141,3 +144,44 @@ class DetailScrollWidget(QScrollArea):
 
     def slot_close_detail(self):
         self.hide()
+
+    def slot_click_install(self):
+        self.emit(SIGNAL("clickinstall"), self.app)
+        self.ui.btnInstall.setText("处理中")
+        self.ui.btnInstall.setEnabled(False)
+
+    def slot_click_update(self):
+        self.emit(SIGNAL("clickupdate"), self.app)
+        self.ui.btnUpdate.setText("处理中")
+        self.ui.btnUpdate.setEnabled(False)
+
+    def slot_click_uninstall(self):
+        self.emit(SIGNAL("clickremove"), self.app)
+        self.ui.btnUninstall.setText("处理中")
+        self.ui.btnUninstall.setEnabled(False)
+
+    def slot_work_finished(self, newPackage):
+        self.app.package = newPackage
+        if(self.app.mark == "install" or self.app.mark == "update"):
+            self.ui.status.show()
+            self.ui.btnInstall.setText("已安装")
+            self.ui.btnUpdate.setText("不可升级")
+            self.ui.btnUninstall.setText("可卸载")
+            self.ui.btnInstall.setEnabled(False)
+            self.ui.btnUpdate.setEnabled(False)
+            self.ui.btnUninstall.setEnabled(True)
+            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+            self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+            self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
+        elif(self.app.mark == "remove"):
+            self.ui.status.hide()
+            self.ui.btnInstall.setText("安装")
+            self.ui.btnUpdate.setText("不可升级")
+            self.ui.btnUninstall.setText("不可卸载")
+            self.ui.btnInstall.setEnabled(True)
+            self.ui.btnUpdate.setEnabled(False)
+            self.ui.btnUninstall.setEnabled(False)
+            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
+            self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+            self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+
