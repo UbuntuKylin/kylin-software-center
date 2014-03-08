@@ -157,6 +157,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr = AppManager()
         self.appmgr.get_category_list(True)
         self.backend = InstallBackend()
+        #self.backend._init_dbus_ifaces()
         self.category = "ubuntukylin"
         self.nowPage = "homepage"
 
@@ -476,9 +477,19 @@ class SoftwareCenter(QMainWindow):
             oneitem = QListWidgetItem()
             liw = ListItemWidget(app, self.backend, self.nowPage)
             self.connect(liw, SIGNAL("btnshowdetail"), self.slot_show_app_detail)
+            self.connect(liw, SIGNAL("clickinstall"), self.slot_click_install)
+            self.connect(liw, SIGNAL("clickupdate"), self.slot_click_update)
+            self.connect(liw, SIGNAL("clickremove"), self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
             count = count + 1
+
+    def add_task_item(self, app):
+        oneitem = QListWidgetItem()
+        tliw = TaskListItemWidget(app)
+        self.ui.taskListWidget.addItem(oneitem)
+        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+        self.stmap[app.name] = tliw
 
     #-------------------------------slots-------------------------------
 
@@ -806,6 +817,19 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget,Signals.app_reviews_ready, self.detailScrollWidget.slot_app_reviews_ready)
         self.connect(self.detailScrollWidget,Signals.app_screenshots_ready, self.detailScrollWidget.slot_app_screenshots_ready)
 
+    def slot_click_install(self, app):
+        print app.name
+        self.backend.install_package(app.name)
+        self.add_task_item(app)
+
+    def slot_click_update(self, app):
+        self.backend.upgrade_package(app.name)
+        self.add_task_item(app)
+
+    def slot_click_remove(self, app):
+        self.backend.remove_package(app.name)
+        self.add_task_item(app)
+
     # search
     def slot_searchDTimer_timeout(self):
         self.searchDTimer.stop()
@@ -853,11 +877,4 @@ def main():
 
 
 if __name__ == '__main__':
-
-    print "sadfaf"
-    print UBUNTUKYLIN_RES_PATH
-    print os.path.abspath(os.path.curdir)
-    print os.path.pardir
-
-    print "dsafd"
-#    main()
+   main()

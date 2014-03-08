@@ -113,15 +113,18 @@ class ListItemWidget(QWidget):
         self.ui.btn.setText("请稍候")
         if(self.workType == 'homepage'):
             print "click install"
-            self.backend.install_package(self.app.name)
+            self.emit(SIGNAL("clickinstall"), self.app)
+            # self.backend.install_package(self.app.name)
             #data.sbo.install_software(self)
         elif(self.workType == 'uppage'):
             print "click update"
-            self.backend.upgrade_package(self.app.name)
+            self.emit(SIGNAL("clickupdate"), self.app)
+            # self.backend.upgrade_package(self.app.name)
             #data.sbo.update_software(self)
         elif(self.workType == 'unpage'):
             print "click remove"
-            self.backend.remove_package(self.app.name)
+            self.emit(SIGNAL("clickremove"), self.app)
+            # self.backend.remove_package(self.app.name)
             #data.sbo.remove_software(self)
 
     def slot_emit_detail(self):

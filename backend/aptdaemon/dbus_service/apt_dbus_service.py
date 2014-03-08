@@ -42,7 +42,6 @@ from gi.repository import GObject
 import apt
 import aptsources.sourceslist
 import apt_pkg
-from server import PolicyKitService
 
 import time
 
