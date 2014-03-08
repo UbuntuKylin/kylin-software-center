@@ -38,9 +38,6 @@ from ui.tasklistitemwidget import TaskListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 #from backend.backend_worker import BackendWorker
-#from util.async_thread import AsyncThread
-#from util.async_process import AsyncProcess
-#from util.check_software_thread import CheckSoftwareThread
 from models.advertisement import Advertisement
 #import data
 #from util import log
