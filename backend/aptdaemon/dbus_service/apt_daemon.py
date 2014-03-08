@@ -41,17 +41,17 @@ class FetchProcess(apb.AcquireProgress):
         print 'all items download finished'
         if item is not None:
             print "FetchProcess, done, Item:", self.appname,item.shortdesc, item.uri, item.owner
-        self.dbus_service.software_fetch_signal("down_done", "")
+        self.dbus_service.software_fetch_signal("down_done", self.appname)
 
     def fail(self, item):
         print 'download failed'
-        self.dbus_service.software_fetch_signal("down_fail", "")
+        self.dbus_service.software_fetch_signal("down_fail", self.appname)
 
     def fetch(self, item):
         print 'one item download finished'
         if item is not None:
             print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
-        self.dbus_service.software_fetch_signal("down_fetch", "")
+        self.dbus_service.software_fetch_signal("down_fetch", self.appname)
 
     def ims_hit(self, item):
         print 'ims_hit'
@@ -60,8 +60,14 @@ class FetchProcess(apb.AcquireProgress):
         print 'media_change'
 
     def pulse(self, owner):
+        kwarg = {"download_appname": self.appname,
+                "download_bytes": str(self.current_bytes),
+                "total_bytes":str(self.total_bytes),
+                "download_items":str(self.current_items),
+                "total_items":str(self.total_items),
+        }
 
-        self.dbus_service.software_fetch_signal("down_pulse","download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items))
+        self.dbus_service.software_fetch_signal("down_pulse","download_appname" + self.appname +",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items))
 
     def start(self):
         # Reset all our values.
@@ -74,11 +80,11 @@ class FetchProcess(apb.AcquireProgress):
         self.total_bytes = 0.0
         self.total_items = 0
         print 'fetch progress start ...',self.appname,
-        self.dbus_service.software_fetch_signal("down_start", "")
+        self.dbus_service.software_fetch_signal("down_start", self.appname)
 
     def stop(self):
         print 'fetch progress stop ...'
-        self.dbus_service.software_fetch_signal("down_stop", "")
+        self.dbus_service.software_fetch_signal("down_stop", self.appname)
 
 
 class AptProcess(apb.InstallProgress):
@@ -93,19 +99,24 @@ class AptProcess(apb.InstallProgress):
 
     def error(self, pkg, errormsg):
         print "AptProcess, error:", self.appname, pkg, errormsg
-        self.dbus_service.software_apt_signal("apt_error", "")
+        self.dbus_service.software_apt_signal("apt_error", self.appname)
 
     def start_update(self):
         print 'apt process start work', self.appname
-        self.dbus_service.software_apt_signal("apt_start", "")
+        self.dbus_service.software_apt_signal("apt_start", self.appname)
 
     def finish_update(self):
         print 'apt process finished', self.appname
-        self.dbus_service.software_apt_signal("apt_stop", "")
+        self.dbus_service.software_apt_signal("apt_stop", self.appname)
 
     def status_change(self, pkg, percent, status):
         print "status_change:", self.appname, pkg
         print str(int(percent)) + "%  status : " + status
+        kwarg = {"apt_appname": self.appname,
+                "percent": str(int(percent)),
+                "status": status,
+        }
+
         self.dbus_service.software_apt_signal("apt_pulse", "percent:" + str(int(percent)) + ",status:" + status)
 
 #class AptDaemon(threading.Thread):

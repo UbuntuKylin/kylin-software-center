@@ -112,3 +112,5 @@ class Signals:
     count_installed_ready = SIGNAL("count-installed-ready")
     count_upgradable_ready = SIGNAL("count-upgradable-ready")
     show_app_detail = SIGNAL("app-show-detail")
+    dbus_fetch_process = SIGNAL("dbus-fetch-process")
+    dbus_apt_process = SIGNAL("dbus-apt-process")
