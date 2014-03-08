@@ -82,9 +82,10 @@ class TransactionTypes:
     REPAIR = "repair_dependencies"
 
 
-
-UBUNTUKYLIN_RES_PATH = "/home/shine/downproject/sc/ubuntu-kylin-software-center/res/"
-UBUNTUKYLIN_DATA_PATH = "/home/shine/downproject/sc/ubuntu-kylin-software-center/data/"
+UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
+UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
+#UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"
+#UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
 UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
@@ -112,5 +113,4 @@ class Signals:
     count_installed_ready = SIGNAL("count-installed-ready")
     count_upgradable_ready = SIGNAL("count-upgradable-ready")
     show_app_detail = SIGNAL("app-show-detail")
-    dbus_fetch_process = SIGNAL("dbus-fetch-process")
     dbus_apt_process = SIGNAL("dbus-apt-process")

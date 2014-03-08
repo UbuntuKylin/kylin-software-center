@@ -41,5 +41,14 @@ class TaskListItemWidget(QWidget):
         self.ui.setupUi(self)
         self.show()
 
+    def status_change(self, processtype, percent, msg):
+        text = ''
+        if(processtype == 'fetch'):
+            text = "正在下载: "
+        elif(processtype == 'apt'):
+            text = "正在执行: "
+        self.ui.progressBar.setValue(percent)
+        self.ui.status.setText(text + msg)
+
     def work_finished(self, newPackage):
         self.software.package = newPackage

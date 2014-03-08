@@ -99,6 +99,7 @@ class InstallBackend(QObject):
         sendType = "fetch"
         sendMsg  = ""
         appname = ""
+        percent = 0.5
         if( type == "down_start"):
             appname = msg
             sendMsg = "开始下载..."
@@ -120,13 +121,14 @@ class InstallBackend(QObject):
             print msg
         print type
         print msg
-        self.emit(Signals.dbus_fetch_process,sendType,appname,sendMsg)
+        self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
     def _on_software_apt_signal(self,type, msg):
         print "_on_software_apt_signal"
         sendType = "apt"
         sendMsg  = ""
         appname = ""
+        percent = 0.5
         if( type == "apt_start"):
             appname = msg
             sendMsg = "安装开始..."
@@ -143,7 +145,7 @@ class InstallBackend(QObject):
 
         print type
         print msg
-        self.emit(Signals.dbus_apt_process,sendType,appname,sendMsg)
+        self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
     def install_package(self,pkgname):
         self.call_dbus_iface(AppActions.INSTALL,pkgname)

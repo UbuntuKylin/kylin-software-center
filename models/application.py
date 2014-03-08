@@ -35,6 +35,8 @@ from models.enums import UBUNTUKYLIN_RES_ICON_PATH
 #This class is the abstraction of a 
 class Application:
 
+    # work type
+    mark = ''
     #
     def __init__(self, pkgname, category_name, apt_cache):
         if not pkgname:
