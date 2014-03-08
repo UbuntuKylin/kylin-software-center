@@ -84,7 +84,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.candidateVersion.setText("最新版本: " + software.candidate_version)
         self.ui.summary.setText(software.summary)
         self.ui.description.setText(software.description)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('res/tmpicons/" + software.name + ".png')}")
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('data/tmpicons/" + software.name + ".png')}")
 
         size = software.packageSize
         sizek = size / 1000
@@ -137,6 +137,7 @@ class DetailScrollWidget(QScrollArea):
 
         # send request
         ################
+        # div
 
     def slot_close_detail(self):
         self.hide()

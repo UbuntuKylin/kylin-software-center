@@ -23,10 +23,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="adwidget.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ui/adwidget.py">
+      <file leaf-file-name="globals.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/globals.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="130" column="25" selection-start="4574" selection-end="4574" vertical-scroll-proportion="0.0" vertical-offset="2210" max-vertical-offset="3264">
+            <state line="30" column="4" selection-start="957" selection-end="957" vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="629">
               <folding />
             </state>
           </provider>
@@ -35,16 +35,36 @@
       <file leaf-file-name="detailscrollwidget.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ui/detailscrollwidget.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="93" column="0" selection-start="5819" selection-end="5819" vertical-scroll-proportion="0.0" vertical-offset="1581" max-vertical-offset="2499">
+            <state line="137" column="22" selection-start="8875" selection-end="8875" vertical-scroll-proportion="0.0" vertical-offset="969" max-vertical-offset="2465">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="detailw.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ui/detailw.py">
+      <file leaf-file-name="softwarecenter.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/softwarecenter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="100" column="38" selection-start="4951" selection-end="4951" vertical-scroll-proportion="0.0" vertical-offset="1700" max-vertical-offset="2584">
+            <state line="474" column="81" selection-start="25005" selection-end="25005" vertical-scroll-proportion="0.0" vertical-offset="7643" max-vertical-offset="14603">
+              <folding>
+                <element signature="e#933#943#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="application.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/application.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="37" column="15" selection-start="1142" selection-end="1142" vertical-scroll-proportion="0.0" vertical-offset="442" max-vertical-offset="2618">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="uktliw.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/uktliw.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="102" max-vertical-offset="1037">
               <folding />
             </state>
           </provider>
@@ -53,28 +73,44 @@
       <file leaf-file-name="listitemwidget.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="12" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="2465">
+            <state line="115" column="55" selection-start="4539" selection-end="4582" vertical-scroll-proportion="0.0" vertical-offset="1624" max-vertical-offset="2329">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="recommenditem.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/ui/recommenditem.py">
+      <file leaf-file-name="installbackend.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/backend/installbackend.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="0" selection-start="1605" selection-end="1605" vertical-scroll-proportion="0.0" vertical-offset="816" max-vertical-offset="1581">
+            <state line="106" column="8" selection-start="3026" selection-end="3026" vertical-scroll-proportion="0.0" vertical-offset="1399" max-vertical-offset="2431">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="softwarecenter.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/softwarecenter.py">
+      <file leaf-file-name="tasklistitemwidget.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ui/tasklistitemwidget.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="40" column="42" selection-start="1389" selection-end="1389" vertical-scroll-proportion="0.4473684" vertical-offset="408" max-vertical-offset="14229">
-              <folding>
-                <element signature="e#933#943#0" expanded="true" />
-              </folding>
+            <state line="50" column="42" selection-start="1651" selection-end="1651" vertical-scroll-proportion="0.7389079" vertical-offset="366" max-vertical-offset="952">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="appmanager.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/models/appmanager.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="182" column="31" selection-start="5438" selection-end="5461" vertical-scroll-proportion="0.0" vertical-offset="753" max-vertical-offset="6545">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="search.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/data/search.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="411" column="0" selection-start="16182" selection-end="16182" vertical-scroll-proportion="0.0" vertical-offset="6320" max-vertical-offset="7157">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -89,9 +125,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/service/software_bo.py" />
-        <option value="$PROJECT_DIR$/util/async_process.py" />
-        <option value="$PROJECT_DIR$/test/pipetest.py" />
         <option value="$PROJECT_DIR$/util/check_software_thread.py" />
         <option value="$PROJECT_DIR$/model/software.py" />
         <option value="$PROJECT_DIR$/test/sizetest.py" />
@@ -100,11 +133,14 @@
         <option value="$PROJECT_DIR$/ui/detailwidget.py" />
         <option value="$PROJECT_DIR$/backend/backend_apt.py" />
         <option value="$PROJECT_DIR$/ui/recommenditem.py" />
-        <option value="$PROJECT_DIR$/ui/listitemwidget.py" />
         <option value="$PROJECT_DIR$/ui/adwidget.py" />
-        <option value="$PROJECT_DIR$/ui/detailscrollwidget.py" />
         <option value="$PROJECT_DIR$/test/software_center.py" />
+        <option value="$PROJECT_DIR$/data/search.py" />
+        <option value="$PROJECT_DIR$/ui/detailscrollwidget.py" />
+        <option value="$PROJECT_DIR$/models/application.py" />
         <option value="$PROJECT_DIR$/softwarecenter.py" />
+        <option value="$PROJECT_DIR$/ui/tasklistitemwidget.py" />
+        <option value="$PROJECT_DIR$/ui/listitemwidget.py" />
       </list>
     </option>
   </component>
@@ -187,7 +223,95 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="utils" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntukylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntu-kylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ui" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntukylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntu-kylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntukylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntu-kylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="models" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntukylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntu-kylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="data" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntukylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntu-kylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntukylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ubuntu-kylin-software-center" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="backend" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aptdaemon" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -555,63 +679,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/ui/adwidget.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="25" selection-start="4574" selection-end="4574" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3264">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/detailscrollwidget.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="0" selection-start="5819" selection-end="5819" vertical-scroll-proportion="0.0" vertical-offset="1581" max-vertical-offset="2499">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/detailw.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="100" column="38" selection-start="4951" selection-end="4951" vertical-scroll-proportion="0.0" vertical-offset="1700" max-vertical-offset="2584">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="12" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="2465">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/recommenditem.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="0" selection-start="1605" selection-end="1605" vertical-scroll-proportion="0.0" vertical-offset="816" max-vertical-offset="1751">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python2.7/dist-packages/apt/package.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1059" column="8" selection-start="34229" selection-end="34229" vertical-scroll-proportion="0.0" vertical-offset="18003" max-vertical-offset="24429" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/data/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="0" selection-start="318" selection-end="318" vertical-scroll-proportion="0.0" vertical-offset="73" max-vertical-offset="731" />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/-2066100796/PyQt4/QtGui.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23624" column="8" selection-start="907078" selection-end="907078" vertical-scroll-proportion="0.3327645" vertical-offset="401413" max-vertical-offset="661419" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/detailw.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="100" column="38" selection-start="4951" selection-end="4951" vertical-scroll-proportion="0.0" vertical-offset="1501" max-vertical-offset="2584">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/lib/python2.7/dist-packages/apt/package.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="20" column="40" selection-start="884" selection-end="884" vertical-scroll-proportion="0.0" vertical-offset="21661" max-vertical-offset="24310" />
@@ -624,33 +691,103 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
+    <entry file="file://$PROJECT_DIR$/utils/vfs.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="12" selection-start="1299" selection-end="1299" vertical-scroll-proportion="0.0" vertical-offset="612" max-vertical-offset="2465">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="697">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="850">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui/adwidget.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="130" column="25" selection-start="4574" selection-end="4574" vertical-scroll-proportion="0.0" vertical-offset="2210" max-vertical-offset="3264">
+        <state line="65" column="0" selection-start="1833" selection-end="1965" vertical-scroll-proportion="0.0" vertical-offset="731" max-vertical-offset="3213">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ui/detailscrollwidget.py">
+    <entry file="file://$PROJECT_DIR$/utils/log.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="93" column="0" selection-start="5819" selection-end="5819" vertical-scroll-proportion="0.0" vertical-offset="1581" max-vertical-offset="2499">
+        <state line="30" column="46" selection-start="1048" selection-end="1048" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="952">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/search.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="411" column="0" selection-start="16182" selection-end="16182" vertical-scroll-proportion="0.0" vertical-offset="6320" max-vertical-offset="7157">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/appmanager.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="182" column="31" selection-start="5438" selection-end="5461" vertical-scroll-proportion="0.0" vertical-offset="2589" max-vertical-offset="6545">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/globals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="4" selection-start="957" selection-end="957" vertical-scroll-proportion="0.0" vertical-offset="30" max-vertical-offset="629">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/uktliw.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1037">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/application.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="15" selection-start="1142" selection-end="1142" vertical-scroll-proportion="0.0" vertical-offset="442" max-vertical-offset="2618">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/softwarecenter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="42" selection-start="1389" selection-end="1389" vertical-scroll-proportion="0.4473684" vertical-offset="408" max-vertical-offset="14229">
+        <state line="474" column="81" selection-start="25005" selection-end="25005" vertical-scroll-proportion="0.0" vertical-offset="7643" max-vertical-offset="14603">
           <folding>
             <element signature="e#933#943#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/backend/installbackend.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="106" column="8" selection-start="3026" selection-end="3026" vertical-scroll-proportion="0.0" vertical-offset="1399" max-vertical-offset="2431">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/listitemwidget.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="115" column="55" selection-start="4539" selection-end="4582" vertical-scroll-proportion="0.0" vertical-offset="1624" max-vertical-offset="2329">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/detailscrollwidget.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="137" column="22" selection-start="8875" selection-end="8875" vertical-scroll-proportion="0.0" vertical-offset="1862" max-vertical-offset="2465">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/tasklistitemwidget.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="42" selection-start="1651" selection-end="1651" vertical-scroll-proportion="0.7389079" vertical-offset="366" max-vertical-offset="952">
+          <folding />
         </state>
       </provider>
     </entry>

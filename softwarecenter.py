@@ -42,6 +42,7 @@ from models.advertisement import Advertisement
 #import data
 #from util import log
 from utils import vfs
+from data.search import *
 
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
@@ -63,6 +64,8 @@ class SoftwareCenter(QMainWindow):
     nowPage = ''
     # search delay timer
     searchDTimer = ''
+    # fx(name, taskitem) map
+    stmap = {}
 
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
@@ -90,6 +93,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
         self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.btnMin.clicked.connect(self.slot_min)
+        self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
         self.connect(self, SIGNAL("clickitem"), self.slot_show_app_detail) #????
         self.connect(self.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
 
@@ -125,6 +129,10 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_review_rating_stats()
         self.appmgr.get_toprated_stats()
 
+        self.searchDTimer = QTimer(self)
+        self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
+
+        self.searchDB = Search()
 
         self.btntesttask = QPushButton(self.ui.taskWidget)
         self.btntesttask.setGeometry(400,20,100,30)
@@ -794,6 +802,20 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
         self.connect(self.detailScrollWidget,Signals.app_reviews_ready, self.detailScrollWidget.slot_app_reviews_ready)
         self.connect(self.detailScrollWidget,Signals.app_screenshots_ready, self.detailScrollWidget.slot_app_screenshots_ready)
+
+    # search
+    def slot_searchDTimer_timeout(self):
+        self.searchDTimer.stop()
+        self.searchDB.search_software(str(self.ui.leSearch.text()))
+
+    def slot_search_text_change(self, text):
+        self.searchDTimer.stop()
+        self.searchDTimer.start(500)
+
+    # name:app name ; processtype:fetch/apt ;
+    def slot_status_change(self, name, processtype, percent, msg):
+        taskItem = self.stmap[name]
+        taskItem.status_change(processtype, percent, msg)
 
     def slot_backend_msg(self, msg):
         print msg

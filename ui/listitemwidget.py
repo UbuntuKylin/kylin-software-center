@@ -127,7 +127,7 @@ class ListItemWidget(QWidget):
     def slot_emit_detail(self):
         self.emit(SIGNAL("btnshowdetail"), self.app)
 
-    def work_finished(self, newPackage):
+    def slot_work_finished(self, newPackage):
         self.app.package = newPackage
         if(self.workType == 'homepage'):
             self.ui.btn.setText("已安装")
