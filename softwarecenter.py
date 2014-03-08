@@ -52,6 +52,9 @@ from models.globals import Globals
 
 from models.enums import Signals
 
+from dbus.mainloop.glib import DBusGMainLoop
+mainloop = DBusGMainLoop(set_as_default=True)
+
 class SoftwareCenter(QMainWindow):
 
     # fx(software, category) map
@@ -881,4 +884,15 @@ def main():
 
 
 if __name__ == '__main__':
+<<<<<<< TREE
+
+    print "sadfaf"
+    print UBUNTUKYLIN_RES_PATH
+    print os.path.abspath(os.path.curdir)
+    print os.path.pardir
+
+    print "dsafd"
     main()
+=======
+    main()
+>>>>>>> MERGE-SOURCE

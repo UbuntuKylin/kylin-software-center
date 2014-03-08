@@ -43,6 +43,12 @@ from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
 class DbusSignals:
     APT_INSTALL_PROCESS = "software_apt_signal"
 
+from dbus.mainloop.glib import DBusGMainLoop
+mainloop = DBusGMainLoop(set_as_default=True)
+
+#from dbus.mainloop.qt import DBusQtMainLoop
+#dbus_loop = DBusQtMainLoop()
+
 
 class InstallBackend(QObject):
 
@@ -57,7 +63,7 @@ class InstallBackend(QObject):
     def _init_dbus_ifaces(self):
 
         try:
-            bus = dbus.SystemBus()
+            bus = dbus.SystemBus(mainloop)
         except:
             print ("could not initiate dbus")
             return False
@@ -66,10 +72,13 @@ class InstallBackend(QObject):
             obj = bus.get_object(UBUNTUKYLIN_SERVICE_PATH,
                                  '/',
                                  UBUNTUKYLIN_INTERFACE_PATH)
+            #proxy = dbus.ProxyObject(obj,UBUNTUKYLIN_INTERFACE_PATH)
             self.iface = dbus.Interface(obj, UBUNTUKYLIN_INTERFACE_PATH)
+            props = self.iface.getProperties()
             print "2222"
+            print props
 
-            self.call_dbus_iface("check_source_ubuntukylin")
+#            self.call_dbus_iface("check_source_ubuntukylin")
 
             self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal)
             self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal)
@@ -159,8 +168,7 @@ class InstallBackend(QObject):
 
 from PyQt4.QtGui import *
 import sys
-from dbus.mainloop.glib import DBusGMainLoop
-mainloop = DBusGMainLoop(set_as_default=True)
+
 
 def main():
     app = QApplication(sys.argv)
@@ -174,7 +182,9 @@ def main():
 
     instBackend = InstallBackend()
     instBackend._init_dbus_ifaces()
-    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
+#    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
+    print "#####"
+#    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"bareftp")
 #    instBackend.call_dbus_iface(UK_DBUS_METHOD.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(UK_DBUS_METHOD.INSTALL,"gimp")
