@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Thu Mar  6 14:18:03 2014
+# Created: Fri Mar  7 11:25:09 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DetailWidget(object):
     def setupUi(self, DetailWidget):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
-        DetailWidget.resize(805, 900)
+        DetailWidget.resize(815, 900)
         self.btnCloseDetail = QtGui.QPushButton(DetailWidget)
         self.btnCloseDetail.setGeometry(QtCore.QRect(16, 24, 60, 20))
         self.btnCloseDetail.setText(_fromUtf8(""))

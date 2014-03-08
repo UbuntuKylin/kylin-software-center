@@ -1,20 +1,47 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-__author__ = 'Shine Huang'
+
+### BEGIN LICENSE
+
+# Copyright (C) 2013 National University of Defense Technology(NUDT) & Kylin Ltd
+
+# Author:
+#     Shine Huang<shenghuang@ubuntukylin.com>
+# Maintainer:
+#     Shine Huang<shenghuang@ubuntukylin.com>
+#     maclin <majun@ubuntukylin.com>
+
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License version 3, as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranties of
+# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
 import data
-
+from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
+                          UBUNTUKYLIN_RES_TMPICON_PATH,
+                          LIST_BUTTON_STYLE_PATH,
+                          UBUNTUKYLIN_RES_PATH,
+                          RECOMMEND_QPUSH_BUTTON_PATH)
 
 class ListItemWidget(QWidget):
-    software = ''
+    app = ''
     workType = ''
 
-    def __init__(self, software, nowpage, parent=None):
+    def __init__(self, app, backend, nowpage, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
-        self.software = software
+        self.app = app
+        self.backend = backend
         self.workType = nowpage
 
         self.ui.size.setAlignment(Qt.AlignCenter)
@@ -23,39 +50,49 @@ class ListItemWidget(QWidget):
         self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()
 
-        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;color:white;font-size:14px;background-image:url('res/btn6-1.png')}QPushButton:hover{background-image:url('res/btn6-2.png')}QPushButton:pressed{background-image:url('res/btn6-3.png')}")
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('res/tmpicons/" + software.name + ".png')}")
+        self.ui.btnDetail.setStyleSheet(RECOMMEND_QPUSH_BUTTON_PATH %(UBUNTUKYLIN_RES_PATH+"btn6-1.png",UBUNTUKYLIN_RES_PATH+"btn6-2.png",UBUNTUKYLIN_RES_PATH+"btn6-3.png"))
+        self.ui.icon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.descr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
         self.ui.installedVersion.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.candidateVersion.setStyleSheet("QLabel{font-size:13px;color:#FF7D15;}")
-        self.ui.btn.setStyleSheet("QPushButton{background-image:url('res/btn-small-1.png');border:0px;color:#497FAB;}QPushButton:hover{background:url('res/btn-small-2.png');}QPushButton:pressed{background:url('res/btn-small-3.png');}")
+        self.ui.btn.setStyleSheet(LIST_BUTTON_STYLE_PATH % (UBUNTUKYLIN_RES_PATH+"btn-small-1.png",UBUNTUKYLIN_RES_PATH+"btn-small-2.png",UBUNTUKYLIN_RES_PATH+"btn-small-3.png") )
 
-        self.ui.name.setText(software.name)
-        summ = software.summary
+        self.ui.name.setText(app.name)
+        summ = app.summary
         # if len(summ) > 31:
         #     summ = summ[:30]
         #     summ += "..."
         self.ui.descr.setText(summ)
 
-        size = software.packageSize
+        size = app.packageSize
         sizek = size / 1000
         self.ui.size.setText(str(sizek) + " K")
 
-        self.ui.installedVersion.setText("已装: " + software.installed_version)
-        self.ui.candidateVersion.setText("最新: " + software.candidate_version)
+        #????放置平均得分和评论人数
+        print "ListItemWidget: ", self.app.name, self.app.rnrStat
+        if app.rnrStat is not None:
+            ratings_average = app.rnrStat.ratings_average
+            ratings_total = app.rnrStat.ratings_total
+            print "评分评论：",app.name, ratings_average, ratings_total
+
+        self.ui.candidateVersion.setText("最新: " + app.candidate_version)
         # self.ui.candidateVersion.setText("<font color='#FF7D15'>最新: " + software.candidate_version + "</font>")
 
         if(nowpage == 'homepage'):
-            if(software.is_installed):
-                self.ui.btn.setText("已安装")
+            if(app.is_installed):
+                self.ui.btn.setText("启动")
+                self.ui.installedVersion.setText("已装: " + app.installed_version)
                 self.ui.btn.setEnabled(False)
             else:
                 self.ui.btn.setText("安装")
+                self.ui.installedVersion.setText("未安装")
         elif(nowpage == 'uppage'):
             self.ui.btn.setText("升级")
+            self.ui.installedVersion.setText("已装: " + app.installed_version)
         elif(nowpage == 'unpage'):
             self.ui.btn.setText("卸载")
+            self.ui.installedVersion.setText("已装: " + app.installed_version)
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
@@ -76,19 +113,22 @@ class ListItemWidget(QWidget):
         self.ui.btn.setText("请稍候")
         if(self.workType == 'homepage'):
             print "click install"
-            data.sbo.install_software(self)
+            self.backend.install_package(self.app.name)
+            #data.sbo.install_software(self)
         elif(self.workType == 'uppage'):
             print "click update"
-            data.sbo.update_software(self)
+            self.backend.upgrade_package(self.app.name)
+            #data.sbo.update_software(self)
         elif(self.workType == 'unpage'):
             print "click remove"
-            data.sbo.remove_software(self)
+            self.backend.remove_package(self.app.name)
+            #data.sbo.remove_software(self)
 
     def slot_emit_detail(self):
-        self.emit(SIGNAL("btnshowdetail"), self.software)
+        self.emit(SIGNAL("btnshowdetail"), self.app)
 
     def work_finished(self, newPackage):
-        self.software.package = newPackage
+        self.app.package = newPackage
         if(self.workType == 'homepage'):
             self.ui.btn.setText("已安装")
         elif(self.workType == 'uppage'):

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TaskWidget</class>
+ <widget class="QWidget" name="TaskWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>805</width>
+    <height>479</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QLabel" name="taskHeader">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>55</y>
+     <width>805</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="taskListWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>79</y>
+     <width>805</width>
+     <height>400</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="taskMSGBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>805</width>
+     <height>55</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

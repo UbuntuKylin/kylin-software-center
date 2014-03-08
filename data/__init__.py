@@ -11,8 +11,7 @@ softwareList = []
 # counts
 installedCount = -1
 upgradableCount = -1
-# how many softwares show in a setp
-showSoftwareStep = 20
+
 # package backend work pool
 workPool = []
 # True : when pool not empty, thread stop
@@ -27,10 +26,10 @@ WORK_TYPE_REMOVE = 'r'
 workMutex = threading.RLock()
 
 # global backend & service
-from backend.ibackend import get_backend
-from service.software_bo import SoftwareBO
-backend = get_backend()
-sbo = SoftwareBO()
+#from backend.ibackend import get_backend
+#from service.software_bo import SoftwareBO
+#backend = get_backend()
+#sbo = SoftwareBO()
 
 # task view
 taskWidget = ''

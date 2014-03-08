@@ -3,6 +3,7 @@
 #
 # Authors:
 #  maclin(majun@ubuntukylin.com)
+#  Shine(shenghuang@ubuntukylin.com)
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public License as published by the Free Software
@@ -16,3 +17,16 @@
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+
+from models.appmanager import  AppManager
+
+
+if __name__ == "__main__":
+
+    #初始化打开cache
+    appManager = AppManager()
+    appManager.open_cache()
+    print appManager.name
+    #加载软件分类
+    appManager.load_categories()
+    print appManager.cat_list

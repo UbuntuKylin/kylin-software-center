@@ -1,0 +1,16 @@
+
+
+###############
+Application management interfaces
+open_cache
+get_category_list
+get_category_byname
+get_category_apps
+get_application_by_name
+get_recommend_apps
+get_ubuntukylin_apps
+get_toprated_apps
+get_review_rating_stats
+get_application_reviews
+get_application_screenshots
+

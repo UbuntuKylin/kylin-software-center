@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Mar  4 14:28:42 2014
+# Created: Fri Mar  7 11:25:41 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -148,10 +148,18 @@ class Ui_MainWindow(object):
         self.allsMSGBar.setText(_fromUtf8(""))
         self.allsMSGBar.setObjectName(_fromUtf8("allsMSGBar"))
         self.taskWidget = QtGui.QWidget(self.centralwidget)
-        self.taskWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
+        self.taskWidget.setGeometry(QtCore.QRect(40, 107, 815, 479))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
+        self.taskHeader = QtGui.QLabel(self.taskWidget)
+        self.taskHeader.setGeometry(QtCore.QRect(0, 55, 815, 24))
+        self.taskHeader.setText(_fromUtf8(""))
+        self.taskHeader.setObjectName(_fromUtf8("taskHeader"))
+        self.taskMSGBar = QtGui.QLabel(self.taskWidget)
+        self.taskMSGBar.setGeometry(QtCore.QRect(0, 0, 815, 55))
+        self.taskMSGBar.setText(_fromUtf8(""))
+        self.taskMSGBar.setObjectName(_fromUtf8("taskMSGBar"))
         self.taskListWidget = QtGui.QListWidget(self.taskWidget)
-        self.taskListWidget.setGeometry(QtCore.QRect(0, 0, 663, 479))
+        self.taskListWidget.setGeometry(QtCore.QRect(0, 79, 815, 400))
         self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
         self.item1Widget = QtGui.QWidget(self.centralwidget)
         self.item1Widget.setGeometry(QtCore.QRect(0, 107, 56, 134))

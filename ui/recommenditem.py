@@ -1,35 +1,66 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-__author__ = 'Shine Huang'
+
+### BEGIN LICENSE
+
+# Copyright (C) 2013 National University of Defense Technology(NUDT) & Kylin Ltd
+
+# Author:
+#     Shine Huang<shenghuang@ubuntukylin.com>
+# Maintainer:
+#     Shine Huang<shenghuang@ubuntukylin.com>
+#     maclin <majun@ubuntukylin.com>
+
+# This program is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License version 3, as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranties of
+# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
+# PURPOSE.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukrcmdw import Ui_UKrcmdw
 import data
 
+from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
+                          UBUNTUKYLIN_RES_ICON_PATH,
+                          RECOMMEND_BUTTON_PATH,
+                          UBUNTUKYLIN_RES_PATH,
+                          RECOMMEND_QPUSH_BUTTON_PATH)
+from models.enums import Signals
 
 class RecommendItem(QWidget):
     software = ''
 
-    def __init__(self,software,parent=None):
+    def __init__(self,app, backend, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
-        self.software = software
+        self.app = app
+        self.backend = backend
 
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()
 
-        self.ui.softIcon.setStyleSheet("QLabel{background-image:url('res/icons/" + str(self.software.name) + ".png')}")
+        self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_ICON_PATH+str(self.app.name)+".png"))
+        #self.ui.softIcon.setStyleSheet("QLabel{background-image:url('res/icons/" + str(self.app.name) + ".png')}")
         self.ui.softName.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.softDescr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
-        self.ui.btn.setStyleSheet("QPushButton{background-image:url('res/btn-1.png');border:0px;color:#497FAB;}")
-        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;color:white;font-size:14px;background-image:url('res/btn6-1.png')}QPushButton:hover{background-image:url('res/btn6-2.png')}QPushButton:pressed{background-image:url('res/btn6-3.png')}")
+        self.ui.btn.setStyleSheet(RECOMMEND_BUTTON_PATH % (UBUNTUKYLIN_RES_PATH+"btn-1.png"))
+        #self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;color:white;font-size:14px;background-image:url('res/btn6-1.png')}QPushButton:hover{background-image:url('res/btn6-2.png')}QPushButton:pressed{background-image:url('res/btn6-3.png')}")
+        self.ui.btnDetail.setStyleSheet(RECOMMEND_QPUSH_BUTTON_PATH %(UBUNTUKYLIN_RES_PATH + "btn6-1.png",UBUNTUKYLIN_RES_PATH + "btn6-2.png",UBUNTUKYLIN_RES_PATH + "btn6-3.png"))
 
-        self.ui.softName.setText(self.software.name)
-        self.ui.softDescr.setText(self.software.summary)
+        self.ui.softName.setText(self.app.name)
+        self.ui.softDescr.setText(self.app.summary)
 
-        if(self.software.is_installed):
+        if(self.app.is_installed):
             self.ui.btn.setText("已安装")
             self.ui.btn.setEnabled(False)
 
@@ -59,7 +90,8 @@ class RecommendItem(QWidget):
     def slot_btn_click(self):
         self.ui.btn.setEnabled(False)
         self.ui.btn.setText("正在处理")
-        data.sbo.install_software(self)
+#        data.sbo.install_software(self)
+        self.backend.install_package(self.app.name)
 
     def slot_emit_detail(self):
-        self.emit(SIGNAL("btnshowdetail"), self.software)
+        self.emit(Signals.show_app_detail, self.app)
