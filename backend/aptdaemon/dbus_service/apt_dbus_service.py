@@ -47,6 +47,7 @@ import time
 
 from apt_daemon import AptDaemon
 
+import threading
 
 log = logging.getLogger('Daemon')
 
@@ -58,6 +59,48 @@ HTTP_SOURCE_UBUNTUKYLIN = "deb http://archive.ubuntukylin.com/ubuntukylin"
 DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
 UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
 
+# application actions, should sync with definition in models.enums
+class AppActions:
+    INSTALL = "install"
+    REMOVE = "remove"
+    UPGRADE = "upgrade"
+    APPLY = "apply_changes"
+    PURCHASE = "purchase"
+
+
+class WorkItem:
+     def __init__(self, pkgname, action, kwargs):
+        self.pkgname = pkgname
+        self.action = action
+        self.kwargs = kwargs
+
+
+class WorkThread(threading.Thread):
+
+    def __init__(self, dbus_service):
+        threading.Thread.__init__(self)
+        self.dbus_service = dbus_service
+
+    def run(self):
+        print "Enter WorkThread run, length is ", len(self.dbus_service.worklist)
+        while(True):
+            if len(self.dbus_service.worklist) == 0:
+                continue
+            self.dbus_service.mutex.acquire()
+            item = self.dbus_service.worklist.pop()
+            self.dbus_service.mutex.release()
+            print "procing item:",item
+            func = getattr(self.dbus_service.daemonApt,item.action)
+            if func is None:
+                print "Error action: ", item
+
+            res = func(item.pkgname,item.kwargs)
+            if res is False:
+                print "Action exec failed..."
+
+            print "finish one acion....."
+            time.sleep(0.5)
+
 class SoftwarecenterDbusService(dbus.service.Object):
 
     def __init__ (self, bus, mainloop):
@@ -68,6 +111,11 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print "SoftwarecenterDbusService:",self.bus_name
         dbus.service.Object.__init__(self, self.bus_name, UKPATH)
         self.mainloop = mainloop
+        self.worklist = []
+        self.mutex = threading.RLock()
+        self.worker_thread = WorkThread(self)
+        self.worker_thread.setDaemon(True)
+        self.worker_thread.start()
 
     def auth_with_policykit(self, sender, action):
         if not sender: 
@@ -86,6 +134,13 @@ class SoftwarecenterDbusService(dbus.service.Object):
         (granted, notused, details) = policykit.CheckAuthorization(
                         subject, action, details, flags, cancel_id)
         return granted
+
+    def add_worker_item(self, item):
+        print "####add_worker_item:",item
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
+        print "####add_worker_item finished!"
 
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def exit(self):
@@ -107,8 +162,8 @@ class SoftwarecenterDbusService(dbus.service.Object):
         return False
 
     # add ubuntukylin source in /etc/apt/sources.list
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='')
-    def add_source_ubuntukylin(self, version):
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def add_source_ubuntukylin(self, version, sender=None):
         source = aptsources.sourceslist.SourcesList(())
         #????the check option should include version
         if(self.check_source_ubuntukylin() is True):
@@ -120,22 +175,58 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
     # -------------------------software-center-------------------------
     # install package sa:software_fetch_signal() and software_apt_signal()
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='')
-    def install(self, pkgName):
-        self.daemonApt.install_pkg(pkgName)
-        print "good"
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def install(self, pkgName, sender=None):
+        print "####install: ",pkgName
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
+
+        item = WorkItem(pkgName,AppActions.INSTALL,None)
+
+        self.add_worker_item(item)
+
+#        self.daemonApt.install_pkg(pkgName)
+        print "####install return"
+        return True
 
     # uninstall package sa:software_apt_signal()
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='')
-    def remove(self, pkgName):
-        self.daemonApt.uninstall_pkg(pkgName)
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def remove(self, pkgName, sender=None):
+        print "####remove: ",pkgName
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
+
+        item = WorkItem(pkgName,AppActions.REMOVE,None)
+
+        self.add_worker_item(item)
+
+#        self.daemonApt.uninstall_pkg(pkgName)
+        print "####remove return"
+        return True
 
     # update package sa:software_fetch_signal() and software_apt_signal()
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='')
-    def upgrade(self, pkgName):
-        self.daemonApt.upgrade_pkg(pkgName)
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def upgrade(self, pkgName, sender=None):
+        print "####upgrade: ",pkgName
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
 
 
+        item = WorkItem(pkgName,AppActions.UPGRADE,None)
+
+        self.add_worker_item(item)
+
+#        self.daemonApt.upgrade_pkg(pkgName)
+        print "####upgrade return"
+        return True
 
     #????????????????????????????
 

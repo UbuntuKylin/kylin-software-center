@@ -66,6 +66,7 @@ class FetchProcess(apb.AcquireProgress):
                 "download_items":str(self.current_items),
                 "total_items":str(self.total_items),
         }
+        print "FetchProcess, pulse: ", kwarg
 
         self.dbus_service.software_fetch_signal("down_pulse","download_appname" + self.appname +",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items))
 
@@ -116,8 +117,9 @@ class AptProcess(apb.InstallProgress):
                 "percent": str(int(percent)),
                 "status": status,
         }
+        print "####status_change:", kwarg
 
-        self.dbus_service.software_apt_signal("apt_pulse", "percent:" + str(int(percent)) + ",status:" + status)
+        self.dbus_service.software_apt_signal("apt_pulse", kwarg)
 
 #class AptDaemon(threading.Thread):
 class AptDaemon():
@@ -141,8 +143,8 @@ class AptDaemon():
             return "ERROR"
 
     # install package
-    def install_pkg(self, pkgName):
-#        self.cache.open()
+    def install(self, pkgName, kwargs=None):
+        self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
         pkg.mark_install()
 
@@ -153,7 +155,7 @@ class AptDaemon():
             print "install err"
 
     # uninstall package
-    def uninstall_pkg(self, pkgName):
+    def remove(self, pkgName, kwargs=None):
         self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
         pkg.mark_delete()
@@ -165,7 +167,7 @@ class AptDaemon():
             print "uninstall err"
 
     # update package
-    def upgrade_pkg(self, pkgName):
+    def upgrade(self, pkgName, kwargs=None):
         self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
         pkg.mark_upgrade()

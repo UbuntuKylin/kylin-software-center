@@ -12,19 +12,14 @@ echo "Copy .policy file to /usr/share/polkit-1/actions/"
 cp ./conf/com.ubuntukylin.softwarecenter.conf /etc/dbus-1/system.d/
 echo "Copy .conf file to /etc/dbus-1/system.d/"
 
-<<<<<<< TREE
 if [ ! -d "$backendPath" ]; then
     cp -rf ./dbus_service /usr/lib/python2.7/dist-packages/ubuntukylin.softwarecenter-daemon/
-    echo "Copy backend folder to /usr/lib/python2.7/dist-packages/youker-assistant-daemon/"
+    echo "Copy backend folder to /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/"
 else
     rm -rf "$bakendPath"
     cp -rf ./dbus_service /usr/lib/python2.7/dist-packages/ubuntukylin.softwarecenter-daemon/
-    echo "Copy backend folder to /usr/lib/python2.7/dist-packages/youker-assistant-daemon/"
+    echo "Copy backend folder to /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/"
 fi
-=======
-cp -rf ./dbus_service/ /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/
-echo "Copy backend folder to /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/"
->>>>>>> MERGE-SOURCE
 
 rm -f /usr/bin/ubuntukylin-softwarecenter-daemon.py
 echo "Remove /usr/bin/ubuntukylin-softwarecenter-daemon.py"

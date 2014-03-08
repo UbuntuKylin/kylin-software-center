@@ -884,15 +884,7 @@ def main():
 
 
 if __name__ == '__main__':
-<<<<<<< TREE
 
-    print "sadfaf"
-    print UBUNTUKYLIN_RES_PATH
-    print os.path.abspath(os.path.curdir)
-    print os.path.pardir
+    main()
 
-    print "dsafd"
-    main()
-=======
-    main()
->>>>>>> MERGE-SOURCE
+
