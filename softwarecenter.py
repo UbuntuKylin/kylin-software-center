@@ -617,9 +617,20 @@ class SoftwareCenter(QMainWindow):
      #   self.ui.rankWidget.setVisible(True)
         print "rankview count res:",self.ui.rankView.count()
 
-
     def slot_app_reviews_ready(self,reviewlist):
-        print ""
+        print "slot_app_reviews_ready:",len(reviewlist)
+        if len(reviewlist) == 0:
+            return
+        for review in reviewlist:
+            print "Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
+
+    def slot_app_screenshots_ready(self,sclist):
+        print "slot_app_screenshots_ready:",len(sclist)
+        if len(sclist) == 0:
+            return
+        for scFile in sclist:
+            print "screenshot file:",scFile
+
 
     def slot_count_installed_ready(self, count):
         print "iover..."
@@ -629,7 +640,6 @@ class SoftwareCenter(QMainWindow):
     def slot_count_upgradable_ready(self, count):
         print "uover..."
         self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-
 
 
     def slot_goto_homepage(self):
@@ -803,10 +813,10 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_app_detail(self, app):
         self.detailScrollWidget.showSimple(app)
+        self.connect(self.appmgr,Signals.app_reviews_ready, self.slot_app_reviews_ready)
+        self.connect(self.appmgr,Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.appmgr.get_application_reviews(app.name)
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-        self.connect(self.detailScrollWidget,Signals.app_reviews_ready, self.detailScrollWidget.slot_app_reviews_ready)
-        self.connect(self.detailScrollWidget,Signals.app_screenshots_ready, self.detailScrollWidget.slot_app_screenshots_ready)
 
     def slot_click_install(self, app):
         print app.name
@@ -829,8 +839,8 @@ class SoftwareCenter(QMainWindow):
         if self.ui.leSearch.text():
             reslist = self.searchDB.search_software(str(self.ui.leSearch.text()))
 
-            #返回查询结果
-            print "*********\n",reslist
+        #返回查询结果
+        print "*********\n",reslist
 
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()

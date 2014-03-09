@@ -36,7 +36,7 @@ from advertisement import Advertisement
 from backend.reviewratingspawn import SpawnProcess,Review,RatingSortMethods,ReviewRatingStat
 from backend.installbackend import InstallBackend
 
-from enums import (UBUNTUKYLIN_RES_PATH,UBUNTUKYLIN_DATA_PATH,UBUNTUKYLIN_DATA_CAT_PATH)
+from enums import (UBUNTUKYLIN_RES_PATH,UBUNTUKYLIN_DATA_PATH,UBUNTUKYLIN_DATA_CAT_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from enums import Signals
 
 
@@ -288,13 +288,15 @@ class AppManager(QObject):
         return []
 
     #get screenshots
-    def get_application_screenshots(self,pkgname, cachedir, callback=None):
+    def get_application_screenshots(self,pkgname, cachedir=UBUNTUKYLIN_RES_SCREENSHOT_PATH, callback=None):
         print "get_application_screenshots",pkgname
         app = self.get_application_by_name(pkgname)
         if app.screenshot_list:
             return app.screenshot_list
 
         kwargs = {"packagename": pkgname,
+                  "thumbnail":app.thumbnail,
+                  "screenshot":app.screenshot,
                   "version": app.version,
                   "cachedir": cachedir, #result directory
                   }

@@ -30,9 +30,9 @@ import json
 import apt
 
 from backend.ubuntu_sw import (SCREENSHOT_THUMB_URL,SCREENSHOT_LARGE_URL)
-from models.enums import UBUNTUKYLIN_RES_ICON_PATH
+from models.enums import UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH
 
-#This class is the abstraction of a 
+#This class is the abstraction of a
 class Application:
 
     # work type
@@ -53,6 +53,8 @@ class Application:
         self.cache = apt_cache
         self.thumbnail_url = None
         self.screenshot_url = None
+        self.thumbnailfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
+        self.screenshotfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
         self.iconfile = UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
         self.screenshot_list = []
         self.icons = []

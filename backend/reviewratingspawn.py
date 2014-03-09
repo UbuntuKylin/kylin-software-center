@@ -43,7 +43,7 @@ import urllib2
 import json
 
 from backend.ubuntu_sw import SCREENSHOT_JSON_URL
-from models.enums import UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR
+from models.enums import UBUNTUKYLIN_RES_SCREENSHOT_PATH
 
 from ubuntu_sw import SortMethods, ReviewSortMethods, Review
 from ubuntu_sw import (REVIEWS_SERVER, REVIEWS_URL)
@@ -172,6 +172,8 @@ class RatingsAndReviwsMethod:
         pkgname = kwargs['packagename']
         version = kwargs['version']
         cachedir = kwargs['cachedir']
+        thumbnail = kwargs['thumbnail']
+        screenshot = kwargs['screenshot']
         print "pkgname:", pkgname
         print "version:", version
         print "cachdir:", cachedir
@@ -213,6 +215,24 @@ class RatingsAndReviwsMethod:
         screenshot_path_list = []
 
         try:
+            #get thumbnail and screenshot
+            file_thumbnail = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
+            file_screenshot = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
+            urlFile = urllib2.urlopen(thumbnail)
+            rawContent = urlFile.read()
+            if rawContent:
+                localFile = open(file_thumbnail,"wb")
+                localFile.write(rawContent)
+                localFile.close()
+                screenshot_path_list.append(file_thumbnail)
+            urlFile = urllib2.urlopen(screenshot)
+            rawContent = urlFile.read()
+            if rawContent:
+                localFile = open(file_screenshot,"wb")
+                localFile.write(rawContent)
+                localFile.close()
+                screenshot_path_list.append(file_screenshot)
+
             for item in screenshots:
                 filename = item['small_image_url'].split(pkgname + '/')[1]
                 destfile = cachedir + pkgname + item['version'] + "_" + filename
