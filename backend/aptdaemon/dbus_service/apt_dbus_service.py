@@ -257,7 +257,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         msg:
             a message of type, sometimes is None
     '''
-    @dbus.service.signal(INTERFACE, signature='ss')
+    @dbus.service.signal(INTERFACE, signature='sa{ss}')
     def software_fetch_signal(self, type, msg):
         pass
 
@@ -271,7 +271,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         msg:
             a message of type, sometimes is None
     '''
-    @dbus.service.signal(INTERFACE, signature='ss')
+    @dbus.service.signal(INTERFACE, signature='sa{ss}')
     def software_apt_signal(self, type, msg):
         pass
 

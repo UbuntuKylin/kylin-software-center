@@ -104,14 +104,15 @@ class InstallBackend(QObject):
         print locale.getlocale()
 
         self.iface = None
-        self._init_dbus_ifaces()
+ #       self.init_dbus_ifaces()
 
-    def _init_dbus_ifaces(self):
+    def init_dbus_ifaces(self):
 
         try:
             bus = dbus.SystemBus(mainloop)
         except:
             print ("could not initiate dbus")
+            self.emit(Signals.init_models_ready,"fail","初始化失败!")
             return False
 
         try:
@@ -120,7 +121,6 @@ class InstallBackend(QObject):
                                  UBUNTUKYLIN_INTERFACE_PATH)
             #proxy = dbus.ProxyObject(obj,UBUNTUKYLIN_INTERFACE_PATH)
             self.iface = dbus.Interface(obj, UBUNTUKYLIN_INTERFACE_PATH)
-            print "2222"
 
 #            self.call_dbus_iface("check_source_ubuntukylin")
 
@@ -129,18 +129,22 @@ class InstallBackend(QObject):
         except dbus.DBusException:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+            self.emit(Signals.init_models_ready,"fail","初始化失败!")
             print "dbus.DBusException error"
+            return False
+
+        return True
 
     #call the dbus functions by function name
     def call_dbus_iface(self, funcname, kwargs=None):
         if self.iface is None:
             return None
 
-        call_process = DbusCallProcess(self.iface,funcname,kwargs)
-#        call_process.connect("spawn-data-available", self._on_spawndata_ready, "", "get_toprated_stats", callback)
-        res = call_process.start()
+#        call_process = DbusCallProcess(self.iface,funcname,kwargs)
+#        call_process.daemon = True
+#        res = call_process.start()
 
-        return
+#        return
 
         func = getattr(self.iface,funcname)
         if func is None:
@@ -154,57 +158,46 @@ class InstallBackend(QObject):
 
         return res
 
-    def _on_software_fetch_signal(self,type, msg):
-        print "_on_software_apt_signal"
+    def _on_software_fetch_signal(self, type, kwarg):
+        print "_on_software_fetch_signal", type, kwarg
+
         sendType = "fetch"
+        appname = str(kwarg['download_appname'])
         sendMsg  = ""
-        appname = ""
-        percent = 0.5
+        percent = float(str(kwarg['download_percent']))
         if( type == "down_start"):
-            appname = msg
             sendMsg = "开始下载..."
         if( type == "down_stop"):
-            appname = msg
             sendMsg = "下载停止！"
         if( type == "down_done"):
-            appname = msg
             sendMsg = "所有下载完成"
         if( type == "down_fail"):
-            appname = msg
             sendMsg = "下载失败!"
         if( type == "down_fetch"):
-            appname = msg
             sendMsg = "单个下载项完成..."
         if( type == "down_pulse"):
-            appname = msg
-            sendMsg = "下载中..."
-            print msg
-        print type
-        print msg
+            sendMsg = "下载中...(" + str(kwarg['download_bytes']) + "/" \
+                      + str(kwarg['total_bytes']) + "," + str(kwarg['download_items']) + "/" + str(kwarg['total_items']) + ")"
+            percent = int(str(kwarg['download_bytes']))*100/int(str(kwarg['total_bytes']))
+
         self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
-    def _on_software_apt_signal(self,type, msg):
-        print "_on_software_apt_signal"
+    def _on_software_apt_signal(self,type, kwarg):
+        print "_on_software_apt_signal:", type, kwarg
         sendType = "apt"
+        appname = str(kwarg['apt_appname'])
         sendMsg  = ""
-        appname = ""
-        percent = 0.5
+        percent = float(str(kwarg['apt_percent']))
         if( type == "apt_start"):
-            appname = msg
             sendMsg = "安装开始..."
-        if( type == "apt_stop"):
-            appname = msg
-            sendMsg = "下载停止！"
+        if( type == "apt_finish"):
+            sendMsg = "安装完成！"
         if( type == "apt_error"):
-            appname = msg
             sendMsg = "安装失败!"
         if( type == "apt_pulse"):
-            appname = msg
-            sendMsg = "下载中..."
-            print msg
+            sendMsg = "安装中..." + str(kwarg['status'])
 
         print type
-        print msg
         self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
     def install_package(self,pkgname):
@@ -231,7 +224,7 @@ def main():
 
 
     instBackend = InstallBackend()
-    instBackend._init_dbus_ifaces()
+    instBackend.init_dbus_ifaces()
     instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
     print "#####"
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")

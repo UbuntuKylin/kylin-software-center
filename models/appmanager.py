@@ -51,11 +51,20 @@ class AppManager(QObject):
         QObject.__init__(self)
         self.name = "Ubuntu Kylin Software Center"
         self.apt_cache = apt.Cache()
-        self.backend = InstallBackend()
         self.cat_list = {}
         self.rnrStatList = {}
         self.language = 'zh_CN'      #'any' for all
         self.distroseries = 'saucy'  #'any' for all
+
+    def init_models(self):
+        self.open_cache()
+
+        self.download_category_list()
+
+        #
+        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+
+        #self.get_review_rating_stats()
 
     #open the apt cache and get the package count
     def open_cache(self):
@@ -135,8 +144,6 @@ class AppManager(QObject):
 
         cat_list = self.download_category_list(catdir)
 
-        #self.get_review_rating_stats()
-
         return cat_list
 
     def download_category_apps(self,cat):
@@ -198,7 +205,7 @@ class AppManager(QObject):
         sum_inst = 0
         sum_up = 0
         sum_all = 0
-        for (catname, cat) in self.cat_list:
+        for (catname, cat) in self.cat_list.iteritems():
             (inst,up, all) = cat.get_application_count()
             sum_inst = sum_inst + inst
             sum_up = sum_up + up
@@ -242,7 +249,7 @@ class AppManager(QObject):
         return self.get_category_apps("ubuntukylin")
 
     #????
-    def get_toprated_stats(self, topcount=10, callback=None):
+    def get_toprated_stats(self, topcount=100, callback=None):
         print "We need to get the top 10 applications"
 
         kwargs = {"topcount": topcount,
@@ -325,14 +332,15 @@ class AppManager(QObject):
             self.rnrStatList = res
 
             #print res
-            self.emit(Signals.rating_reviews_ready,rnrStats)
+            #self.emit(Signals.rating_reviews_ready,rnrStats)
+            self.emit(Signals.init_models_ready,"ok","获取总评分评论完成")
             print "emited rating_reviews_ready......***********"
         elif func == "get_toprated_stats":
             print "\ntoprated stats ready..."
             topRated = res
             print res
-            for item, rnrStat in topRated.iteritems():
-                print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+#            for item, rnrStat in topRated.iteritems():
+#                print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
             self.emit(Signals.toprated_ready,topRated)
 
 

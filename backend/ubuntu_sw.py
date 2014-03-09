@@ -125,4 +125,35 @@ class Review(object):
 
 #=============================================================================end
 
-
+# values used in the database
+class XapianValues:
+    APPNAME = 170
+    PKGNAME = 171
+    ICON = 172
+    GETTEXT_DOMAIN = 173
+    ARCHIVE_SECTION = 174
+    ARCHIVE_ARCH = 175
+    POPCON = 176
+    SUMMARY = 177
+    ARCHIVE_CHANNEL = 178
+    DESKTOP_FILE = 179
+    PRICE = 180
+    ARCHIVE_PPA = 181
+    ARCHIVE_DEB_LINE = 182
+    ARCHIVE_SIGNING_KEY_ID = 183
+    PURCHASED_DATE = 184
+    SCREENSHOT_URLS = 185             # multiple urls, comma seperated
+    ICON_NEEDS_DOWNLOAD = 186         # no longer used
+    THUMBNAIL_URL = 187               # no longer used
+    SC_DESCRIPTION = 188
+    APPNAME_UNTRANSLATED = 189
+    ICON_URL = 190
+    CATEGORIES = 191
+    LICENSE_KEY = 192
+    LICENSE_KEY_PATH = 193           # no longer used
+    LICENSE = 194
+    VIDEO_URL = 195
+    DATE_PUBLISHED = 196
+    SUPPORT_SITE_URL = 197
+    VERSION_INFO = 198
+    SC_SUPPORTED_DISTROS = 199

@@ -41,17 +41,26 @@ class FetchProcess(apb.AcquireProgress):
         print 'all items download finished'
         if item is not None:
             print "FetchProcess, done, Item:", self.appname,item.shortdesc, item.uri, item.owner
-        self.dbus_service.software_fetch_signal("down_done", self.appname)
+        kwarg = {"download_appname":self.appname,
+                 "download_percent":str(self.percent),
+                 }
+        self.dbus_service.software_fetch_signal("down_done", kwarg)
 
     def fail(self, item):
         print 'download failed'
-        self.dbus_service.software_fetch_signal("down_fail", self.appname)
+        kwarg = {"download_appname":self.appname,
+                 "download_percent":str(self.percent),
+                 }
+        self.dbus_service.software_fetch_signal("down_fail", kwarg)
 
     def fetch(self, item):
         print 'one item download finished'
         if item is not None:
             print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
-        self.dbus_service.software_fetch_signal("down_fetch", self.appname)
+        kwarg = {"download_appname":self.appname,
+                 "download_percent":str(self.percent),
+                 }
+        self.dbus_service.software_fetch_signal("down_fetch", kwarg)
 
     def ims_hit(self, item):
         print 'ims_hit'
@@ -60,15 +69,21 @@ class FetchProcess(apb.AcquireProgress):
         print 'media_change'
 
     def pulse(self, owner):
-        kwarg = {"download_appname": self.appname,
-                "download_bytes": str(self.current_bytes),
-                "total_bytes":str(self.total_bytes),
-                "download_items":str(self.current_items),
-                "total_items":str(self.total_items),
-        }
+
+        kwarg = {"download_appname":self.appname,
+                 "download_percent":str(self.percent),
+                 "download_bytes":str(self.current_bytes),
+                 "total_bytes":str(self.total_bytes),
+                 "download_items":str(self.current_items),
+                 "total_items":str(self.total_items),
+                 }
+
+        if self.total_bytes != 0:
+            self.percent = float(self.current_bytes * 100.0 / self.total_bytes)
+        #kwarg = "download_appname:"+ self.appname + ",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items)
         print "FetchProcess, pulse: ", kwarg
 
-        self.dbus_service.software_fetch_signal("down_pulse","download_appname" + self.appname +",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items))
+        self.dbus_service.software_fetch_signal("down_pulse",kwarg)
 
     def start(self):
         # Reset all our values.
@@ -80,12 +95,19 @@ class FetchProcess(apb.AcquireProgress):
         self.last_bytes = 0.0
         self.total_bytes = 0.0
         self.total_items = 0
-        print 'fetch progress start ...',self.appname,
-        self.dbus_service.software_fetch_signal("down_start", self.appname)
+        self.percent = 0
+        print 'fetch progress start ...',self.appname
+        kwarg = {"download_appname":self.appname,
+                 "download_percent":str(self.percent),
+                 }
+        self.dbus_service.software_fetch_signal("down_start", kwarg)
 
     def stop(self):
         print 'fetch progress stop ...'
-        self.dbus_service.software_fetch_signal("down_stop", self.appname)
+        kwarg = {"download_appname":self.appname,
+                 "download_percent":str(self.percent),
+                 }
+        self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
 class AptProcess(apb.InstallProgress):
@@ -94,29 +116,43 @@ class AptProcess(apb.InstallProgress):
         apb.InstallProgress.__init__(self)
         self.dbus_service = dbus_service
         self.appname = appname
+        self.percent = 0
 
     def conffile(self, current, new):
         print 'there is a conffile question'
 
     def error(self, pkg, errormsg):
         print "AptProcess, error:", self.appname, pkg, errormsg
-        self.dbus_service.software_apt_signal("apt_error", self.appname)
+        kwarg = {"apt_appname":self.appname,
+                 "apt_percent":str(self.percent),
+                 }
+        self.dbus_service.software_apt_signal("apt_error", kwarg)
 
     def start_update(self):
         print 'apt process start work', self.appname
-        self.dbus_service.software_apt_signal("apt_start", self.appname)
+        kwarg = {"apt_appname":self.appname,
+                 "apt_percent":str(self.percent),
+                 }
+        self.dbus_service.software_apt_signal("apt_start", kwarg)
 
     def finish_update(self):
         print 'apt process finished', self.appname
-        self.dbus_service.software_apt_signal("apt_stop", self.appname)
+        kwarg = {"apt_appname":self.appname,
+                 "apt_percent":str(self.percent),
+                 }
+        self.dbus_service.software_apt_signal("apt_finish", kwarg)
 
     def status_change(self, pkg, percent, status):
         print "status_change:", self.appname, pkg
         print str(int(percent)) + "%  status : " + status
-        kwarg = {"apt_appname": self.appname,
-                "percent": str(int(percent)),
-                "status": status,
-        }
+        if percent != self.percent:
+            print "&&&&&&&&&&&&&&&&&&&"
+        kwarg = {"apt_appname":str(self.appname),
+#                 "install_percent":self.percent,
+                 "apt_percent":str(percent),
+                 "status":str(status),
+                 }
+
         print "####status_change:", kwarg
 
         self.dbus_service.software_apt_signal("apt_pulse", kwarg)

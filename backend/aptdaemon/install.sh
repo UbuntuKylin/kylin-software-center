@@ -1,5 +1,5 @@
 #!/bin/sh
-backupPath="/var/lib/ubuntukylin-softwarecenter-daemon/"
+
 backendPath="/usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon"
 cd `dirname $0`
 
@@ -13,18 +13,18 @@ cp ./conf/com.ubuntukylin.softwarecenter.conf /etc/dbus-1/system.d/
 echo "Copy .conf file to /etc/dbus-1/system.d/"
 
 if [ ! -d "$backendPath" ]; then
-    cp -rf ./dbus_service /usr/lib/python2.7/dist-packages/ubuntukylin.softwarecenter-daemon/
+    cp -rf ./dbus_service /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/
     echo "Copy backend folder to /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/"
 else
-    rm -rf "$bakendPath"
-    cp -rf ./dbus_service /usr/lib/python2.7/dist-packages/ubuntukylin.softwarecenter-daemon/
+    rm -rf "$backendPath"
+    cp -rf ./dbus_service /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/
     echo "Copy backend folder to /usr/lib/python2.7/dist-packages/ubuntukylin-softwarecenter-daemon/"
 fi
 
-rm -f /usr/bin/ubuntukylin-softwarecenter-daemon.py
-echo "Remove /usr/bin/ubuntukylin-softwarecenter-daemon.py"
+rm -f /usr/bin/ubuntukylin-softwarecenter-daemon
+echo "Remove /usr/bin/ubuntukylin-softwarecenter-daemon"
 
 chmod +x "$backendPath"/start_systemdbus.py
-ln -s "$backendPath"/start_systemdbus.py  /usr/bin/ubuntukylin-softwarecenter-daemon.py
+ln -s "$backendPath"/start_systemdbus.py  /usr/bin/ubuntukylin-softwarecenter-daemon
 echo "Build symbol link for service file"
 echo "^^ Now, You can run the ubuntukylin software center!"

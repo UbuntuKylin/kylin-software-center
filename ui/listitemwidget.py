@@ -70,7 +70,7 @@ class ListItemWidget(QWidget):
         self.ui.size.setText(str(sizek) + " K")
 
         #????放置平均得分和评论人数
-        print "ListItemWidget: ", self.app.name, self.app.rnrStat
+ #       print "ListItemWidget: ", self.app.name, self.app.rnrStat
         if app.rnrStat is not None:
             ratings_average = app.rnrStat.ratings_average
             ratings_total = app.rnrStat.ratings_total

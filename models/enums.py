@@ -100,6 +100,7 @@ HEADER_BUTTON_STYLE_PATH = ("QPushButton{background-image:url(%s);border:0px;}QP
 LIST_BUTTON_STYLE_PATH = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
 
 class Signals:
+    init_models_ready = SIGNAL("init-data-ready")
     chksoftwareover = SIGNAL("chksoftwareover")
     getallpackagesover = SIGNAL("getallpackagesover")
     countiover = SIGNAL("countiover")

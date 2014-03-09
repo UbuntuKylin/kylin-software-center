@@ -25,6 +25,7 @@ import threading
 import xapian
 import apt
 import sys
+from backend.ubuntu_sw import XapianValues
 
 from gi.repository import GObject, Gio, GLib
 from gettext import gettext as _
@@ -404,12 +405,18 @@ class Search:
         enquire = xapian.Enquire(self.db.xapiandb)
         enquire.set_query(query[1])
         matches = enquire.get_mset(0, len(self.db))
+        pkgnamelist = []
         for m in matches:
             doc = m.document
-            print(doc.get_data())
-        print(type(doc.get_data().split()))
-        return doc.get_data().split()
-
+#            print(doc.get_data())
+#            print "appname:",doc.get_value(XapianValues.APPNAME)
+#            print "pkgname:",doc.get_value(XapianValues.PKGNAME)
+            pkgname = doc.get_value(XapianValues.PKGNAME)
+            if pkgname:
+                pkgnamelist.append(pkgname)
+#            print(type(doc.get_data().split()))
+#        return doc.get_data().split()
+        return pkgnamelist
 
 
 if __name__ == "__main__":

@@ -33,8 +33,9 @@ class TaskListItemWidget(QWidget):
         sizek = size / 1000
         self.ui.size.setText(str(sizek) + " K")
 
+        self.ui.progressBar.setRange(0,100)
         self.ui.progressBar.reset()
-        self.ui.status.setText("拉卡三大件阿卡老师讲的考虑萨基是打开垃圾斯科拉克")
+        self.ui.status.setText("waiting......")
 
     def ui_init(self):
         self.ui = Ui_TaskLIWidget()
@@ -45,9 +46,18 @@ class TaskListItemWidget(QWidget):
         text = ''
         if(processtype == 'fetch'):
             text = "正在下载: "
+            if percent >= 100:
+                text = "下载完成，开始安装..."
+                self.ui.progressBar.reset()
+            else:
+                self.ui.progressBar.setValue(percent)
         elif(processtype == 'apt'):
             text = "正在执行: "
-        self.ui.progressBar.setValue(percent)
+            if percent >= 100:
+                text = "安装完成"
+            else:
+                self.ui.progressBar.setValue(percent)
+
         self.ui.status.setText(text + msg)
 
     def work_finished(self, newPackage):
