@@ -1,11 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 __author__ = 'Shine Huang'
+
+import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.detailw import Ui_DetailWidget
+from ui.starwidget import StarWidget
+from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
-
+from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
+                          UBUNTUKYLIN_RES_TMPICON_PATH,
+                          RECOMMEND_BUTTON_PATH,
+                          UBUNTUKYLIN_RES_PATH,
+                          RECOMMEND_QPUSH_BUTTON_PATH)
 
 class DetailScrollWidget(QScrollArea):
     app = ''
@@ -81,22 +89,31 @@ class DetailScrollWidget(QScrollArea):
 
     # fill fast property, show ui, request remote property
     def showSimple(self, software):
+        # clear reviews
+        self.ui.reviewListWidget.clear()
+
         self.app = software
         self.ui.name.setText(software.name)
         self.ui.installedVersion.setText("当前版本: " + software.installed_version)
         self.ui.candidateVersion.setText("最新版本: " + software.candidate_version)
         self.ui.summary.setText(software.summary)
         self.ui.description.setText(software.description)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('data/tmpicons/" + software.name + ".png')}")
+
+        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".png")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".png')}")
+        else:
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + "default.png')}")
 
         size = software.packageSize
         sizek = size / 1000
         self.ui.size.setText("软件大小: " + str(sizek) + " K")
 
         self.ui.gradeText1.setText("我的评分: ")
-        self.ui.gradeText2.setText("评分9次")
+        self.ui.gradeText2.setText("评分 ? 次")
         self.ui.gradeText3.setText("满分5分")
         self.ui.grade.setText("4.6")
+        self.star = StarWidget('big', 4, self.detailWidget)
+        self.star.move(500, 94)
 
         if(software.is_installed):
             self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
@@ -141,6 +158,22 @@ class DetailScrollWidget(QScrollArea):
         # send request
         ################
         # div
+
+    def add_one_review(self, review):
+        count = self.ui.reviewListWidget.count()
+        reviewHeight = count * 85
+        self.detailWidget.resize(805, 790 + reviewHeight)
+        self.ui.reviewListWidget.resize(805, reviewHeight)
+
+        oneitem = QListWidgetItem()
+        rliw = ReviewWidget(review)
+        self.ui.reviewListWidget.addItem(oneitem)
+        self.ui.reviewListWidget.setItemWidget(oneitem, rliw)
+
+    def add_sshot(self, sshot):
+        onesshot = QLabel()
+        onesshot.setGeometry(309, 458, 158, 120)
+        # onesshot.setStyleSheet("QLabel{background-image:url('res/" + sshot. + "')}")
 
     def slot_close_detail(self):
         self.hide()

@@ -23,6 +23,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
@@ -50,8 +51,11 @@ class ListItemWidget(QWidget):
         self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()
 
+        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
+            self.ui.icon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
+        else:
+            self.ui.icon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
         self.ui.btnDetail.setStyleSheet(RECOMMEND_QPUSH_BUTTON_PATH %(UBUNTUKYLIN_RES_PATH+"btn6-1.png",UBUNTUKYLIN_RES_PATH+"btn6-2.png",UBUNTUKYLIN_RES_PATH+"btn6-3.png"))
-        self.ui.icon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.descr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
         self.ui.installedVersion.setStyleSheet("QLabel{font-size:13px;}")

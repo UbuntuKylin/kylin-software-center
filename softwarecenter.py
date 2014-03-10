@@ -79,6 +79,7 @@ class SoftwareCenter(QMainWindow):
         #init the ui
         self.init_main_view()
         self.init_category_view()
+        # self.init_rank_view(None)
 
 
         #connect the ui signals
@@ -256,7 +257,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-image:url('res/categorybg.png');}QListWidget::item{height:35px;padding-left:20px;margin-top:0px;border:0px;}QListWidget::item:hover{background:#CAD4E2;}QListWidget::item:selected{background-color:#6BB8DD;color:black;}")
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -364,6 +365,7 @@ class SoftwareCenter(QMainWindow):
             oneitem.setIcon(icon)
             oneitem.setWhatsThis(catname)
             self.ui.categoryView.addItem(oneitem)
+            # self.ui.rankView.addItem(oneitem)
 
     def tmp_get_ads(self):
         tmpads = []
@@ -597,33 +599,55 @@ class SoftwareCenter(QMainWindow):
         print "#######slot_rating_reviews_ready********"
 
     def slot_toprated_ready(self,rnrlist):
+        # self.ui.rankView.setVisible(True)
+        # self.ui.rankView.show()
+        # self.ui.rankView.raise_()
         print "slot_toprated_ready"
+        print "hohoho"
         self.ui.rankView.clear()
-        for item, rnrStat in rnrlist.iteritems():
-            pkgname = str(rnrStat.pkgname)
-  #          self.
-  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
-            oneitem = QListWidgetItem(pkgname)
-            print "slot_toprated_ready:",pkgname
-            app = self.appmgr.get_application_by_name(pkgname)
-            if app is None:
-                print "111"
-            else:
-                print "icon file:", app.iconfile
-                icon = QIcon()
-                icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
-                oneitem.setIcon(icon)
-                oneitem.setWhatsThis(pkgname)
-                self.ui.rankView.addItem(oneitem)
+        self.init_rank_view(None)
+        # self.ui.rankView.addItem(QListWidgetItem("hahahaha"))
+  #       for item, rnrStat in rnrlist.iteritems():
+  #           pkgname = str(rnrStat.pkgname)
+  # #          self.
+  # #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+  #           oneitem = QListWidgetItem(pkgname)
+  #           print "slot_toprated_ready:",pkgname
+  #           app = self.appmgr.get_application_by_name(pkgname)
+  #           if app is None:
+  #               print "111"
+  #           else:
+  #               print "icon file:", app.iconfile
+  #               icon = QIcon()
+  #               icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
+  #               oneitem.setIcon(icon)
+  #               oneitem.setWhatsThis(pkgname)
+  #               self.ui.rankView.addItem(oneitem)
      #   self.ui.rankWidget.setVisible(True)
         print "rankview count res:",self.ui.rankView.count()
+
+    def init_rank_view(self, rlist):
+        self.ui.rankView.addItem("hahaha")
 
     def slot_app_reviews_ready(self,reviewlist):
         print "slot_app_reviews_ready:",len(reviewlist)
         if len(reviewlist) == 0:
+            print "@@@@@@ review 0"
             return
         for review in reviewlist:
-            print "Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
+            self.detailScrollWidget.ui.name.setText("test one")
+            print "!!!!!!!!!!!!!!!!!!!!"
+            # count = self.detailScrollWidget.ui.reviewListWidget.count()
+            # reviewHeight = count * 85
+            # self.detailWidget.resize(805, 790 + reviewHeight)
+            # self.detailScrollWidget.ui.reviewListWidget.resize(805, reviewHeight)
+            # oneitem = QListWidgetItem()
+            # from ui.reviewwidget import ReviewWidget
+            # rliw = ReviewWidget(review)
+            # self.detailScrollWidget.ui.reviewListWidget.addItem(oneitem)
+            # self.detailScrollWidget.ui.reviewListWidget.setItemWidget(oneitem, rliw)
+            # self.detailScrollWidget.add_one_review(review)
+            # print "@@@@Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
 
     def slot_app_screenshots_ready(self,sclist):
         print "slot_app_screenshots_ready:",len(sclist)
@@ -742,7 +766,8 @@ class SoftwareCenter(QMainWindow):
 
     def slot_click_ad(self, ad):
         if(ad.type == "pkg"):
-            print ad.urlorpkgid
+            app = self.appmgr.get_application_by_name(ad.urlorpkgid)
+            self.slot_show_app_detail(app)
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
 
