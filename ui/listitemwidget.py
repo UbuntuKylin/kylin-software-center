@@ -84,6 +84,7 @@ class ListItemWidget(QWidget):
         # self.ui.candidateVersion.setText("<font color='#FF7D15'>最新: " + software.candidate_version + "</font>")
 
         if(nowpage == 'homepage'):
+            self.ui.btn.setVisible(True)
             if(app.is_installed):
                 self.ui.btn.setText("启动")
                 self.ui.installedVersion.setText("已装: " + app.installed_version)
@@ -92,11 +93,15 @@ class ListItemWidget(QWidget):
                 self.ui.btn.setText("安装")
                 self.ui.installedVersion.setText("未安装")
         elif(nowpage == 'uppage'):
+            self.ui.btn.setVisible(True)
             self.ui.btn.setText("升级")
             self.ui.installedVersion.setText("已装: " + app.installed_version)
         elif(nowpage == 'unpage'):
+            self.ui.btn.setVisible(True)
             self.ui.btn.setText("卸载")
             self.ui.installedVersion.setText("已装: " + app.installed_version)
+        elif(nowpage == 'searchpage'):
+            self.ui.btn.setVisible(False)
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
