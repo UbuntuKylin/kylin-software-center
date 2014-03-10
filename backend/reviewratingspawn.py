@@ -79,6 +79,7 @@ class ReviewRatingStat(object):
 #多进程类,参数包括：指定要执行的方法和对应的参数,!!!!目前参数简单处理，后面再统一封装
 #其中方法从RatingsAndReviwsMethod中获取
 #class SpawnProcess(GObject.GObject,multiprocessing.Process):
+from multiprocessing import Queue
 class SpawnProcess(GObject.GObject,threading.Thread):
     __gsignals__ = {
         "spawn-data-available": (GObject.SIGNAL_RUN_LAST,

@@ -343,9 +343,8 @@ class AppManager(QObject):
             for item, rnrStat in rnrStats.iteritems():
                 app = self.get_application_by_name(str(rnrStat.pkgname))
                 if app is not None:
-                    app.rnrStat = ReviewRatingStat(str(rnrStat.pkgname))
-                    app.rnrStat.ratings_total = rnrStat.ratings_total
-                    app.rnrStat.ratings_average = rnrStat.ratings_average
+                    app.ratings_average = rnrStat.ratings_average
+                    app.ratings_total = rnrStat.ratings_total
 
             #print res
             self.emit(Signals.rating_reviews_ready,rnrStats)

@@ -60,6 +60,8 @@ class Application:
         self.icons = []
         self.reviews = []
         self.rnrStat = None
+        self.ratings_average = -1
+        self.ratings_total = -1
 
     @property
     def name(self):
