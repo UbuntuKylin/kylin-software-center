@@ -64,6 +64,7 @@ class RatingSortMethods:
 
 from gi.repository import GObject
 import multiprocessing
+import threading
 
 #a class to describe the total rating and review info
 class ReviewRatingStat(object):
@@ -77,7 +78,8 @@ class ReviewRatingStat(object):
 
 #多进程类,参数包括：指定要执行的方法和对应的参数,!!!!目前参数简单处理，后面再统一封装
 #其中方法从RatingsAndReviwsMethod中获取
-class SpawnProcess(GObject.GObject,multiprocessing.Process):
+#class SpawnProcess(GObject.GObject,multiprocessing.Process):
+class SpawnProcess(GObject.GObject,threading.Thread):
     __gsignals__ = {
         "spawn-data-available": (GObject.SIGNAL_RUN_LAST,
                            GObject.TYPE_NONE,
@@ -95,9 +97,11 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
 
     def __init__(self, func, kwargs=None):
         super(SpawnProcess, self).__init__()
-        multiprocessing.Process.__init__(self)
+        #multiprocessing.Process.__init__(self)
+        threading.Thread.__init__(self)
         self.func = func
         self.kwargs = kwargs
+        self.daemon = True
         print "\nEnter __init__ of SpawnThread...kwargs:\n", kwargs
 
     def run(self):
@@ -137,7 +141,7 @@ class RatingsAndReviwsMethod:
         #cachedir = os.path.join(UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR, "rnrclient")
         #cachedir = "/home/maclin/test"
         print cachedir
-        rnrclient = RatingsAndReviewsAPI()  #????cache
+        rnrclient = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)  #????cache
 
         piston_reviews = []
         try:
@@ -182,6 +186,7 @@ class RatingsAndReviwsMethod:
         screenshotURL = SCREENSHOT_JSON_URL % pkgname
 
         print screenshotURL
+        rawContent = None
         try:
             urlFile = urllib2.urlopen(screenshotURL)
             rawContent = urlFile.read()
@@ -192,6 +197,9 @@ class RatingsAndReviwsMethod:
             print e.code
         except urllib2.URLError,e:
             print str(e)
+
+        if rawContent is None:
+            return []
 
         try:
             jsonContent = json.loads(rawContent)
@@ -263,9 +271,14 @@ class RatingsAndReviwsMethod:
 
         rnrArray = {}
         try:
-            rnr = RatingsAndReviewsAPI()
-            statlist = rnr.review_stats()
+            print "000####get_review_rating_stats....."
+            rnr = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)
+            print "aaa####get_review_rating_stats....."
+            sat_res = rnr.server_status()
+            print "get_review_rating_stats, server_status:",sat_res
+            statlist = rnr.review_stats(distroseries='saucy')
 
+            print "bbb####get_review_rating_stats.....:", len(statlist)
             index = 0
             for stat in statlist:
                 rnrStat = ReviewRatingStat(stat.package_name)
@@ -422,6 +435,14 @@ class RatingsAndReviewsTest:
  
        self._reviews = {}
 
+    def get_review_rating_stats(self):
+        print "get_review_rating_stats..."
+        spawn_helper = SpawnProcess("get_review_rating_stats")
+        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_review_rating_stats")
+        spawn_helper.start()
+
+
+
     def start_get_reviews(self, str_pkgname='gimp', callback=None, page=1):
         """ public api, triggers fetching a review and calls callback
             when its ready
@@ -451,6 +472,17 @@ class RatingsAndReviewsTest:
         spawn_helper = SpawnProcess("get_reviews",kwargs)
         spawn_helper.connect("data-available", self._on_reviews_ready, str_pkgname, callback)
         spawn_helper.start()
+
+
+    def _on_spawndata_ready(self, spawn_helper, res, pkgname, func,callback=None):
+        rnrStats = res
+        rnrStatList = res
+
+        print "_on_spawndata_ready:",len(rnrStatList)
+
+        for item, rnrStat in rnrStats.iteritems():
+            print "aaaa:",rnrStat
+
  
     def _on_reviews_ready(self, spawn_helper, piston_reviews, str_pkgname,
         callback):
@@ -481,19 +513,20 @@ def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
 
 if __name__ == "__main__":
 
-   req = urllib2.Request("http://screenshots.ubuntu.com/screenshots/g/gimp/10064_small1.png")
-   urlFile = urllib2.urlopen(req)
-   print urlFile.info()
+#   req = urllib2.Request("http://screenshots.ubuntu.com/screenshots/g/gimp/10064_small1.png")
+#   urlFile = urllib2.urlopen(req)
+#   print urlFile.info()
 
 
-#   test = RatingsAndReviewsTest()
+    test = RatingsAndReviewsTest()
+    test.get_review_rating_stats()
 #   piston_reviews = test.start_get_reviews('gimp',_reviews_ready_callback)
 
 #   piston_reviews = test.get_reviews('gimp',_reviews_ready_callback)
 #   print piston_reviews
-   while True:
-      print "********"
-      time.sleep(1)
+    while True:
+        print "********"
+        time.sleep(1)
 
 
 

@@ -414,26 +414,6 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="taskWidget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>192</x>
-      <y>107</y>
-      <width>663</width>
-      <height>479</height>
-     </rect>
-    </property>
-    <widget class="QListWidget" name="taskListWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>663</width>
-       <height>479</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
    <widget class="QWidget" name="item1Widget" native="true">
     <property name="geometry">
      <rect>
@@ -673,6 +653,52 @@
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="taskWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>107</y>
+      <width>815</width>
+      <height>479</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="taskHeader">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>55</y>
+       <width>815</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="taskMSGBar">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>815</width>
+       <height>55</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QListWidget" name="taskListWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>79</y>
+       <width>815</width>
+       <height>400</height>
+      </rect>
      </property>
     </widget>
    </widget>

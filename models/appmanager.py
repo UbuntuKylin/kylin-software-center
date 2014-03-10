@@ -61,10 +61,11 @@ class AppManager(QObject):
 
         self.download_category_list()
 
-        #
-        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
-
         #self.get_review_rating_stats()
+        #
+        #self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+
+
 
     #open the apt cache and get the package count
     def open_cache(self):
@@ -258,14 +259,17 @@ class AppManager(QObject):
 
         spawn_helper = SpawnProcess("get_toprated_stats",kwargs)
         spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_toprated_stats", callback)
+        spawn_helper.daemon = True
         spawn_helper.start()
         return {}
 
     #????
     def get_review_rating_stats(self,callback=None):
 
+        print "get_review_rating_stats..."
         spawn_helper = SpawnProcess("get_review_rating_stats")
         spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_review_rating_stats", callback)
+        spawn_helper.daemon = True
         spawn_helper.start()
         return []
 
@@ -284,6 +288,8 @@ class AppManager(QObject):
 
         spawn_helper = SpawnProcess("get_reviews",kwargs)
         spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, pkgname, "get_reviews", callback)
+        spawn_helper.daemon = True
+#        spawn_helper.join()
         spawn_helper.start()
         return []
 
@@ -303,6 +309,7 @@ class AppManager(QObject):
 
         spawn_helper = SpawnProcess("get_screenshots",kwargs)
         spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, pkgname, "get_screenshots", callback)
+        spawn_helper.daemon = True
         spawn_helper.start()
         return []
 
@@ -333,9 +340,16 @@ class AppManager(QObject):
             rnrStats = res
             self.rnrStatList = res
 
+            for item, rnrStat in rnrStats.iteritems():
+                app = self.get_application_by_name(str(rnrStat.pkgname))
+                if app is not None:
+                    app.rnrStat = ReviewRatingStat(str(rnrStat.pkgname))
+                    app.rnrStat.ratings_total = rnrStat.ratings_total
+                    app.rnrStat.ratings_average = rnrStat.ratings_average
+
             #print res
-            #self.emit(Signals.rating_reviews_ready,rnrStats)
-            self.emit(Signals.init_models_ready,"ok","获取总评分评论完成")
+            self.emit(Signals.rating_reviews_ready,rnrStats)
+            #self.emit(Signals.init_models_ready,"ok","获取总评分评论完成")
             print "emited rating_reviews_ready......***********"
         elif func == "get_toprated_stats":
             print "\ntoprated stats ready..."
