@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Mon Mar 10 09:26:36 2014
+# Created: Mon Mar 10 09:37:08 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -147,12 +147,6 @@ class Ui_MainWindow(object):
         self.allsMSGBar.setGeometry(QtCore.QRect(0, 0, 663, 55))
         self.allsMSGBar.setText(_fromUtf8(""))
         self.allsMSGBar.setObjectName(_fromUtf8("allsMSGBar"))
-        self.taskWidget = QtGui.QWidget(self.centralwidget)
-        self.taskWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
-        self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
-        self.taskListWidget = QtGui.QListWidget(self.taskWidget)
-        self.taskListWidget.setGeometry(QtCore.QRect(0, 0, 663, 479))
-        self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
         self.item1Widget = QtGui.QWidget(self.centralwidget)
         self.item1Widget.setGeometry(QtCore.QRect(0, 107, 56, 134))
         self.item1Widget.setObjectName(_fromUtf8("item1Widget"))
@@ -227,6 +221,20 @@ class Ui_MainWindow(object):
         self.searchMSGBar.setGeometry(QtCore.QRect(0, 0, 663, 55))
         self.searchMSGBar.setText(_fromUtf8(""))
         self.searchMSGBar.setObjectName(_fromUtf8("searchMSGBar"))
+        self.taskWidget = QtGui.QWidget(self.centralwidget)
+        self.taskWidget.setGeometry(QtCore.QRect(40, 107, 815, 479))
+        self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
+        self.taskHeader = QtGui.QLabel(self.taskWidget)
+        self.taskHeader.setGeometry(QtCore.QRect(0, 55, 815, 24))
+        self.taskHeader.setText(_fromUtf8(""))
+        self.taskHeader.setObjectName(_fromUtf8("taskHeader"))
+        self.taskMSGBar = QtGui.QLabel(self.taskWidget)
+        self.taskMSGBar.setGeometry(QtCore.QRect(0, 0, 815, 55))
+        self.taskMSGBar.setText(_fromUtf8(""))
+        self.taskMSGBar.setObjectName(_fromUtf8("taskMSGBar"))
+        self.taskListWidget = QtGui.QListWidget(self.taskWidget)
+        self.taskListWidget.setGeometry(QtCore.QRect(0, 79, 815, 400))
+        self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
