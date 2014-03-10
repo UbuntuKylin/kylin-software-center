@@ -630,6 +630,52 @@
      </property>
     </widget>
    </widget>
+   <widget class="QWidget" name="searchWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>192</x>
+      <y>107</y>
+      <width>663</width>
+      <height>479</height>
+     </rect>
+    </property>
+    <widget class="QListWidget" name="searchListWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>79</y>
+       <width>663</width>
+       <height>400</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="searhHeader">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>55</y>
+       <width>663</width>
+       <height>24</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="searchMSGBar">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>663</width>
+       <height>55</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
   </widget>
  </widget>
  <resources/>

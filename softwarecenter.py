@@ -220,6 +220,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.allsWidget.hide()
         self.ui.upWidget.hide()
         self.ui.unWidget.hide()
+        self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
         self.ui.rankWidget.hide()
 
