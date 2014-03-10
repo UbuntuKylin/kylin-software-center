@@ -239,9 +239,10 @@ class AppManager(QObject):
     def get_advertisements(self):
         print "we need to get the advertisements"
         tmpads = []
-        tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.baidu.com"))
-        tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps"))
-        tmpads.append(Advertisement("qt", "pkg", "ad3.png", "qtcreator"))
+        tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1"))
+        tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps-office"))
+        tmpads.append(Advertisement("dota2", "url", "ad3.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7687&extra=page%3D1"))
+        tmpads.append(Advertisement("pps", "url", "ad4.png", "http://dl.pps.tv/pps_linux_download.html"))
         self.emit(Signals.ads_ready,tmpads)
 
     #????

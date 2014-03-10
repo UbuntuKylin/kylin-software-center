@@ -37,6 +37,7 @@ from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
+from ui.loadingdiv import LoadingDiv
 #from backend.backend_worker import BackendWorker
 from models.advertisement import Advertisement
 #import data
@@ -81,7 +82,6 @@ class SoftwareCenter(QMainWindow):
         #init the ui
         self.init_main_view()
         self.init_category_view()
-        # self.init_rank_view(None)
 
 
         #connect the ui signals
@@ -156,15 +156,16 @@ class SoftwareCenter(QMainWindow):
 
     #????用于测试进度显示
     def slot_testtask(self):
-        software = self.appmgr.get_application_by_name("firefox")
-        oneitem = QListWidgetItem()
-        tliw = TaskListItemWidget(software)
-        self.ui.taskListWidget.addItem(oneitem)
-        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-        import time
-        for i in range(100):
-            tliw.ui.progressBar.setValue(i+1)
-            time.sleep(0.02)
+        self.loadingDiv.start_loading("test one hahahaha hehe")
+        # software = self.appmgr.get_application_by_name("firefox")
+        # oneitem = QListWidgetItem()
+        # tliw = TaskListItemWidget(software)
+        # self.ui.taskListWidget.addItem(oneitem)
+        # self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+        # import time
+        # for i in range(100):
+        #     tliw.ui.progressBar.setValue(i+1)
+        #     time.sleep(0.02)
 
 
     def init_main_view(self):
@@ -177,6 +178,8 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget = DetailScrollWidget(self.ui.centralwidget)
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
+
+        self.loadingDiv = LoadingDiv(self)
 
         # style by code
         self.ui.headerWidget.setAutoFillBackground(True)
@@ -224,6 +227,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
 
+        self.ui.taskWidget.stackUnder(self.ui.item1Widget)
+        self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
         self.ui.allsWidget.hide()
         self.ui.upWidget.hide()
         self.ui.unWidget.hide()
@@ -263,7 +270,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-image:url('res/categorybg.png');}QListWidget::item{height:35px;padding-left:20px;margin-top:0px;border:0px;}QListWidget::item:hover{background:#CAD4E2;}QListWidget::item:selected{background-color:#6BB8DD;color:black;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}")
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -659,35 +666,30 @@ class SoftwareCenter(QMainWindow):
         print "#######slot_rating_reviews_ready********"
 
     def slot_toprated_ready(self,rnrlist):
-        # self.ui.rankView.setVisible(True)
-        # self.ui.rankView.show()
-        # self.ui.rankView.raise_()
         print "slot_toprated_ready"
-        print "hohoho"
         self.ui.rankView.clear()
-        self.init_rank_view(None)
-        # self.ui.rankView.addItem(QListWidgetItem("hahahaha"))
-  #       for item, rnrStat in rnrlist.iteritems():
-  #           pkgname = str(rnrStat.pkgname)
-  # #          self.
-  # #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
-  #           oneitem = QListWidgetItem(pkgname)
-  #           print "slot_toprated_ready:",pkgname
-  #           app = self.appmgr.get_application_by_name(pkgname)
-  #           if app is None:
-  #               print "111"
-  #           else:
-  #               print "icon file:", app.iconfile
-  #               icon = QIcon()
-  #               icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
-  #               oneitem.setIcon(icon)
-  #               oneitem.setWhatsThis(pkgname)
-  #               self.ui.rankView.addItem(oneitem)
-     #   self.ui.rankWidget.setVisible(True)
-        print "rankview count res:",self.ui.rankView.count()
+        for item, rnrStat in rnrlist.iteritems():
+            pkgname = str(rnrStat.pkgname)
+  #          self.
+  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+            oneitem = QListWidgetItem(pkgname)
+            print "slot_toprated_ready:",pkgname
+            app = self.appmgr.get_application_by_name(pkgname)
 
-    def init_rank_view(self, rlist):
-        self.ui.rankView.addItem("hahaha")
+            if (self.ui.rankView.count() > 9):
+                break
+
+            if app is None:
+                print "111"
+            else:
+                print "icon file:", app.iconfile
+                icon = QIcon()
+                icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
+                oneitem.setIcon(icon)
+                oneitem.setWhatsThis(pkgname)
+                self.ui.rankView.addItem(oneitem)
+        self.ui.rankWidget.setVisible(True)
+        print "rankview count res:",self.ui.rankView.count()
 
     def slot_app_reviews_ready(self,reviewlist):
         print "slot_app_reviews_ready:",len(reviewlist)
@@ -695,7 +697,6 @@ class SoftwareCenter(QMainWindow):
             print "@@@@@@ review 0"
             return
         for review in reviewlist:
-            self.detailScrollWidget.ui.name.setText("test one")
             print "!!!!!!!!!!!!!!!!!!!!"
             # count = self.detailScrollWidget.ui.reviewListWidget.count()
             # reviewHeight = count * 85
@@ -706,7 +707,7 @@ class SoftwareCenter(QMainWindow):
             # rliw = ReviewWidget(review)
             # self.detailScrollWidget.ui.reviewListWidget.addItem(oneitem)
             # self.detailScrollWidget.ui.reviewListWidget.setItemWidget(oneitem, rliw)
-            # self.detailScrollWidget.add_one_review(review)
+            self.detailScrollWidget.add_one_review(review)
             # print "@@@@Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
 
     def slot_app_screenshots_ready(self,sclist):

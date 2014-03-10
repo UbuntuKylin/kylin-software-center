@@ -13,13 +13,13 @@ class ReviewWidget(QWidget):
         QWidget.__init__(self,parent)
         self.ui_init()
 
-        self.ui.comment.setAlignment(Qt.AlignHCenter)
+        self.ui.comment.setAlignment(Qt.AlignVCenter)
         self.ui.comment.setWordWrap(True)
 
         self.ui.userName.setStyleSheet("QLabel{color:#1E66A4;font-size:14px;}")
         self.ui.userHead.setStyleSheet("QLabel{background-image:url('res/plslogin.png')}")
         self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png')}")
-# review.package_name,review.reviewer_username,review.rating,review.review_text
+
         self.ui.userName.setText(review.reviewer_username)
         self.ui.comment.setText(review.review_text)
 

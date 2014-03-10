@@ -37,6 +37,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUninstall.setFocusPolicy(Qt.NoFocus)
         self.ui.btnSshotBack.setFocusPolicy(Qt.NoFocus)
         self.ui.btnSshotNext.setFocusPolicy(Qt.NoFocus)
+        self.ui.reviewListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.summary.setReadOnly(True)
         self.ui.description.setReadOnly(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -80,6 +81,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.sshotBG.setStyleSheet("QLabel{background-image:url('res/sshotbg.png')}")
         self.ui.btnSshotBack.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-back-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-back-2')}QPushButton:pressed{background-image:url('res/btn-sshot-back-3')}")
         self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-3')}")
+        self.ui.reviewListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
 
         self.hide()
 
@@ -91,6 +93,8 @@ class DetailScrollWidget(QScrollArea):
     def showSimple(self, software):
         # clear reviews
         self.ui.reviewListWidget.clear()
+        self.detailWidget.resize(805, 790)
+        self.ui.reviewListWidget.resize(805, 0)
 
         self.app = software
         self.ui.name.setText(software.name)
@@ -111,7 +115,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText("评分 ? 次")
         self.ui.gradeText3.setText("满分5分")
-        self.ui.grade.setText("4.6")
+        self.ui.grade.setText(str(software.rnrStat.ratings_average))
         self.star = StarWidget('big', 4, self.detailWidget)
         self.star.move(500, 94)
 
@@ -161,7 +165,7 @@ class DetailScrollWidget(QScrollArea):
 
     def add_one_review(self, review):
         count = self.ui.reviewListWidget.count()
-        reviewHeight = count * 85
+        reviewHeight = (count + 1) * 85
         self.detailWidget.resize(805, 790 + reviewHeight)
         self.ui.reviewListWidget.resize(805, reviewHeight)
 
