@@ -42,7 +42,7 @@
   <widget class="QLabel" name="commentBG">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>85</x>
      <y>30</y>
      <width>708</width>
      <height>39</height>
@@ -55,7 +55,7 @@
   <widget class="QLabel" name="comment">
    <property name="geometry">
     <rect>
-     <x>105</x>
+     <x>100</x>
      <y>33</y>
      <width>600</width>
      <height>34</height>

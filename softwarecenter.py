@@ -38,6 +38,7 @@ from ui.tasklistitemwidget import TaskListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import LoadingDiv
+from ui.messagebox import MessageBox
 #from backend.backend_worker import BackendWorker
 from models.advertisement import Advertisement
 #import data
@@ -88,6 +89,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.headerWidget.installEventFilter(self)
 
         self.ui.categoryView.itemClicked.connect(self.slot_change_category)
+        self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
         self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
         self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
         self.ui.unListWidget.itemClicked.connect(self.slot_click_item)
@@ -151,21 +153,17 @@ class SoftwareCenter(QMainWindow):
         #????用于测试进度显示
         self.btntesttask = QPushButton(self.ui.taskWidget)
         self.btntesttask.setGeometry(400,20,100,30)
-        self.raise_()
         self.btntesttask.clicked.connect(self.slot_testtask)
+        self.btntesttask2 = QPushButton(self.ui.taskWidget)
+        self.btntesttask2.setGeometry(520,20,100,30)
+        self.btntesttask2.clicked.connect(self.slot_testtask2)
 
     #????用于测试进度显示
     def slot_testtask(self):
         self.loadingDiv.start_loading("test one hahahaha hehe")
-        # software = self.appmgr.get_application_by_name("firefox")
-        # oneitem = QListWidgetItem()
-        # tliw = TaskListItemWidget(software)
-        # self.ui.taskListWidget.addItem(oneitem)
-        # self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-        # import time
-        # for i in range(100):
-        #     tliw.ui.progressBar.setValue(i+1)
-        #     time.sleep(0.02)
+
+    def slot_testtask2(self):
+        self.messageBox.alert_msg("这是一个测试函数..")
 
 
     def init_main_view(self):
@@ -176,10 +174,13 @@ class SoftwareCenter(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
+        # detail page
         self.detailScrollWidget = DetailScrollWidget(self.ui.centralwidget)
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
-
+        # loading page
         self.loadingDiv = LoadingDiv(self)
+        # alert message box
+        self.messageBox = MessageBox(self)
 
         # style by code
         self.ui.headerWidget.setAutoFillBackground(True)
@@ -226,8 +227,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.unListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
+        self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
         self.ui.taskWidget.stackUnder(self.ui.item1Widget)
+        self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
@@ -268,9 +271,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
         self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
-        self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
+        self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{padding-left:25px;border:0px;}QListWidget::item:selected{color:black;}")
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -683,9 +686,9 @@ class SoftwareCenter(QMainWindow):
                 print "111"
             else:
                 print "icon file:", app.iconfile
-                icon = QIcon()
-                icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
-                oneitem.setIcon(icon)
+                # icon = QIcon()
+                # icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
+                # oneitem.setIcon(icon)
                 oneitem.setWhatsThis(pkgname)
                 self.ui.rankView.addItem(oneitem)
         self.ui.rankWidget.setVisible(True)
@@ -924,6 +927,10 @@ class SoftwareCenter(QMainWindow):
         if(self.nowPage == 'searchpage'):
             liw = self.ui.searchListWidget.itemWidget(item)
         self.emit(SIGNAL("clickitem"), liw.app)
+
+    def slot_click_rank_item(self, item):
+        app = self.appmgr.get_application_by_name(str(item.text()))
+        self.slot_show_app_detail(app)
 
     def slot_show_app_detail(self, app):
         self.detailScrollWidget.showSimple(app)

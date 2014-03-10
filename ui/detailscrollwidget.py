@@ -115,8 +115,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText("评分 ? 次")
         self.ui.gradeText3.setText("满分5分")
-        self.ui.grade.setText(str(software.rnrStat.ratings_average))
-        self.star = StarWidget('big', 4, self.detailWidget)
+        # self.ui.grade.setText(str(software.rnrStat.ratings_average))
+        self.star = StarWidget('big', 0, self.detailWidget)
         self.star.move(500, 94)
 
         if(software.is_installed):
