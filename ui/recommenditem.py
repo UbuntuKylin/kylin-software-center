@@ -23,13 +23,14 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukrcmdw import Ui_UKrcmdw
 import data
 
 from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
-                          UBUNTUKYLIN_RES_ICON_PATH,
+                          UBUNTUKYLIN_RES_TMPICON_PATH,
                           RECOMMEND_BUTTON_PATH,
                           UBUNTUKYLIN_RES_PATH,
                           RECOMMEND_QPUSH_BUTTON_PATH)
@@ -49,7 +50,11 @@ class RecommendItem(QWidget):
         self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()
 
-        self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_ICON_PATH+str(self.app.name)+".png"))
+        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png")):
+            self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png"))
+        else:
+            self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
+        # self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_ICON_PATH+str(self.app.name)+".png"))
         #self.ui.softIcon.setStyleSheet("QLabel{background-image:url('res/icons/" + str(self.app.name) + ".png')}")
         self.ui.softName.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.softDescr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")

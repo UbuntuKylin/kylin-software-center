@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>805</width>
-    <height>900</height>
+    <height>790</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -369,6 +369,16 @@
    </property>
    <property name="text">
     <string>321条评论</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="reviewListWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>680</y>
+     <width>815</width>
+     <height>85</height>
+    </rect>
    </property>
   </widget>
  </widget>

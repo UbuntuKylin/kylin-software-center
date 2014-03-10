@@ -101,7 +101,7 @@ class ADWidget(QWidget):
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
-        adbx = 590
+        adbx = 570
         for one in addata:
             ad = ADButton(one, self.adContentWidget)
             ad.resize(663, 186)
@@ -118,7 +118,7 @@ class ADWidget(QWidget):
             adbtn.move(adbx, 193)
             adbx += 20
             adbtn.setFocusPolicy(Qt.NoFocus)
-            adbtn.setStyleSheet("QPushButton{background-image:url('res/1-1.png');border:0px;}QPushButton:pressed{background:url('res/1-2.png');}")
+            adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
             adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad)
             self.adbs.append(adbtn)
 
@@ -127,8 +127,8 @@ class ADWidget(QWidget):
     def slot_change_ad(self, i):
         self.adi = i
         for adb in self.adbs:
-            adb.setStyleSheet("QPushButton{background-image:url('res/1-1.png');border:0px;}QPushButton:pressed{background-image:url('res/1-2.png');border:0px;}")
-        self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/1-2.png');border:0px;}")
+            adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
+        self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/adbtn-2.png');border:0px;}")
 
         # self.adContentWidget.move(i * 663 * -1, 0)
         self.distance = self.adi * 663 - self.adContentWidget.x()

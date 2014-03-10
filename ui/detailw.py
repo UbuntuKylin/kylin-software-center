@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Fri Mar  7 11:25:09 2014
+# Created: Mon Mar 10 11:12:20 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DetailWidget(object):
     def setupUi(self, DetailWidget):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
-        DetailWidget.resize(815, 900)
+        DetailWidget.resize(805, 790)
         self.btnCloseDetail = QtGui.QPushButton(DetailWidget)
         self.btnCloseDetail.setGeometry(QtCore.QRect(16, 24, 60, 20))
         self.btnCloseDetail.setText(_fromUtf8(""))
@@ -133,6 +133,9 @@ class Ui_DetailWidget(object):
         self.commentNumber = QtGui.QLabel(DetailWidget)
         self.commentNumber.setGeometry(QtCore.QRect(650, 640, 80, 17))
         self.commentNumber.setObjectName(_fromUtf8("commentNumber"))
+        self.reviewListWidget = QtGui.QListWidget(DetailWidget)
+        self.reviewListWidget.setGeometry(QtCore.QRect(0, 680, 815, 85))
+        self.reviewListWidget.setObjectName(_fromUtf8("reviewListWidget"))
 
         self.retranslateUi(DetailWidget)
         QtCore.QMetaObject.connectSlotsByName(DetailWidget)
