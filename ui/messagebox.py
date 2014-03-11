@@ -49,8 +49,8 @@ class MessageBox(QObject):
             self.alertGOE.setOpacity(self.ao)
         if(self.ay <= 250):
             self.alertTimer.stop()
-            # close after 5 second
-            self.alertDelayTimer.start(5000)
+            # close after * second
+            self.alertDelayTimer.start(4000)
         else:
             self.ay -= 2
             self.alert.move(self.alert.x(), self.ay)
