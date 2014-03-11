@@ -39,8 +39,62 @@ from backend.installbackend import InstallBackend
 from enums import (UBUNTUKYLIN_RES_PATH,UBUNTUKYLIN_DATA_PATH,UBUNTUKYLIN_DATA_CAT_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from enums import Signals
 
+import threading
+import multiprocessing
 
 from operator import itemgetter
+
+
+class WorkerItem:
+     def __init__(self, funcname, kwargs):
+        self.funcname = funcname
+        self.kwargs = kwargs
+
+
+class ThreadWorkerDaemon(threading.Thread):
+
+    def __init__(self, appmgr):
+        threading.Thread.__init__(self)
+        print ""
+        self.appmgr = appmgr
+
+    def run(self):
+        while True:
+            self.appmgr.mutex.acquire()
+            worklen = len(self.appmgr.worklist)
+            self.appmgr.mutex.release()
+            if worklen == 0:
+                print "@@@@@@work len==0"
+                time.sleep(2)
+                continue
+
+            print "=========ThreadWorkerDaemon run======="
+            self.appmgr.mutex.acquire()
+            item = self.appmgr.worklist.pop()
+            self.appmgr.mutex.release()
+
+            if item is None:
+                continue
+
+            print "=========ThreadWorkerDaemon before event======="
+            event = multiprocessing.Event()
+            queue = multiprocessing.Queue()
+            spawn_helper = SpawnProcess(item.funcname,item.kwargs, event, queue)
+#            spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_toprated_stats", callback)
+            spawn_helper.daemon = True
+            spawn_helper.start()
+            event.wait()
+            print "=========ThreadWorkerDaemon after wait======="
+
+            reslist = []
+            while not queue.empty():
+                resitem = queue.get_nowait()
+                reslist.append(resitem)
+
+            print "finish recv:",len(reslist)
+            self.appmgr.dispatchWorkerResult(item,reslist)
+
+
 
 #This class is the abstraction of application management
 class AppManager(QObject):
@@ -56,6 +110,12 @@ class AppManager(QObject):
         self.language = 'zh_CN'      #'any' for all
         self.distroseries = 'saucy'  #'any' for all
 
+        self.worklist = []
+        self.mutex = threading.RLock()
+        self.worker_thread = ThreadWorkerDaemon(self)
+        self.worker_thread.setDaemon(True)
+        self.worker_thread.start()
+
     def init_models(self):
         self.open_cache()
 
@@ -64,8 +124,6 @@ class AppManager(QObject):
         #self.get_review_rating_stats()
         #
         #self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
-
-
 
     #open the apt cache and get the package count
     def open_cache(self):
@@ -123,21 +181,11 @@ class AppManager(QObject):
 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c))
-#            cat_list.append(cat)
             cat_list[c] = cat
-
-#        sorted(cat_list.iteritems(),key=itemgetter)
-
-#        cmp_rating = lambda x, y: \
-#            cmp(x[1].index,y[1].index)
-#        self.cat_list = sorted(cat_list.iteritems(),
-#                        cmp_rating,
-#                        reverse=False)
-
-#        print resList
 
         self.cat_list = cat_list
         return cat_list
+
     #get category list
     def get_category_list(self, reload=False, catdir=""):
         if reload is False:
@@ -226,7 +274,7 @@ class AppManager(QObject):
             rnrStat = None
         return rnrStat
 
-    #????
+    #get recommend apps, this is now implemented with local config file
     def get_recommend_apps(self):
         print "we need to get the applications by condition recommend"
         applist = []
@@ -236,6 +284,7 @@ class AppManager(QObject):
 
         self.emit(Signals.recommend_ready,applist)
 
+    #get advertisements, this is now implemented locally
     def get_advertisements(self):
         print "we need to get the advertisements"
         tmpads = []
@@ -245,12 +294,13 @@ class AppManager(QObject):
         tmpads.append(Advertisement("pps", "url", "ad4.png", "http://dl.pps.tv/pps_linux_download.html"))
         self.emit(Signals.ads_ready,tmpads)
 
-    #????
+    #get apps in ubuntukylin archives, this is now implemented with config file
+    #then we can sync with the archive
     def get_ubuntukylin_apps(self):
         print "we need to get the applications by condition recommend"
         return self.get_category_apps("ubuntukylin")
 
-    #????
+    #get toprated apps
     def get_toprated_stats(self, topcount=100, callback=None):
         print "We need to get the top 10 applications"
 
@@ -258,28 +308,27 @@ class AppManager(QObject):
                   "sortingMethod": RatingSortMethods.INTEGRATE,
                   }
 
-        spawn_helper = SpawnProcess("get_toprated_stats",kwargs)
-        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_toprated_stats", callback)
-        spawn_helper.daemon = True
-        spawn_helper.start()
-        return {}
+        print "=========get_toprated_stats======="
+        item  = WorkerItem("get_toprated_stats",kwargs)
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
 
-    #????
+        return []
+
+    #get rating and review status
     def get_review_rating_stats(self,callback=None):
 
-        print "get_review_rating_stats..."
-        spawn_helper = SpawnProcess("get_review_rating_stats")
-        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_review_rating_stats", callback)
-        spawn_helper.daemon = True
-        spawn_helper.start()
+        print "=========get_review_rating_stats======="
+        item  = WorkerItem("get_review_rating_stats",None)
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
+
         return []
 
     #get reviews for a package
     def get_application_reviews(self,pkgname,callback=None):
-        app = self.get_application_by_name(pkgname)
-        reviews = app.get_reviews()
-        if reviews:
-            return reviews
 
         kwargs = {"language": self.language,
                   "distroseries": self.distroseries,
@@ -287,19 +336,25 @@ class AppManager(QObject):
                   "page": int(1),
                   }
 
-        spawn_helper = SpawnProcess("get_reviews",kwargs)
-        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, pkgname, "get_reviews", callback)
-        spawn_helper.daemon = True
-#        spawn_helper.join()
-        spawn_helper.start()
-        return []
+        print "=========get_reviews======="
+        item  = WorkerItem("get_reviews",kwargs)
+
+        app = self.get_application_by_name(pkgname)
+        reviews = app.get_reviews()
+        if reviews:
+            self.dispatchWorkerResult(item,reviews)
+            return reviews
+
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
 
     #get screenshots
     def get_application_screenshots(self,pkgname, cachedir=UBUNTUKYLIN_RES_SCREENSHOT_PATH, callback=None):
         print "get_application_screenshots",pkgname
         app = self.get_application_by_name(pkgname)
-        if app.screenshot_list:
-            return app.screenshot_list
+        if app is None:
+            return False
 
         kwargs = {"packagename": pkgname,
                   "thumbnail":app.thumbnail,
@@ -308,11 +363,64 @@ class AppManager(QObject):
                   "cachedir": cachedir, #result directory
                   }
 
-        spawn_helper = SpawnProcess("get_screenshots",kwargs)
-        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, pkgname, "get_screenshots", callback)
-        spawn_helper.daemon = True
-        spawn_helper.start()
+        print "=========get_screenshots======="
+        item  = WorkerItem("get_screenshots",kwargs)
+
+        if app.screenshots:
+            self.dispatchWorkerResult(item,app.screenshots)
+            return app.screenshots
+
+
+        self.mutex.acquire()
+        self.worklist.append(item)
+        print "@@@@@@@@worklist len=",len(self.worklist)
+        self.mutex.release()
+
         return []
+
+    def dispatchWorkerResult(self,item,reslist):
+        print "dispatchWorkerResult:",item
+        if item.funcname == "get_reviews":
+            # convert into our review objects
+            print "\nreviews ready...",len(reslist)
+            reviews = reslist
+#            for r in reslist:
+#                reviews.append(Review.from_piston_mini_client(r))
+            # add to our dicts and run callback
+            app = self.get_application_by_name(item.kwargs['packagename'])
+            app.reviews = reviews
+    #        self._reviews[str_pkgname] = reviews
+
+            self.emit(Signals.app_reviews_ready,reviews)
+        elif item.funcname == "get_screenshots":
+            print "\nscreenshots ready..."
+            screenshots = reslist
+            app = self.get_application_by_name(item.kwargs['packagename'])
+            app.screenshots = screenshots
+            print reslist
+            self.emit(Signals.app_screenshots_ready,screenshots)
+        elif item.funcname == "get_review_rating_stats":
+            print "\nreview rating stats ready..."
+            rnrStats = reslist
+            self.rnrStatList = reslist
+
+            for rnrStat in rnrStats:
+                app = self.get_application_by_name(str(rnrStat.pkgname))
+                if app is not None:
+                    app.ratings_average = rnrStat.ratings_average
+                    app.ratings_total = rnrStat.ratings_total
+
+            #print res
+            self.emit(Signals.rating_reviews_ready,rnrStats)
+            #self.emit(Signals.init_models_ready,"ok","获取总评分评论完成")
+            print "emited rating_reviews_ready......***********"
+        elif item.funcname == "get_toprated_stats":
+            print "\ntoprated stats ready..."
+            topRated = reslist
+            print reslist
+#            for item, rnrStat in topRated.iteritems():
+#                print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+            self.emit(Signals.toprated_ready,topRated)
 
     def _on_spawndata_ready(self, spawn_helper, res, pkgname, func,callback=None):
         if not func:
@@ -344,9 +452,8 @@ class AppManager(QObject):
             for item, rnrStat in rnrStats.iteritems():
                 app = self.get_application_by_name(str(rnrStat.pkgname))
                 if app is not None:
-                    app.rnrStat = ReviewRatingStat(str(rnrStat.pkgname))
-                    app.rnrStat.ratings_total = rnrStat.ratings_total
-                    app.rnrStat.ratings_average = rnrStat.ratings_average
+                    app.ratings_average = rnrStat.ratings_average
+                    app.ratings_total = rnrStat.ratings_total
 
             #print res
             self.emit(Signals.rating_reviews_ready,rnrStats)
@@ -381,6 +488,8 @@ def on_review_ready(reviews_data):
       print(review.review_text)
       print("\n")
     print "\n\n"
+
+
 
 
 if __name__ == "__main__":

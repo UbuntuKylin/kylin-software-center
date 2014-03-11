@@ -17,6 +17,8 @@ from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
 
 class DetailScrollWidget(QScrollArea):
     app = ''
+    sshotcount = 0
+    bigsshot = ''
 
     def __init__(self, parent=None):
         QScrollArea.__init__(self,parent)
@@ -25,6 +27,8 @@ class DetailScrollWidget(QScrollArea):
 
         self.setGeometry(QRect(40, 107, 815, 479))
         self.setWidget(self.detailWidget)
+
+        self.bigsshot = ScreenShotBig()
 
         self.ui.detailHeader.setAlignment(Qt.AlignCenter)
         self.ui.detailHeader.setText("详细信息")
@@ -38,6 +42,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnSshotBack.setFocusPolicy(Qt.NoFocus)
         self.ui.btnSshotNext.setFocusPolicy(Qt.NoFocus)
         self.ui.reviewListWidget.setFocusPolicy(Qt.NoFocus)
+        self.ui.thumbnail.setFocusPolicy(Qt.NoFocus)
+        self.ui.sshot.setFocusPolicy(Qt.NoFocus)
         self.ui.summary.setReadOnly(True)
         self.ui.description.setReadOnly(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -46,6 +52,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnInstall.clicked.connect(self.slot_click_install)
         self.ui.btnUpdate.clicked.connect(self.slot_click_update)
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
+        self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
+        self.ui.sshot.clicked.connect(self.ui.sshot.hide)
 
         # style
         self.detailWidget.setAutoFillBackground(True)
@@ -83,6 +91,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-3')}")
         self.ui.reviewListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
 
+        self.ui.thumbnail.hide()
+
         self.hide()
 
     def ui_init(self):
@@ -95,6 +105,9 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.clear()
         self.detailWidget.resize(805, 790)
         self.ui.reviewListWidget.resize(805, 0)
+        # clear sshot
+        self.sshotcount = 0
+        self.ui.thumbnail.hide()
 
         self.app = software
         self.ui.name.setText(software.name)
@@ -113,10 +126,11 @@ class DetailScrollWidget(QScrollArea):
         self.ui.size.setText("软件大小: " + str(sizek) + " K")
 
         self.ui.gradeText1.setText("我的评分: ")
-        self.ui.gradeText2.setText("评分 ? 次")
+        self.ui.gradeText2.setText("评分" + (str(software.ratings_total)) + "次")
         self.ui.gradeText3.setText("满分5分")
-        # self.ui.grade.setText(str(software.rnrStat.ratings_average))
-        self.star = StarWidget('big', 0, self.detailWidget)
+        self.ui.grade.setText(str(software.ratings_average))
+        self.star = StarWidget('big', software.ratings_average, self.detailWidget)
+
         self.star.move(500, 94)
 
         if(software.is_installed):
@@ -163,6 +177,10 @@ class DetailScrollWidget(QScrollArea):
         ################
         # div
 
+    def add_review(self, reviewlist):
+        for review in reviewlist:
+            self.add_one_review(review)
+
     def add_one_review(self, review):
         count = self.ui.reviewListWidget.count()
         reviewHeight = (count + 1) * 85
@@ -174,10 +192,38 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.addItem(oneitem)
         self.ui.reviewListWidget.setItemWidget(oneitem, rliw)
 
-    def add_sshot(self, sshot):
-        onesshot = QLabel()
-        onesshot.setGeometry(309, 458, 158, 120)
-        # onesshot.setStyleSheet("QLabel{background-image:url('res/" + sshot. + "')}")
+    def add_sshot(self, sclist):
+        self.sshotcount = len(sclist)
+        if(self.sshotcount > 0):
+            img = QPixmap(self.app.thumbnailfile)
+            self.ui.thumbnail.resize(img.width(), img.height())
+            self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+            self.ui.thumbnail.move(400 - img.width() / 2, 521 - img.height() / 2)
+            self.ui.thumbnail.show()
+        if(self.sshotcount > 1):
+            img = QPixmap(self.app.screenshotfile)
+            self.bigsshot.resize(img.width(), img.height())
+            self.bigsshot.bg.resize(img.width(), img.height())
+            self.bigsshot.bg.setStyleSheet("QLabel{background-image:url('" + self.app.screenshotfile + "');}")
+            # self.ui.sshot.resize(img.width(), img.height())
+            # self.ui.sshot.setStyleSheet("QPushButton{background-image:url('" + self.app.screenshotfile + "');border:0px;}")
+
+        # for i in range(len(sclist)):
+        #     scfile = sclist[i]
+        #     if(i == 0):
+        #         img = QPixmap(scfile)
+        #         self.ui.thumbnail.resize(img.width(), img.height())
+        #         self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + scfile + "');border:0px;}")
+        #         self.ui.thumbnail.show()
+        #     if(i == 1):
+        #         img = QPixmap(scfile)
+        #         self.ui.sshot.resize(img.width(), img.height())
+        #         self.ui.sshot.setStyleSheet("QPushButton{background-image:url('" + scfile + "');border:0px;}")
+
+    def slot_show_sshot(self):
+        if(self.sshotcount > 1):
+            self.bigsshot.move_to_center()
+            self.bigsshot.show()
 
     def slot_close_detail(self):
         self.hide()
@@ -222,3 +268,25 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
             self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
 
+
+class ScreenShotBig(QWidget):
+
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.ToolTip)
+        self.bg = QLabel(self)
+        self.bg.move(0, 0)
+        self.bg.installEventFilter(self)
+        self.hide()
+
+    def eventFilter(self, obj, event):
+        if(obj == self.bg and event.type() == QEvent.MouseButtonRelease):
+            print "hide"
+            self.hide()
+        return True
+
+    def move_to_center(self):
+        windowWidth = QApplication.desktop().width()
+        windowHeight = QApplication.desktop().height()
+        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)

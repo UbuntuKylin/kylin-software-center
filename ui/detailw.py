@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Mon Mar 10 11:12:20 2014
+# Created: Tue Mar 11 11:39:07 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -136,6 +136,14 @@ class Ui_DetailWidget(object):
         self.reviewListWidget = QtGui.QListWidget(DetailWidget)
         self.reviewListWidget.setGeometry(QtCore.QRect(0, 680, 815, 85))
         self.reviewListWidget.setObjectName(_fromUtf8("reviewListWidget"))
+        self.thumbnail = QtGui.QPushButton(DetailWidget)
+        self.thumbnail.setGeometry(QtCore.QRect(350, 500, 1, 1))
+        self.thumbnail.setText(_fromUtf8(""))
+        self.thumbnail.setObjectName(_fromUtf8("thumbnail"))
+        self.sshot = QtGui.QPushButton(DetailWidget)
+        self.sshot.setGeometry(QtCore.QRect(350, 530, 1, 1))
+        self.sshot.setText(_fromUtf8(""))
+        self.sshot.setObjectName(_fromUtf8("sshot"))
 
         self.retranslateUi(DetailWidget)
         QtCore.QMetaObject.connectSlotsByName(DetailWidget)

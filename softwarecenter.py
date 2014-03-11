@@ -115,18 +115,13 @@ class SoftwareCenter(QMainWindow):
         # test
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
-        self.ui.bottomText1.setText("Ubuntu Kylin软件中心:")
-        self.ui.bottomText2.setText("0.2.1")
-        # self.tmp_fill_recommend_softwares()
-        # self.tmp_get_ads()
+        self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
+        self.ui.bottomText2.setText("v0.1")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(False)
-
-        #self.slot_goto_homepage()
-
 
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -230,6 +225,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
         self.ui.taskWidget.stackUnder(self.ui.item1Widget)
+        self.ui.searchWidget.stackUnder(self.ui.item1Widget)
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -274,7 +270,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
         self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{padding-left:25px;border:0px;}QListWidget::item:selected{color:black;}")
-        self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
+        self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
@@ -330,7 +326,7 @@ class SoftwareCenter(QMainWindow):
         self.backend = InstallBackend()
         self.searchDB = Search()
         self.searchList = {}
-        self.category = "ubuntukylin"
+        self.category = ""
         self.nowPage = "homepage"
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
         self.appmgr.init_models()
@@ -381,8 +377,8 @@ class SoftwareCenter(QMainWindow):
             if cat.visible is False:
                 continue
             zh_name = cat.name
-            if cat.index == 0:
-                self.category = cat.category_name
+#            if cat.index == 0:
+#                self.category = cat.category_name
             oneitem = QListWidgetItem(zh_name)
             icon = QIcon()
             icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)
@@ -671,7 +667,7 @@ class SoftwareCenter(QMainWindow):
     def slot_toprated_ready(self,rnrlist):
         print "slot_toprated_ready"
         self.ui.rankView.clear()
-        for item, rnrStat in rnrlist.iteritems():
+        for rnrStat in rnrlist:
             pkgname = str(rnrStat.pkgname)
   #          self.
   #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
@@ -697,28 +693,18 @@ class SoftwareCenter(QMainWindow):
     def slot_app_reviews_ready(self,reviewlist):
         print "slot_app_reviews_ready:",len(reviewlist)
         if len(reviewlist) == 0:
-            print "@@@@@@ review 0"
             return
-        for review in reviewlist:
-            print "!!!!!!!!!!!!!!!!!!!!"
-            # count = self.detailScrollWidget.ui.reviewListWidget.count()
-            # reviewHeight = count * 85
-            # self.detailWidget.resize(805, 790 + reviewHeight)
-            # self.detailScrollWidget.ui.reviewListWidget.resize(805, reviewHeight)
-            # oneitem = QListWidgetItem()
-            # from ui.reviewwidget import ReviewWidget
-            # rliw = ReviewWidget(review)
-            # self.detailScrollWidget.ui.reviewListWidget.addItem(oneitem)
-            # self.detailScrollWidget.ui.reviewListWidget.setItemWidget(oneitem, rliw)
-            self.detailScrollWidget.add_one_review(review)
+        # for review in reviewlist:
             # print "@@@@Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
+        self.detailScrollWidget.add_review(reviewlist)
 
     def slot_app_screenshots_ready(self,sclist):
         print "slot_app_screenshots_ready:",len(sclist)
         if len(sclist) == 0:
             return
-        for scFile in sclist:
-            print "screenshot file:",scFile
+        # for scFile in sclist:
+        #     print "screenshot file:",scFile
+        self.detailScrollWidget.add_sshot(sclist)
 
 
     def slot_count_installed_ready(self, count):
@@ -839,17 +825,21 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
         self.ui.taskWidget.setVisible(False)
-        self.ui.btnHomepage.setEnabled(True)
-        self.ui.btnUp.setEnabled(True)
-        self.ui.btnUn.setEnabled(True)
-        self.ui.btnTask.setEnabled(True)
-        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
-        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
-        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        if self.nowPage == 'homepage':
+            self.ui.btnHomepage.setEnabled(True)
+        elif self.nowPage == 'uppage':
+            self.ui.btnUp.setEnabled(True)
+        elif self.nowPage == 'unpage':
+            self.ui.btnUn.setEnabled(True)
+        elif self.nowPage == 'taskpage':
+            self.ui.btnTask.setEnabled(True)
+        #self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        #self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
+        #self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
+        #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_close(self):
-        os._exit(0)
+        sys.exit(0)
 
     def slot_min(self):
         self.showMinimized()
@@ -905,16 +895,6 @@ class SoftwareCenter(QMainWindow):
         (inst,up, all) = self.appmgr.get_application_count()
 
         self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-
-#????        self.connect(self.backend, Signals.countiover, self.slot_count_installed_over)
-#????        at = AsyncThread(data.sbo.count_installed_software)
-#????        at.setDaemon(True)
-#????        at.start()
-
-#????        self.connect(data.sbo, SIGNAL("countuover"), self.slot_count_upgradable_over)
-#????        at = AsyncThread(data.sbo.count_upgradable_software)
-#????        at.setDaemon(True)
-#????        at.start()
 
     def slot_click_item(self, item):
         liw = ''

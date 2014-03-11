@@ -78,8 +78,8 @@ class ReviewRatingStat(object):
 
 #多进程类,参数包括：指定要执行的方法和对应的参数,!!!!目前参数简单处理，后面再统一封装
 #其中方法从RatingsAndReviwsMethod中获取
-#class SpawnProcess(GObject.GObject,multiprocessing.Process):
-class SpawnProcess(GObject.GObject,threading.Thread):
+class SpawnProcess(GObject.GObject,multiprocessing.Process):
+#class SpawnProcess(GObject.GObject,threading.Thread):
     __gsignals__ = {
         "spawn-data-available": (GObject.SIGNAL_RUN_LAST,
                            GObject.TYPE_NONE,
@@ -95,13 +95,15 @@ class SpawnProcess(GObject.GObject,threading.Thread):
                  ),
         }
 
-    def __init__(self, func, kwargs=None):
+    def __init__(self, func, kwargs=None, event=None, queue=None):
         super(SpawnProcess, self).__init__()
-        #multiprocessing.Process.__init__(self)
-        threading.Thread.__init__(self)
+        multiprocessing.Process.__init__(self)
+        #threading.Thread.__init__(self)
         self.func = func
         self.kwargs = kwargs
         self.daemon = True
+        self.event = event
+        self.queue = queue
         print "\nEnter __init__ of SpawnThread...kwargs:\n", kwargs
 
     def run(self):
@@ -119,10 +121,13 @@ class SpawnProcess(GObject.GObject,threading.Thread):
             return
 
         #run the function sync
-        if self.kwargs is None:
-            res = func_method()
-        else:
-            res = func_method(self.kwargs)
+        res = func_method(self.kwargs,self.queue)
+
+        self.event.set()
+#        if self.kwargs is None:
+#            res = func_method()
+#        else:
+#            res = func_method(self.kwargs)
         if not res:
             self.emit("spawn-error","####error result from function run")
         else:
@@ -136,7 +141,7 @@ class RatingsAndReviwsMethod:
     #return a list of Review
     @staticmethod
 #    def get_reviews(self, str_pkgname='gimp', callback=None, page=1):
-    def get_reviews(kwargs):
+    def get_reviews(kwargs,queue=None):
         cachedir = None
         #cachedir = os.path.join(UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR, "rnrclient")
         #cachedir = "/home/maclin/test"
@@ -164,11 +169,21 @@ class RatingsAndReviwsMethod:
         if piston_reviews is None:
             piston_reviews = []
 
-        return piston_reviews
+        reviews = []
+        print "-----before inserting queue, review len=",len(piston_reviews)
+        print "-----before inserting queue, queue len=",queue.qsize()
+        for r in piston_reviews:
+            review = Review.from_piston_mini_client(r)
+            reviews.append(review)
+            queue.put_nowait(review)
+            print "-----queue len=",queue.qsize()
+
+
+        return reviews
 
     #return a list of screenshot file path
     @staticmethod
-    def get_screenshots(kwargs):
+    def get_screenshots(kwargs,queue=None):
         screenshots = []
 
         print "enter get_screenshots.....", kwargs
@@ -254,6 +269,8 @@ class RatingsAndReviwsMethod:
                 localFile.write(rawContent)
                 localFile.close()
                 screenshot_path_list.append(destfile)
+                queue.put_nowait(destfile)
+                print "------screenshot queue len=",queue.qsize()
 
         except urllib2.HTTPError,e:
             print e.code
@@ -266,7 +283,7 @@ class RatingsAndReviwsMethod:
 
     #return a list of ReviewRatingStat
     @staticmethod
-    def get_review_rating_stats():
+    def get_review_rating_stats(kwargs=None,queue=None):
         print "enter get_review_rating_stats...."
 
         rnrArray = {}
@@ -287,6 +304,7 @@ class RatingsAndReviwsMethod:
                 rnrStat.pkgname = stat.package_name
                 rnrArray[stat.package_name] = rnrStat
 
+                queue.put_nowait(rnrStat)
             print "stat list count: ", len(rnrArray)
 
             return rnrArray
@@ -298,7 +316,7 @@ class RatingsAndReviwsMethod:
 
 
     @staticmethod
-    def get_toprated_stats(kwargs):
+    def get_toprated_stats(kwargs,queue=None):
         topcount = int(kwargs['topcount'])
         sortingMethod = kwargs['sortingMethod']
 
@@ -312,6 +330,8 @@ class RatingsAndReviwsMethod:
             for pac in ratingList:
                 pac.ratings_average = float(pac.ratings_average)
                 pac.ratings_total = int(pac.ratings_total)
+
+            print "ready for ranking...."
 
             ratingAvg = range(len(ratingList))
             ratingTotal = range(len(ratingList))
@@ -342,6 +362,8 @@ class RatingsAndReviwsMethod:
             ratingWR = [ratingWR[i] for i in index]
 
 
+            print "=====ready for ranking...."
+
             if sortingMethod is None or sortingMethod == RatingSortMethods.INTEGRATE:
                 resList =  ratingList
             if sortingMethod == RatingSortMethods.FREQ_FIRST:
@@ -360,13 +382,23 @@ class RatingsAndReviwsMethod:
                                 cmp_rating,
                                 reverse=True)
 
+
+
             resList = resList[1:topcount]
             rnrStatList = {}
+
+            print "=====before inserting, q len=",queue.qsize()
+            print "=====after ranking....len=",len(resList)
             for item in resList:
                 stat = ReviewRatingStat(item.package_name)
                 stat.ratings_total = item.ratings_total
                 stat.ratings_average = item.ratings_average
                 rnrStatList[item.package_name] = stat
+
+                queue.put_nowait(stat)
+                print "------qlen=",queue.qsize()
+
+            print "=====return...."
 
             return rnrStatList
 
@@ -374,7 +406,6 @@ class RatingsAndReviwsMethod:
             print("Error in RatingList.get_rating_list(): ")
             print(e.args)
             return resList
-
 
     @staticmethod
     def get_reviews_list(self, str_pkgname='gimp', callback=None, page=1):

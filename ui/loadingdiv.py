@@ -35,5 +35,5 @@ class LoadingDiv(QWidget):
         self.show()
 
     def stop_loading(self):
-        self.loadinggif.stop()
+        self.gif.stop()
         self.hide()

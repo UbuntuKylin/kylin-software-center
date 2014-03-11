@@ -44,8 +44,8 @@ class MessageBox(QObject):
         self.alertTimer.start(12)
 
     def slot_alert_step(self):
-        if(self.ao < 0.80):
-            self.ao += 0.012
+        if(self.ao < 1):
+            self.ao += 0.015
             self.alertGOE.setOpacity(self.ao)
         if(self.ay <= 250):
             self.alertTimer.stop()
