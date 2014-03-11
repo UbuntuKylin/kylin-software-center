@@ -9,11 +9,11 @@ from ui.detailw import Ui_DetailWidget
 from ui.starwidget import StarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
-from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
+from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
-                          RECOMMEND_BUTTON_PATH,
+                          RECOMMEND_BUTTON_BK_STYLE,
                           UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_QPUSH_BUTTON_PATH)
+                          RECOMMEND_BUTTON_STYLE)
 
 class DetailScrollWidget(QScrollArea):
     app = ''

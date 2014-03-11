@@ -359,6 +359,8 @@ class AppManager(QObject):
         kwargs = {"packagename": pkgname,
                   "thumbnail":app.thumbnail,
                   "screenshot":app.screenshot,
+                  "thumbnailfile":app.thumbnailfile,
+                  "screenshotfile":app.screenshotfile,
                   "version": app.version,
                   "cachedir": cachedir, #result directory
                   }

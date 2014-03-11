@@ -193,91 +193,103 @@ class RatingsAndReviwsMethod:
         cachedir = kwargs['cachedir']
         thumbnail = kwargs['thumbnail']
         screenshot = kwargs['screenshot']
+        thumbnailfile = kwargs['thumbnailfile']
+        screenshotfile = kwargs['screenshotfile']
         print "pkgname:", pkgname
         print "version:", version
         print "cachdir:", cachedir
 
-        #get urls of screenshots
-        screenshotURL = SCREENSHOT_JSON_URL % pkgname
-
-        print screenshotURL
-        rawContent = None
-        try:
-            urlFile = urllib2.urlopen(screenshotURL)
-            rawContent = urlFile.read()
-            print "good"
-            if not rawContent:
-                return []
-        except urllib2.HTTPError,e:
-            print e.code
-        except urllib2.URLError,e:
-            print str(e)
-
-        if rawContent is None:
-            return []
-
-        try:
-            jsonContent = json.loads(rawContent)
-        except ValueError as e:
-            print("can not decode: '%s' (%s)" % (content, e))
-            jsonContent = None
-            return []
-
-        if isinstance(jsonContent, dict):
-            # a list of screenshots as listsed online
-            screenshots = jsonContent['screenshots']
-        else:
-            # fallback to a list of screenshots as supplied by the axi
-            screenshots = []
-
-        print screenshots
-
-        #we should choose the suitable ones for showing
-        #????
-
         screenshot_path_list = []
 
-        try:
-            #get thumbnail and screenshot
-            file_thumbnail = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
-            file_screenshot = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
-            urlFile = urllib2.urlopen(thumbnail)
-            rawContent = urlFile.read()
-            if rawContent:
-                localFile = open(file_thumbnail,"wb")
-                localFile.write(rawContent)
-                localFile.close()
-                screenshot_path_list.append(file_thumbnail)
-            urlFile = urllib2.urlopen(screenshot)
-            rawContent = urlFile.read()
-            if rawContent:
-                localFile = open(file_screenshot,"wb")
-                localFile.write(rawContent)
-                localFile.close()
-                screenshot_path_list.append(file_screenshot)
-
-            for item in screenshots:
-                filename = item['small_image_url'].split(pkgname + '/')[1]
-                destfile = cachedir + pkgname + item['version'] + "_" + filename
-
-                urlFile = urllib2.urlopen(item['small_image_url'])
+        #if thumbnail and screenshot are not null,only get them
+        if(thumbnail and screenshot and thumbnailfile and screenshotfile):
+            try:
+                urlFile = urllib2.urlopen(thumbnail)
                 rawContent = urlFile.read()
+                if rawContent:
+                    localFile = open(thumbnailfile,"wb")
+                    localFile.write(rawContent)
+                    localFile.close()
+                    screenshot_path_list.append(thumbnailfile)
+                    queue.put_nowait(thumbnailfile)
+                urlFile = urllib2.urlopen(screenshot)
+                rawContent = urlFile.read()
+                if rawContent:
+                    localFile = open(screenshotfile,"wb")
+                    localFile.write(rawContent)
+                    localFile.close()
+                    screenshot_path_list.append(screenshotfile)
+                    queue.put_nowait(screenshotfile)
+            except urllib2.HTTPError,e:
+                print e.code
+            except urllib2.URLError,e:
+                print str(e)
+
+            return screenshot_path_list
+        else:
+            #get urls of screenshots
+            screenshotURL = SCREENSHOT_JSON_URL % pkgname
+
+            print screenshotURL
+            rawContent = None
+            try:
+                urlFile = urllib2.urlopen(screenshotURL)
+                rawContent = urlFile.read()
+                print "good"
                 if not rawContent:
-                    continue
+                    return []
+            except urllib2.HTTPError,e:
+                print e.code
+            except urllib2.URLError,e:
+                print str(e)
 
-                localFile = open(destfile,"wb")
-                localFile.write(rawContent)
-                localFile.close()
-                screenshot_path_list.append(destfile)
-                queue.put_nowait(destfile)
-                print "------screenshot queue len=",queue.qsize()
+            if rawContent is None:
+                return []
 
-        except urllib2.HTTPError,e:
-            print e.code
-        except urllib2.URLError,e:
-            print str(e)
+            try:
+                jsonContent = json.loads(rawContent)
+            except ValueError as e:
+                print("can not decode: '%s' (%s)" % (content, e))
+                jsonContent = None
+                return []
 
-        print "####Revice screenshots:\n", screenshot_path_list
+            if isinstance(jsonContent, dict):
+                # a list of screenshots as listsed online
+                screenshots = jsonContent['screenshots']
+            else:
+                # fallback to a list of screenshots as supplied by the axi
+                screenshots = []
+
+            print screenshots
+
+            #we should choose the suitable ones for showing
+            #????
+
+            screenshot_path_list = []
+
+            try:
+                for item in screenshots:
+                    filename = item['small_image_url'].split(pkgname + '/')[1]
+                    destfile = cachedir + pkgname + item['version'] + "_" + filename
+
+                    urlFile = urllib2.urlopen(item['small_image_url'])
+                    rawContent = urlFile.read()
+                    if not rawContent:
+                        continue
+
+                    localFile = open(destfile,"wb")
+                    localFile.write(rawContent)
+                    localFile.close()
+                    screenshot_path_list.append(destfile)
+                    queue.put_nowait(destfile)
+                    print "------screenshot queue len=",queue.qsize()
+
+            except urllib2.HTTPError,e:
+                print e.code
+            except urllib2.URLError,e:
+                print str(e)
+
+            print "####Revice screenshots:\n", screenshot_path_list
 
         return screenshot_path_list
 

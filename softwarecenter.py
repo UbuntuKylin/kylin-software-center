@@ -49,7 +49,7 @@ from data.search import *
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.globals import Globals
 
 from models.enums import Signals
@@ -149,7 +149,6 @@ class SoftwareCenter(QMainWindow):
     def slot_testtask2(self):
         self.messageBox.alert_msg("这是一个测试函数..")
 
-
     def init_main_view(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -230,7 +229,7 @@ class SoftwareCenter(QMainWindow):
 
         # style by qss
         #self.ui.btnBack.setStyleSheet("QPushButton{background-image:url('res/nav-back-1.png');border:0px;}QPushButton:hover{background:url('res/nav-back-2.png');}QPushButton:pressed{background:url('res/nav-back-3.png');}")
-        self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE_PATH % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
+        self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
         self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
@@ -359,9 +358,9 @@ class SoftwareCenter(QMainWindow):
 
         # request init data
         self.ads_ready = False
-        self.toprated_ready = False
+        self.toprated_ready = True
         self.rec_ready = False
-        self.rnr_ready = False
+        self.rnr_ready = True
         self.appmgr.get_advertisements()
         self.appmgr.get_recommend_apps()
         self.appmgr.get_toprated_stats()

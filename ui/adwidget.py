@@ -27,8 +27,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from models.advertisement import Advertisement
-import data
-
+from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
 
 class ADWidget(QWidget):
     # ad model list
@@ -122,7 +121,8 @@ class ADWidget(QWidget):
             adx += 663
             ad.setFocusPolicy(Qt.NoFocus)
             ad.setCursor(Qt.PointingHandCursor)
-            ad.setStyleSheet("QPushButton{background-image:url('res/" + one.pic + "');border:0px;}")
+#            ad.setStyleSheet("QPushButton{background-image:url('res/" + one.pic + "');border:0px;}")
+            ad.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic))
             ad.connect(ad, SIGNAL("adsignal"), parent.slot_click_ad)
             self.ads.append(ad)
 
@@ -138,7 +138,6 @@ class ADWidget(QWidget):
             i += 1
 
     def slot_change_ad(self, i):
-        print "slot_change_ad!!!!!!!!!:len()=",len(self.adbs),i
         if(len(self.adbs) == 0):
             return
 
@@ -154,7 +153,6 @@ class ADWidget(QWidget):
         self.admtimer.start(12)
 
     def slot_adtimer_timeout(self):
-        print "slot_adtimer_timeout!!!!!!!!!"
         if(self.adi == (self.adl - 1)):
             self.adi = 0
         else:
