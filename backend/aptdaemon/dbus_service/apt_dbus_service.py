@@ -85,6 +85,7 @@ class WorkThread(threading.Thread):
         print "Enter WorkThread run, length is ", len(self.dbus_service.worklist)
         while(True):
             if len(self.dbus_service.worklist) == 0:
+                time.sleep(0.5)
                 continue
             self.dbus_service.mutex.acquire()
             item = self.dbus_service.worklist.pop()

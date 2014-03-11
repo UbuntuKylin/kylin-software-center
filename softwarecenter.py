@@ -327,7 +327,7 @@ class SoftwareCenter(QMainWindow):
         self.backend = InstallBackend()
         self.searchDB = Search()
         self.searchList = {}
-        self.category = "ubuntukylin"
+        self.category = ""
         self.nowPage = "homepage"
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
         self.appmgr.init_models()
@@ -378,8 +378,8 @@ class SoftwareCenter(QMainWindow):
             if cat.visible is False:
                 continue
             zh_name = cat.name
-            if cat.index == 0:
-                self.category = cat.category_name
+#            if cat.index == 0:
+#                self.category = cat.category_name
             oneitem = QListWidgetItem(zh_name)
             icon = QIcon()
             icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)
@@ -668,7 +668,7 @@ class SoftwareCenter(QMainWindow):
     def slot_toprated_ready(self,rnrlist):
         print "slot_toprated_ready"
         self.ui.rankView.clear()
-        for item, rnrStat in rnrlist.iteritems():
+        for rnrStat in rnrlist:
             pkgname = str(rnrStat.pkgname)
   #          self.
   #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
@@ -850,7 +850,7 @@ class SoftwareCenter(QMainWindow):
         #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_close(self):
-        os._exit(0)
+        sys.exit(0)
 
     def slot_min(self):
         self.showMinimized()
@@ -906,16 +906,6 @@ class SoftwareCenter(QMainWindow):
         (inst,up, all) = self.appmgr.get_application_count()
 
         self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-
-#????        self.connect(self.backend, Signals.countiover, self.slot_count_installed_over)
-#????        at = AsyncThread(data.sbo.count_installed_software)
-#????        at.setDaemon(True)
-#????        at.start()
-
-#????        self.connect(data.sbo, SIGNAL("countuover"), self.slot_count_upgradable_over)
-#????        at = AsyncThread(data.sbo.count_upgradable_software)
-#????        at.setDaemon(True)
-#????        at.start()
 
     def slot_click_item(self, item):
         liw = ''

@@ -56,7 +56,7 @@ class Application:
         self.thumbnailfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
         self.screenshotfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
         self.iconfile = UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
-        self.screenshot_list = []
+        self.screenshots = []
         self.icons = []
         self.reviews = []
         self.rnrStat = None
