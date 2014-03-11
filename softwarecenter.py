@@ -35,9 +35,10 @@ from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
+from ui.ranklistitemwidget import RankListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
-from ui.loadingdiv import LoadingDiv
+from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 #from backend.backend_worker import BackendWorker
 from models.advertisement import Advertisement
@@ -77,13 +78,17 @@ class SoftwareCenter(QMainWindow):
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
 
-        #init the initial data for view init
-        self.init_models()
-
         #init the ui
         self.init_main_view()
-        self.init_category_view()
 
+        #show user to wait
+        self.loadingDiv.start_loading("正在进行系统初始化...")
+
+        #self.init_category_view()
+
+        windowWidth = QApplication.desktop().width()
+        windowHeight = QApplication.desktop().height()
+        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
         #connect the ui signals
         self.ui.headerWidget.installEventFilter(self)
@@ -111,8 +116,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, SIGNAL("clickupdate"), self.slot_click_update)
         self.connect(self.detailScrollWidget, SIGNAL("clickremove"), self.slot_click_remove)
 
-
-        # test
+        # init text info
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
@@ -123,25 +127,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(False)
 
-        #connect data signals
-        self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
-        self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
-        self.connect(self.appmgr, Signals.count_installed_ready,self.slot_count_installed_ready)
-        self.connect(self.appmgr, Signals.count_upgradable_ready,self.slot_count_upgradable_ready)
-        self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
-        self.connect(self.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
-
-        self.appmgr.get_advertisements()
-        self.appmgr.get_recommend_apps()
-#        self.appmgr.get_toprated_stats()
-        self.appmgr.get_review_rating_stats()
-
-        #conncet apt signals
-        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
-
         self.searchDTimer = QTimer(self)
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
+
+          #init the initial data for view init
+        self.init_models()
 
         self.slot_goto_homepage()
 
@@ -195,6 +185,11 @@ class SoftwareCenter(QMainWindow):
         palette.setColor(QPalette.Background, Qt.white)
         self.ui.recommendWidget.setPalette(palette)
 
+        self.ui.rankWidget.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, Qt.white)
+        self.ui.rankWidget.setPalette(palette)
+
         self.ui.bottomWidget.setAutoFillBackground(True)
         palette = QPalette()
         img = QPixmap("res/foot.png")
@@ -235,8 +230,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
-        self.ui.rankWidget.hide()
+#        self.ui.rankWidget.hide()
 
+        self.ui.searchWidget.stackUnder(self.detailScrollWidget)
         self.show()
 
         # style by qss
@@ -261,15 +257,14 @@ class SoftwareCenter(QMainWindow):
         self.ui.categorytext.setStyleSheet("QLabel{background-image:url('res/categorybg.png');color:#7E8B97;font-weight:bold;padding-left:5px;}")
         self.ui.hline1.setStyleSheet("QLabel{background-image:url('res/hline1.png')}")
         self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
-        self.ui.rankWidget.setStyleSheet("QWidget{background-color:white}")
         self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
         self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{border:0px;}QListWidget::item:selected{color:black;}")
         self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
         self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{padding-left:25px;border:0px;}QListWidget::item:selected{color:black;}")
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -304,6 +299,9 @@ class SoftwareCenter(QMainWindow):
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
+        # advertisement
+        adw = ADWidget([], self)
+
     def eventFilter(self, obj, event):
         if (obj == self.ui.headerWidget):
             if (event.type() == QEvent.MouseButtonPress):
@@ -322,18 +320,64 @@ class SoftwareCenter(QMainWindow):
         return True
 
     def init_models(self):
+
+        #init appmgr
         self.appmgr = AppManager()
-        self.backend = InstallBackend()
-        self.searchDB = Search()
-        self.searchList = {}
-        self.category = ""
-        self.nowPage = "homepage"
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
         self.appmgr.init_models()
+        self.init_category_view()
+
+        #init backend
+        self.backend = InstallBackend()
         res = self.backend.init_dbus_ifaces()
-        if res == False:
-            print "dbus init failed..."
-            #????sys.exit(0)
+        while res == False:
+            button=QMessageBox.question(self,"初始化提示",
+                                    self.tr("DBus服务初始化失败！\n请确认是否正确安装,继续操作将不能正常进行软件安装等操作!\n是否继续?"),
+                                    "重试", "是", "否", 0)
+            print "choose:",button
+            if button == 0:
+                res = self.backend.init_dbus_ifaces()
+            elif button == 1:
+                print "init the dbus service..."
+                break
+            else:
+                sys.exit(0)
+
+        #init search
+        self.searchDB = Search()
+        self.searchList = {}
+
+        #init others
+        self.category = ""
+        self.nowPage = "homepage"
+        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+
+        #connect data signals
+        self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
+        self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
+        self.connect(self.appmgr, Signals.count_installed_ready,self.slot_count_installed_ready)
+        self.connect(self.appmgr, Signals.count_upgradable_ready,self.slot_count_upgradable_ready)
+        self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
+        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
+        self.connect(self.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
+        #conncet apt signals
+        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
+
+        # request init data
+        self.ads_ready = False
+        self.toprated_ready = True
+        self.rec_ready = False
+        self.rnr_ready = True
+        self.appmgr.get_advertisements()
+        self.appmgr.get_recommend_apps()
+        self.appmgr.get_toprated_stats()
+        self.appmgr.get_review_rating_stats()
+
+    def check_init_data_ready(self):
+        print "check:",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready
+        if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
+            self.loadingDiv.stop_loading()
+            self.topratedload.start_loading()
 
     def slot_init_models_ready(self, step, message):
 
@@ -343,9 +387,6 @@ class SoftwareCenter(QMainWindow):
 
         elif step == "ok":
             print "初始化成功,可以开始构造依赖于动态数据的界面"
-#            self.init_category_view()
-
-            self.appmgr.get_review_rating_stats()
 
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
@@ -360,7 +401,6 @@ class SoftwareCenter(QMainWindow):
 
         else:
             print "初始化过程中:", step, message
-
 
     def init_category_view(self):
         cat_list_orgin = self.appmgr.get_category_list()
@@ -377,15 +417,13 @@ class SoftwareCenter(QMainWindow):
             if cat.visible is False:
                 continue
             zh_name = cat.name
-#            if cat.index == 0:
-#                self.category = cat.category_name
+
             oneitem = QListWidgetItem(zh_name)
             icon = QIcon()
             icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)
             oneitem.setIcon(icon)
             oneitem.setWhatsThis(catname)
             self.ui.categoryView.addItem(oneitem)
-            # self.ui.rankView.addItem(oneitem)
 
     def tmp_get_ads(self):
         tmpads = []
@@ -618,19 +656,18 @@ class SoftwareCenter(QMainWindow):
             self.show_more_software(listWidget)
 
     def slot_advertisement_ready(self,adlist):
-        print ""
-        tmpads = []
-        tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.baidu.com"))
-        tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps"))
-        tmpads.append(Advertisement("qt", "pkg", "ad3.png", "qtcreator"))
-        #adw = ADWidget(tmpads, self)
         print "slot_advertisement_ready",len(adlist)
         if adlist is not None:
             adw = ADWidget(adlist, self)
-        #self.show()
+            #adw.add_advertisements(adlist)
+            (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
+            adw.update_total_count(sum_all)
+
+        self.ads_ready = True
+        self.check_init_data_ready()
 
     def slot_recommend_apps_ready(self,applist):
-        print ""
+        print "slot_recommend_apps_ready",len(applist)
 
         count_per_line = 3
         index = int(0)
@@ -645,15 +682,20 @@ class SoftwareCenter(QMainWindow):
             index = index + 1
             recommend.move(x, y)
 
+        self.rec_ready = True
+        self.check_init_data_ready()
+
     def slot_rating_reviews_ready(self,rnrlist):
-        print "#######slot_rating_reviews_ready"
+        print "#######slot_rating_reviews_ready",len(rnrlist)
         app = self.appmgr.get_application_by_name('gimp')
         if(app is not None):
             print "!!!!!!!rnrStat: ",app.rnrStat
         print self.appmgr.get_application_rnrstat("gimp")
 
+        self.rnr_ready = True
+        self.check_init_data_ready()
         #收到所有信息之后再获取排行榜
-        self.appmgr.get_toprated_stats()
+#        self.appmgr.get_toprated_stats()
 
 #        for item, rnrStat in rnrlist.iteritems():
 #            app = self.appmgr.get_application_by_name(str(rnrStat.pkgname))
@@ -665,30 +707,37 @@ class SoftwareCenter(QMainWindow):
         print "#######slot_rating_reviews_ready********"
 
     def slot_toprated_ready(self,rnrlist):
-        print "slot_toprated_ready"
+        print "slot_toprated_ready:",len(rnrlist)
         self.ui.rankView.clear()
-        for rnrStat in rnrlist:
-            pkgname = str(rnrStat.pkgname)
-  #          self.
-  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
-            oneitem = QListWidgetItem(pkgname)
-            print "slot_toprated_ready:",pkgname
-            app = self.appmgr.get_application_by_name(pkgname)
-
+        for i in range(len(rnrlist)):
+        # for rnrStat in rnrlist:
             if (self.ui.rankView.count() > 9):
                 break
+
+            pkgname = str(rnrlist[i].pkgname)
+  #          self.
+  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+            app = self.appmgr.get_application_by_name(pkgname)
 
             if app is None:
                 print "111"
             else:
-                print "icon file:", app.iconfile
+                # print "icon file:", app.iconfile
                 # icon = QIcon()
                 # icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
                 # oneitem.setIcon(icon)
-                oneitem.setWhatsThis(pkgname)
+
+                oneitem = QListWidgetItem()
+                rliw = RankListItemWidget(pkgname, i)
                 self.ui.rankView.addItem(oneitem)
+                self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
+
+        self.toprated_ready = True
+        self.check_init_data_ready()
         print "rankview count res:",self.ui.rankView.count()
+
+        self.topratedload.stop_loading()
 
     def slot_app_reviews_ready(self,reviewlist):
         print "slot_app_reviews_ready:",len(reviewlist)
@@ -988,9 +1037,6 @@ def main():
     # log.error("hoho app5")
 
     mw = SoftwareCenter()
-    windowWidth = QApplication.desktop().width()
-    windowHeight = QApplication.desktop().height()
-    mw.move((windowWidth - mw.width()) / 2, (windowHeight - mw.height()) / 2)
     mw.show()
 
 #    w = BackendWorker()

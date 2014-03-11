@@ -48,53 +48,6 @@ mainloop = DBusGMainLoop(set_as_default=True)
 #from dbus.mainloop.qt import DBusQtMainLoop
 #mainloop = DBusQtMainLoop()
 
-class DbusCallProcess(multiprocessing.Process):
-
-    def __init__(self, iface, func, kwargs=None):
-        multiprocessing.Process.__init__(self)
-#        self.iface = iface
-        self.func = func
-        self.kwargs = kwargs
-
-    def run(self):
-
-        try:
-            bus = dbus.SystemBus(mainloop)
-        except:
-            print ("could not initiate dbus")
-            return False
-
-        try:
-            obj = bus.get_object(UBUNTUKYLIN_SERVICE_PATH,
-                                 '/',
-                                 UBUNTUKYLIN_INTERFACE_PATH)
-            #proxy = dbus.ProxyObject(obj,UBUNTUKYLIN_INTERFACE_PATH)
-            self.iface = dbus.Interface(obj, UBUNTUKYLIN_INTERFACE_PATH)
-            print "2222"
-
-#            self.call_dbus_iface("check_source_ubuntukylin")
-
- #           self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal)
- #           self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal)
-        except dbus.DBusException:
-#            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
-#            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
-            print "dbus.DBusException error"
-
-
-        print "run:", self.func,self.kwargs
-        func = getattr(self.iface,self.func)
-        if func is None:
-            return None
-
-        res = None
-        try:
-            print "1213121212121"
-            res = func(self.kwargs)
-            print "222222:", res
-        except dbus.DBusException:
-            return None
-
 
 class InstallBackend(QObject):
 
@@ -139,12 +92,6 @@ class InstallBackend(QObject):
     def call_dbus_iface(self, funcname, kwargs=None):
         if self.iface is None:
             return None
-
-#        call_process = DbusCallProcess(self.iface,funcname,kwargs)
-#        call_process.daemon = True
-#        res = call_process.start()
-
-#        return
 
         func = getattr(self.iface,funcname)
         if func is None:

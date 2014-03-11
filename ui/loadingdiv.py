@@ -37,3 +37,43 @@ class LoadingDiv(QWidget):
     def stop_loading(self):
         self.gif.stop()
         self.hide()
+
+
+class MiniLoadingDiv(QWidget):
+
+    # parent of the request component
+    parent_ = ''
+
+    x_ = ''
+    y_ = ''
+    width_ = ''
+    height_ = ''
+
+    def __init__(self, onwhich, parent=None):
+        QWidget.__init__(self, parent)
+
+        self.parent_ = parent
+        self.x_ = onwhich.x()
+        self.y_ = onwhich.y()
+        self.width_ = onwhich.width()
+        self.height_ = onwhich.height()
+
+        self.setGeometry(self.x_, self.y_, self.width_, self.height_)
+
+        self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loading.gif")
+        self.loadinggif = QLabel(self)
+        self.loadinggif.setGeometry(self.width_ / 2 - 25, self.height_ / 2 - 25, 50, 50)
+        self.loadinggif.setMovie(self.gif)
+        # self.loadingtext = QLabel(self)
+        # self.loadingtext.setGeometry(self.loadinggif.x() + 25 - 150, self.loadinggif.y() + 55, 300, 20)
+        # self.loadingtext.setAlignment(Qt.AlignCenter)
+        self.raise_()
+        self.hide()
+
+    def start_loading(self):
+        self.gif.start()
+        self.show()
+
+    def stop_loading(self):
+        self.gif.stop()
+        self.hide()

@@ -9,6 +9,7 @@ from ui.detailw import Ui_DetailWidget
 from ui.starwidget import StarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
+from ui.loadingdiv import *
 from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
                           RECOMMEND_BUTTON_PATH,
@@ -95,6 +96,10 @@ class DetailScrollWidget(QScrollArea):
 
         self.hide()
 
+        # mini loading div
+        self.sshotload = MiniLoadingDiv(self.ui.sshotBG, self.detailWidget)
+        self.reviewload = MiniLoadingDiv(self.ui.reviewListWidget, self.detailWidget)
+
     def ui_init(self):
         self.ui = Ui_DetailWidget()
         self.ui.setupUi(self.detailWidget)
@@ -175,11 +180,15 @@ class DetailScrollWidget(QScrollArea):
 
         # send request
         ################
-        # div
+        # show div
+        self.sshotload.start_loading()
+        self.reviewload.start_loading()
 
     def add_review(self, reviewlist):
         for review in reviewlist:
             self.add_one_review(review)
+
+        self.reviewload.stop_loading()
 
     def add_one_review(self, review):
         count = self.ui.reviewListWidget.count()
@@ -205,6 +214,8 @@ class DetailScrollWidget(QScrollArea):
             self.bigsshot.resize(img.width(), img.height())
             self.bigsshot.bg.resize(img.width(), img.height())
             self.bigsshot.bg.setStyleSheet("QLabel{background-image:url('" + self.app.screenshotfile + "');}")
+
+        self.sshotload.stop_loading()
             # self.ui.sshot.resize(img.width(), img.height())
             # self.ui.sshot.setStyleSheet("QPushButton{background-image:url('" + self.app.screenshotfile + "');border:0px;}")
 

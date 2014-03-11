@@ -123,7 +123,7 @@ class AppManager(QObject):
 
         #self.get_review_rating_stats()
         #
-        #self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
 
     #open the apt cache and get the package count
     def open_cache(self):

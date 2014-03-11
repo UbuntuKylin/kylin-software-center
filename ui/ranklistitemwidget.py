@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from ui.ukrliw import Ui_RankListWidget
 
 
-class TaskListItemWidget(QWidget):
+class RankListItemWidget(QWidget):
 
     def __init__(self, name, rank, parent=None):
         QWidget.__init__(self,parent)
@@ -14,6 +14,8 @@ class TaskListItemWidget(QWidget):
 
         self.ui.name.setText(name)
         self.ui.iconnumber.setText(str(rank))
+        self.ui.iconnumber.setAlignment(Qt.AlignCenter)
+        self.ui.iconnumber.setStyleSheet("QLabel{color:white;font-size:12px;}")
         if(rank < 4):
             self.ui.iconbg.setStyleSheet("QLabel{background-color:#FF7C14;}")
         else:

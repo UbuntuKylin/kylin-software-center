@@ -52,6 +52,8 @@ class ADWidget(QWidget):
         QWidget.__init__(self,parent.ui.homepageWidget)
         self.ui_init()
 
+        self.parent = parent
+
         self.setAutoFillBackground(True)
         palette = QPalette()
         img = QPixmap("res/adback.png")
@@ -61,7 +63,7 @@ class ADWidget(QWidget):
         self.adl = len(addata)
         self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 186))
         self.create_ads(addata, parent)
-        self.softCount.setText(str(len(data.softwareList)))
+        #self.softCount.setText(str(len(data.softwareList)))
 
         self.adtimer = QTimer(self)
         self.adtimer.timeout.connect(self.slot_adtimer_timeout)
@@ -69,6 +71,17 @@ class ADWidget(QWidget):
 
         self.admtimer = QTimer(self)
         self.admtimer.timeout.connect(self.slot_admtimer_update)
+
+        self.slot_change_ad(self.adi)
+
+        self.show()
+
+    def add_advertisements(self, addata):
+        self.adl = len(addata)
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 186))
+        self.create_ads(addata, self.parent)
+
+        self.adtimer.start(3000)
 
         self.slot_change_ad(self.adi)
 
@@ -125,6 +138,10 @@ class ADWidget(QWidget):
             i += 1
 
     def slot_change_ad(self, i):
+        print "slot_change_ad!!!!!!!!!:len()=",len(self.adbs),i
+        if(len(self.adbs) == 0):
+            return
+
         self.adi = i
         for adb in self.adbs:
             adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
@@ -137,6 +154,7 @@ class ADWidget(QWidget):
         self.admtimer.start(12)
 
     def slot_adtimer_timeout(self):
+        print "slot_adtimer_timeout!!!!!!!!!"
         if(self.adi == (self.adl - 1)):
             self.adi = 0
         else:
@@ -154,6 +172,8 @@ class ADWidget(QWidget):
             self.adx -= 8
             self.adContentWidget.move(self.adx, 0)
 
+    def update_total_count(self,count):
+        self.softCount.setText(str(count))
 
 class ADButton(QPushButton):
     obj = ''
