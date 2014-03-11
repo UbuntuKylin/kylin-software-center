@@ -24,12 +24,14 @@
 
 
 import os
+from xdg import BaseDirectory as xdg
 from PyQt4.QtCore import *
+
+from backend.ubuntu_sw import safe_makedirs
 
 
 #########################################################
-UBUNTUKYLIN_RESOURCE_PATH = "/res/"
-UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR = "/home/test/"
+
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
@@ -81,12 +83,15 @@ class TransactionTypes:
     APPLY = "apply_changes"
     REPAIR = "repair_dependencies"
 
+UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
+safe_makedirs(UKSC_CACHE_DIR)
 
 UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
 UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
 #UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"
 #UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
 UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
+
 
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
 UBUNTUKYLIN_RES_TMPICON_PATH = UBUNTUKYLIN_DATA_PATH + "tmpicons/"

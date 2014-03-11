@@ -27,6 +27,7 @@ import apt
 
 import os
 import time
+import logging
 
 from PyQt4.QtCore import *
 
@@ -44,6 +45,7 @@ import multiprocessing
 
 from operator import itemgetter
 
+LOG = logging.getLogger("uksc")
 
 class WorkerItem:
      def __init__(self, funcname, kwargs):
@@ -55,7 +57,6 @@ class ThreadWorkerDaemon(threading.Thread):
 
     def __init__(self, appmgr):
         threading.Thread.__init__(self)
-        print ""
         self.appmgr = appmgr
 
     def run(self):
@@ -64,11 +65,9 @@ class ThreadWorkerDaemon(threading.Thread):
             worklen = len(self.appmgr.worklist)
             self.appmgr.mutex.release()
             if worklen == 0:
-                print "@@@@@@work len==0"
-                time.sleep(2)
+                time.sleep(1)
                 continue
 
-            print "=========ThreadWorkerDaemon run======="
             self.appmgr.mutex.acquire()
             item = self.appmgr.worklist.pop()
             self.appmgr.mutex.release()
@@ -76,22 +75,19 @@ class ThreadWorkerDaemon(threading.Thread):
             if item is None:
                 continue
 
-            print "=========ThreadWorkerDaemon before event======="
             event = multiprocessing.Event()
             queue = multiprocessing.Queue()
             spawn_helper = SpawnProcess(item.funcname,item.kwargs, event, queue)
-#            spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_toprated_stats", callback)
             spawn_helper.daemon = True
             spawn_helper.start()
             event.wait()
-            print "=========ThreadWorkerDaemon after wait======="
 
             reslist = []
             while not queue.empty():
                 resitem = queue.get_nowait()
                 reslist.append(resitem)
 
-            print "finish recv:",len(reslist)
+            LOG.debug("receive data from backend process, len=%d",len(reslist))
             self.appmgr.dispatchWorkerResult(item,reslist)
 
 
@@ -137,8 +133,6 @@ class AppManager(QObject):
         if not catdir:
             catdir = UBUNTUKYLIN_DATA_CAT_PATH
 
-        print UBUNTUKYLIN_DATA_CAT_PATH
-
         cat_list = {}
         index = 0
         for c in os.listdir(catdir):
@@ -180,7 +174,7 @@ class AppManager(QObject):
                 visible = False
 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
-            cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c))
+            cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c,catdir))
             cat_list[c] = cat
 
         self.cat_list = cat_list
@@ -195,41 +189,42 @@ class AppManager(QObject):
 
         return cat_list
 
-    def download_category_apps(self,cat):
+    def download_category_apps(self,cat,catdir=""):
         #load the apps from category file
         count = 0
         sumapp = 0
         apps = {}
-        file = open(os.path.abspath(UBUNTUKYLIN_DATA_CAT_PATH + cat), 'r')
+        file = open(catdir + cat, 'r')
         for line in file:
             pkgname = line.strip('\n')
             app = Application(pkgname,cat, self.apt_cache)
             if app.package:
                 apps[pkgname] = app
-#                    apps.append(app)
                 sumapp = sumapp + 1
             else:
-#                  print pkgname
                 count = count + 1
-        print count
-        print sumapp
         return apps
 
     #get app list for a category
-    def get_category_apps(self, cat, load=False):
-        print "get_category_apps: ", cat, load
+    def get_category_apps(self, cat, load=False, catdir=""):
+        apps = {}
         if not cat:
-            return []
-
-        #get the apps from category list
-        if not load:
-            if not self.cat_list[cat]:
-                return []
-            else:
-                return self.cat_list[cat].apps
+            for catName,catItem in self.cat_list.iteritems():
+                if len(apps) == 0:
+                    apps = dict(catItem.apps.items())
+                else:
+                    apps = dict(apps.items() + catItem.apps.items())
         else:
-            return self.download_category_apps(cat)
+            #get the apps from category list
+            if not load:
+                if not self.cat_list[cat]:
+                    apps = []
+                else:
+                    apps = self.cat_list[cat].apps
+            else:
+                apps = self.download_category_apps(cat,catdir)
 
+        return apps
 
     #get category list
     def get_category_byname(self, cat):
@@ -308,7 +303,6 @@ class AppManager(QObject):
                   "sortingMethod": RatingSortMethods.INTEGRATE,
                   }
 
-        print "=========get_toprated_stats======="
         item  = WorkerItem("get_toprated_stats",kwargs)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -318,8 +312,7 @@ class AppManager(QObject):
 
     #get rating and review status
     def get_review_rating_stats(self,callback=None):
-
-        print "=========get_review_rating_stats======="
+        print "we need to get the ratings and reviews stat"
         item  = WorkerItem("get_review_rating_stats",None)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -336,7 +329,6 @@ class AppManager(QObject):
                   "page": int(1),
                   }
 
-        print "=========get_reviews======="
         item  = WorkerItem("get_reviews",kwargs)
 
         app = self.get_application_by_name(pkgname)
@@ -351,7 +343,7 @@ class AppManager(QObject):
 
     #get screenshots
     def get_application_screenshots(self,pkgname, cachedir=UBUNTUKYLIN_RES_SCREENSHOT_PATH, callback=None):
-        print "get_application_screenshots",pkgname
+        LOG.debug("request to get screenshots:%s",pkgname)
         app = self.get_application_by_name(pkgname)
         if app is None:
             return False
@@ -365,44 +357,37 @@ class AppManager(QObject):
                   "cachedir": cachedir, #result directory
                   }
 
-        print "=========get_screenshots======="
         item  = WorkerItem("get_screenshots",kwargs)
 
         if app.screenshots:
             self.dispatchWorkerResult(item,app.screenshots)
             return app.screenshots
 
-
         self.mutex.acquire()
         self.worklist.append(item)
-        print "@@@@@@@@worklist len=",len(self.worklist)
         self.mutex.release()
 
         return []
 
     def dispatchWorkerResult(self,item,reslist):
-        print "dispatchWorkerResult:",item
         if item.funcname == "get_reviews":
             # convert into our review objects
-            print "\nreviews ready...",len(reslist)
+            LOG.debug("reviews ready:%s",len(reslist))
             reviews = reslist
-#            for r in reslist:
-#                reviews.append(Review.from_piston_mini_client(r))
-            # add to our dicts and run callback
+
             app = self.get_application_by_name(item.kwargs['packagename'])
             app.reviews = reviews
-    #        self._reviews[str_pkgname] = reviews
 
             self.emit(Signals.app_reviews_ready,reviews)
         elif item.funcname == "get_screenshots":
-            print "\nscreenshots ready..."
+            LOG.debug("screenshots ready:%s",len(reslist))
             screenshots = reslist
             app = self.get_application_by_name(item.kwargs['packagename'])
             app.screenshots = screenshots
-            print reslist
+
             self.emit(Signals.app_screenshots_ready,screenshots)
         elif item.funcname == "get_review_rating_stats":
-            print "\nreview rating stats ready..."
+            LOG.debug("review rating stats ready:%s",len(reslist))
             rnrStats = reslist
             self.rnrStatList = reslist
 
@@ -412,63 +397,13 @@ class AppManager(QObject):
                     app.ratings_average = rnrStat.ratings_average
                     app.ratings_total = rnrStat.ratings_total
 
-            #print res
             self.emit(Signals.rating_reviews_ready,rnrStats)
-            #self.emit(Signals.init_models_ready,"ok","获取总评分评论完成")
-            print "emited rating_reviews_ready......***********"
         elif item.funcname == "get_toprated_stats":
-            print "\ntoprated stats ready..."
+            LOG.debug("toprated stats ready:%s",len(reslist))
             topRated = reslist
             print reslist
-#            for item, rnrStat in topRated.iteritems():
-#                print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+
             self.emit(Signals.toprated_ready,topRated)
-
-    def _on_spawndata_ready(self, spawn_helper, res, pkgname, func,callback=None):
-        if not func:
-            return
-
-        if func == "get_reviews":
-            # convert into our review objects
-            print "\nreviews ready..."
-            reviews = []
-            for r in res:
-                reviews.append(Review.from_piston_mini_client(r))
-            # add to our dicts and run callback
-            app = self.get_application_by_name(pkgname)
-            app.reviews = reviews
-    #        self._reviews[str_pkgname] = reviews
-            if callback:
-               callback(pkgname, reviews)
-            self.emit(Signals.app_reviews_ready,reviews)
-        elif func == "get_screenshots":
-            print "\nscreenshots ready..."
-            screenshots = res
-            print res
-            self.emit(Signals.app_screenshots_ready,screenshots)
-        elif func == "get_review_rating_stats":
-            print "\nreview rating stats ready..."
-            rnrStats = res
-            self.rnrStatList = res
-
-            for item, rnrStat in rnrStats.iteritems():
-                app = self.get_application_by_name(str(rnrStat.pkgname))
-                if app is not None:
-                    app.ratings_average = rnrStat.ratings_average
-                    app.ratings_total = rnrStat.ratings_total
-
-            #print res
-            self.emit(Signals.rating_reviews_ready,rnrStats)
-            #self.emit(Signals.init_models_ready,"ok","获取总评分评论完成")
-            print "emited rating_reviews_ready......***********"
-        elif func == "get_toprated_stats":
-            print "\ntoprated stats ready..."
-            topRated = res
-            print res
-#            for item, rnrStat in topRated.iteritems():
-#                print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
-            self.emit(Signals.toprated_ready,topRated)
-
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):
@@ -482,17 +417,6 @@ def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
       print("\n")
     print "\n\n"
 
-def on_review_ready(reviews_data):
-    for review in reviews_data:
-      print("rating: %s  user=%s" % (review.rating,
-          review.reviewer_username))
-      print(review.summary)
-      print(review.review_text)
-      print("\n")
-    print "\n\n"
-
-
-
 
 if __name__ == "__main__":
 
@@ -501,12 +425,12 @@ if __name__ == "__main__":
     appManager.open_cache()
     print appManager.name
     #加载软件分类
-    cat_list = appManager.get_category_list(True)
+    cat_list = appManager.get_category_list(True,"../data/category/")
 #    print appManager.cat_list
 #    print appManager.get_category_byname("office")
-#    print appManager.get_category_apps('office')
-    app = appManager.get_application_by_name("gimp")
-    print app
+    print appManager.get_category_apps('')
+#    app = appManager.get_application_by_name("gimp")
+#    print app
     apps = appManager.get_recommend_apps()
     print len(apps)
 #    print app.thumbnail
@@ -517,16 +441,7 @@ if __name__ == "__main__":
 #    appManager.get_application_reviews("gimp",_reviews_ready_callback)
 #    appManager.get_review_rating_stats()
 #    appManager.get_toprated_stats()
-#    appManager.connect("review-available",on_review_ready)
     print "waiting..........\n\n"
     while True:
         print "***"
         time.sleep(2)
-    """cats = appManager.cat_list
-    for cat in cats:
-        print "Category Info: "+cat.name + " " + cat.category_name
-        apps = cat.apps
-        for app in apps:
-            print "Application Info:" + app.name
-            print app.package
-    """

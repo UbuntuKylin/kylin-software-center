@@ -31,9 +31,10 @@ import sys
 import os
 import pdb
 import time
+import logging
 
 from string import join
-
+LOG = logging.getLogger("uksc")
 
 from piston_mini_client import APIError
 import httplib2
@@ -104,30 +105,24 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
         self.daemon = True
         self.event = event
         self.queue = queue
-        print "\nEnter __init__ of SpawnThread...kwargs:\n", kwargs
 
     def run(self):
-        print "\nEnter run of SpawnThread..."
-
         if self.func is None:
-            print "\nEnter run...\n"
-            self.emit("spawn-error","####error parameters of calling function run")
+            LOG.error("sart running backend process failed as no operation...")
             return
 
         func_method = getattr(RatingsAndReviwsMethod,self.func)
         if func_method is None:
-            print "\nEnter run...\n"
-            self.emit("spawn-error","####error parameters of calling function run")
+            LOG.error("sart running backend process failed as no method...")
             return
 
         #run the function sync
         res = func_method(self.kwargs,self.queue)
 
         self.event.set()
-#        if self.kwargs is None:
-#            res = func_method()
-#        else:
-#            res = func_method(self.kwargs)
+
+        LOG.debug("backend process finished...")
+
         if not res:
             self.emit("spawn-error","####error result from function run")
         else:
@@ -140,12 +135,10 @@ class RatingsAndReviwsMethod:
 
     #return a list of Review
     @staticmethod
-#    def get_reviews(self, str_pkgname='gimp', callback=None, page=1):
     def get_reviews(kwargs,queue=None):
         cachedir = None
         #cachedir = os.path.join(UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR, "rnrclient")
         #cachedir = "/home/maclin/test"
-        print cachedir
         rnrclient = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)  #????cache
 
         piston_reviews = []
@@ -170,14 +163,10 @@ class RatingsAndReviwsMethod:
             piston_reviews = []
 
         reviews = []
-        print "-----before inserting queue, review len=",len(piston_reviews)
-        print "-----before inserting queue, queue len=",queue.qsize()
         for r in piston_reviews:
             review = Review.from_piston_mini_client(r)
             reviews.append(review)
             queue.put_nowait(review)
-            print "-----queue len=",queue.qsize()
-
 
         return reviews
 
@@ -185,8 +174,6 @@ class RatingsAndReviwsMethod:
     @staticmethod
     def get_screenshots(kwargs,queue=None):
         screenshots = []
-
-        print "enter get_screenshots.....", kwargs
 
         pkgname = kwargs['packagename']
         version = kwargs['version']
@@ -296,18 +283,14 @@ class RatingsAndReviwsMethod:
     #return a list of ReviewRatingStat
     @staticmethod
     def get_review_rating_stats(kwargs=None,queue=None):
-        print "enter get_review_rating_stats...."
 
         rnrArray = {}
         try:
-            print "000####get_review_rating_stats....."
             rnr = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)
-            print "aaa####get_review_rating_stats....."
             sat_res = rnr.server_status()
-            print "get_review_rating_stats, server_status:",sat_res
+            LOG.debug("review and rating service stat:%s",sat_res)
             statlist = rnr.review_stats(distroseries='saucy')
 
-            print "bbb####get_review_rating_stats.....:", len(statlist)
             index = 0
             for stat in statlist:
                 rnrStat = ReviewRatingStat(stat.package_name)
@@ -317,12 +300,12 @@ class RatingsAndReviwsMethod:
                 rnrArray[stat.package_name] = rnrStat
 
                 queue.put_nowait(rnrStat)
-            print "stat list count: ", len(rnrArray)
+            LOG.debug("got the rating and review list count:%d",len(rnrArray))
 
             return rnrArray
 
         except Exception as e:
-            print("Error in get_review_rating_stats...")
+            LOG.error("exception when getting rating and review stat...")
             print(e.args)
             return {}
 
@@ -332,18 +315,15 @@ class RatingsAndReviwsMethod:
         topcount = int(kwargs['topcount'])
         sortingMethod = kwargs['sortingMethod']
 
-        print "get_toprated_stats: ", topcount, sortingMethod
         resList = {}
 
         try:
             rnr = RatingsAndReviewsAPI()
-            print(rnr.server_status())
             ratingList = rnr.review_stats()
             for pac in ratingList:
                 pac.ratings_average = float(pac.ratings_average)
                 pac.ratings_total = int(pac.ratings_total)
 
-            print "ready for ranking...."
 
             ratingAvg = range(len(ratingList))
             ratingTotal = range(len(ratingList))
@@ -366,15 +346,10 @@ class RatingsAndReviwsMethod:
                 ratingWR[i] = (leastRateTimes*avgScoreAll +
                                     ratingList[i].ratings_total*ratingList[i].ratings_average) / \
                                     (leastRateTimes + ratingList[i].ratings_total)
-            # print(_("We got the rating list "))
-            # print(_("Average score of all package is %s, number of scored package is %d") %
-            #       (avgScoreAll, ratedPac))
+
             index = sorted(range(len(ratingWR)), key=lambda x: ratingWR[x], reverse=True)
             ratingList = [ratingList[i] for i in index]
             ratingWR = [ratingWR[i] for i in index]
-
-
-            print "=====ready for ranking...."
 
             if sortingMethod is None or sortingMethod == RatingSortMethods.INTEGRATE:
                 resList =  ratingList
@@ -394,13 +369,9 @@ class RatingsAndReviwsMethod:
                                 cmp_rating,
                                 reverse=True)
 
-
-
             resList = resList[1:topcount]
             rnrStatList = {}
 
-            print "=====before inserting, q len=",queue.qsize()
-            print "=====after ranking....len=",len(resList)
             for item in resList:
                 stat = ReviewRatingStat(item.package_name)
                 stat.ratings_total = item.ratings_total
@@ -408,9 +379,6 @@ class RatingsAndReviwsMethod:
                 rnrStatList[item.package_name] = stat
 
                 queue.put_nowait(stat)
-                print "------qlen=",queue.qsize()
-
-            print "=====return...."
 
             return rnrStatList
 

@@ -19,6 +19,7 @@
 # These defines of variables and classes are imported from ubuntu software center
 
 from gettext import gettext as _
+import os
 
 # reviews
  #REVIEWS_SERVER = (os.environ.get("SOFTWARE_CENTER_REVIEWS_HOST") or
@@ -157,3 +158,24 @@ class XapianValues:
     SUPPORT_SITE_URL = 197
     VERSION_INFO = 198
     SC_SUPPORTED_DISTROS = 199
+
+
+def safe_makedirs(dir_path):
+    """ This function can be used in place of a straight os.makedirs to
+        handle the possibility of a race condition when more than one
+        process may potentially be creating the same directory, it will
+        not fail if two processes try to create the same dir at the same
+        time
+    """
+    # avoid throwing an OSError, see for example LP: #743003
+    if not os.path.exists(dir_path):
+        try:
+            os.makedirs(dir_path)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                # it seems that another process has already created this
+                # directory in the meantime, that's ok
+                pass
+            else:
+                # the error is due to something else, so we want to raise it
+                raise

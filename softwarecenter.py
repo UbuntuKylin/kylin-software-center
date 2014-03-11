@@ -44,13 +44,13 @@ from ui.messagebox import MessageBox
 from models.advertisement import Advertisement
 #import data
 #from util import log
-from utils import vfs
+from utils import vfs,log
 from data.search import *
 
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH,UKSC_CACHE_DIR)
 from models.globals import Globals
 
 from models.enums import Signals
@@ -58,12 +58,12 @@ from models.enums import Signals
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 
+
+LOG = logging.getLogger("uksc")
+
+
 class SoftwareCenter(QMainWindow):
 
-    # fx(software, category) map
-#    scmap = {}
-    # fx(page, softwares) map
-    psmap = {}
     # recommend number in fill func
     recommendNumber = 0
     # now page
@@ -319,7 +319,7 @@ class SoftwareCenter(QMainWindow):
         return True
 
     def init_models(self):
-
+        LOG.debug("begin init_models...")
         #init appmgr
         self.appmgr = AppManager()
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
@@ -333,13 +333,13 @@ class SoftwareCenter(QMainWindow):
             button=QMessageBox.question(self,"初始化提示",
                                     self.tr("DBus服务初始化失败！\n请确认是否正确安装,继续操作将不能正常进行软件安装等操作!\n是否继续?"),
                                     "重试", "是", "否", 0)
-            print "choose:",button
             if button == 0:
                 res = self.backend.init_dbus_ifaces()
             elif button == 1:
-                print "init the dbus service..."
+                LOG.warning("failed to connecting dbus service, you still choose to continue...")
                 break
             else:
+                LOG.warning("dbus service init failed, you choose to exit.\n\n")
                 sys.exit(0)
 
         #init search
@@ -358,7 +358,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.count_upgradable_ready,self.slot_count_upgradable_ready)
         self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
         self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
-        self.connect(self.backend, SIGNAL("backendmsg"), self.slot_backend_msg)
+
         #conncet apt signals
         self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
 
@@ -373,19 +373,18 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_review_rating_stats()
 
     def check_init_data_ready(self):
-        print "check:",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready
+        LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
         if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
             self.loadingDiv.stop_loading()
             self.topratedload.start_loading()
 
     def slot_init_models_ready(self, step, message):
 
-        print "init_models_ready:....", step, message
         if step == "fail":
-            print "初始化错误，提示用户:",message
+            LOG.warning("init models failed:%s",message)
 
         elif step == "ok":
-            print "初始化成功,可以开始构造依赖于动态数据的界面"
+            LOG.debug("init models successfully and ready to setup ui...")
 
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
@@ -394,12 +393,13 @@ class SoftwareCenter(QMainWindow):
 
             (inst,up, all) = self.appmgr.get_application_count()
 
+            self.emit(Signals.count_installed_ready,inst)
+            self.emit(Signals.count_upgradable_ready,up)
+
             self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
             self.show()
 
-        else:
-            print "初始化过程中:", step, message
 
     def init_category_view(self):
         cat_list_orgin = self.appmgr.get_category_list()
@@ -510,14 +510,10 @@ class SoftwareCenter(QMainWindow):
     def show_more_search_result(self, listWidget):
         listLen = len(listWidget)
 
-        print "show_more_search_result",listLen
-
         count = 0
         for appname in self.searchList:
-
             app = self.appmgr.get_application_by_name(appname)
             if app is None:
-#                print "show_more_search_result:",appname
                 continue
 
             if count < listLen:
@@ -526,7 +522,6 @@ class SoftwareCenter(QMainWindow):
             if(count > (Globals.showSoftwareStep + listLen)):
                 break
 
-#            print "show_more_search_result: insert item",appname
             oneitem = QListWidgetItem()
             liw = ListItemWidget(app, self.backend, self.nowPage)
             self.connect(liw, SIGNAL("btnshowdetail"), self.slot_show_app_detail)
@@ -540,15 +535,11 @@ class SoftwareCenter(QMainWindow):
         return True
 
     def show_more_software(self, listWidget):
-        print "show_more_software,nowpage=",self.nowPage
         if self.nowPage == "searchpage":
-            print "show_more_software: searchpage"
             self.show_more_search_result(listWidget)
             return True
 
         listLen = listWidget.count()
-
-        print "show_more_software:", listLen
 
         apps = self.appmgr.get_category_apps(self.category)
 
@@ -609,8 +600,7 @@ class SoftwareCenter(QMainWindow):
         return listWidget
 
     def switch_to_category(self, category, forcechange):
-        print "switch_to_category:", category
-        print "current category: ", self.category
+        LOG.debug("switch category from %s to %s", self.category, category)
         if self.category == category and forcechange == False:
             return
 
@@ -626,7 +616,6 @@ class SoftwareCenter(QMainWindow):
         self.show_more_software(listWidget)
 
     def add_task_item(self, app):
-        print "add_task_item:", app.name
         oneitem = QListWidgetItem()
         tliw = TaskListItemWidget(app)
         self.ui.taskListWidget.addItem(oneitem)
@@ -655,7 +644,7 @@ class SoftwareCenter(QMainWindow):
             self.show_more_software(listWidget)
 
     def slot_advertisement_ready(self,adlist):
-        print "slot_advertisement_ready",len(adlist)
+        LOG.debug("receive ads ready, count is %d", len(adlist))
         if adlist is not None:
             adw = ADWidget(adlist, self)
             #adw.add_advertisements(adlist)
@@ -666,8 +655,7 @@ class SoftwareCenter(QMainWindow):
         self.check_init_data_ready()
 
     def slot_recommend_apps_ready(self,applist):
-        print "slot_recommend_apps_ready",len(applist)
-
+        LOG.debug("receive recommend apps ready, count is %d", len(applist))
         count_per_line = 3
         index = int(0)
         x = y = int(0)
@@ -685,48 +673,24 @@ class SoftwareCenter(QMainWindow):
         self.check_init_data_ready()
 
     def slot_rating_reviews_ready(self,rnrlist):
-        print "#######slot_rating_reviews_ready",len(rnrlist)
-        app = self.appmgr.get_application_by_name('gimp')
-        if(app is not None):
-            print "!!!!!!!rnrStat: ",app.rnrStat
-        print self.appmgr.get_application_rnrstat("gimp")
+        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
 
         self.rnr_ready = True
         self.check_init_data_ready()
-        #收到所有信息之后再获取排行榜
-#        self.appmgr.get_toprated_stats()
-
-#        for item, rnrStat in rnrlist.iteritems():
-#            app = self.appmgr.get_application_by_name(str(rnrStat.pkgname))
-#            if app is not None:
-#                app.rnrStat = ReviewRatingStat(str(rnrStat.pkgname))
-#                app.rnrStat.ratings_total = rnrStat.ratings_total
-#                app.rnrStat.ratings_average = rnrStat.ratings_average
-
-        print "#######slot_rating_reviews_ready********"
 
     def slot_toprated_ready(self,rnrlist):
-        print "slot_toprated_ready:",len(rnrlist)
+        LOG.debug("receive toprated apps ready, count is %d", len(rnrlist))
         self.ui.rankView.clear()
         for i in range(len(rnrlist)):
-        # for rnrStat in rnrlist:
             if (self.ui.rankView.count() > 9):
                 break
 
             pkgname = str(rnrlist[i].pkgname)
-  #          self.
-  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
             app = self.appmgr.get_application_by_name(pkgname)
 
-            if app is None:
-                print "111"
-            else:
-                # print "icon file:", app.iconfile
-                # icon = QIcon()
-                # icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
-                # oneitem.setIcon(icon)
-
+            if app is not None:
                 oneitem = QListWidgetItem()
+                oneitem.setWhatsThis(pkgname)
                 rliw = RankListItemWidget(pkgname, i)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
@@ -734,36 +698,27 @@ class SoftwareCenter(QMainWindow):
 
         self.toprated_ready = True
         self.check_init_data_ready()
-        print "rankview count res:",self.ui.rankView.count()
 
         self.topratedload.stop_loading()
 
     def slot_app_reviews_ready(self,reviewlist):
-        print "slot_app_reviews_ready:",len(reviewlist)
-        if len(reviewlist) == 0:
-            return
-        # for review in reviewlist:
-            # print "@@@@Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
+        LOG.debug("receive reviews for an app, count is %d", len(reviewlist))
+
         self.detailScrollWidget.add_review(reviewlist)
 
     def slot_app_screenshots_ready(self,sclist):
-        print "slot_app_screenshots_ready:",len(sclist)
-        if len(sclist) == 0:
-            return
-        # for scFile in sclist:
-        #     print "screenshot file:",scFile
+        LOG.debug("receive screenshots for an app, count is %d", len(sclist))
+
         self.detailScrollWidget.add_sshot(sclist)
 
-
     def slot_count_installed_ready(self, count):
-        print "iover..."
+        LOG.debug("receive installed app count: %d", count)
         self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
         self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
     def slot_count_upgradable_ready(self, count):
-        print "uover..."
+        LOG.debug("receive upgradable app count: %d", count)
         self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-
 
     def slot_goto_homepage(self):
         if self.nowPage != 'homepage':
@@ -881,10 +836,6 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnUn.setEnabled(True)
         elif self.nowPage == 'taskpage':
             self.ui.btnTask.setEnabled(True)
-        #self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
-        #self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
-        #self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
-        #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_close(self):
         sys.exit(0)
@@ -899,51 +850,6 @@ class SoftwareCenter(QMainWindow):
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
 
-    def slot_get_all_packages_over(self, sl):
-        print len(sl)
-        self.connect(self, SIGNAL("chksoftwareover"), self.slot_check_software_over)
-        self.slot_check_software_over(sl)
-#????        at = AsyncThread(self.check_software, sl)
-#????        at.setDaemon(True)
-#????        at.start()
-        # at = CheckSoftwareThread(sl, self.scmap)
-        # at.setDaemon(True)
-        # at.start()
-
-        from multiprocessing import Process, Queue, Pipe
-        # q = Queue()
-        # q.put(sl)
-        # ap = AsyncProcess(self.check_software)
-        # ap.start()
-        # from multiprocessing import Process,Queue
-        # q = Queue()
-        # q.put(sl)
-        # sll = ['1','2','3','1','2','3']
-        # one = sl[0]
-        # print one
-        # pipe = Pipe()
-        # p = Process(target=self.check_software,args=(pipe[1],))
-        # pipe[0].send(one)
-        # p.start()
-        # print q.get()
-        # data.softwareList = q.get()
-        # print len(data.softwareList)
-        # p.join()
-
-    def slot_check_software_over(self, sl):
-        print len(sl)
-        data.softwareList = sl
-        self.tmp_fill_recommend_softwares()
-        self.tmp_get_ads()
-        self.ui.categoryView.setEnabled(True)
-        self.ui.btnUp.setEnabled(True)
-        self.ui.btnUn.setEnabled(True)
-        self.ui.btnTask.setEnabled(True)
-
-        (inst,up, all) = self.appmgr.get_application_count()
-
-        self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-
     def slot_click_item(self, item):
         liw = ''
         if(self.nowPage == 'homepage'):
@@ -957,8 +863,12 @@ class SoftwareCenter(QMainWindow):
         self.emit(SIGNAL("clickitem"), liw.app)
 
     def slot_click_rank_item(self, item):
-        app = self.appmgr.get_application_by_name(str(item.text()))
-        self.slot_show_app_detail(app)
+        pkgname = item.whatsThis()
+        app = self.appmgr.get_application_by_name(str(pkgname))
+        if app is not None:
+            self.slot_show_app_detail(app)
+        else:
+            LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app):
         self.detailScrollWidget.showSimple(app)
@@ -968,28 +878,28 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def slot_click_install(self, app):
-        print app.name
+        LOG.info("add an install task:",app.name)
         self.add_task_item(app)
         self.backend.install_package(app.name)
 
     def slot_click_update(self, app):
-        print app.name
+        LOG.info("add an update task:",app.name)
         self.add_task_item(app)
         self.backend.upgrade_package(app.name)
 
     def slot_click_remove(self, app):
+        LOG.info("add a remove task:",app.name)
         self.add_task_item(app)
         self.backend.remove_package(app.name)
 
     # search
     def slot_searchDTimer_timeout(self):
         self.searchDTimer.stop()
-        print "slot_searchDTimer_timeout : ",self.ui.leSearch.text()
         if self.ui.leSearch.text():
             reslist = self.searchDB.search_software(str(self.ui.leSearch.text()))
 
             #返回查询结果
-            print "*********\n",reslist
+            LOG.debug("search result:",len(reslist))
             self.searchList = reslist
             count = 0
             for appname in self.searchList:
@@ -999,8 +909,6 @@ class SoftwareCenter(QMainWindow):
                 count = count + 1
             self.goto_search_page()
             self.ui.searchMSGBar.setText("共搜索到软件 <font color='#009900'>" + str(count) + "</font> 款")
-        #self.show_more_software(self.searchWidget)
-        #self.searchWidget
 
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()
@@ -1008,17 +916,11 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, percent, msg):
-        print "\nslot_status_change: ", name, processtype, percent, msg
         if self.stmap.has_key(name) is False:
-            print "has no such key:",name
+            LOG.warning("there is no task for this app:",name)
         else:
             taskItem = self.stmap[name]
             taskItem.status_change(processtype, percent, msg)
-        print "slot_status_change,end"
-
-    def slot_backend_msg(self, msg):
-        print msg
-
 
 def main():
     app = QApplication(sys.argv)
@@ -1030,17 +932,10 @@ def main():
     globalfont.setFamily("文泉驿微米黑")
     # globalfont.setFamily("华文细黑")
     app.setFont(globalfont)
-
-    # log.info("app start5")
-    # log.debug("haha app5")
-    # log.error("hoho app5")
+    app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
 
     mw = SoftwareCenter()
     mw.show()
-
-#    w = BackendWorker()
-#    w.setDaemon(True) # thread w will dead when main thread dead by this setting
-#    w.start()
 
     sys.exit(app.exec_())
 
@@ -1048,10 +943,5 @@ def main():
 if __name__ == '__main__':
 
     main()
-#    str = "download_appname:gimp,download_bytes:1023,total_bytes:32.12,name:haha"
-#    print str
-#    res = str.split(',')
-#    print res['download_appname']
-
 
 
