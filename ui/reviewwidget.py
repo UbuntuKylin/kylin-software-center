@@ -17,7 +17,7 @@ class ReviewWidget(QWidget):
         self.ui.comment.setWordWrap(True)
 
         self.ui.userName.setStyleSheet("QLabel{color:#1E66A4;font-size:14px;}")
-        self.ui.userHead.setStyleSheet("QLabel{background-image:url('res/plslogin.png')}")
+        self.ui.userHead.setStyleSheet("QLabel{background-image:url('res/userhead.png')}")
         self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png')}")
 
         self.ui.userName.setText(review.reviewer_username)

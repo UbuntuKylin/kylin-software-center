@@ -35,9 +35,10 @@ from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
+from ui.ranklistitemwidget import RankListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
-from ui.loadingdiv import LoadingDiv
+from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 #from backend.backend_worker import BackendWorker
 from models.advertisement import Advertisement
@@ -118,8 +119,8 @@ class SoftwareCenter(QMainWindow):
         # init text info
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
-        self.ui.bottomText1.setText("Ubuntu Kylin软件中心:")
-        self.ui.bottomText2.setText("0.2.1")
+        self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
+        self.ui.bottomText2.setText("v0.1")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -183,6 +184,11 @@ class SoftwareCenter(QMainWindow):
         palette.setColor(QPalette.Background, Qt.white)
         self.ui.recommendWidget.setPalette(palette)
 
+        self.ui.rankWidget.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, Qt.white)
+        self.ui.rankWidget.setPalette(palette)
+
         self.ui.bottomWidget.setAutoFillBackground(True)
         palette = QPalette()
         img = QPixmap("res/foot.png")
@@ -213,6 +219,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
         self.ui.taskWidget.stackUnder(self.ui.item1Widget)
+        self.ui.searchWidget.stackUnder(self.ui.item1Widget)
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -249,16 +256,15 @@ class SoftwareCenter(QMainWindow):
         self.ui.categorytext.setStyleSheet("QLabel{background-image:url('res/categorybg.png');color:#7E8B97;font-weight:bold;padding-left:5px;}")
         self.ui.hline1.setStyleSheet("QLabel{background-image:url('res/hline1.png')}")
         self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
-        self.ui.rankWidget.setStyleSheet("QWidget{background-color:white}")
         self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
         self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{border:0px;}QListWidget::item:selected{color:black;}")
         self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
         self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{padding-left:25px;border:0px;}QListWidget::item:selected{color:black;}")
-        self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
+        self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
@@ -320,7 +326,6 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.init_models()
         self.init_category_view()
 
-
         #init backend
         self.backend = InstallBackend()
         res = self.backend.init_dbus_ifaces()
@@ -344,6 +349,7 @@ class SoftwareCenter(QMainWindow):
         #init others
         self.category = ""
         self.nowPage = "homepage"
+        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
 
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -370,6 +376,7 @@ class SoftwareCenter(QMainWindow):
         print "check:",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready
         if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
             self.loadingDiv.stop_loading()
+            self.topratedload.start_loading()
 
     def slot_init_models_ready(self, step, message):
 
@@ -393,7 +400,6 @@ class SoftwareCenter(QMainWindow):
 
         else:
             print "初始化过程中:", step, message
-
 
     def init_category_view(self):
         cat_list_orgin = self.appmgr.get_category_list()
@@ -702,56 +708,51 @@ class SoftwareCenter(QMainWindow):
     def slot_toprated_ready(self,rnrlist):
         print "slot_toprated_ready:",len(rnrlist)
         self.ui.rankView.clear()
-        for rnrStat in rnrlist:
-            pkgname = str(rnrStat.pkgname)
-  #          self.
-  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
-            oneitem = QListWidgetItem(pkgname)
-            app = self.appmgr.get_application_by_name(pkgname)
-
+        for i in range(len(rnrlist)):
+        # for rnrStat in rnrlist:
             if (self.ui.rankView.count() > 9):
                 break
+
+            pkgname = str(rnrlist[i].pkgname)
+  #          self.
+  #          print item, rnrStat.pkgname, rnrStat.ratings_average, rnrStat.ratings_total
+            app = self.appmgr.get_application_by_name(pkgname)
 
             if app is None:
                 print "111"
             else:
-                print "icon file:", app.iconfile
+                # print "icon file:", app.iconfile
                 # icon = QIcon()
                 # icon.addFile(app.iconfile,QSize(), QIcon.Normal, QIcon.Off)
                 # oneitem.setIcon(icon)
-                oneitem.setWhatsThis(pkgname)
+
+                oneitem = QListWidgetItem()
+                rliw = RankListItemWidget(pkgname, i)
                 self.ui.rankView.addItem(oneitem)
+                self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
 
         self.toprated_ready = True
         self.check_init_data_ready()
         print "rankview count res:",self.ui.rankView.count()
 
+        self.topratedload.stop_loading()
+
     def slot_app_reviews_ready(self,reviewlist):
         print "slot_app_reviews_ready:",len(reviewlist)
         if len(reviewlist) == 0:
-            print "@@@@@@ review 0"
             return
-        for review in reviewlist:
-            print "!!!!!!!!!!!!!!!!!!!!"
-            # count = self.detailScrollWidget.ui.reviewListWidget.count()
-            # reviewHeight = count * 85
-            # self.detailWidget.resize(805, 790 + reviewHeight)
-            # self.detailScrollWidget.ui.reviewListWidget.resize(805, reviewHeight)
-            # oneitem = QListWidgetItem()
-            # from ui.reviewwidget import ReviewWidget
-            # rliw = ReviewWidget(review)
-            # self.detailScrollWidget.ui.reviewListWidget.addItem(oneitem)
-            # self.detailScrollWidget.ui.reviewListWidget.setItemWidget(oneitem, rliw)
-            self.detailScrollWidget.add_one_review(review)
+        # for review in reviewlist:
             # print "@@@@Review item:\n",review.package_name,review.reviewer_username,review.rating,review.review_text
+        self.detailScrollWidget.add_review(reviewlist)
 
     def slot_app_screenshots_ready(self,sclist):
         print "slot_app_screenshots_ready:",len(sclist)
         if len(sclist) == 0:
             return
-        for scFile in sclist:
-            print "screenshot file:",scFile
+        # for scFile in sclist:
+        #     print "screenshot file:",scFile
+        self.detailScrollWidget.add_sshot(sclist)
 
 
     def slot_count_installed_ready(self, count):

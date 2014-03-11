@@ -239,10 +239,10 @@
     <widget class="QLabel" name="bottomImg">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>2</y>
-       <width>21</width>
-       <height>21</height>
+       <x>12</x>
+       <y>4</y>
+       <width>18</width>
+       <height>18</height>
       </rect>
      </property>
      <property name="text">
@@ -252,9 +252,9 @@
     <widget class="QLabel" name="bottomText1">
      <property name="geometry">
       <rect>
-       <x>50</x>
+       <x>37</x>
        <y>3</y>
-       <width>70</width>
+       <width>140</width>
        <height>19</height>
       </rect>
      </property>
@@ -265,7 +265,7 @@
     <widget class="QLabel" name="bottomText2">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>182</x>
        <y>3</y>
        <width>70</width>
        <height>19</height>
@@ -629,7 +629,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="searhHeader">
+    <widget class="QLabel" name="searchHeader">
      <property name="geometry">
       <rect>
        <x>0</x>

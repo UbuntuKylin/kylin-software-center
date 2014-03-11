@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Mon Mar 10 09:37:08 2014
+# Created: Tue Mar 11 14:37:32 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -94,15 +94,15 @@ class Ui_MainWindow(object):
         self.bottomWidget.setGeometry(QtCore.QRect(40, 586, 815, 25))
         self.bottomWidget.setObjectName(_fromUtf8("bottomWidget"))
         self.bottomImg = QtGui.QLabel(self.bottomWidget)
-        self.bottomImg.setGeometry(QtCore.QRect(20, 2, 21, 21))
+        self.bottomImg.setGeometry(QtCore.QRect(12, 4, 18, 18))
         self.bottomImg.setText(_fromUtf8(""))
         self.bottomImg.setObjectName(_fromUtf8("bottomImg"))
         self.bottomText1 = QtGui.QLabel(self.bottomWidget)
-        self.bottomText1.setGeometry(QtCore.QRect(50, 3, 70, 19))
+        self.bottomText1.setGeometry(QtCore.QRect(37, 3, 140, 19))
         self.bottomText1.setText(_fromUtf8(""))
         self.bottomText1.setObjectName(_fromUtf8("bottomText1"))
         self.bottomText2 = QtGui.QLabel(self.bottomWidget)
-        self.bottomText2.setGeometry(QtCore.QRect(130, 3, 70, 19))
+        self.bottomText2.setGeometry(QtCore.QRect(182, 3, 70, 19))
         self.bottomText2.setText(_fromUtf8(""))
         self.bottomText2.setObjectName(_fromUtf8("bottomText2"))
         self.upWidget = QtGui.QWidget(self.centralwidget)
@@ -216,7 +216,7 @@ class Ui_MainWindow(object):
         self.searchHeader = QtGui.QLabel(self.searchWidget)
         self.searchHeader.setGeometry(QtCore.QRect(0, 55, 663, 24))
         self.searchHeader.setText(_fromUtf8(""))
-        self.searchHeader.setObjectName(_fromUtf8("searhHeader"))
+        self.searchHeader.setObjectName(_fromUtf8("searchHeader"))
         self.searchMSGBar = QtGui.QLabel(self.searchWidget)
         self.searchMSGBar.setGeometry(QtCore.QRect(0, 0, 663, 55))
         self.searchMSGBar.setText(_fromUtf8(""))
