@@ -351,6 +351,9 @@ class SoftwareCenter(QMainWindow):
         self.nowPage = "homepage"
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
 
+        #self signals
+        self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
+
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
         self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
@@ -878,17 +881,17 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def slot_click_install(self, app):
-        LOG.info("add an install task:",app.name)
+        LOG.info("add an install task:%s",app.name)
         self.add_task_item(app)
         self.backend.install_package(app.name)
 
     def slot_click_update(self, app):
-        LOG.info("add an update task:",app.name)
+        LOG.info("add an update task:%s",app.name)
         self.add_task_item(app)
         self.backend.upgrade_package(app.name)
 
     def slot_click_remove(self, app):
-        LOG.info("add a remove task:",app.name)
+        LOG.info("add a remove task:%s",app.name)
         self.add_task_item(app)
         self.backend.remove_package(app.name)
 
@@ -899,7 +902,7 @@ class SoftwareCenter(QMainWindow):
             reslist = self.searchDB.search_software(str(self.ui.leSearch.text()))
 
             #返回查询结果
-            LOG.debug("search result:",len(reslist))
+            LOG.debug("search result:%d",len(reslist))
             self.searchList = reslist
             count = 0
             for appname in self.searchList:
@@ -917,10 +920,27 @@ class SoftwareCenter(QMainWindow):
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, percent, msg):
         if self.stmap.has_key(name) is False:
-            LOG.warning("there is no task for this app:",name)
+            LOG.warning("there is no task for this app:%s",name)
         else:
+            if processtype=='apt' and int(percent)==200:
+                self.emit(Signals.apt_process_finish,name)
             taskItem = self.stmap[name]
             taskItem.status_change(processtype, percent, msg)
+
+    # call the backend models update opeartion
+    def slot_apt_process_finish(self,pkgname):
+        print "slot_apt_process_finish:",pkgname
+
+        self.appmgr.update_models(pkgname)
+
+    #update backend models ready
+    def slot_apt_cache_update_ready(self,pkgname):
+        print "slot_apt_cache_update_ready"
+
+        (inst,up, all) = self.appmgr.get_application_count()
+
+        self.emit(Signals.count_installed_ready,inst)
+        self.emit(Signals.count_upgradable_ready,up)
 
 def main():
     app = QApplication(sys.argv)

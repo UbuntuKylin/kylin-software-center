@@ -75,17 +75,21 @@ class ThreadWorkerDaemon(threading.Thread):
             if item is None:
                 continue
 
-            event = multiprocessing.Event()
-            queue = multiprocessing.Queue()
-            spawn_helper = SpawnProcess(item.funcname,item.kwargs, event, queue)
-            spawn_helper.daemon = True
-            spawn_helper.start()
-            event.wait()
-
             reslist = []
-            while not queue.empty():
-                resitem = queue.get_nowait()
-                reslist.append(resitem)
+            if item.funcname == "update_models":
+                self.appmgr._update_models()
+                reslist.append(item.kwargs["packagename"])
+            else:
+                event = multiprocessing.Event()
+                queue = multiprocessing.Queue()
+                spawn_helper = SpawnProcess(item.funcname,item.kwargs, event, queue)
+                spawn_helper.daemon = True
+                spawn_helper.start()
+                event.wait()
+
+                while not queue.empty():
+                    resitem = queue.get_nowait()
+                    reslist.append(resitem)
 
             LOG.debug("receive data from backend process, len=%d",len(reslist))
             self.appmgr.dispatchWorkerResult(item,reslist)
@@ -127,6 +131,23 @@ class AppManager(QObject):
             self.apt_cache = apt.Cache()
         self.apt_cache.open()
         self.pkgcount = len(self.apt_cache)
+
+    def _update_models(self):
+        self.open_cache()
+
+        for cname,citem in self.cat_list.iteritems():
+            apps = citem.apps
+            for aname,app in apps.iteritems():
+                app.update_cache(self.apt_cache)
+
+    def update_models(self,pkgname):
+        kwargs = {"packagename": pkgname,
+                  }
+
+        item  = WorkerItem("update_models",kwargs)
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
 
     def download_category_list(self,catdir=""):
         #first load the categories from directory
@@ -387,7 +408,7 @@ class AppManager(QObject):
 
             self.emit(Signals.app_screenshots_ready,screenshots)
         elif item.funcname == "get_review_rating_stats":
-            LOG.debug("review rating stats ready:%s",len(reslist))
+            LOG.debug("review rating stats ready:%d",len(reslist))
             rnrStats = reslist
             self.rnrStatList = reslist
 
@@ -399,11 +420,16 @@ class AppManager(QObject):
 
             self.emit(Signals.rating_reviews_ready,rnrStats)
         elif item.funcname == "get_toprated_stats":
-            LOG.debug("toprated stats ready:%s",len(reslist))
+            LOG.debug("toprated stats ready:%d",len(reslist))
             topRated = reslist
             print reslist
+        elif item.funcname == "update_models":
+            LOG.debug("update apt cache ready")
+            pkgname = reslist[0]
+            print "update apt cache ready:",len(reslist),pkgname
 
-            self.emit(Signals.toprated_ready,topRated)
+
+            self.emit(Signals.apt_cache_update_ready,pkgname)
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):

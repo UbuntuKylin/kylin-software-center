@@ -105,7 +105,7 @@ class InstallBackend(QObject):
         return res
 
     def _on_software_fetch_signal(self, type, kwarg):
-        print "_on_software_fetch_signal", type, kwarg
+#        print "_on_software_fetch_signal", type, kwarg
 
         sendType = "fetch"
         appname = str(kwarg['download_appname'])
@@ -129,7 +129,7 @@ class InstallBackend(QObject):
         self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
     def _on_software_apt_signal(self,type, kwarg):
-        print "_on_software_apt_signal:", type, kwarg
+#        print "_on_software_apt_signal:", type, kwarg
         sendType = "apt"
         appname = str(kwarg['apt_appname'])
         sendMsg  = ""
@@ -137,13 +137,13 @@ class InstallBackend(QObject):
         if( type == "apt_start"):
             sendMsg = "安装开始..."
         if( type == "apt_finish"):
+            percent = 200
             sendMsg = "安装完成！"
         if( type == "apt_error"):
             sendMsg = "安装失败!"
         if( type == "apt_pulse"):
             sendMsg = "安装中..." + str(kwarg['status'])
 
-        print type
         self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
     def install_package(self,pkgname):
