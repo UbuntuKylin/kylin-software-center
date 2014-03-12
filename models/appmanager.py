@@ -422,7 +422,7 @@ class AppManager(QObject):
         elif item.funcname == "get_toprated_stats":
             LOG.debug("toprated stats ready:%d",len(reslist))
             topRated = reslist
-            print reslist
+            #print reslist
         elif item.funcname == "update_models":
             LOG.debug("update apt cache ready")
             pkgname = reslist[0]
