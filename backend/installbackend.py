@@ -125,6 +125,9 @@ class InstallBackend(QObject):
             sendMsg = "下载中...(" + str(kwarg['download_bytes']) + "/" \
                       + str(kwarg['total_bytes']) + "," + str(kwarg['download_items']) + "/" + str(kwarg['total_items']) + ")"
             percent = int(str(kwarg['download_bytes']))*100/int(str(kwarg['total_bytes']))
+        if(type == "down_cancel"):
+            sendMsg = "操作取消"
+            percent = -1
 
         self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
 
@@ -154,6 +157,9 @@ class InstallBackend(QObject):
 
     def upgrade_package(self,pkgname):
         self.call_dbus_iface(AppActions.UPGRADE,pkgname)
+
+    def cancel_package(self,pkgname):
+        self.call_dbus_iface(AppActions.CANCEL,pkgname)
 
 from PyQt4.QtGui import *
 import sys

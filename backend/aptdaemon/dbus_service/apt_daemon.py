@@ -85,6 +85,11 @@ class FetchProcess(apb.AcquireProgress):
 
         self.dbus_service.software_fetch_signal("down_pulse",kwarg)
 
+        # cancel the operation
+        if self.dbus_service.check_cancel_worker_item(self.appname) is True:
+            self.dbus_service.software_fetch_signal("down_cancel",kwarg)
+            return False
+
     def start(self):
         # Reset all our values.
         self.current_bytes = 0.0

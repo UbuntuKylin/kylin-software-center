@@ -66,11 +66,12 @@ class PkgStates:
     ) = range(17)
 
 
-# application actions
+# application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"
+    CANCEL = "cancel"
     APPLY = "apply_changes"
     PURCHASE = "purchase"
 
