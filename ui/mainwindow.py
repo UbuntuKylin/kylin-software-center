@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Mar 12 11:53:01 2014
+# Created: Wed Mar 12 16:01:09 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,11 +26,11 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(895, 611)
+        MainWindow.resize(895, 614)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.leftWidget = QtGui.QWidget(self.centralwidget)
-        self.leftWidget.setGeometry(QtCore.QRect(41, 107, 152, 479))
+        self.leftWidget.setGeometry(QtCore.QRect(40, 107, 152, 479))
         self.leftWidget.setObjectName(_fromUtf8("leftWidget"))
         self.categoryView = QtGui.QListWidget(self.leftWidget)
         self.categoryView.setGeometry(QtCore.QRect(0, 163, 152, 316))
@@ -50,7 +50,7 @@ class Ui_MainWindow(object):
         self.categorytext.setGeometry(QtCore.QRect(0, 133, 152, 28))
         self.categorytext.setObjectName(_fromUtf8("categorytext"))
         self.homepageWidget = QtGui.QWidget(self.centralwidget)
-        self.homepageWidget.setGeometry(QtCore.QRect(193, 107, 661, 479))
+        self.homepageWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
         self.homepageWidget.setObjectName(_fromUtf8("homepageWidget"))
         self.recommendWidget = QtGui.QWidget(self.homepageWidget)
         self.recommendWidget.setGeometry(QtCore.QRect(0, 214, 529, 265))
@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.vline1.setText(_fromUtf8(""))
         self.vline1.setObjectName(_fromUtf8("vline1"))
         self.bottomWidget = QtGui.QWidget(self.centralwidget)
-        self.bottomWidget.setGeometry(QtCore.QRect(40, 586, 815, 25))
+        self.bottomWidget.setGeometry(QtCore.QRect(37, 586, 821, 28))
         self.bottomWidget.setObjectName(_fromUtf8("bottomWidget"))
         self.bottomImg = QtGui.QLabel(self.bottomWidget)
         self.bottomImg.setGeometry(QtCore.QRect(12, 4, 18, 18))
@@ -106,7 +106,7 @@ class Ui_MainWindow(object):
         self.bottomText2.setText(_fromUtf8(""))
         self.bottomText2.setObjectName(_fromUtf8("bottomText2"))
         self.upWidget = QtGui.QWidget(self.centralwidget)
-        self.upWidget.setGeometry(QtCore.QRect(193, 107, 661, 479))
+        self.upWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
         self.upWidget.setObjectName(_fromUtf8("upWidget"))
         self.upListWidget = QtGui.QListWidget(self.upWidget)
         self.upListWidget.setGeometry(QtCore.QRect(0, 79, 663, 400))
@@ -120,7 +120,7 @@ class Ui_MainWindow(object):
         self.upMSGBar.setText(_fromUtf8(""))
         self.upMSGBar.setObjectName(_fromUtf8("upMSGBar"))
         self.unWidget = QtGui.QWidget(self.centralwidget)
-        self.unWidget.setGeometry(QtCore.QRect(193, 107, 661, 479))
+        self.unWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
         self.unWidget.setObjectName(_fromUtf8("unWidget"))
         self.unListWidget = QtGui.QListWidget(self.unWidget)
         self.unListWidget.setGeometry(QtCore.QRect(0, 79, 663, 400))
@@ -134,7 +134,7 @@ class Ui_MainWindow(object):
         self.unMSGBar.setText(_fromUtf8(""))
         self.unMSGBar.setObjectName(_fromUtf8("unMSGBar"))
         self.allsWidget = QtGui.QWidget(self.centralwidget)
-        self.allsWidget.setGeometry(QtCore.QRect(193, 107, 661, 479))
+        self.allsWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
         self.allsWidget.setObjectName(_fromUtf8("allsWidget"))
         self.allsListWidget = QtGui.QListWidget(self.allsWidget)
         self.allsListWidget.setGeometry(QtCore.QRect(0, 79, 663, 400))
@@ -208,7 +208,7 @@ class Ui_MainWindow(object):
         self.searchicon.setText(_fromUtf8(""))
         self.searchicon.setObjectName(_fromUtf8("searchicon"))
         self.searchWidget = QtGui.QWidget(self.centralwidget)
-        self.searchWidget.setGeometry(QtCore.QRect(193, 107, 661, 479))
+        self.searchWidget.setGeometry(QtCore.QRect(192, 107, 663, 479))
         self.searchWidget.setObjectName(_fromUtf8("searchWidget"))
         self.searchListWidget = QtGui.QListWidget(self.searchWidget)
         self.searchListWidget.setGeometry(QtCore.QRect(0, 79, 663, 400))
@@ -222,7 +222,7 @@ class Ui_MainWindow(object):
         self.searchMSGBar.setText(_fromUtf8(""))
         self.searchMSGBar.setObjectName(_fromUtf8("searchMSGBar"))
         self.taskWidget = QtGui.QWidget(self.centralwidget)
-        self.taskWidget.setGeometry(QtCore.QRect(41, 107, 813, 479))
+        self.taskWidget.setGeometry(QtCore.QRect(40, 107, 815, 479))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
         self.taskHeader = QtGui.QLabel(self.taskWidget)
         self.taskHeader.setGeometry(QtCore.QRect(0, 55, 815, 24))
@@ -235,6 +235,14 @@ class Ui_MainWindow(object):
         self.taskListWidget = QtGui.QListWidget(self.taskWidget)
         self.taskListWidget.setGeometry(QtCore.QRect(0, 79, 815, 400))
         self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
+        self.leftBorder = QtGui.QLabel(self.centralwidget)
+        self.leftBorder.setGeometry(QtCore.QRect(37, 107, 3, 479))
+        self.leftBorder.setText(_fromUtf8(""))
+        self.leftBorder.setObjectName(_fromUtf8("leftBorder"))
+        self.rightBorder = QtGui.QLabel(self.centralwidget)
+        self.rightBorder.setGeometry(QtCore.QRect(855, 107, 3, 479))
+        self.rightBorder.setText(_fromUtf8(""))
+        self.rightBorder.setObjectName(_fromUtf8("rightBorder"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

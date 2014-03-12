@@ -31,7 +31,7 @@ class MessageBox(QObject):
         self.alert.setGeometry(353, 380, 190, 95)
         self.alert.setFocusPolicy(Qt.NoFocus)
         self.alert.setGraphicsEffect(self.alertGOE)
-        self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:5px;color:white;font-size:17px;font-weight:bold;}")
+        self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:5px;color:#1E66A4;font-size:16px;}")
         self.alert.clicked.connect(self.alert.hide)
         self.alert.hide()
 

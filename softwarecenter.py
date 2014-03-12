@@ -118,7 +118,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("v0.1")
+        self.ui.bottomText2.setText("0.2")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -132,6 +132,25 @@ class SoftwareCenter(QMainWindow):
         self.init_models()
 
         self.slot_goto_homepage()
+
+        #????用于测试进度显示
+        self.btntesttask = QPushButton(self.ui.taskWidget)
+        self.btntesttask.setGeometry(400,20,100,30)
+        self.btntesttask.clicked.connect(self.slot_testtask)
+        self.btntesttask2 = QPushButton(self.ui.taskWidget)
+        self.btntesttask2.setGeometry(520,20,100,30)
+        self.btntesttask2.clicked.connect(self.slot_testtask2)
+
+    #????用于测试进度显示
+    def slot_testtask(self):
+        oneitem = QListWidgetItem()
+        app = self.appmgr.get_application_by_name("gedit")
+        tliw = TaskListItemWidget(app)
+        self.ui.taskListWidget.addItem(oneitem)
+        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+
+    def slot_testtask2(self):
+        self.messageBox.alert_msg("这是一个测试函数..")
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -213,7 +232,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
 
+        self.ui.leftBorder.lower()
+        self.ui.rightBorder.lower()
         self.ui.searchWidget.stackUnder(self.detailScrollWidget)
+
         self.show()
 
         # style by qss
@@ -245,6 +267,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
+        self.ui.leftBorder.setStyleSheet("QLabel{background-image:url('res/border-left.png');}")
+        self.ui.rightBorder.setStyleSheet("QLabel{background-image:url('res/border-right.png');}")
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -299,20 +323,6 @@ class SoftwareCenter(QMainWindow):
                 self.isMove = False
         return True
 
-    def paintEvent(self, event):
-        qp = QPainter()
-        qp.begin(self)
-
-        # qp.setPen(QColor(0, 154, 227))
-        # qp.setPen(QColor(30, 102, 164))
-        # qp.setPen(QColor(30, 127, 180))
-        # qp.setPen(QColor(204, 195, 186))
-        qp.setPen(QColor(221, 228, 234))
-        qp.drawLine(40, 220, 40, 586)
-        qp.drawLine(854, 107, 854, 586)
-
-        qp.end()
-
     def init_models(self):
         LOG.debug("begin init_models...")
         #init appmgr
@@ -345,6 +355,9 @@ class SoftwareCenter(QMainWindow):
         self.category = ""
         self.nowPage = "homepage"
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+
+        #self signals
+        self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
 
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -873,17 +886,17 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def slot_click_install(self, app):
-        LOG.info("add an install task:",app.name)
+        LOG.info("add an install task:%s",app.name)
         self.add_task_item(app)
         self.backend.install_package(app.name)
 
     def slot_click_update(self, app):
-        LOG.info("add an update task:",app.name)
+        LOG.info("add an update task:%s",app.name)
         self.add_task_item(app)
         self.backend.upgrade_package(app.name)
 
     def slot_click_remove(self, app):
-        LOG.info("add a remove task:",app.name)
+        LOG.info("add a remove task:%s",app.name)
         self.add_task_item(app)
         self.backend.remove_package(app.name)
 
@@ -894,7 +907,7 @@ class SoftwareCenter(QMainWindow):
             reslist = self.searchDB.search_software(str(self.ui.leSearch.text()))
 
             #返回查询结果
-            LOG.debug("search result:",len(reslist))
+            LOG.debug("search result:%d",len(reslist))
             self.searchList = reslist
             count = 0
             for appname in self.searchList:
@@ -912,14 +925,30 @@ class SoftwareCenter(QMainWindow):
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, percent, msg):
         if self.stmap.has_key(name) is False:
-            LOG.warning("there is no task for this app:",name)
+            LOG.warning("there is no task for this app:%s",name)
         else:
+            if processtype=='apt' and int(percent)==200:
+                self.emit(Signals.apt_process_finish,name)
             taskItem = self.stmap[name]
             taskItem.status_change(processtype, percent, msg)
 
-        if (percent == 200):
-            msg = "软件 " + str(name) + " 操作完成"
-            self.messageBox.alert_msg(msg)
+    # call the backend models update opeartion
+    def slot_apt_process_finish(self,pkgname):
+        print "slot_apt_process_finish:",pkgname
+
+        self.appmgr.update_models(pkgname)
+
+    #update backend models ready
+    def slot_apt_cache_update_ready(self,pkgname):
+        print "slot_apt_cache_update_ready"
+
+        (inst,up, all) = self.appmgr.get_application_count()
+
+        self.emit(Signals.count_installed_ready,inst)
+        self.emit(Signals.count_upgradable_ready,up)
+
+        msg = "软件 " + str(pkgname) + " 操作完成"
+        self.messageBox.alert_msg(msg)
 
 def main():
     app = QApplication(sys.argv)

@@ -129,6 +129,15 @@ class Application:
     def get_reviews(self):
         return self.reviews
 
+    def update_cache(self,apt_cache):
+        if not apt_cache:
+            self.package = None
+        else:
+            try:
+                self.package = apt_cache[self.pkgname]
+            except:
+                self.package = None
+        self.cache = apt_cache
 
 if __name__ == "__main__":
 

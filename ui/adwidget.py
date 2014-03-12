@@ -61,17 +61,19 @@ class ADWidget(QWidget):
 
         self.adl = len(addata)
         self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 186))
-        self.create_ads(addata, parent)
-        #self.softCount.setText(str(len(data.softwareList)))
 
-        self.adtimer = QTimer(self)
-        self.adtimer.timeout.connect(self.slot_adtimer_timeout)
-        self.adtimer.start(3000)
+        if self.adl > 0:
+            self.create_ads(addata, parent)
+            #self.softCount.setText(str(len(data.softwareList)))
 
-        self.admtimer = QTimer(self)
-        self.admtimer.timeout.connect(self.slot_admtimer_update)
+            self.adtimer = QTimer(self)
+            self.adtimer.timeout.connect(self.slot_adtimer_timeout)
+            self.adtimer.start(3000)
 
-        self.slot_change_ad(self.adi)
+            self.admtimer = QTimer(self)
+            self.admtimer.timeout.connect(self.slot_admtimer_update)
+
+            self.slot_change_ad(self.adi)
 
         self.show()
 

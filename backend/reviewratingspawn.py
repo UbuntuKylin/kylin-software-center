@@ -117,16 +117,16 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
             return
 
         #run the function sync
-        res = func_method(self.kwargs,self.queue)
+        func_method(self.kwargs,self.queue)
 
         self.event.set()
 
         LOG.debug("backend process finished...")
 
-        if not res:
-            self.emit("spawn-error","####error result from function run")
-        else:
-            self.emit("spawn-data-available",res)
+#        if not res:
+#            self.emit("spawn-error","####error result from function run")
+#        else:
+#            self.emit("spawn-data-available",res)
 
 
 #执行方法封装类
@@ -289,7 +289,7 @@ class RatingsAndReviwsMethod:
             rnr = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)
             sat_res = rnr.server_status()
             LOG.debug("review and rating service stat:%s",sat_res)
-            statlist = rnr.review_stats(distroseries='saucy')
+            statlist = rnr.review_stats(distroseries='any')
 
             index = 0
             for stat in statlist:

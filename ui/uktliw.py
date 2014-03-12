@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'uktliw.ui'
 #
-# Created: Fri Mar  7 15:38:57 2014
+# Created: Wed Mar 12 16:08:45 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -40,12 +40,16 @@ class Ui_TaskLIWidget(object):
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.progressBar = QtGui.QProgressBar(TaskLIWidget)
-        self.progressBar.setGeometry(QtCore.QRect(352, 14, 194, 17))
+        self.progressBar.setGeometry(QtCore.QRect(343, 14, 194, 17))
         self.progressBar.setProperty("value", 24)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.status = QtGui.QLabel(TaskLIWidget)
         self.status.setGeometry(QtCore.QRect(575, 3, 220, 39))
         self.status.setObjectName(_fromUtf8("status"))
+        self.btnCancel = QtGui.QPushButton(TaskLIWidget)
+        self.btnCancel.setGeometry(QtCore.QRect(545, 13, 18, 18))
+        self.btnCancel.setText(_fromUtf8(""))
+        self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
 
         self.retranslateUi(TaskLIWidget)
         QtCore.QMetaObject.connectSlotsByName(TaskLIWidget)

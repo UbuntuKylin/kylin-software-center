@@ -16,12 +16,16 @@ class TaskListItemWidget(QWidget):
         self.software = software
 
         self.ui.size.setAlignment(Qt.AlignCenter)
+        self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
         self.ui.status.setAlignment(Qt.AlignTop)
         self.ui.status.setWordWrap(True)
 
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel.png');border:0px;}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-image:url('res/progress1.png');}")
+
+        self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
 
         img = QPixmap("data/tmpicons/" + software.name + ".png")
         img = img.scaled(32, 32)
@@ -63,3 +67,6 @@ class TaskListItemWidget(QWidget):
 
     def work_finished(self, newPackage):
         self.software.package = newPackage
+
+    def slot_click_cancel(self):
+        self.emit(SIGNAL("taskcancel"), None)

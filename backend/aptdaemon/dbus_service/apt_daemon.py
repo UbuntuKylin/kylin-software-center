@@ -58,7 +58,7 @@ class FetchProcess(apb.AcquireProgress):
         if item is not None:
             print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
-                 "download_percent":str(self.percent),
+                 "download_percent":str(200),
                  }
         self.dbus_service.software_fetch_signal("down_fetch", kwarg)
 
@@ -138,7 +138,7 @@ class AptProcess(apb.InstallProgress):
     def finish_update(self):
         print 'apt process finished', self.appname
         kwarg = {"apt_appname":self.appname,
-                 "apt_percent":str(self.percent),
+                 "apt_percent":str(200),
                  }
         self.dbus_service.software_apt_signal("apt_finish", kwarg)
 

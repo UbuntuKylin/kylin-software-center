@@ -123,3 +123,5 @@ class Signals:
     count_upgradable_ready = SIGNAL("count-upgradable-ready")
     show_app_detail = SIGNAL("app-show-detail")
     dbus_apt_process = SIGNAL("dbus-apt-process")
+    apt_process_finish = SIGNAL("apt-process-finish")
+    apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
