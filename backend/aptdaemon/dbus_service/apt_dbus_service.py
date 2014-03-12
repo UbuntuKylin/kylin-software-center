@@ -143,6 +143,13 @@ class SoftwarecenterDbusService(dbus.service.Object):
         self.mutex.release()
         print "####add_worker_item finished!"
 
+    def del_worker_item(self, item):
+        print "####add_worker_item:",item
+        self.mutex.acquire()
+        self.worklist.remove(item)
+        self.mutex.release()
+        print "####add_worker_item finished!"
+
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def exit(self):
         self.mainloop.quit()
@@ -227,6 +234,22 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
 #        self.daemonApt.upgrade_pkg(pkgName)
         print "####upgrade return"
+        return True
+
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def cancel(self, pkgName, sender=None):
+        print "####cancel: ",pkgName
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
+        item = WorkItem(pkgName,AppActions.INSTALL,None)
+
+        self.del_worker_item(item)
+
+#        self.daemonApt.install_pkg(pkgName)
+        print "####install return"
         return True
 
     #????????????????????????????

@@ -86,6 +86,7 @@ class TransactionTypes:
 UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
 safe_makedirs(UKSC_CACHE_DIR)
 
+#UBUNTUKYLIN_ROOT_PATH,filename = (os.path.split(os.path.realpath(__file__)))
 UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
 UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
 #UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"

@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=com.ubuntukylin.softwarecenter
-Exec=/usr/bin/ubuntukylin-softwarecenter-daemon.py
+Exec=/usr/bin/ubuntukylin-softwarecenter-daemon
 User=root
