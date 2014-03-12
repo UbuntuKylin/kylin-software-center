@@ -132,10 +132,10 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText("评分" + (str(software.ratings_total)) + "次")
+        self.ui.commentNumber.setText("共 " + str(software.ratings_total) + " 条评论")
         self.ui.gradeText3.setText("满分5分")
         self.ui.grade.setText(str(software.ratings_average))
         self.star = StarWidget('big', software.ratings_average, self.detailWidget)
-
         self.star.move(500, 94)
 
         if(software.is_installed):
@@ -293,7 +293,6 @@ class ScreenShotBig(QWidget):
 
     def eventFilter(self, obj, event):
         if(obj == self.bg and event.type() == QEvent.MouseButtonRelease):
-            print "hide"
             self.hide()
         return True
 

@@ -126,6 +126,7 @@ class InstallBackend(QObject):
                       + str(kwarg['total_bytes']) + "," + str(kwarg['download_items']) + "/" + str(kwarg['total_items']) + ")"
             percent = int(str(kwarg['download_bytes']))*100/int(str(kwarg['total_bytes']))
         if(type == "down_cancel"):
+            sendType = "cancel"
             sendMsg = "操作取消"
             percent = -1
 

@@ -155,11 +155,11 @@ class SoftwarecenterDbusService(dbus.service.Object):
                 exist = True
                 break
         if exist is True:
-            self.worklist.remove(item)
+            self.worklist.remove(pkgname)
         self.mutex.release()
 
         self.cancelmutex.acquire()
-        self.cancel_name_list.append(item.pkgname)
+        self.cancel_name_list.append(pkgname)
         self.cancelmutex.release()
         print "####del_worker_item_by_name finished!"
 
@@ -167,16 +167,18 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print "####check_cancel_worker_item:",pkgname
         cancel = False
         self.cancelmutex.acquire()
+        print "check_cancel_worker_item:",len(self.cancel_name_list)
         for item in self.cancel_name_list:
-            if item.pkgname == pkgname:
+            if item == pkgname:
                 cancel = True
                 break
         if cancel is True:
             self.cancel_name_list.remove(pkgname)
         self.cancelmutex.release()
 
+        print "####check_cancel_worker_item finished!:",cancel
         return cancel
-        print "####check_cancel_worker_item finished!"
+
 
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def exit(self):

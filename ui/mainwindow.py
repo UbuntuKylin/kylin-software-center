@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Mar 11 14:37:32 2014
+# Created: Wed Mar 12 16:01:09 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(895, 611)
+        MainWindow.resize(895, 614)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.leftWidget = QtGui.QWidget(self.centralwidget)
@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.vline1.setText(_fromUtf8(""))
         self.vline1.setObjectName(_fromUtf8("vline1"))
         self.bottomWidget = QtGui.QWidget(self.centralwidget)
-        self.bottomWidget.setGeometry(QtCore.QRect(40, 586, 815, 25))
+        self.bottomWidget.setGeometry(QtCore.QRect(37, 586, 821, 28))
         self.bottomWidget.setObjectName(_fromUtf8("bottomWidget"))
         self.bottomImg = QtGui.QLabel(self.bottomWidget)
         self.bottomImg.setGeometry(QtCore.QRect(12, 4, 18, 18))
@@ -235,6 +235,14 @@ class Ui_MainWindow(object):
         self.taskListWidget = QtGui.QListWidget(self.taskWidget)
         self.taskListWidget.setGeometry(QtCore.QRect(0, 79, 815, 400))
         self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
+        self.leftBorder = QtGui.QLabel(self.centralwidget)
+        self.leftBorder.setGeometry(QtCore.QRect(37, 107, 3, 479))
+        self.leftBorder.setText(_fromUtf8(""))
+        self.leftBorder.setObjectName(_fromUtf8("leftBorder"))
+        self.rightBorder = QtGui.QLabel(self.centralwidget)
+        self.rightBorder.setGeometry(QtCore.QRect(855, 107, 3, 479))
+        self.rightBorder.setText(_fromUtf8(""))
+        self.rightBorder.setObjectName(_fromUtf8("rightBorder"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

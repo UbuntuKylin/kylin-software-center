@@ -78,19 +78,17 @@ class SoftwareCenter(QMainWindow):
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
 
-        #init the ui
+        # init the ui
         self.init_main_view()
 
-        #show user to wait
-        self.loadingDiv.start_loading("正在进行系统初始化...")
-
-        #self.init_category_view()
+        # show user to wait
+        self.loadingDiv.start_loading("系统正在初始化...")
 
         windowWidth = QApplication.desktop().width()
         windowHeight = QApplication.desktop().height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
-        #connect the ui signals
+        # connect the ui signals
         self.ui.headerWidget.installEventFilter(self)
 
         self.ui.categoryView.itemClicked.connect(self.slot_change_category)
@@ -120,7 +118,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("v0.1")
+        self.ui.bottomText2.setText("0.2")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -130,22 +128,30 @@ class SoftwareCenter(QMainWindow):
         self.searchDTimer = QTimer(self)
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
 
-          #init the initial data for view init
-        self.init_models()
+        # init the initial data for view init
+        #self.init_models()  #????
+        self.appmgr = AppManager()
+        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
+        self.appmgr.init_models()
 
-        self.slot_goto_homepage()
+        self.show()
 
         #????用于测试进度显示
-        self.btntesttask = QPushButton(self.ui.taskWidget)
-        self.btntesttask.setGeometry(400,20,100,30)
-        self.btntesttask.clicked.connect(self.slot_testtask)
-        self.btntesttask2 = QPushButton(self.ui.taskWidget)
-        self.btntesttask2.setGeometry(520,20,100,30)
-        self.btntesttask2.clicked.connect(self.slot_testtask2)
+#        self.btntesttask = QPushButton(self.ui.taskWidget)
+#        self.btntesttask.setGeometry(400,20,100,30)
+#        self.btntesttask.clicked.connect(self.slot_testtask)
+#        self.btntesttask.setVisible(False)
+#        self.btntesttask2 = QPushButton(self.ui.taskWidget)
+#        self.btntesttask2.setGeometry(520,20,100,30)
+#        self.btntesttask2.clicked.connect(self.slot_testtask2)
 
     #????用于测试进度显示
     def slot_testtask(self):
-        self.loadingDiv.start_loading("test one hahahaha hehe")
+        oneitem = QListWidgetItem()
+        app = self.appmgr.get_application_by_name("gedit")
+        tliw = TaskListItemWidget(app)
+        self.ui.taskListWidget.addItem(oneitem)
+        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
     def slot_testtask2(self):
         self.messageBox.alert_msg("这是一个测试函数..")
@@ -229,13 +235,14 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
-#        self.ui.rankWidget.hide()
 
+        self.ui.leftBorder.lower()
+        self.ui.rightBorder.lower()
         self.ui.searchWidget.stackUnder(self.detailScrollWidget)
+
         self.show()
 
         # style by qss
-        #self.ui.btnBack.setStyleSheet("QPushButton{background-image:url('res/nav-back-1.png');border:0px;}QPushButton:hover{background:url('res/nav-back-2.png');}QPushButton:pressed{background:url('res/nav-back-3.png');}")
         self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
         self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
@@ -264,6 +271,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
         self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
         self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
+        self.ui.leftBorder.setStyleSheet("QLabel{background-image:url('res/border-left.png');}")
+        self.ui.rightBorder.setStyleSheet("QLabel{background-image:url('res/border-right.png');}")
         self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
         self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -321,9 +330,9 @@ class SoftwareCenter(QMainWindow):
     def init_models(self):
         LOG.debug("begin init_models...")
         #init appmgr
-        self.appmgr = AppManager()
-        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
-        self.appmgr.init_models()
+#        self.appmgr = AppManager()
+#        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
+#        self.appmgr.init_models()
         self.init_category_view()
 
         #init backend
@@ -350,6 +359,8 @@ class SoftwareCenter(QMainWindow):
         self.category = ""
         self.nowPage = "homepage"
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+
+        self.slot_goto_homepage()
 
         #self signals
         self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -385,9 +396,13 @@ class SoftwareCenter(QMainWindow):
 
         if step == "fail":
             LOG.warning("init models failed:%s",message)
+            sys.exit(0)
+            return
 
         elif step == "ok":
             LOG.debug("init models successfully and ready to setup ui...")
+
+            self.init_models() #????
 
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
@@ -621,9 +636,23 @@ class SoftwareCenter(QMainWindow):
     def add_task_item(self, app):
         oneitem = QListWidgetItem()
         tliw = TaskListItemWidget(app)
+        self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
         self.ui.taskListWidget.addItem(oneitem)
         self.ui.taskListWidget.setItemWidget(oneitem, tliw)
         self.stmap[app.name] = tliw
+
+    def del_task_item(self, pkgname):
+        count = self.ui.taskListWidget.count()
+        print "del_task_item:",count
+        for i in range(count):
+            item = self.ui.taskListWidget.item(i)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            if taskitem.app.name == pkgname:
+                print "del_task_item: found an item",i,pkgname
+                delitem = self.ui.taskListWidget.takeItem(i)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                del delitem
+                break
 
     #-------------------------------slots-------------------------------
 
@@ -895,6 +924,10 @@ class SoftwareCenter(QMainWindow):
         self.add_task_item(app)
         self.backend.remove_package(app.name)
 
+    def slot_click_cancel(self, app):
+        LOG.info("cancel an task:%s",app.name)
+        self.backend.cancel_package(app.name)
+
     # search
     def slot_searchDTimer_timeout(self):
         self.searchDTimer.stop()
@@ -922,10 +955,18 @@ class SoftwareCenter(QMainWindow):
         if self.stmap.has_key(name) is False:
             LOG.warning("there is no task for this app:%s",name)
         else:
-            if processtype=='apt' and int(percent)==200:
-                self.emit(Signals.apt_process_finish,name)
-            taskItem = self.stmap[name]
-            taskItem.status_change(processtype, percent, msg)
+            if processtype=='cancel':
+                print "@@@@@@@@@cancel:",name
+                taskItem = self.stmap[name]
+                self.del_task_item(name)
+                del self.stmap[name]
+                print "@@@@@@@@@cancel:finished!"
+            else:
+                if processtype=='apt' and int(percent)==200:
+                    self.emit(Signals.apt_process_finish,name)
+                else:
+                    taskItem = self.stmap[name]
+                    taskItem.status_change(processtype, percent, msg)
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname):
@@ -941,6 +982,9 @@ class SoftwareCenter(QMainWindow):
 
         self.emit(Signals.count_installed_ready,inst)
         self.emit(Signals.count_upgradable_ready,up)
+
+        msg = "软件 " + str(pkgname) + " 操作完成"
+        self.messageBox.alert_msg(msg)
 
 def main():
     app = QApplication(sys.argv)

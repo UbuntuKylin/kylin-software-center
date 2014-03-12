@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Tue Mar 11 11:39:07 2014
+# Created: Wed Mar 12 10:02:04 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -153,5 +153,5 @@ class Ui_DetailWidget(object):
         self.splitText1.setText(_translate("DetailWidget", "详细介绍", None))
         self.splitText2.setText(_translate("DetailWidget", "软件截图", None))
         self.splitText3.setText(_translate("DetailWidget", "用户评论", None))
-        self.commentNumber.setText(_translate("DetailWidget", "321条评论", None))
+        self.commentNumber.setText(_translate("DetailWidget", "条评论", None))
 

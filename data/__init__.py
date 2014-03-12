@@ -2,8 +2,6 @@
 __author__ = 'Shine Huang'
 import threading
 
-print "db init..."
-
 # used backend package manager
 backend_type = 'apt'
 # all software in sourcelist

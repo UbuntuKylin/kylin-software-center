@@ -368,7 +368,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>321条评论</string>
+    <string>条评论</string>
    </property>
   </widget>
   <widget class="QListWidget" name="reviewListWidget">

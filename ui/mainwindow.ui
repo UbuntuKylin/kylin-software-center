@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>895</width>
-    <height>611</height>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -230,10 +230,10 @@
    <widget class="QWidget" name="bottomWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>37</x>
       <y>586</y>
-      <width>815</width>
-      <height>25</height>
+      <width>821</width>
+      <height>28</height>
      </rect>
     </property>
     <widget class="QLabel" name="bottomImg">
@@ -701,6 +701,32 @@
       </rect>
      </property>
     </widget>
+   </widget>
+   <widget class="QLabel" name="leftBorder">
+    <property name="geometry">
+     <rect>
+      <x>37</x>
+      <y>107</y>
+      <width>3</width>
+      <height>479</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="rightBorder">
+    <property name="geometry">
+     <rect>
+      <x>855</x>
+      <y>107</y>
+      <width>3</width>
+      <height>479</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
  </widget>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ukcmtw.ui'
 #
-# Created: Mon Mar 10 19:24:04 2014
+# Created: Wed Mar 12 09:52:10 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -32,7 +32,7 @@ class Ui_CommentWidget(object):
         self.userHead.setText(_fromUtf8(""))
         self.userHead.setObjectName(_fromUtf8("userHead"))
         self.userName = QtGui.QLabel(CommentWidget)
-        self.userName.setGeometry(QtCore.QRect(95, 10, 120, 17))
+        self.userName.setGeometry(QtCore.QRect(95, 10, 130, 17))
         self.userName.setText(_fromUtf8(""))
         self.userName.setObjectName(_fromUtf8("userName"))
         self.commentBG = QtGui.QLabel(CommentWidget)
@@ -43,6 +43,10 @@ class Ui_CommentWidget(object):
         self.comment.setGeometry(QtCore.QRect(100, 33, 600, 34))
         self.comment.setText(_fromUtf8(""))
         self.comment.setObjectName(_fromUtf8("comment"))
+        self.createDate = QtGui.QLabel(CommentWidget)
+        self.createDate.setGeometry(QtCore.QRect(235, 10, 160, 17))
+        self.createDate.setText(_fromUtf8(""))
+        self.createDate.setObjectName(_fromUtf8("createDate"))
 
         self.retranslateUi(CommentWidget)
         QtCore.QMetaObject.connectSlotsByName(CommentWidget)

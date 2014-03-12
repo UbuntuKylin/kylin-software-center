@@ -55,7 +55,7 @@
   <widget class="QProgressBar" name="progressBar">
    <property name="geometry">
     <rect>
-     <x>352</x>
+     <x>343</x>
      <y>14</y>
      <width>194</width>
      <height>17</height>
@@ -73,6 +73,19 @@
      <width>220</width>
      <height>39</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCancel">
+   <property name="geometry">
+    <rect>
+     <x>545</x>
+     <y>13</y>
+     <width>18</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>
