@@ -1,0 +1,40 @@
+Source: ubuntu-kylin-software-center
+Section: misc
+Priority: optional
+Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
+Build-Depends: debhelper (>= 9),
+               dh-translations,
+               libphonon-dev,
+               python-dev,
+               python-pywapi,
+               python-tz,
+               python-unidecode,
+               libqt4-dev,
+               fcitx-libs-dev,
+               pkg-config,
+               python (>= 2.6.6-3~),
+               qt4-default,
+               qtchooser,
+Standards-Version: 3.9.5
+Homepage: https://launchpad.net/ubuntu-kylin-software-center
+Vcs-Browser: https://code.launchpad.net/~ubuntukylin-members/ubuntu-kylin-software-center/trunk
+Vcs-Bzr: lp:ubuntu-kylin-software-center
+
+Package: ubuntu-kylin-software-center
+Architecture: any
+Depends: phonon-backend-gstreamer,
+         python-dbus,
+         python-psutil,
+         python-pywapi,
+         python-tz,
+         python-compizconfig,
+         ${misc:Depends},
+         ${python:Depends},
+         ${shlibs:Depends},
+Description: Integrated tool to aid in routine system maintenance tasks
+ Ubuntu Kylin Software Center is a new built software center client for Ubuntu Kylin. The aim is to improve localization experience. The applications and related data come from both ubuntu and ubuntu kylin package sources.
+ . 
+ Features currently included:
+  * Categories and selected applications for users
+  * Newly disigned UI
+  * Keep with ubuntu software center and hold special packages in Ubuntu Kylin archive
