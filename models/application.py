@@ -127,7 +127,6 @@ class Application:
 
     #get the reviews object list of this application
     def get_reviews(self):
-        print "get_reviews_sync"
         return self.reviews
 
 

@@ -28,11 +28,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
 import data
-from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
+from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
-                          LIST_BUTTON_STYLE_PATH,
+                          LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_QPUSH_BUTTON_PATH)
+                          RECOMMEND_BUTTON_STYLE)
 
 class ListItemWidget(QWidget):
     app = ''
@@ -52,15 +52,15 @@ class ListItemWidget(QWidget):
         self.ui.btnDetail.hide()
 
         if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
-            self.ui.icon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
+            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
         else:
-            self.ui.icon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
-        self.ui.btnDetail.setStyleSheet(RECOMMEND_QPUSH_BUTTON_PATH %(UBUNTUKYLIN_RES_PATH+"btn6-1.png",UBUNTUKYLIN_RES_PATH+"btn6-2.png",UBUNTUKYLIN_RES_PATH+"btn6-3.png"))
+            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
+        self.ui.btnDetail.setStyleSheet(RECOMMEND_BUTTON_STYLE %(UBUNTUKYLIN_RES_PATH+"btn6-1.png",UBUNTUKYLIN_RES_PATH+"btn6-2.png",UBUNTUKYLIN_RES_PATH+"btn6-3.png"))
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.descr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
         self.ui.installedVersion.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.candidateVersion.setStyleSheet("QLabel{font-size:13px;color:#FF7D15;}")
-        self.ui.btn.setStyleSheet(LIST_BUTTON_STYLE_PATH % (UBUNTUKYLIN_RES_PATH+"btn-small-1.png",UBUNTUKYLIN_RES_PATH+"btn-small-2.png",UBUNTUKYLIN_RES_PATH+"btn-small-3.png") )
+        self.ui.btn.setStyleSheet(LIST_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH+"btn-small-1.png",UBUNTUKYLIN_RES_PATH+"btn-small-2.png",UBUNTUKYLIN_RES_PATH+"btn-small-3.png") )
 
         self.ui.name.setText(app.name)
         summ = app.summary

@@ -17,7 +17,7 @@
    <widget class="QWidget" name="leftWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>41</x>
       <y>107</y>
       <width>152</width>
       <height>479</height>
@@ -86,9 +86,9 @@
    <widget class="QWidget" name="homepageWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
+      <x>193</x>
       <y>107</y>
-      <width>663</width>
+      <width>661</width>
       <height>479</height>
      </rect>
     </property>
@@ -279,9 +279,9 @@
    <widget class="QWidget" name="upWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
+      <x>193</x>
       <y>107</y>
-      <width>663</width>
+      <width>661</width>
       <height>479</height>
      </rect>
     </property>
@@ -325,9 +325,9 @@
    <widget class="QWidget" name="unWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
+      <x>193</x>
       <y>107</y>
-      <width>663</width>
+      <width>661</width>
       <height>479</height>
      </rect>
     </property>
@@ -371,9 +371,9 @@
    <widget class="QWidget" name="allsWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
+      <x>193</x>
       <y>107</y>
-      <width>663</width>
+      <width>661</width>
       <height>479</height>
      </rect>
     </property>
@@ -613,9 +613,9 @@
    <widget class="QWidget" name="searchWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
+      <x>193</x>
       <y>107</y>
-      <width>663</width>
+      <width>661</width>
       <height>479</height>
      </rect>
     </property>
@@ -659,9 +659,9 @@
    <widget class="QWidget" name="taskWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>41</x>
       <y>107</y>
-      <width>815</width>
+      <width>813</width>
       <height>479</height>
      </rect>
     </property>

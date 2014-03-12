@@ -10,11 +10,11 @@ from ui.starwidget import StarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
 from ui.loadingdiv import *
-from models.enums import (UBUNTUKYLIN_LABEL_STYLE_PATH,
+from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
-                          RECOMMEND_BUTTON_PATH,
+                          RECOMMEND_BUTTON_BK_STYLE,
                           UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_QPUSH_BUTTON_PATH)
+                          RECOMMEND_BUTTON_STYLE)
 
 class DetailScrollWidget(QScrollArea):
     app = ''
@@ -132,10 +132,10 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText("评分" + (str(software.ratings_total)) + "次")
+        self.ui.commentNumber.setText("共 " + str(software.ratings_total) + " 条评论")
         self.ui.gradeText3.setText("满分5分")
         self.ui.grade.setText(str(software.ratings_average))
         self.star = StarWidget('big', software.ratings_average, self.detailWidget)
-
         self.star.move(500, 94)
 
         if(software.is_installed):
@@ -293,7 +293,6 @@ class ScreenShotBig(QWidget):
 
     def eventFilter(self, obj, event):
         if(obj == self.bg and event.type() == QEvent.MouseButtonRelease):
-            print "hide"
             self.hide()
         return True
 

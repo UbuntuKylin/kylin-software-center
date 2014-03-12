@@ -57,7 +57,6 @@ class InstallBackend(QObject):
         print locale.getlocale()
 
         self.iface = None
- #       self.init_dbus_ifaces()
 
     def init_dbus_ifaces(self):
 

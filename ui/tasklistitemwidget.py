@@ -55,6 +55,7 @@ class TaskListItemWidget(QWidget):
             text = "正在执行: "
             if percent >= 100:
                 text = "安装完成"
+                self.ui.progressBar.setValue(percent)
             else:
                 self.ui.progressBar.setValue(percent)
 

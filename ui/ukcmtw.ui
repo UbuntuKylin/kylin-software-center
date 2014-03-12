@@ -31,7 +31,7 @@
     <rect>
      <x>95</x>
      <y>10</y>
-     <width>120</width>
+     <width>130</width>
      <height>17</height>
     </rect>
    </property>
@@ -59,6 +59,19 @@
      <y>33</y>
      <width>600</width>
      <height>34</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="createDate">
+   <property name="geometry">
+    <rect>
+     <x>235</x>
+     <y>10</y>
+     <width>160</width>
+     <height>17</height>
     </rect>
    </property>
    <property name="text">

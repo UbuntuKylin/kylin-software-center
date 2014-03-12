@@ -4,6 +4,7 @@ __author__ = 'Shine Huang'
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukcmtw import Ui_CommentWidget
+from ui.starwidget import StarWidget
 import data
 
 
@@ -13,14 +14,19 @@ class ReviewWidget(QWidget):
         QWidget.__init__(self,parent)
         self.ui_init()
 
+        self.star = StarWidget('small', review.rating, self)
+        self.star.move(719, 42)
+
         self.ui.comment.setAlignment(Qt.AlignVCenter)
         self.ui.comment.setWordWrap(True)
 
         self.ui.userName.setStyleSheet("QLabel{color:#1E66A4;font-size:14px;}")
         self.ui.userHead.setStyleSheet("QLabel{background-image:url('res/userhead.png')}")
+        self.ui.createDate.setStyleSheet("QLabel{color:#9AA2AF;font-size:13px;}")
         self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png')}")
 
         self.ui.userName.setText(review.reviewer_username)
+        self.ui.createDate.setText(review.date_created)
         self.ui.comment.setText(review.review_text)
 
     def ui_init(self):

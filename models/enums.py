@@ -24,12 +24,14 @@
 
 
 import os
+from xdg import BaseDirectory as xdg
 from PyQt4.QtCore import *
+
+from backend.ubuntu_sw import safe_makedirs
 
 
 #########################################################
-UBUNTUKYLIN_RESOURCE_PATH = "/res/"
-UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR = "/home/test/"
+
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
@@ -81,6 +83,8 @@ class TransactionTypes:
     APPLY = "apply_changes"
     REPAIR = "repair_dependencies"
 
+UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
+safe_makedirs(UKSC_CACHE_DIR)
 
 UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
 UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
@@ -88,16 +92,20 @@ UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
 #UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
 UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 
+
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
 UBUNTUKYLIN_RES_TMPICON_PATH = UBUNTUKYLIN_DATA_PATH + "tmpicons/"
 UBUNTUKYLIN_RES_SCREENSHOT_PATH = UBUNTUKYLIN_DATA_PATH + "screenshots/"
+UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
 
-UBUNTUKYLIN_LABEL_STYLE_PATH = ("QLabel{background-image:url(%s)}")
-RECOMMEND_BUTTON_PATH = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
-RECOMMEND_QPUSH_BUTTON_PATH = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
-HEADER_BUTTON_STYLE_PATH = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s)}")
+RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
+RECOMMEND_BUTTON_STYLE = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
+HEADER_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
 
-LIST_BUTTON_STYLE_PATH = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+
+AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 
 class Signals:
     init_models_ready = SIGNAL("init-data-ready")
