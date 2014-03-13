@@ -81,9 +81,14 @@ class FetchProcess(apb.AcquireProgress):
         if self.total_bytes != 0:
             self.percent = float(self.current_bytes * 100.0 / self.total_bytes)
         #kwarg = "download_appname:"+ self.appname + ",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items)
-        print "FetchProcess, pulse: ", kwarg
+        print "FetchProcess, pulse: ", str(self.percent)
 
         self.dbus_service.software_fetch_signal("down_pulse",kwarg)
+
+        # cancel the operation
+        if self.dbus_service.check_cancel_worker_item(self.appname) is True:
+            self.dbus_service.software_fetch_signal("down_cancel",kwarg)
+            return False
 
     def start(self):
         # Reset all our values.

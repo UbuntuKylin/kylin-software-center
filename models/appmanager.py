@@ -61,9 +61,7 @@ class ThreadWorkerDaemon(threading.Thread):
 
     def run(self):
         while True:
-            self.appmgr.mutex.acquire()
             worklen = len(self.appmgr.worklist)
-            self.appmgr.mutex.release()
             if worklen == 0:
                 time.sleep(1)
                 continue
@@ -79,6 +77,8 @@ class ThreadWorkerDaemon(threading.Thread):
             if item.funcname == "update_models":
                 self.appmgr._update_models()
                 reslist.append(item.kwargs["packagename"])
+            elif item.funcname == "init_models":
+                self.appmgr._init_models()
             else:
                 event = multiprocessing.Event()
                 queue = multiprocessing.Queue()
@@ -104,7 +104,7 @@ class AppManager(QObject):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
         self.name = "Ubuntu Kylin Software Center"
-        self.apt_cache = apt.Cache()
+        self.apt_cache = None
         self.cat_list = {}
         self.rnrStatList = {}
         self.language = 'zh_CN'      #'any' for all
@@ -116,21 +116,24 @@ class AppManager(QObject):
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
 
-    def init_models(self):
-        self.open_cache()
-
-        self.download_category_list()
-
-        #self.get_review_rating_stats()
-        #
-        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
-
     #open the apt cache and get the package count
     def open_cache(self):
         if not self.apt_cache:
             self.apt_cache = apt.Cache()
         self.apt_cache.open()
         self.pkgcount = len(self.apt_cache)
+
+    def _init_models(self):
+        self.open_cache()
+
+        self.download_category_list()
+
+    def init_models(self):
+
+        item  = WorkerItem("init_models",None)
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
 
     def _update_models(self):
         self.open_cache()
@@ -423,13 +426,19 @@ class AppManager(QObject):
             LOG.debug("toprated stats ready:%d",len(reslist))
             topRated = reslist
             #print reslist
+
+            self.emit(Signals.toprated_ready,topRated)
         elif item.funcname == "update_models":
             LOG.debug("update apt cache ready")
             pkgname = reslist[0]
             print "update apt cache ready:",len(reslist),pkgname
 
-
             self.emit(Signals.apt_cache_update_ready,pkgname)
+        elif item.funcname == "init_models":
+            LOG.debug("init models ready")
+            self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+            print "init models ready"
+
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):

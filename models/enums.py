@@ -66,11 +66,12 @@ class PkgStates:
     ) = range(17)
 
 
-# application actions
+# application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"
+    CANCEL = "cancel"
     APPLY = "apply_changes"
     PURCHASE = "purchase"
 
@@ -114,6 +115,7 @@ class Signals:
     getallpackagesover = SIGNAL("getallpackagesover")
     countiover = SIGNAL("countiover")
     countuover = SIGNAL("countuover")
+    task_cancel = SIGNAL("taskcancel")
     ads_ready = SIGNAL("advertisements-ready")
     recommend_ready = SIGNAL("recommend-ready")
     toprated_ready = SIGNAL("toprated-ready")

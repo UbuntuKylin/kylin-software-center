@@ -64,6 +64,7 @@ class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"
+    CANCEL = "cancel"
     APPLY = "apply_changes"
     PURCHASE = "purchase"
 
@@ -113,7 +114,9 @@ class SoftwarecenterDbusService(dbus.service.Object):
         dbus.service.Object.__init__(self, self.bus_name, UKPATH)
         self.mainloop = mainloop
         self.worklist = []
+        self.cancel_name_list = []
         self.mutex = threading.RLock()
+        self.cancelmutex = threading.RLock()
         self.worker_thread = WorkThread(self)
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
@@ -143,12 +146,39 @@ class SoftwarecenterDbusService(dbus.service.Object):
         self.mutex.release()
         print "####add_worker_item finished!"
 
-    def del_worker_item(self, item):
-        print "####add_worker_item:",item
+    def del_worker_item_by_name(self, pkgname):
+        print "####del_worker_item_by_name:",pkgname
+        exist = False
         self.mutex.acquire()
-        self.worklist.remove(item)
+        for item in self.worklist:
+            if item.pkgname == pkgname:
+                exist = True
+                break
+        if exist is True:
+            self.worklist.remove(pkgname)
         self.mutex.release()
-        print "####add_worker_item finished!"
+
+        self.cancelmutex.acquire()
+        self.cancel_name_list.append(pkgname)
+        self.cancelmutex.release()
+        print "####del_worker_item_by_name finished!"
+
+    def check_cancel_worker_item(self, pkgname):
+        print "####check_cancel_worker_item:",pkgname
+        cancel = False
+        self.cancelmutex.acquire()
+        print "check_cancel_worker_item:",len(self.cancel_name_list)
+        for item in self.cancel_name_list:
+            if item == pkgname:
+                cancel = True
+                break
+        if cancel is True:
+            self.cancel_name_list.remove(pkgname)
+        self.cancelmutex.release()
+
+        print "####check_cancel_worker_item finished!:",cancel
+        return cancel
+
 
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def exit(self):
@@ -244,12 +274,9 @@ class SoftwarecenterDbusService(dbus.service.Object):
         if not granted:
             return False
 
-        item = WorkItem(pkgName,AppActions.INSTALL,None)
+        self.del_worker_item_by_name(pkgName)
 
-        self.del_worker_item(item)
-
-#        self.daemonApt.install_pkg(pkgName)
-        print "####install return"
+        print "####cancel return"
         return True
 
     #????????????????????????????

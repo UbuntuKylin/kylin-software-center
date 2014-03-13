@@ -129,28 +129,11 @@ class SoftwareCenter(QMainWindow):
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
 
         # init the initial data for view init
-        self.init_models()
+        self.appmgr = AppManager()
+        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
+        self.appmgr.init_models()
 
-        self.slot_goto_homepage()
-
-        #????用于测试进度显示
-        self.btntesttask = QPushButton(self.ui.taskWidget)
-        self.btntesttask.setGeometry(400,20,100,30)
-        self.btntesttask.clicked.connect(self.slot_testtask)
-        self.btntesttask2 = QPushButton(self.ui.taskWidget)
-        self.btntesttask2.setGeometry(520,20,100,30)
-        self.btntesttask2.clicked.connect(self.slot_testtask2)
-
-    #????用于测试进度显示
-    def slot_testtask(self):
-        oneitem = QListWidgetItem()
-        app = self.appmgr.get_application_by_name("gedit")
-        tliw = TaskListItemWidget(app)
-        self.ui.taskListWidget.addItem(oneitem)
-        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-
-    def slot_testtask2(self):
-        self.messageBox.alert_msg("这是一个测试函数..")
+        self.show()
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -303,6 +286,15 @@ class SoftwareCenter(QMainWindow):
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
+        # erase the window edge shade from window manager in 1404
+        bm = QBitmap(self.size())
+        qp = QPainter()
+        qp.begin(bm)
+        qp.setBrush(QColor(0, 0, 0))
+        qp.drawRoundedRect(self.rect(), 10, 10)
+        qp.end()
+        self.setMask(bm)
+
         # advertisement
         adw = ADWidget([], self)
 
@@ -326,9 +318,9 @@ class SoftwareCenter(QMainWindow):
     def init_models(self):
         LOG.debug("begin init_models...")
         #init appmgr
-        self.appmgr = AppManager()
-        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
-        self.appmgr.init_models()
+#        self.appmgr = AppManager()
+#        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
+#        self.appmgr.init_models()
         self.init_category_view()
 
         #init backend
@@ -355,6 +347,8 @@ class SoftwareCenter(QMainWindow):
         self.category = ""
         self.nowPage = "homepage"
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+
+        self.slot_goto_homepage()
 
         #self signals
         self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -390,9 +384,13 @@ class SoftwareCenter(QMainWindow):
 
         if step == "fail":
             LOG.warning("init models failed:%s",message)
+            sys.exit(0)
+            return
 
         elif step == "ok":
             LOG.debug("init models successfully and ready to setup ui...")
+
+            self.init_models() #????
 
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
@@ -626,9 +624,23 @@ class SoftwareCenter(QMainWindow):
     def add_task_item(self, app):
         oneitem = QListWidgetItem()
         tliw = TaskListItemWidget(app)
+        self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
         self.ui.taskListWidget.addItem(oneitem)
         self.ui.taskListWidget.setItemWidget(oneitem, tliw)
         self.stmap[app.name] = tliw
+
+    def del_task_item(self, pkgname):
+        count = self.ui.taskListWidget.count()
+        print "del_task_item:",count
+        for i in range(count):
+            item = self.ui.taskListWidget.item(i)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            if taskitem.app.name == pkgname:
+                print "del_task_item: found an item",i,pkgname
+                delitem = self.ui.taskListWidget.takeItem(i)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                del delitem
+                break
 
     #-------------------------------slots-------------------------------
 
@@ -900,6 +912,10 @@ class SoftwareCenter(QMainWindow):
         self.add_task_item(app)
         self.backend.remove_package(app.name)
 
+    def slot_click_cancel(self, app):
+        LOG.info("cancel an task:%s",app.name)
+        self.backend.cancel_package(app.name)
+
     # search
     def slot_searchDTimer_timeout(self):
         self.searchDTimer.stop()
@@ -927,10 +943,18 @@ class SoftwareCenter(QMainWindow):
         if self.stmap.has_key(name) is False:
             LOG.warning("there is no task for this app:%s",name)
         else:
-            if processtype=='apt' and int(percent)==200:
-                self.emit(Signals.apt_process_finish,name)
-            taskItem = self.stmap[name]
-            taskItem.status_change(processtype, percent, msg)
+            if processtype=='cancel':
+                print "@@@@@@@@@cancel:",name
+                taskItem = self.stmap[name]
+                self.del_task_item(name)
+                del self.stmap[name]
+                print "@@@@@@@@@cancel:finished!"
+            else:
+                if processtype=='apt' and int(percent)==200:
+                    self.emit(Signals.apt_process_finish,name)
+                else:
+                    taskItem = self.stmap[name]
+                    taskItem.status_change(processtype, percent, msg)
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname):

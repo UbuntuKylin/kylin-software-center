@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>895</width>
-    <height>614</height>
+    <width>907</width>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <widget class="QWidget" name="leftWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>107</y>
+      <x>46</x>
+      <y>113</y>
       <width>152</width>
       <height>479</height>
      </rect>
@@ -86,8 +86,8 @@
    <widget class="QWidget" name="homepageWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
-      <y>107</y>
+      <x>198</x>
+      <y>113</y>
       <width>663</width>
       <height>479</height>
      </rect>
@@ -230,9 +230,9 @@
    <widget class="QWidget" name="bottomWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>37</x>
-      <y>586</y>
-      <width>821</width>
+      <x>40</x>
+      <y>592</y>
+      <width>827</width>
       <height>28</height>
      </rect>
     </property>
@@ -279,8 +279,8 @@
    <widget class="QWidget" name="upWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
-      <y>107</y>
+      <x>198</x>
+      <y>113</y>
       <width>663</width>
       <height>479</height>
      </rect>
@@ -325,8 +325,8 @@
    <widget class="QWidget" name="unWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
-      <y>107</y>
+      <x>198</x>
+      <y>113</y>
       <width>663</width>
       <height>479</height>
      </rect>
@@ -371,8 +371,8 @@
    <widget class="QWidget" name="allsWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
-      <y>107</y>
+      <x>198</x>
+      <y>113</y>
       <width>663</width>
       <height>479</height>
      </rect>
@@ -417,8 +417,8 @@
    <widget class="QWidget" name="item1Widget" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>107</y>
+      <x>6</x>
+      <y>113</y>
       <width>56</width>
       <height>134</height>
      </rect>
@@ -427,8 +427,8 @@
    <widget class="QWidget" name="item2Widget" native="true">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>262</y>
+      <x>6</x>
+      <y>268</y>
       <width>40</width>
       <height>90</height>
      </rect>
@@ -437,8 +437,8 @@
    <widget class="QPushButton" name="btnClose">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>241</y>
+      <x>6</x>
+      <y>247</y>
       <width>40</width>
       <height>21</height>
      </rect>
@@ -450,8 +450,8 @@
    <widget class="QPushButton" name="btnMin">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>271</y>
+      <x>6</x>
+      <y>277</y>
       <width>40</width>
       <height>21</height>
      </rect>
@@ -463,8 +463,8 @@
    <widget class="QPushButton" name="btnSkin">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>301</y>
+      <x>6</x>
+      <y>307</y>
       <width>40</width>
       <height>21</height>
      </rect>
@@ -476,8 +476,8 @@
    <widget class="QPushButton" name="btnConf">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>331</y>
+      <x>6</x>
+      <y>337</y>
       <width>40</width>
       <height>21</height>
      </rect>
@@ -491,15 +491,15 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>895</width>
-      <height>130</height>
+      <width>907</width>
+      <height>141</height>
      </rect>
     </property>
     <widget class="QPushButton" name="btnBack">
      <property name="geometry">
       <rect>
        <x>70</x>
-       <y>22</y>
+       <y>28</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -512,7 +512,7 @@
      <property name="geometry">
       <rect>
        <x>126</x>
-       <y>22</y>
+       <y>28</y>
        <width>41</width>
        <height>41</height>
       </rect>
@@ -525,7 +525,7 @@
      <property name="geometry">
       <rect>
        <x>221</x>
-       <y>24</y>
+       <y>30</y>
        <width>77</width>
        <height>34</height>
       </rect>
@@ -538,7 +538,7 @@
      <property name="geometry">
       <rect>
        <x>319</x>
-       <y>24</y>
+       <y>30</y>
        <width>77</width>
        <height>34</height>
       </rect>
@@ -551,7 +551,7 @@
      <property name="geometry">
       <rect>
        <x>419</x>
-       <y>24</y>
+       <y>30</y>
        <width>77</width>
        <height>34</height>
       </rect>
@@ -564,7 +564,7 @@
      <property name="geometry">
       <rect>
        <x>667</x>
-       <y>15</y>
+       <y>21</y>
        <width>159</width>
        <height>56</height>
       </rect>
@@ -577,7 +577,7 @@
      <property name="geometry">
       <rect>
        <x>515</x>
-       <y>24</y>
+       <y>30</y>
        <width>113</width>
        <height>34</height>
       </rect>
@@ -590,7 +590,7 @@
      <property name="geometry">
       <rect>
        <x>670</x>
-       <y>85</y>
+       <y>91</y>
        <width>154</width>
        <height>20</height>
       </rect>
@@ -600,7 +600,7 @@
      <property name="geometry">
       <rect>
        <x>675</x>
-       <y>90</y>
+       <y>96</y>
        <width>10</width>
        <height>10</height>
       </rect>
@@ -613,8 +613,8 @@
    <widget class="QWidget" name="searchWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>192</x>
-      <y>107</y>
+      <x>198</x>
+      <y>113</y>
       <width>663</width>
       <height>479</height>
      </rect>
@@ -659,8 +659,8 @@
    <widget class="QWidget" name="taskWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>107</y>
+      <x>46</x>
+      <y>113</y>
       <width>815</width>
       <height>479</height>
      </rect>
@@ -705,9 +705,9 @@
    <widget class="QLabel" name="leftBorder">
     <property name="geometry">
      <rect>
-      <x>37</x>
-      <y>107</y>
-      <width>3</width>
+      <x>40</x>
+      <y>113</y>
+      <width>6</width>
       <height>479</height>
      </rect>
     </property>
@@ -718,9 +718,9 @@
    <widget class="QLabel" name="rightBorder">
     <property name="geometry">
      <rect>
-      <x>855</x>
-      <y>107</y>
-      <width>3</width>
+      <x>861</x>
+      <y>113</y>
+      <width>6</width>
       <height>479</height>
      </rect>
     </property>
