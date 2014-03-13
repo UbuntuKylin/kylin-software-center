@@ -94,10 +94,11 @@ UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
 #UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
 UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 
+UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
+safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
 UBUNTUKYLIN_RES_TMPICON_PATH = UBUNTUKYLIN_DATA_PATH + "tmpicons/"
-UBUNTUKYLIN_RES_SCREENSHOT_PATH = UBUNTUKYLIN_DATA_PATH + "screenshots/"
 UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
 
 ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s)}")

@@ -27,7 +27,7 @@ class DetailScrollWidget(QScrollArea):
         self.detailWidget = QWidget()
         self.ui_init()
 
-        self.setGeometry(QRect(40, 107, 815, 479))
+        self.setGeometry(QRect(46, 113, 815, 479))
         self.setWidget(self.detailWidget)
 
         self.bigsshot = ScreenShotBig()

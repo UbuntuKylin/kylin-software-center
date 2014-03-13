@@ -6,7 +6,7 @@ from distutils.core import setup
 #import build_i18n_ext as build_i18n
 
 setup(name="ubuntu-kylin-software-center",
-      version="0.2.2",
+      version="0.2.1",
       author="Ubuntu Kylin Team",
       author_email="ubuntukylin-members@list.launchpad.net",
       url="https://launchpad.net/ubuntu-kylin-software-center",
@@ -33,5 +33,5 @@ setup(name="ubuntu-kylin-software-center",
     ('../opt/ubuntu-kylin-software-center/test/', glob.glob('test/*')),
     ('../opt/ubuntu-kylin-software-center/ui/', glob.glob('ui/*')),
     ('../opt/ubuntu-kylin-software-center/utils/', glob.glob('utils/*')),
-    ('../opt/ubuntu-kylin-software-center/',['ReadMe','softwarecenter.py']),
+    ('../opt/ubuntu-kylin-software-center/',['ReadMe','ubuntu-kylin-software-center.py']),
     ])
