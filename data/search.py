@@ -401,7 +401,7 @@ class Search:
         """search interface"""
         # db = StoreDatabase("/var/cache/software-center/xapian", apt.Cache())
         self.db.open()
-        query = self.db.get_query_list_from_search_entry(keyword)
+        query = self.db.get_query_list_from_search_entry(str(keyword))
         enquire = xapian.Enquire(self.db.xapiandb)
         enquire.set_query(query[1])
         matches = enquire.get_mset(0, len(self.db))

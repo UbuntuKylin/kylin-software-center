@@ -361,6 +361,9 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.count_upgradable_ready,self.slot_count_upgradable_ready)
         self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
         self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
+        self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
+        self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
+
 
         #conncet apt signals
         self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
@@ -873,8 +876,6 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_app_detail(self, app):
         self.detailScrollWidget.showSimple(app)
-        self.connect(self.appmgr,Signals.app_reviews_ready, self.slot_app_reviews_ready)
-        self.connect(self.appmgr,Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.appmgr.get_application_reviews(app.name)
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
@@ -917,7 +918,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.searchMSGBar.setText("共搜索到软件 <font color='#009900'>" + str(count) + "</font> 款")
 
     def slot_search_text_change(self, text):
-        print "=====slot_search_text_change:",text
+  #      print "=====slot_search_text_change:",text
         self.searchDTimer.stop()
         self.searchDTimer.start(500)
 
