@@ -1,5 +1,12 @@
 ubuntu-kylin-software-center (0.2.2-0ubuntu1) trusty; urgency=low
 
+  * Add quick launch.
+  * Solve transparent of main window (bug#1291345)
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Wed, 12 Mar 2014 18:15:13 +0800
+
+ubuntu-kylin-software-center (0.2.2-0ubuntu1) trusty; urgency=low
+
   * Remove print log operations and implement with logging.
   * Modify the default cache and resource path.
 

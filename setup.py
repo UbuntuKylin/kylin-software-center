@@ -17,8 +17,8 @@ setup(name="ubuntu-kylin-software-center",
     ('share/dbus-1/system-services/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.service']),
     ('share/polkit-1/actions/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.policy']),
 #    ('lib/python2.7/dist-packages/ubuntu-kylin-software-center-daemon/', ['backend/aptdaemon/dbus_service/start_systemdbus.py']),
-    ('share/applications/',['ubuntu-kylin-software-center.desktop'])
-    ('share/pixmaps/',['ubuntu-kylin-software-center.svg'])
+    ('share/applications/',['ubuntu-kylin-software-center.desktop']),
+    ('share/pixmaps/',['ubuntu-kylin-software-center.svg']),
     ('share/ubuntu-kylin-software-center-daemon/', glob.glob('backend/aptdaemon/dbus_service/*.py')),
     ('../opt/ubuntu-kylin-software-center/backend/piston/', glob.glob('backend/piston/*.py')),
     ('../opt/ubuntu-kylin-software-center/backend', glob.glob('backend/*.py')),

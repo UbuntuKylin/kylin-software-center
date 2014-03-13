@@ -140,7 +140,7 @@ class ListItemWidget(QWidget):
         self.emit(Signals.show_app_detail, self.app)
 
     def slot_work_finished(self, newPackage):
-        self.app.package = newPackage
+#        self.app.package = newPackage
         if(self.workType == 'homepage'):
             self.ui.btn.setText("已安装")
         elif(self.workType == 'uppage'):

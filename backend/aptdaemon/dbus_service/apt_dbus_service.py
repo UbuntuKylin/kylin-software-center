@@ -83,7 +83,7 @@ class WorkThread(threading.Thread):
         self.dbus_service = dbus_service
 
     def run(self):
-        print "The backend start the work thread..."
+#        print "The backend start the work thread..."
         while(True):
             if len(self.dbus_service.worklist) == 0:
                 time.sleep(0.5)
