@@ -37,7 +37,6 @@ from models.enums import (ITEM_LABEL_STYLE,
 from models.enums import Signals
 
 class RecommendItem(QWidget):
-    software = ''
 
     def __init__(self,app, backend, parent=None):
         QWidget.__init__(self,parent)
@@ -68,6 +67,8 @@ class RecommendItem(QWidget):
         if(self.app.is_installed):
             self.ui.btn.setText("已安装")
             self.ui.btn.setEnabled(False)
+        else:
+            self.ui.btn.setText("安装")
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
@@ -95,8 +96,9 @@ class RecommendItem(QWidget):
     def slot_btn_click(self):
         self.ui.btn.setEnabled(False)
         self.ui.btn.setText("正在处理")
-#        data.sbo.install_software(self)
-        self.backend.install_package(self.app.name)
+
+        self.emit(Signals.install_app, self.app)
+        #self.backend.install_package(self.app.name)
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)

@@ -110,9 +110,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
         self.connect(self, SIGNAL("clickitem"), self.slot_show_app_detail) #????
 
-        self.connect(self.detailScrollWidget, SIGNAL("clickinstall"), self.slot_click_install)
-        self.connect(self.detailScrollWidget, SIGNAL("clickupdate"), self.slot_click_update)
-        self.connect(self.detailScrollWidget, SIGNAL("clickremove"), self.slot_click_remove)
+        self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
+        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_update)
+        self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
 
         # init text info
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
@@ -363,7 +363,7 @@ class SoftwareCenter(QMainWindow):
         self.slot_goto_homepage()
 
         #self signals
-        self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
+        self.connect(self,Signals.dbus_apt_finish,self.slot_dbus_apt_finish)
 
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -460,7 +460,7 @@ class SoftwareCenter(QMainWindow):
                 x = 0
                 y = 0
                 recommend = RecommendItem(software,self.ui.recommendWidget)
-                self.connect(recommend, SIGNAL("btnshowdetail"), self.slot_show_detail)
+                self.connect(recommend, Signals.show_app_detail, self.slot_show_detail)
                 if(self.recommendNumber in (0, 1, 2)):
                     y = 0
                 elif(self.recommendNumber in (3, 4, 5)):
@@ -542,10 +542,10 @@ class SoftwareCenter(QMainWindow):
 
             oneitem = QListWidgetItem()
             liw = ListItemWidget(app, self.backend, self.nowPage)
-            self.connect(liw, SIGNAL("btnshowdetail"), self.slot_show_app_detail)
-            self.connect(liw, SIGNAL("clickinstall"), self.slot_click_install)
-            self.connect(liw, SIGNAL("clickupdate"), self.slot_click_update)
-            self.connect(liw, SIGNAL("clickremove"), self.slot_click_remove)
+            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
+            self.connect(liw, Signals.install_app, self.slot_click_install)
+            self.connect(liw, Signals.upgrade_app, self.slot_click_update)
+            self.connect(liw, Signals.remove_app, self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
             count = count + 1
@@ -580,10 +580,10 @@ class SoftwareCenter(QMainWindow):
 
             oneitem = QListWidgetItem()
             liw = ListItemWidget(app, self.backend, self.nowPage)
-            self.connect(liw, SIGNAL("btnshowdetail"), self.slot_show_app_detail)
-            self.connect(liw, SIGNAL("clickinstall"), self.slot_click_install)
-            self.connect(liw, SIGNAL("clickupdate"), self.slot_click_update)
-            self.connect(liw, SIGNAL("clickremove"), self.slot_click_remove)
+            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
+            self.connect(liw, Signals.install_app, self.slot_click_install)
+            self.connect(liw, Signals.upgrade_app, self.slot_click_update)
+            self.connect(liw, Signals.remove_app, self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
             count = count + 1
@@ -694,6 +694,10 @@ class SoftwareCenter(QMainWindow):
         for app in applist:
             recommend = RecommendItem(app,self.backend,self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
+            self.connect(recommend, Signals.install_app, self.slot_click_install)
+            self.connect(recommend, Signals.upgrade_app, self.slot_click_update)
+            self.connect(recommend, Signals.remove_app, self.slot_click_remove)
+
             if index%count_per_line == 0:
                 x = 0
             x = int(index%count_per_line)*176
@@ -706,6 +710,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
+        print "receive ratings and reviews ready, count is:",len(rnrlist)
 
         self.rnr_ready = True
         self.check_init_data_ready()
@@ -930,6 +935,7 @@ class SoftwareCenter(QMainWindow):
 
     # search
     def slot_searchDTimer_timeout(self):
+        print "=====slot_searchDTimer_timeout:"
         self.searchDTimer.stop()
         if self.ui.leSearch.text():
             reslist = self.searchDB.search_software(str(self.ui.leSearch.text()))
@@ -947,6 +953,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.searchMSGBar.setText("共搜索到软件 <font color='#009900'>" + str(count) + "</font> 款")
 
     def slot_search_text_change(self, text):
+        print "=====slot_search_text_change:",text
         self.searchDTimer.stop()
         self.searchDTimer.start(500)
 
@@ -955,22 +962,19 @@ class SoftwareCenter(QMainWindow):
         if self.stmap.has_key(name) is False:
             LOG.warning("there is no task for this app:%s",name)
         else:
+            taskItem = self.stmap[name]
             if processtype=='cancel':
-                print "@@@@@@@@@cancel:",name
-                taskItem = self.stmap[name]
                 self.del_task_item(name)
                 del self.stmap[name]
-                print "@@@@@@@@@cancel:finished!"
             else:
                 if processtype=='apt' and int(percent)==200:
-                    self.emit(Signals.apt_process_finish,name)
+                    self.emit(Signals.dbus_apt_finish,name)
                 else:
-                    taskItem = self.stmap[name]
                     taskItem.status_change(processtype, percent, msg)
 
     # call the backend models update opeartion
-    def slot_apt_process_finish(self,pkgname):
-        print "slot_apt_process_finish:",pkgname
+    def slot_dbus_apt_finish(self,pkgname):
+        print "slot_dbus_apt_finish:",pkgname
 
         self.appmgr.update_models(pkgname)
 

@@ -27,12 +27,12 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
-import data
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
                           LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_BUTTON_STYLE)
+                          RECOMMEND_BUTTON_STYLE,
+                          Signals)
 
 class ListItemWidget(QWidget):
     app = ''
@@ -122,22 +122,22 @@ class ListItemWidget(QWidget):
         self.ui.btn.setText("请稍候")
         if(self.workType == 'homepage'):
 #            print "click install"
-            self.emit(SIGNAL("clickinstall"), self.app)
+            self.emit(Signals.install_app, self.app)
             # self.backend.install_package(self.app.name)
             #data.sbo.install_software(self)
         elif(self.workType == 'uppage'):
 #            print "click update"
-            self.emit(SIGNAL("clickupdate"), self.app)
+            self.emit(Signals.upgrade_app, self.app)
             # self.backend.upgrade_package(self.app.name)
             #data.sbo.update_software(self)
         elif(self.workType == 'unpage'):
 #            print "click remove"
-            self.emit(SIGNAL("clickremove"), self.app)
+            self.emit(Signals.remove_app, self.app)
             # self.backend.remove_package(self.app.name)
             #data.sbo.remove_software(self)
 
     def slot_emit_detail(self):
-        self.emit(SIGNAL("btnshowdetail"), self.app)
+        self.emit(Signals.show_app_detail, self.app)
 
     def slot_work_finished(self, newPackage):
         self.app.package = newPackage

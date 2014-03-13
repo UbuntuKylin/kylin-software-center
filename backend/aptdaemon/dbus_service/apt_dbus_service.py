@@ -91,7 +91,7 @@ class WorkThread(threading.Thread):
             self.dbus_service.mutex.acquire()
             item = self.dbus_service.worklist.pop()
             self.dbus_service.mutex.release()
-            print "procing item:",item
+#            print "procing item:",item
             func = getattr(self.dbus_service.daemonApt,item.action)
             if func is None:
                 print "Error action: ", item
@@ -100,7 +100,7 @@ class WorkThread(threading.Thread):
             if res is False:
                 print "Action exec failed..."
 
-            print "finish one acion....."
+#            print "finish one acion....."
             time.sleep(0.5)
 
 class SoftwarecenterDbusService(dbus.service.Object):
@@ -110,7 +110,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         self.daemonApt = AptDaemon(self)
         self.bus = bus
         self.bus_name = dbus.service.BusName(INTERFACE, bus=bus)
-        print "SoftwarecenterDbusService:",self.bus_name
+#        print "SoftwarecenterDbusService:",self.bus_name
         dbus.service.Object.__init__(self, self.bus_name, UKPATH)
         self.mainloop = mainloop
         self.worklist = []
@@ -125,7 +125,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         if not sender: 
             raise ValueError('sender == None')
 
-        print "auth_with_policykit:", sender
+#        print "auth_with_policykit:", sender
 
         obj = dbus.SystemBus().get_object('org.freedesktop.PolicyKit1',
                                                 '/org/freedesktop/PolicyKit1/Authority')

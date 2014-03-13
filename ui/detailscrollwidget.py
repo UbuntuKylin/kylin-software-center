@@ -12,6 +12,7 @@ from ui.listitemwidget import ListItemWidget
 from ui.loadingdiv import *
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
+                          Signals,
                           RECOMMEND_BUTTON_BK_STYLE,
                           UBUNTUKYLIN_RES_PATH,
                           RECOMMEND_BUTTON_STYLE)
@@ -240,17 +241,17 @@ class DetailScrollWidget(QScrollArea):
         self.hide()
 
     def slot_click_install(self):
-        self.emit(SIGNAL("clickinstall"), self.app)
+        self.emit(Signals.install_app, self.app)
         self.ui.btnInstall.setText("处理中")
         self.ui.btnInstall.setEnabled(False)
 
     def slot_click_update(self):
-        self.emit(SIGNAL("clickupdate"), self.app)
+        self.emit(Signals.upgrade_app, self.app)
         self.ui.btnUpdate.setText("处理中")
         self.ui.btnUpdate.setEnabled(False)
 
     def slot_click_uninstall(self):
-        self.emit(SIGNAL("clickremove"), self.app)
+        self.emit(Signals.remove_app, self.app)
         self.ui.btnUninstall.setText("处理中")
         self.ui.btnUninstall.setEnabled(False)
 

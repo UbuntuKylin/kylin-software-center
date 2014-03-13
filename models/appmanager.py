@@ -417,6 +417,8 @@ class AppManager(QObject):
 
             for rnrStat in rnrStats:
                 app = self.get_application_by_name(str(rnrStat.pkgname))
+                if(str(rnrStat.pkgname) == "gparted"):
+                    print "######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app
                 if app is not None:
                     app.ratings_average = rnrStat.ratings_average
                     app.ratings_total = rnrStat.ratings_total
