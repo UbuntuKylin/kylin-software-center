@@ -196,6 +196,10 @@ class AppManager(QObject):
                 zhcnc = '热门推荐'
                 index = 10
                 visible = False
+            if(c == 'toprated'):
+                zhcnc = '排行榜'
+                index = 11
+                visible = False
 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c,catdir))
@@ -417,17 +421,17 @@ class AppManager(QObject):
 
             for rnrStat in rnrStats:
                 app = self.get_application_by_name(str(rnrStat.pkgname))
-                if(str(rnrStat.pkgname) == "gparted"):
-                    print "######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app
                 if app is not None:
                     app.ratings_average = rnrStat.ratings_average
                     app.ratings_total = rnrStat.ratings_total
+                if(str(rnrStat.pkgname) == "gparted"):
+                    print "######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app
+
 
             self.emit(Signals.rating_reviews_ready,rnrStats)
         elif item.funcname == "get_toprated_stats":
             LOG.debug("toprated stats ready:%d",len(reslist))
             topRated = reslist
-            #print reslist
 
             self.emit(Signals.toprated_ready,topRated)
         elif item.funcname == "update_models":

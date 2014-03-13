@@ -289,7 +289,7 @@ class RatingsAndReviwsMethod:
             rnr = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)
             sat_res = rnr.server_status()
             LOG.debug("review and rating service stat:%s",sat_res)
-            statlist = rnr.review_stats(distroseries='any')
+            statlist = rnr.review_stats()  #distroseries='any'
 
             index = 0
             for stat in statlist:

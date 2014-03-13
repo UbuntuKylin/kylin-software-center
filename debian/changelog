@@ -25,7 +25,6 @@ ubuntu-kylin-software-center (0.2.1-0ubuntu1) trusty; urgency=low
   * Modify the default cache and resource path.
 
  -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Tue, 11 Mar 2014 17:23:11 +0800
- -- Jun Ma (maclin) <majun@ubuntukylin.com>  Tue, 11 Mar 2014 17:23:11 +0800
 
 ubuntu-kylin-software-center (0.2.1-0ubuntu1) trusty; urgency=low
 

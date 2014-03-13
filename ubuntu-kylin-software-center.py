@@ -438,33 +438,6 @@ class SoftwareCenter(QMainWindow):
         tmpads.append(Advertisement("qt", "pkg", "ad3.png", "qtcreator"))
         adw = ADWidget(tmpads, self)
 
-    def tmp_fill_recommend_softwares(self):
-        rnames = ['flashplugin-installer','vlc','openfetion','virtualbox']
-        for name in rnames:
-            self.add_one_recommend_software(name)
-
-    def add_one_recommend_software(self, name):
-        for software in data.softwareList:
-            if(software.name == name):
-                x = 0
-                y = 0
-                recommend = RecommendItem(software,self.ui.recommendWidget)
-                self.connect(recommend, Signals.show_app_detail, self.slot_show_detail)
-                if(self.recommendNumber in (0, 1, 2)):
-                    y = 0
-                elif(self.recommendNumber in (3, 4, 5)):
-                    y = 88
-                else:
-                    y = 176
-                if(self.recommendNumber in (0, 3, 6)):
-                    x = 0
-                elif(self.recommendNumber in (1, 4, 7)):
-                    x = 176
-                else:
-                    x = 352
-                recommend.move(x, y)
-                self.recommendNumber += 1
-
     # delete packages from apt backend which not in category file
     def check_software(self, sl):
         slist = []
@@ -700,6 +673,8 @@ class SoftwareCenter(QMainWindow):
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
         print "receive ratings and reviews ready, count is:",len(rnrlist)
+        app = self.appmgr.get_application_by_name("gimp")
+
 
         self.rnr_ready = True
         self.check_init_data_ready()
