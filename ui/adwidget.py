@@ -123,7 +123,6 @@ class ADWidget(QWidget):
             adx += 663
             ad.setFocusPolicy(Qt.NoFocus)
             ad.setCursor(Qt.PointingHandCursor)
-#            ad.setStyleSheet("QPushButton{background-image:url('res/" + one.pic + "');border:0px;}")
             ad.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic))
             ad.connect(ad, SIGNAL("adsignal"), parent.slot_click_ad)
             self.ads.append(ad)
@@ -134,14 +133,28 @@ class ADWidget(QWidget):
             adbx += 20
             adbtn.setFocusPolicy(Qt.NoFocus)
             adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
-            adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad)
+            adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad_immediately)
             self.adbs.append(adbtn)
 
             i += 1
 
+    def slot_change_ad_immediately(self, i):
+        self.adi = i
+        for adb in self.adbs:
+            adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
+        self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/adbtn-2.png');border:0px;}")
+
+        self.adx = self.adi * 663 * - 1
+        self.adContentWidget.move(self.adx, 0)
+
+        self.admtimer.stop()
+        self.adtimer.start(2500)
+
     def slot_change_ad(self, i):
         if(len(self.adbs) == 0):
             return
+
+        self.lock_adbs(False)
 
         self.adi = i
         for adb in self.adbs:
@@ -163,14 +176,21 @@ class ADWidget(QWidget):
         self.slot_change_ad(self.adi)
 
     def slot_admtimer_update(self):
-        if(self.adx - self.adi * 663 * -1 <= 2):
+        if(self.adx - self.adi * 663 * -1 <= 8):
             self.adx = self.adi * 663 * - 1
             self.adContentWidget.move(self.adx, 0)
+
+            self.lock_adbs(True)
+
             self.admtimer.stop()
-            self.adtimer.start(3000)
+            self.adtimer.start(2500)
         else:
             self.adx -= 8
             self.adContentWidget.move(self.adx, 0)
+
+    def lock_adbs(self, flag):
+        for btn in self.adbs:
+            btn.setEnabled(flag)
 
     def update_total_count(self,count):
         self.softCount.setText(str(count))

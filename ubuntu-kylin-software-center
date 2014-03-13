@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd /opt/ubuntu-kylin-software-center/
-python softwarecenter.py
+python ubuntu-kylin-software-center.py
