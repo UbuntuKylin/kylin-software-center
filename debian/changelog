@@ -1,33 +1,88 @@
-ubuntu-kylin-software-center (0.2.1-0ubuntu1) trusty; urgency=low
+ubuntu-kylin-software-center (0.2.2-0ubuntu1) trusty; urgency=low
 
-  * Implement the main page with new dsigned pics.
-  * build up basic UI of category and application list.
-  * implement package install/uninstall/upgrade by backend thread pool .
-  * use gksu to access privilege to install package.
-  * Implement the dbus service to install/uninstall/upgrade packages.
-  * Rewrite the data management by object abstract.
-  * Get reviews information from those of ubuntu.
-  * Add screenshot and review/rating procedure.
-  * Implement the remote data with multiprocessing.
-  * Add task view of package management procedure
-  * Implement basic ui with new dsigned ui pics 
-  * rewrite the dbus service with thread daemon.
-  * optimize the interfaces between frontend and backend
-  * Add search widget for package search. 
-  * Implement search method with xapian.
-  * Implement detail view of application.
-  * Add wait spin ui.
-  * Add screenshots and reviews show.
-  * Optimize the backend data management.
-  * Fix many little problems.
-  * Rebuid the start process to solve some operation conflicts.
+  * Add quick launch.
+  * Solve transparent of main window (bug#1291345)
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Wed, 12 Mar 2014 18:15:13 +0800
+
+ubuntu-kylin-software-center (0.2.2-0ubuntu1) trusty; urgency=low
+
   * Remove print log operations and implement with logging.
   * Modify the default cache and resource path.
 
- -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Tue, 11 Mar 2014 17:23:11 +0800
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Tue, 11 Mar 2014 17:23:11 +0800
+
 
 ubuntu-kylin-software-center (0.2.1-0ubuntu1) trusty; urgency=low
 
+  * Optimize the backend data management.
+  * Fix many little problems.
+  * Rebuid the start process to solve some operation conflicts.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Tue, 11 Mar 2014 22:23:11 +0800
+
+
+ubuntu-kylin-software-center (0.2.1-0ubuntu1) trusty; urgency=low
+
+  * Implement detail view of application.
+  * Add wait spin ui.
+  * Add screenshots and reviews show.
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Tue, 11 Mar 2014 15:10:11 +0800
+
+ubuntu-kylin-software-center (0.2.0-0ubuntu1) trusty; urgency=low
+
+  * Add search widget for package search. 
+  * Implement search method with xapian.
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Mon, 10 Mar 2014 18:49:13 +0800
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Mon, 10 Mar 2014 18:49:13 +0800
+
+ubuntu-kylin-software-center (0.1.6-0ubuntu1) trusty; urgency=low
+
+  * rewrite the dbus service with thread daemon.
+  * optimize the interfaces between frontend and backend
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Mon, 10 March 2014 09:39:45 +0800
+
+ubuntu-kylin-software-center (0.1.5-0ubuntu1) trusty; urgency=low
+
+  * Add task view of package management procedure
+  * Implement basic ui with new dsigned ui pics 
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Sun, 09 Aug 2013 11:25:15 +0800
+
+ubuntu-kylin-software-center (0.1.4-0ubuntu1) trusty; urgency=low
+
+  * Add screenshot and review/rating procedure.
+  * Implement the remote data with multiprocessing.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Sun, 09 Mar 2014 01:53:16 +0800
+
+ubuntu-kylin-software-center (0.1.3-0ubuntu1) trusty; urgency=low
+
+  * Implement the dbus service to install/uninstall/upgrade packages.
+  * Rewrite the data management by object abstract.
+  * Get reviews information from those of ubuntu.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Thu, 08 March 2014 15:54:08 +0800
+
+ubuntu-kylin-software-center (0.1.2-0ubuntu1) trusty; urgency=low
+
+  * build up basic UI of category and application list.
+  * implement package install/uninstall/upgrade by backend thread pool .
+  * use gksu to access privilege to install package.
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Thu, 06 Mar 2014 20:53:15 +0800
+
+ubuntu-kylin-software-center (0.1.1-0ubuntu1) trusty; urgency=low
+
+  * Implement the main page with new dsigned pics.
+
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Fri, 28 Feb 2014 15:51:14 +0800
+
+ubuntu-kylin-software-center (0.1.1-0ubuntu1) trusty; urgency=low
+
   * Initial release.
 
- -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Tue, 11 Mar 2014 17:23:11 +0800
+ -- Shine Huang (shine) <shenghuang@ubuntukylin.com>  Sun, 26 Jan 2014 16:51:14 +0800
