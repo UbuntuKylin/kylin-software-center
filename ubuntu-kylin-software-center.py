@@ -903,7 +903,9 @@ class SoftwareCenter(QMainWindow):
         print "=====slot_searchDTimer_timeout:"
         self.searchDTimer.stop()
         if self.ui.leSearch.text():
-            reslist = self.searchDB.search_software(str(self.ui.leSearch.text()))
+            s = self.ui.leSearch.text().toUtf8()
+            print "输入的QString转utf-8：" + s
+            reslist = self.searchDB.search_software(s)
 
             #返回查询结果
             LOG.debug("search result:%d",len(reslist))

@@ -120,6 +120,7 @@ class StoreDatabase(GObject.GObject):
         if pathname is None:
             pathname = XAPIAN_PATH
         self._db_pathname = pathname
+        locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
         if cache is None:
             cache = get_pkg_info()
         self._aptcache = cache
