@@ -74,6 +74,7 @@ class AppActions:
     CANCEL = "cancel"
     APPLY = "apply_changes"
     PURCHASE = "purchase"
+    UPDATE = "update"
 
 
 # transaction types
@@ -130,5 +131,27 @@ class Signals:
     remove_app = SIGNAL("remove-app")
     upgrade_app = SIGNAL("upgrade-app")
     dbus_apt_process = SIGNAL("dbus-apt-process")
-    dbus_apt_finish = SIGNAL("dbus-apt-finish")
+    apt_process_finish = SIGNAL("apt-process-finish")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
+
+
+AptActionMsg = {
+    "install":"安装",
+    "remove":"卸载!",
+    "upgrade":"更新",
+    "update":"源更新",
+}
+
+AptProcessMsg = {
+    "apt_start":"开始...",
+    "apt_finish":"完成!",
+    "apt_error":"失败!",
+    "apt_pulse":"进行中",
+    "down_start":"下载开始",
+    "down_stop":"下载停止",
+    "down_done":"下载完成",
+    "down_fail":"下载失败",
+    "down_fetch":"单项下载完成",
+    "down_pulse":"下载进行中...",
+    "down_cancel":"下载取消",
+}

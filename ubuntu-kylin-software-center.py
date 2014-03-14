@@ -352,7 +352,7 @@ class SoftwareCenter(QMainWindow):
         self.slot_goto_homepage()
 
         #self signals
-        self.connect(self,Signals.dbus_apt_finish,self.slot_dbus_apt_finish)
+        self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
 
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -506,7 +506,7 @@ class SoftwareCenter(QMainWindow):
                 break
 
             oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage)
+            liw = ListItemWidget(app, self.backend, self.nowPage, self)
             self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(liw, Signals.install_app, self.slot_click_install)
             self.connect(liw, Signals.upgrade_app, self.slot_click_update)
@@ -544,7 +544,7 @@ class SoftwareCenter(QMainWindow):
                 break
 
             oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage)
+            liw = ListItemWidget(app, self.backend, self.nowPage, self)
             self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(liw, Signals.install_app, self.slot_click_install)
             self.connect(liw, Signals.upgrade_app, self.slot_click_update)
@@ -600,7 +600,7 @@ class SoftwareCenter(QMainWindow):
 
     def add_task_item(self, app):
         oneitem = QListWidgetItem()
-        tliw = TaskListItemWidget(app)
+        tliw = TaskListItemWidget(app,self)
         self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
         self.ui.taskListWidget.addItem(oneitem)
         self.ui.taskListWidget.setItemWidget(oneitem, tliw)
@@ -923,7 +923,7 @@ class SoftwareCenter(QMainWindow):
         self.searchDTimer.start(500)
 
     # name:app name ; processtype:fetch/apt ;
-    def slot_status_change(self, name, processtype, percent, msg):
+    def slot_status_change(self, name, processtype, action, percent, msg):
         if self.stmap.has_key(name) is False:
             LOG.warning("there is no task for this app:%s",name)
         else:
@@ -932,14 +932,14 @@ class SoftwareCenter(QMainWindow):
                 self.del_task_item(name)
                 del self.stmap[name]
             else:
-                if processtype=='apt' and int(percent)==200:
-                    self.emit(Signals.dbus_apt_finish,name)
+                if processtype=='apt' and int(percent)>=100:
+                    self.emit(Signals.apt_process_finish,name,action)
                 else:
                     taskItem.status_change(processtype, percent, msg)
 
     # call the backend models update opeartion
-    def slot_dbus_apt_finish(self,pkgname):
-        print "slot_dbus_apt_finish:",pkgname
+    def slot_apt_process_finish(self,pkgname,action):
+        print "slot_apt_process_finish:",pkgname,action
 
         self.appmgr.update_models(pkgname)
 

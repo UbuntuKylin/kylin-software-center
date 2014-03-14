@@ -38,7 +38,8 @@ from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
                           UBUNTUKYLIN_INTERFACE_PATH,
                           AppActions,
                           Signals,
-                          TransactionTypes)
+                          AptActionMsg,
+                          AptProcessMsg)
 
 import multiprocessing
 
@@ -47,6 +48,7 @@ mainloop = DBusGMainLoop(set_as_default=True)
 
 #from dbus.mainloop.qt import DBusQtMainLoop
 #mainloop = DBusQtMainLoop()
+
 
 
 class InstallBackend(QObject):
@@ -109,28 +111,35 @@ class InstallBackend(QObject):
 
         sendType = "fetch"
         appname = str(kwarg['download_appname'])
-        sendMsg  = ""
         percent = float(str(kwarg['download_percent']))
-        if( type == "down_start"):
-            sendMsg = "开始下载..."
-        if( type == "down_stop"):
-            sendMsg = "下载停止！"
-        if( type == "down_done"):
-            sendMsg = "所有下载完成"
-        if( type == "down_fail"):
-            sendMsg = "下载失败!"
-        if( type == "down_fetch"):
-            sendMsg = "单个下载项完成..."
+        action = str(kwarg['action'])
+        sendMsg = AptProcessMsg[str(type)]
         if( type == "down_pulse"):
-            sendMsg = "下载中...(" + str(kwarg['download_bytes']) + "/" \
-                      + str(kwarg['total_bytes']) + "," + str(kwarg['download_items']) + "/" + str(kwarg['total_items']) + ")"
-            percent = int(str(kwarg['download_bytes']))*100/int(str(kwarg['total_bytes']))
+            sizepercent = str(int(kwarg['download_bytes'])/1024) + "/" + str(int(kwarg['total_bytes'])/1024)
+            itempercent = str(int(kwarg['download_items'])) + "/" + str(int(kwarg['total_items']))
+            sendMsg = sendMsg + "(" + sizepercent + ")" + "(" + itempercent + ")"
+
+#        if( type == "down_start"):
+#            sendMsg = "开始下载..."
+#        if( type == "down_stop"):
+#            sendMsg = "下载停止！"
+#        if( type == "down_done"):
+#            sendMsg = "所有下载完成"
+#        if( type == "down_fail"):
+#            sendMsg = "下载失败!"
+#        if( type == "down_fetch"):
+#            sendMsg = "单个下载项完成..."
+#        if( type == "down_pulse"):
+#            sendMsg = "下载中...(" + str(kwarg['download_bytes']) + "/" \
+#                      + str(kwarg['total_bytes']) + "," + str(kwarg['download_items']) + "/" + str(kwarg['total_items']) + ")"
+#            percent = int(str(kwarg['download_bytes']))*100/int(str(kwarg['total_bytes']))
         if(type == "down_cancel"):
             sendType = "cancel"
-            sendMsg = "操作取消"
+#            sendMsg = "操作取消"
             percent = -1
 
-        self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
+
+        self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
     def _on_software_apt_signal(self,type, kwarg):
 #        print "_on_software_apt_signal:", type, kwarg
@@ -138,17 +147,23 @@ class InstallBackend(QObject):
         appname = str(kwarg['apt_appname'])
         sendMsg  = ""
         percent = float(str(kwarg['apt_percent']))
-        if( type == "apt_start"):
-            sendMsg = "安装开始..."
-        if( type == "apt_finish"):
-            percent = 200
-            sendMsg = "安装完成！"
-        if( type == "apt_error"):
-            sendMsg = "安装失败!"
-        if( type == "apt_pulse"):
-            sendMsg = "安装中..." + str(kwarg['status'])
+        action = str(kwarg['action'])
+        sendMsg = AptActionMsg[action] + AptProcessMsg[str(type)]
 
-        self.emit(Signals.dbus_apt_process,appname,sendType,percent,sendMsg)
+        if(type == "apt_pulse"):
+#            sendMsg = sendMsg + kwarg['status']
+            print kwarg['status']
+#        if( type == "apt_start"):
+#            sendMsg = "安装开始..."
+#        if( type == "apt_finish"):
+#            percent = 200
+#            sendMsg = "安装完成！"
+#        if( type == "apt_error"):
+#            sendMsg = "安装失败!"
+#        if( type == "apt_pulse"):
+#            sendMsg = "安装中..." + str(kwarg['status'])
+
+        self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
     def install_package(self,pkgname):
         self.call_dbus_iface(AppActions.INSTALL,pkgname)

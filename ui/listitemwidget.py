@@ -32,6 +32,7 @@ from models.enums import (ITEM_LABEL_STYLE,
                           LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
                           RECOMMEND_BUTTON_STYLE,
+                          AppActions,
                           Signals)
 
 class ListItemWidget(QWidget):
@@ -44,6 +45,7 @@ class ListItemWidget(QWidget):
         self.app = app
         self.backend = backend
         self.workType = nowpage
+        self.parent = parent
 
         self.ui.size.setAlignment(Qt.AlignCenter)
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
@@ -105,6 +107,7 @@ class ListItemWidget(QWidget):
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
+        self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
     def ui_init(self):
         self.ui = Ui_Ukliw()
@@ -139,13 +142,20 @@ class ListItemWidget(QWidget):
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
 
-    def slot_work_finished(self, newPackage):
+    def slot_work_finished(self, pkgname, action):
 #        self.app.package = newPackage
-        if(self.workType == 'homepage'):
-            self.ui.btn.setText("已安装")
-        elif(self.workType == 'uppage'):
-            self.ui.btn.setText("已升级")
-        elif(self.workType == 'unpage'):
-            self.ui.btn.setText("已卸载")
-        elif(self.workType == 'searchpage'):
-            self.ui.btn.setText("已完成")
+        if self.app.name == pkgname:
+            if action == AppActions.INSTALL:
+                self.ui.btn.setText("启动")
+            elif action == AppActions.REMOVE:
+                self.ui.btn.setText("安装")
+            elif action == AppActions.UPGRADE:
+                self.ui.btn.setText("启动")
+#        if(self.workType == 'homepage'):
+#            self.ui.btn.setText("已安装")
+#        elif(self.workType == 'uppage'):
+#            self.ui.btn.setText("已升级")
+#        elif(self.workType == 'unpage'):
+#            self.ui.btn.setText("已卸载")
+#        elif(self.workType == 'searchpage'):
+#            self.ui.btn.setText("已完成")

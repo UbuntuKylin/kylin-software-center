@@ -28,14 +28,27 @@
 import apt
 import aptsources.sourceslist
 import apt.progress.base as apb
-#import threading
+
+import locale
+
+# application actions, should sync with definition in models.enums
+class AppActions:
+    INSTALL = "install"
+    REMOVE = "remove"
+    UPGRADE = "upgrade"
+    CANCEL = "cancel"
+    APPLY = "apply_changes"
+    PURCHASE = "purchase"
+    UPDATE = "update"
+
 
 class FetchProcess(apb.AcquireProgress):
     '''Fetch Process'''
-    def __init__(self, dbus_service, appname):
+    def __init__(self, dbus_service, appname, action):
         apb.AcquireProgress.__init__(self)
         self.dbus_service = dbus_service
         self.appname = appname
+        self.action = action
 
     def done(self, item):
 #        print 'all items download finished'
@@ -43,6 +56,7 @@ class FetchProcess(apb.AcquireProgress):
             print "FetchProcess, done, Item:", self.appname,item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_fetch_signal("down_done", kwarg)
 
@@ -50,6 +64,7 @@ class FetchProcess(apb.AcquireProgress):
 #        print 'download failed'
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_fetch_signal("down_fail", kwarg)
 
@@ -59,6 +74,7 @@ class FetchProcess(apb.AcquireProgress):
             print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(200),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_fetch_signal("down_fetch", kwarg)
 
@@ -78,6 +94,7 @@ class FetchProcess(apb.AcquireProgress):
                  "total_bytes":str(self.total_bytes),
                  "download_items":str(self.current_items),
                  "total_items":str(self.total_items),
+                 "action":str(self.action),
                  }
 
         if self.total_bytes != 0:
@@ -106,6 +123,7 @@ class FetchProcess(apb.AcquireProgress):
 #        print 'fetch progress start ...',self.appname
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_fetch_signal("down_start", kwarg)
 
@@ -113,17 +131,19 @@ class FetchProcess(apb.AcquireProgress):
 #        print 'fetch progress stop ...'
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
 class AptProcess(apb.InstallProgress):
     '''Apt progress'''
-    def __init__(self, dbus_service, appname):
+    def __init__(self, dbus_service, appname, action):
         apb.InstallProgress.__init__(self)
         self.dbus_service = dbus_service
         self.appname = appname
         self.percent = 0
+        self.action = action
 
     def conffile(self, current, new):
 #        print 'there is a conffile question'
@@ -133,6 +153,7 @@ class AptProcess(apb.InstallProgress):
 #        print "AptProcess, error:", self.appname, pkg, errormsg
         kwarg = {"apt_appname":self.appname,
                  "apt_percent":str(self.percent),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_apt_signal("apt_error", kwarg)
 
@@ -140,6 +161,7 @@ class AptProcess(apb.InstallProgress):
 #        print 'apt process start work', self.appname
         kwarg = {"apt_appname":self.appname,
                  "apt_percent":str(self.percent),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_apt_signal("apt_start", kwarg)
 
@@ -147,18 +169,21 @@ class AptProcess(apb.InstallProgress):
 #        print 'apt process finished', self.appname
         kwarg = {"apt_appname":self.appname,
                  "apt_percent":str(200),
+                 "action":str(self.action),
                  }
         self.dbus_service.software_apt_signal("apt_finish", kwarg)
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg
         print str(int(percent)) + "%  status : " + status
-        if percent != self.percent:
-            print "&&&&&&&&&&&&&&&&&&&"
+#        self.percent = percent
+#        if percent != self.percent:
+#            print "&&&&&&&&&&&&&&&&&&&:",self.percent
         kwarg = {"apt_appname":str(self.appname),
 #                 "install_percent":self.percent,
                  "apt_percent":str(percent),
                  "status":str(status),
+                 "action":str(self.action),
                  }
 
 #        print "####status_change:", kwarg
@@ -170,12 +195,13 @@ class AptDaemon():
     def __init__(self, dbus_service):
 
         self.dbus_service = dbus_service
+        locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
         self.cache = apt.Cache()
         self.cache.open()
 
     # apt-get update
     def apt_get_update(self):
-        self.cache.update(fetch_progress=FetchProcess(self.dbus_service,""))
+        self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
 
     # get package by pkgName
     def get_pkg_by_name(self, pkgName):
@@ -193,7 +219,7 @@ class AptDaemon():
         pkg.mark_install()
 
         try:
-            self.cache.commit(FetchProcess(self.dbus_service,pkgName), AptProcess(self.dbus_service,pkgName))
+            self.cache.commit(FetchProcess(self.dbus_service,pkgName,AppActions.INSTALL), AptProcess(self.dbus_service,pkgName,AppActions.INSTALL))
         except Exception, e:
             print e
             print "install err"
@@ -205,7 +231,7 @@ class AptDaemon():
         pkg.mark_delete()
 
         try:
-            self.cache.commit(None, AptProcess(self.dbus_service,pkgName))
+            self.cache.commit(None, AptProcess(self.dbus_service,pkgName,AppActions.REMOVE))
         except Exception, e:
             print e
             print "uninstall err"
@@ -217,7 +243,7 @@ class AptDaemon():
         pkg.mark_upgrade()
 
         try:
-            self.cache.commit(FetchProcess(self.dbus_service,pkgName), AptProcess(self.dbus_service,pkgName))
+            self.cache.commit(FetchProcess(self.dbus_service,pkgName,AppActions.UPGRADE), AptProcess(self.dbus_service,pkgName,AppActions.UPGRADE))
         except Exception, e:
             print e
             print "update err"

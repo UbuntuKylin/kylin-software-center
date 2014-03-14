@@ -4,7 +4,7 @@ __author__ = 'Shine Huang'
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
-from models.enums import Signals
+from models.enums import Signals,AptActionMsg
 
 
 class TaskListItemWidget(QWidget):
@@ -14,6 +14,7 @@ class TaskListItemWidget(QWidget):
         QWidget.__init__(self,parent)
         self.ui_init()
         self.app = app
+        self.parent = parent
 
         self.ui.size.setAlignment(Qt.AlignCenter)
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
@@ -26,6 +27,7 @@ class TaskListItemWidget(QWidget):
                                           "QProgressBar:chunk{background-image:url('res/progress1.png');}")
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
+        self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
         img = QPixmap("data/tmpicons/" + app.name + ".png")
         img = img.scaled(32, 32)
@@ -51,8 +53,10 @@ class TaskListItemWidget(QWidget):
         if(processtype == 'fetch'):
             text = "正在下载: "
             if percent >= 100:
-                text = "下载完成，开始安装..."
+                #text = "下载完成，开始安装..."
                 self.ui.progressBar.reset()
+                self.ui.status.setText("下载完成，开始安装...")
+                return
             else:
                 self.ui.progressBar.setValue(percent)
         elif(processtype == 'apt'):
@@ -63,10 +67,13 @@ class TaskListItemWidget(QWidget):
             else:
                 self.ui.progressBar.setValue(percent)
 
-        self.ui.status.setText(text + msg)
+        self.ui.status.setText(msg)
 
-    def work_finished(self, newPackage):
-        self.app.package = newPackage
+    def slot_work_finished(self, pkgname, action):
+ #       self.app.package = newPackage
+        if self.app.name == pkgname:
+            self.ui.progressBar.setValue(100)
+            self.ui.status.setText(AptActionMsg[action]+"已经完成")
 
     def slot_click_cancel(self):
         self.emit(Signals.task_cancel, self.app)

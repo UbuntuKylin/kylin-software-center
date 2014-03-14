@@ -45,7 +45,7 @@ import apt_pkg
 
 import time
 
-from apt_daemon import AptDaemon
+from apt_daemon import AptDaemon,AppActions
 
 import threading
 
@@ -59,14 +59,6 @@ HTTP_SOURCE_UBUNTUKYLIN = "deb http://archive.ubuntukylin.com/ubuntukylin"
 DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
 UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
 
-# application actions, should sync with definition in models.enums
-class AppActions:
-    INSTALL = "install"
-    REMOVE = "remove"
-    UPGRADE = "upgrade"
-    CANCEL = "cancel"
-    APPLY = "apply_changes"
-    PURCHASE = "purchase"
 
 
 class WorkItem:
@@ -164,10 +156,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print "####del_worker_item_by_name finished!"
 
     def check_cancel_worker_item(self, pkgname):
-        print "####check_cancel_worker_item:",pkgname
+#        print "####check_cancel_worker_item:",pkgname
         cancel = False
         self.cancelmutex.acquire()
-        print "check_cancel_worker_item:",len(self.cancel_name_list)
+#        print "check_cancel_worker_item:",len(self.cancel_name_list)
         for item in self.cancel_name_list:
             if item == pkgname:
                 cancel = True
@@ -176,7 +168,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             self.cancel_name_list.remove(pkgname)
         self.cancelmutex.release()
 
-        print "####check_cancel_worker_item finished!:",cancel
+#        print "####check_cancel_worker_item finished!:",cancel
         return cancel
 
 

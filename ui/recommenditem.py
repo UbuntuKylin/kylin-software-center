@@ -27,12 +27,13 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukrcmdw import Ui_UKrcmdw
-import data
+
 
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
                           RECOMMEND_BUTTON_BK_STYLE,
                           UBUNTUKYLIN_RES_PATH,
+                          AppActions,
                           RECOMMEND_BUTTON_STYLE)
 from models.enums import Signals
 
@@ -43,6 +44,7 @@ class RecommendItem(QWidget):
         self.ui_init()
         self.app = app
         self.backend = backend
+        self.parent = parent
 
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
@@ -72,6 +74,7 @@ class RecommendItem(QWidget):
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
+        self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
     def ui_init(self):
         self.ui = Ui_UKrcmdw()
@@ -102,3 +105,13 @@ class RecommendItem(QWidget):
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
+
+    def slot_work_finished(self, pkgname,action):
+        self.ui.btn.setText(action)
+        if self.app.name == pkgname:
+            if action == AppActions.INSTALL:
+                self.ui.btn.setText("启动")
+            elif action == AppActions.REMOVE:
+                self.ui.btn.setText("安装")
+            elif action == AppActions.UPGRADE:
+                self.ui.btn.setText("启动")
