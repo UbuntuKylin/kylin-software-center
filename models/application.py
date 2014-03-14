@@ -102,6 +102,10 @@ class Application:
         return self.package.candidate.size
 
     @property
+    def installedSize(self):
+        return self.package.candidate.installed_size
+
+    @property
     def version(self):
         return self.package.candidate.version
 
