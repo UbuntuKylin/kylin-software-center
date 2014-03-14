@@ -125,7 +125,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         subject = ('system-bus-name', {'name': sender})
         flags = dbus.UInt32(1)   # AllowUserInteraction flag
-        details = { '' : '' }
+        details = { 'polkit.message' : '要安装或卸载软件，您需要进行验证。'}
         cancel_id = '' # No cancellation id
         (granted, notused, details) = policykit.CheckAuthorization(
                         subject, action, details, flags, cancel_id)
