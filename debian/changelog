@@ -1,3 +1,11 @@
+ubuntu-kylin-software-center (0.2.3-0ubuntu1) trusty; urgency=low
+
+  * Modify the service name in dbus configure file.
+  * Add state update of application list and recommend (bug#1292005)
+  * Modify the message in taskitem.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Fri, 14 Mar 2014 10:58:11 +0800
+
 ubuntu-kylin-software-center (0.2.2-0ubuntu1) trusty; urgency=low
 
   * Add quick launch.
