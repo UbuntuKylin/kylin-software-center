@@ -220,6 +220,15 @@ class SoftwareCenter(QMainWindow):
         self.ui.rightBorder.lower()
         self.ui.searchWidget.stackUnder(self.detailScrollWidget)
 
+        # erase the window edge shade from window manager in 1404
+        bm = QBitmap(self.size())
+        qp = QPainter()
+        qp.begin(bm)
+        qp.setBrush(QColor(0, 0, 0))
+        qp.drawRoundedRect(self.rect(), 10, 10)
+        qp.end()
+        self.setMask(bm)
+
         self.show()
 
         # style by qss
@@ -286,15 +295,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-
-        # erase the window edge shade from window manager in 1404
-        bm = QBitmap(self.size())
-        qp = QPainter()
-        qp.begin(bm)
-        qp.setBrush(QColor(0, 0, 0))
-        qp.drawRoundedRect(self.rect(), 10, 10)
-        qp.end()
-        self.setMask(bm)
 
         # advertisement
         adw = ADWidget([], self)
