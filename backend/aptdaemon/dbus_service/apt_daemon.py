@@ -200,8 +200,15 @@ class AptDaemon():
         self.cache.open()
 
     # apt-get update
-    def apt_get_update(self):
-        self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
+    def apt_get_update(self, kwargs=None):
+        quiet = False
+        if kwargs is not None:
+            quiet = int(kwargs["quiet"])
+
+        if quiet == False:
+            self.cache.update()
+        else:
+            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
 
     # get package by pkgName
     def get_pkg_by_name(self, pkgName):

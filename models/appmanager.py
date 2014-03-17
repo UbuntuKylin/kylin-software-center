@@ -76,7 +76,6 @@ class ThreadWorkerDaemon(threading.Thread):
             reslist = []
             if item.funcname == "update_models":
                 self.appmgr._update_models()
-                reslist.append(item.kwargs["packagename"])
             elif item.funcname == "init_models":
                 self.appmgr._init_models()
             else:
@@ -143,8 +142,9 @@ class AppManager(QObject):
             for aname,app in apps.iteritems():
                 app.update_cache(self.apt_cache)
 
-    def update_models(self,pkgname):
+    def update_models(self,action,pkgname=""):
         kwargs = {"packagename": pkgname,
+                  "action": action,
                   }
 
         item  = WorkerItem("update_models",kwargs)
@@ -436,10 +436,11 @@ class AppManager(QObject):
             self.emit(Signals.toprated_ready,topRated)
         elif item.funcname == "update_models":
             LOG.debug("update apt cache ready")
-            pkgname = reslist[0]
+            pkgname = item.kwargs["packagename"]
+            action = item.kwargs["action"]
             print "update apt cache ready:",len(reslist),pkgname
 
-            self.emit(Signals.apt_cache_update_ready,pkgname)
+            self.emit(Signals.apt_cache_update_ready,action, pkgname)
         elif item.funcname == "init_models":
             LOG.debug("init models ready")
             self.emit(Signals.init_models_ready,"ok","获取分类信息完成")

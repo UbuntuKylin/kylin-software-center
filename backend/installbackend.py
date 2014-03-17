@@ -119,20 +119,6 @@ class InstallBackend(QObject):
             itempercent = str(int(kwarg['download_items'])) + "/" + str(int(kwarg['total_items']))
             sendMsg = sendMsg + "(" + sizepercent + ")" + "(" + itempercent + ")"
 
-#        if( type == "down_start"):
-#            sendMsg = "开始下载..."
-#        if( type == "down_stop"):
-#            sendMsg = "下载停止！"
-#        if( type == "down_done"):
-#            sendMsg = "所有下载完成"
-#        if( type == "down_fail"):
-#            sendMsg = "下载失败!"
-#        if( type == "down_fetch"):
-#            sendMsg = "单个下载项完成..."
-#        if( type == "down_pulse"):
-#            sendMsg = "下载中...(" + str(kwarg['download_bytes']) + "/" \
-#                      + str(kwarg['total_bytes']) + "," + str(kwarg['download_items']) + "/" + str(kwarg['total_items']) + ")"
-#            percent = int(str(kwarg['download_bytes']))*100/int(str(kwarg['total_bytes']))
         if(type == "down_cancel"):
             sendType = "cancel"
 #            sendMsg = "操作取消"

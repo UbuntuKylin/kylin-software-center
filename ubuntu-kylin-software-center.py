@@ -50,7 +50,8 @@ from data.search import *
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH,UKSC_CACHE_DIR)
+from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH,
+                          UKSC_CACHE_DIR,AppActions,AptActionMsg)
 from models.globals import Globals
 
 from models.enums import Signals
@@ -369,6 +370,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
         self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
+        self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
 
 
         #conncet apt signals
@@ -950,6 +952,11 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
+
+        if action == AppActions.UPDATE and int(percent)>=100:
+            print "cache update finished!"
+            self.appmgr.update_models(AppActions.UPDATE,"")
+
         if self.stmap.has_key(name) is False:
             LOG.warning("there is no task for this app:%s",name)
         else:
@@ -958,7 +965,7 @@ class SoftwareCenter(QMainWindow):
                 self.del_task_item(name)
                 del self.stmap[name]
             else:
-                if processtype=='apt' and int(percent)>=100:
+                if processtype=='apt' and int(percent)>=200:
                     self.emit(Signals.apt_process_finish,name,action)
                 else:
                     taskItem.status_change(processtype, percent, msg)
@@ -967,10 +974,10 @@ class SoftwareCenter(QMainWindow):
     def slot_apt_process_finish(self,pkgname,action):
         print "slot_apt_process_finish:",pkgname,action
 
-        self.appmgr.update_models(pkgname)
+        self.appmgr.update_models(action,pkgname)
 
     #update backend models ready
-    def slot_apt_cache_update_ready(self,pkgname):
+    def slot_apt_cache_update_ready(self, action, pkgname):
         print "slot_apt_cache_update_ready"
 
         (inst,up, all) = self.appmgr.get_application_count()
@@ -978,7 +985,8 @@ class SoftwareCenter(QMainWindow):
         self.emit(Signals.count_installed_ready,inst)
         self.emit(Signals.count_upgradable_ready,up)
 
-        msg = "软件 " + str(pkgname) + " 操作完成"
+        #msg = "软件" + str(pkgname) + AptActionMsg[action] + "操作完成"
+        msg = "软件" + AptActionMsg[action] + "操作完成"
         self.messageBox.alert_msg(msg)
 
 def main():

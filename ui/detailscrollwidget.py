@@ -149,7 +149,7 @@ class DetailScrollWidget(QScrollArea):
             self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + "default.png')}")
 
         size = software.packageSize
-        sizek = size / 1000
+        sizek = size / 1024
         self.ui.size.setText("软件大小: " + str(sizek) + " K")
 
         self.ui.gradeText1.setText("我的评分: ")
