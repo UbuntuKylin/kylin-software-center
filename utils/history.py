@@ -36,7 +36,9 @@ class History:
 
     def history_add(self, func, parm=None):
         self.ui.btnBack.setEnabled(True)
+        self.ui.btnBack.setStyleSheet("QPushButton{background-image:url('res/nav-back-1.png');border:0px;}QPushButton:hover{background:url('res/nav-back-2.png');}QPushButton:pressed{background:url('res/nav-back-3.png');}")
         self.ui.btnNext.setEnabled(False)
+        self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-3.png');border:0px;}")
 
         del self.hlist[self.hindex + 1:]
         self.hlist.append((func, parm))
@@ -44,9 +46,11 @@ class History:
 
         if(self.hindex == 0):
             self.ui.btnBack.setEnabled(False)
+            self.ui.btnBack.setStyleSheet("QPushButton{background-image:url('res/nav-back-3.png');border:0px;}")
 
     def history_back(self):
         self.ui.btnNext.setEnabled(True)
+        self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
 
         back = self.hlist[self.hindex - 1]
         func = back[0]
@@ -59,9 +63,11 @@ class History:
 
         if(self.hindex == 0):
             self.ui.btnBack.setEnabled(False)
+            self.ui.btnBack.setStyleSheet("QPushButton{background-image:url('res/nav-back-3.png');border:0px;}")
 
     def history_next(self):
         self.ui.btnBack.setEnabled(True)
+        self.ui.btnBack.setStyleSheet("QPushButton{background-image:url('res/nav-back-1.png');border:0px;}QPushButton:hover{background:url('res/nav-back-2.png');}QPushButton:pressed{background:url('res/nav-back-3.png');}")
 
         next = self.hlist[self.hindex + 1]
         func = next[0]
@@ -74,3 +80,4 @@ class History:
 
         if(self.hindex == len(self.hlist) - 1):
             self.ui.btnNext.setEnabled(False)
+            self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-3.png');border:0px;}")

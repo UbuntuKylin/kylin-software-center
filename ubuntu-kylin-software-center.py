@@ -701,7 +701,7 @@ class SoftwareCenter(QMainWindow):
             if app is not None:
                 oneitem = QListWidgetItem()
                 oneitem.setWhatsThis(pkgname)
-                rliw = RankListItemWidget(pkgname, i)
+                rliw = RankListItemWidget(pkgname, self.ui.rankView.count() + 1)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
