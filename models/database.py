@@ -24,9 +24,10 @@
 
 import sqlite3
 import os
+from models.enums import UBUNTUKYLIN_DATA_PATH
 
-
-DB_PATH = "category.db"
+#DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"category.db")
+DB_PATH = "../data/category.db"
 
 CREATE_CATEGORY = "create table category (name varchar(32) primary key,display_name varchar(32), \
                    priority integer, visible integer)"
@@ -54,8 +55,10 @@ QUERY_CATEGORY_APPS = "select * from application where first_cat_name='%s' or se
 class Database:
 
     def __init__(self):
+        print DB_PATH
         self.connect = sqlite3.connect(DB_PATH)
         self.cursor = self.connect.cursor()
+        self.catelist = []
 
     def init_category_table(self):
         self.cursor.execute(CREATE_CATEGORY)
@@ -92,6 +95,27 @@ class Database:
                     self.cursor.execute(UPDATE_APP_CATEGORY % (cat_name,pkgname))
                     self.connect.commit()
 
+
+    s="中文"
+
+    if isinstance(s, unicode):
+    #s=u"中文"
+        print s.encode('gb2312')
+    else:
+    #s="中文"
+        print s.decode('utf-8').encode('gb2312')
+
+
+    def query_categories(self):
+        self.cursor.execute("select * from category")
+        res = self.cursor.fetchall()
+        print res
+        for item in res:
+           self.catelist.append(item[1].encode("gb2312"))
+           print item[1]
+#           print "item:",str((item[0]).decode('utf-8')),(str((item[1]).decode('utf-8')))
+
+
     def query_category_apps(self,cat_name):
         self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name))
         res = self.cursor.fetchall()
@@ -107,6 +131,8 @@ if __name__ == "__main__":
     db = Database()
 #    db.init_category_table()
 #    db.init_app_table()
-    db.query_category_apps("ubuntukylin")
+#    db.query_category_apps("ubuntukylin")
+    db.query_categories()
+    print db.catelist
 
 
