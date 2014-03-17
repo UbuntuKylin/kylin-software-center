@@ -6,9 +6,8 @@
 # Copyright (C) 2013 National University of Defense Technology(NUDT) & Kylin Ltd
 
 # Author:
-#     Shine Huang<shenghuang@ubuntukylin.com>     
+#     maclin <majun@ubuntukylin.com>
 # Maintainer:
-#     Shine Huang<shenghuang@ubuntukylin.com>
 #     maclin <majun@ubuntukylin.com>
 
 # This program is free software: you can redistribute it and/or modify it
@@ -23,21 +22,26 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-### END LICENSE
+import sqlite3
 
 
-class ADVERTISEMENT_TYPE:
-    TYPE_PKG = "pkg"
-    TYPE_URL = "url"
+DB_PATH = "cat_app.db"
 
-class Advertisement:
-    name = ''   # ad name
-    type = ''   # package: pkg    websitelink: url
-    pic = ''    # downloaded pic url
-    urlorpkgid = '' # url or a package name
+CREATE_CATEGORY = "create table category (id integer autoincrement   \
+        primary key,name varchar(32) UNIQUE,display_name varchar(32) )"
+INSERT_CATEGORY = "insert into category values(%s, %s, 'name1')")
 
-    def __init__(self, name, type, pic, urlorpkgid):
-        self.name = name
-        self.type = type
-        self.pic = pic
-        self.urlorpkgid = urlorpkgid
+
+class Database:
+
+    def __init__(self):
+        self.connect = sqlite3.connect(DB_PATH)
+        self.cursor = self.connect.cursor()
+
+    def create_category_db(self):
+        self.cursor.execute()
+
+
+
+
+

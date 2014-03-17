@@ -88,9 +88,15 @@ class SoftwareCenter(QMainWindow):
         windowHeight = QApplication.desktop().height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
+        from utils.history import History
+        self.history = History(self.ui)
         # connect the ui signals
         self.ui.headerWidget.installEventFilter(self)
 
+        # self.ui.btnBack.clicked.connect(self.history_back)
+        # self.ui.btnNext.clicked.connect(self.history_next)
+        self.ui.btnBack.clicked.connect(self.history.history_back)
+        self.ui.btnNext.clicked.connect(self.history.history_next)
         self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
         self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
@@ -724,7 +730,10 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive upgradable app count: %d", count)
         self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
-    def slot_goto_homepage(self):
+    def slot_goto_homepage(self, ishistory=False):
+        if(ishistory == False):
+            self.history.history_add(self.slot_goto_homepage)
+
         if self.nowPage != 'homepage':
             forceChange = True
         else:
@@ -749,7 +758,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
-    def slot_goto_uppage(self):
+    def slot_goto_uppage(self, ishistory=False):
+        if(ishistory == False):
+            self.history.history_add(self.slot_goto_uppage)
+
         if self.nowPage != 'uppage':
             forceChange = True
         else:
@@ -774,7 +786,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
-    def slot_goto_unpage(self):
+    def slot_goto_unpage(self, ishistory=False):
+        if(ishistory == False):
+            self.history.history_add(self.slot_goto_unpage)
+
         if self.nowPage != 'unpage':
             forceChange = True
         else:
@@ -799,7 +814,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
-    def slot_goto_taskpage(self):
+    def slot_goto_taskpage(self, ishistory=False):
+        if(ishistory == False):
+            self.history.history_add(self.slot_goto_taskpage)
+
         self.nowPage = 'taskpage'
         self.ui.categoryView.setEnabled(False)
         self.ui.categoryView.clearSelection()
@@ -819,7 +837,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
 
-    def goto_search_page(self):
+    def goto_search_page(self, ishistory=False):
+        if(ishistory == False):
+            self.history.history_add(self.goto_search_page)
+
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
@@ -874,7 +895,10 @@ class SoftwareCenter(QMainWindow):
         else:
             LOG.debug("rank item does not have according app...")
 
-    def slot_show_app_detail(self, app):
+    def slot_show_app_detail(self, app, ishistory=False):
+        if(ishistory == False):
+            self.history.history_add(self.slot_show_app_detail, app)
+
         self.detailScrollWidget.showSimple(app)
         self.appmgr.get_application_reviews(app.name)
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
