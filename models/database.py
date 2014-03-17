@@ -96,22 +96,20 @@ class Database:
                     self.connect.commit()
 
 
-    s="中文"
-
-    if isinstance(s, unicode):
-    #s=u"中文"
-        print s.encode('gb2312')
-    else:
-    #s="中文"
-        print s.decode('utf-8').encode('gb2312')
-
+    def get_str(self,s):
+        if isinstance(s, unicode):
+        #s=u"中文"
+            return s.encode('gb2312')
+        else:
+        #s="中文"
+            return s.decode('utf-8').encode('gb2312')
 
     def query_categories(self):
         self.cursor.execute("select * from category")
         res = self.cursor.fetchall()
         print res
         for item in res:
-           self.catelist.append(item[1].encode("gb2312"))
+           self.catelist.append(self.get_str(item[1]))
            print item[1]
 #           print "item:",str((item[0]).decode('utf-8')),(str((item[1]).decode('utf-8')))
 
