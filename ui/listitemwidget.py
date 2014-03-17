@@ -47,7 +47,10 @@ class ListItemWidget(QWidget):
         self.workType = nowpage
         self.parent = parent
 
-        self.ui.size.setAlignment(Qt.AlignCenter)
+        self.ui.size.setAlignment(Qt.AlignRight)
+        self.ui.installedsize.setAlignment(Qt.AlignRight)
+        self.ui.size.setStyleSheet("QLabel{font-size:13px;}")
+        self.ui.installedsize.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setText("详情")
@@ -72,8 +75,18 @@ class ListItemWidget(QWidget):
         self.ui.descr.setText(summ)
 
         size = app.packageSize
-        sizek = size / 1000
-        self.ui.size.setText(str(sizek) + " K")
+        sizek = size / 1024
+        if(sizek < 1024):
+            self.ui.size.setText(str(sizek) + " KB")
+        else:
+            self.ui.size.setText(str(sizek/1024) + " MB")
+#        print "########item size:",app.name,app.packageSize,app.installedSize
+        installedsize = app.installedSize
+        installedsizek = installedsize / 1024
+        if(installedsizek < 1024):
+            self.ui.installedsize.setText(str(installedsizek) + " KB")
+        else:
+            self.ui.installedsize.setText(str(installedsizek/1024) + " MB")
 
         #????放置平均得分和评论人数
  #       print "ListItemWidget: ", self.app.name, self.app.rnrStat

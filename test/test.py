@@ -46,5 +46,9 @@ def main():
         loop.quit()
 
 if __name__ == "__main__":
-    main()
-    loop.run()
+    # main()
+    # loop.run()
+    a = []
+    print a
+    del a[1231:]
+    print a

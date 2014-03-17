@@ -7,8 +7,8 @@
 
 # Author:
 #     Shine Huang<shenghuang@ubuntukylin.com>     
-#     maclin <majun@ubuntukylin.com>
 # Maintainer:
+#     Shine Huang<shenghuang@ubuntukylin.com>
 #     maclin <majun@ubuntukylin.com>
 
 # This program is free software: you can redistribute it and/or modify it
@@ -24,9 +24,6 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ### END LICENSE
-
-
-
 
 
 class ADVERTISEMENT_TYPE:
