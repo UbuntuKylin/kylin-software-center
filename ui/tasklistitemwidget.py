@@ -23,10 +23,12 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
 from models.enums import Signals,AptActionMsg
+from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH
 
 
 class TaskListItemWidget(QWidget):
@@ -51,7 +53,13 @@ class TaskListItemWidget(QWidget):
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
-        img = QPixmap("data/tmpicons/" + app.name + ".png")
+        img = ''
+        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+            img = QPixmap("data/tmpicons/" + app.name + ".png")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
+            img = QPixmap("data/tmpicons/" + app.name + ".jpg")
+        else:
+            img = QPixmap("data/tmpicons/default.jpg")
         img = img.scaled(32, 32)
         self.ui.icon.setPixmap(img)
 

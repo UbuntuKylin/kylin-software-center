@@ -92,7 +92,7 @@ class SoftwareCenter(QMainWindow):
         from utils.history import History
         self.history = History(self.ui)
         # connect the ui signals
-        self.ui.headerWidget.installEventFilter(self)
+        # self.ui.headerWidget.installEventFilter(self)
 
         # self.ui.btnBack.clicked.connect(self.history_back)
         # self.ui.btnNext.clicked.connect(self.history_next)
@@ -305,23 +305,17 @@ class SoftwareCenter(QMainWindow):
 
         # advertisement
         adw = ADWidget([], self)
+        # self.setAttribute(Qt.WA_X11NetWmWindowTypeDock)
 
-    def eventFilter(self, obj, event):
-        if (obj == self.ui.headerWidget):
-            if (event.type() == QEvent.MouseButtonPress):
-                self.isMove = True  # True only when click the blank place on header bar
-                self.nowMX = event.globalX()
-                self.nowMY = event.globalY()
-                self.nowWX = self.x()
-                self.nowWY = self.y()
-            elif (event.type() == QEvent.MouseMove):
-                if(self.isMove):
-                    incx = event.globalX() - self.nowMX
-                    incy = event.globalY() - self.nowMY
-                    self.move(self.nowWX + incx, self.nowWY + incy)
-            elif (event.type() == QEvent.MouseButtonRelease):
-                self.isMove = False
-        return True
+    def mousePressEvent(self, event):
+        if (event.button() == Qt.LeftButton):
+            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if (event.buttons() == Qt.LeftButton):
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()
 
     def init_models(self):
         LOG.debug("begin init_models...")

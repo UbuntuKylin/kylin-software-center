@@ -145,6 +145,8 @@ class DetailScrollWidget(QScrollArea):
 
         if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".png")):
             self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".png')}")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".jpg")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".jpg')}")
         else:
             self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + "default.png')}")
 
