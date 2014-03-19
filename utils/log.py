@@ -44,9 +44,7 @@ formatter = logging.Formatter(fmt)   # 实例化formatter
 handler.setFormatter(formatter)      # 为handler添加formatter
 logger = logging.getLogger("uksc")    # 获取名为tst的logger
 logger.addHandler(handler)           # 为logger添加handler
-logger.setLevel(logging.DEBUG)
-
-
+logger.setLevel(logging.WARNING)
 
 
 

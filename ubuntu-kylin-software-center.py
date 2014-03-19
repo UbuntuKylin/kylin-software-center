@@ -54,7 +54,7 @@ from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_R
                           UKSC_CACHE_DIR,AppActions,AptActionMsg)
 from models.globals import Globals
 
-from models.enums import Signals
+from models.enums import Signals,CheckChineseWords
 
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -125,7 +125,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.2")
+        self.ui.bottomText2.setText("0.2.5")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -364,8 +364,7 @@ class SoftwareCenter(QMainWindow):
         #connect data signals
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
         self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
-        self.connect(self.appmgr, Signals.count_installed_ready,self.slot_count_installed_ready)
-        self.connect(self.appmgr, Signals.count_upgradable_ready,self.slot_count_upgradable_ready)
+        self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
         self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
         self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
@@ -409,12 +408,9 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnUn.setEnabled(True)
             self.ui.btnTask.setEnabled(True)
 
-            (inst,up, all) = self.appmgr.get_application_count()
 
-            self.emit(Signals.count_installed_ready,inst)
-            self.emit(Signals.count_upgradable_ready,up)
+            self.emit(Signals.count_application_update)
 
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
             self.show()
 
@@ -606,6 +602,8 @@ class SoftwareCenter(QMainWindow):
 
         self.show_more_software(listWidget)
 
+        self.emit(Signals.count_application_update)
+
     def add_task_item(self, app):
         oneitem = QListWidgetItem()
         tliw = TaskListItemWidget(app,self)
@@ -684,8 +682,8 @@ class SoftwareCenter(QMainWindow):
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
         print "receive ratings and reviews ready, count is:",len(rnrlist)
-        app = self.appmgr.get_application_by_name("gimp")
-
+        #app = self.appmgr.get_application_by_name("gimp")
+        self.appmgr.update_rating_reviews(rnrlist)
 
         self.rnr_ready = True
         self.check_init_data_ready()
@@ -708,6 +706,8 @@ class SoftwareCenter(QMainWindow):
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
 
+        self.appmgr.update_toprated(rnrlist)
+
         self.toprated_ready = True
         self.check_init_data_ready()
 
@@ -723,14 +723,21 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget.add_sshot(sclist)
 
-    def slot_count_installed_ready(self, count):
-        LOG.debug("receive installed app count: %d", count)
-        self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-        self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+    def slot_count_application_update(self):
+        (inst,up, all) = self.appmgr.get_application_count()
+        (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
+#        print "slot_count_application_update:",inst,up,all
 
-    def slot_count_upgradable_ready(self, count):
-        LOG.debug("receive upgradable app count: %d", count)
-        self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(count) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+        LOG.debug("receive installed app count: %d", inst)
+        if len(self.category)>0:
+            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_all) +"</font> 款")
+            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_inst) +"</font> 款")
+            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_up) +"</font> 款")
+        else:
+            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+        self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
     def slot_goto_homepage(self, ishistory=False):
         if(ishistory == False):
@@ -901,6 +908,9 @@ class SoftwareCenter(QMainWindow):
         if(ishistory == False):
             self.history.history_add(self.slot_show_app_detail, app)
 
+        if(app is None):
+            print "has no such application...."
+            return
         self.detailScrollWidget.showSimple(app)
         self.appmgr.get_application_reviews(app.name)
         self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
@@ -932,6 +942,7 @@ class SoftwareCenter(QMainWindow):
             s = self.ui.leSearch.text().toUtf8()
             print "输入的QString转utf-8：" + s
             reslist = self.searchDB.search_software(s)
+
 
             #返回查询结果
             LOG.debug("search result:%d",len(reslist))
@@ -980,10 +991,10 @@ class SoftwareCenter(QMainWindow):
     def slot_apt_cache_update_ready(self, action, pkgname):
         print "slot_apt_cache_update_ready"
 
-        (inst,up, all) = self.appmgr.get_application_count()
+        (inst,up, all) = self.appmgr.get_application_count(self.category)
+        (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count()
 
-        self.emit(Signals.count_installed_ready,inst)
-        self.emit(Signals.count_upgradable_ready,up)
+        self.emit(Signals.count_application_update)
 
         #msg = "软件" + str(pkgname) + AptActionMsg[action] + "操作完成"
         msg = "软件" + AptActionMsg[action] + "操作完成"

@@ -24,7 +24,7 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import apt
-
+import locale
 import os
 import time
 import logging
@@ -35,10 +35,10 @@ from category import Category
 from application import Application
 from advertisement import Advertisement
 from backend.reviewratingspawn import SpawnProcess,Review,RatingSortMethods,ReviewRatingStat
-from backend.installbackend import InstallBackend
+from database import Database
 
 from enums import (UBUNTUKYLIN_RES_PATH,UBUNTUKYLIN_DATA_PATH,UBUNTUKYLIN_DATA_CAT_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-from enums import Signals
+from enums import Signals,UnicodeToAscii,CheckChineseWords,CheckChineseWordsForUnicode
 
 import threading
 import multiprocessing
@@ -108,6 +108,7 @@ class AppManager(QObject):
         self.rnrStatList = {}
         self.language = 'zh_CN'      #'any' for all
         self.distroseries = 'saucy'  #'any' for all
+        self.db = Database()
 
         self.worklist = []
         self.mutex = threading.RLock()
@@ -117,6 +118,7 @@ class AppManager(QObject):
 
     #open the apt cache and get the package count
     def open_cache(self):
+        locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
         if not self.apt_cache:
             self.apt_cache = apt.Cache()
         self.apt_cache.open()
@@ -125,9 +127,20 @@ class AppManager(QObject):
     def _init_models(self):
         self.open_cache()
 
-        self.download_category_list()
+        #self.cat_list = self.download_category_list()
+        self.cat_list = self.get_category_list_from_db()
+#        print "&&&&&&&&&&&:\n",self.cat_list
+
+        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+
+    def _init_toprated(self,reslist):
+        #init db rank
+        self.db.init_toprated_table(reslist)
 
     def init_models(self):
+
+        self._init_models()
+        return #????
 
         item  = WorkerItem("init_models",None)
         self.mutex.acquire()
@@ -151,6 +164,23 @@ class AppManager(QObject):
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()
+
+    def get_category_list_from_db(self):
+        list = self.db.query_categories()
+        cat_list = {}
+        for item in list:
+#            print "categories:",item,item[0],item[1]
+            c = UnicodeToAscii(item[0])
+            zhcnc = item[1]
+            index = item[2]
+            visible = (item[3]==1)
+#            print "trans:",c, zhcnc
+
+            icon = UBUNTUKYLIN_RES_PATH + c + ".png"
+            cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+            cat_list[c] = cat
+
+        return cat_list
 
     def download_category_list(self,catdir=""):
         #first load the categories from directory
@@ -205,7 +235,7 @@ class AppManager(QObject):
             cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c,catdir))
             cat_list[c] = cat
 
-        self.cat_list = cat_list
+        #self.cat_list = cat_list
         return cat_list
 
     #get category list
@@ -213,9 +243,40 @@ class AppManager(QObject):
         if reload is False:
             return self.cat_list
 
-        cat_list = self.download_category_list(catdir)
+        #cat_list = self.download_category_list(catdir)
+        cat_list = self.get_category_list_from_db()
 
         return cat_list
+
+    def get_category_apps_from_db(self,cat,catdir=""):
+        list = self.db.query_category_apps(cat)
+        apps = {}
+        for item in list:
+            pkgname = UnicodeToAscii(item[0])
+            displayname = item[1]
+#            print "get_category_apps_from_db:",pkgname
+            app = Application(pkgname,displayname, cat, self.apt_cache)
+            if app.package:
+                apps[pkgname] = app
+
+                #if there has special information in db, get them
+                appinfo = self.db.query_application(pkgname)
+                summary = appinfo[1]
+                description = appinfo[2]
+                rating_average = appinfo[3]
+                rating_total = appinfo[4]
+                review_total = appinfo[5]
+                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+                    app.summary = summary
+                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+                    app.description = description
+                if rating_average is not None:
+                    app.rating_average = rating_average
+                if rating_total is not None:
+                    app.rating_total = rating_total
+                if review_total is not None:
+                    app.review_total = review_total
+        return apps
 
     def download_category_apps(self,cat,catdir=""):
         #load the apps from category file
@@ -273,18 +334,21 @@ class AppManager(QObject):
 
         return None
 
-    def get_application_count(self):
+    def get_application_count(self,cat_name=""):
         sum_inst = 0
         sum_up = 0
         sum_all = 0
-        for (catname, cat) in self.cat_list.iteritems():
-            (inst,up, all) = cat.get_application_count()
-            sum_inst = sum_inst + inst
-            sum_up = sum_up + up
-            sum_all = sum_all + all
 
-        self.emit(Signals.count_installed_ready,sum_inst)
-        self.emit(Signals.count_upgradable_ready,sum_up)
+        if len(cat_name)>0:
+            cat = self.cat_list[cat_name]
+            (sum_inst,sum_up, sum_all) = cat.get_application_count()
+        else:
+            for (catname, cat) in self.cat_list.iteritems():
+                (inst,up, all) = cat.get_application_count()
+                sum_inst = sum_inst + inst
+                sum_up = sum_up + up
+                sum_all = sum_all + all
+
         return (sum_inst,sum_up, sum_all)
 
     def get_application_rnrstat(self,pkgname):
@@ -302,8 +366,9 @@ class AppManager(QObject):
         print "we need to get the applications by condition recommend"
         applist = []
         apps = self.get_category_apps("recommend")
-        for appname,app in apps.iteritems():
-            applist.append(app)
+        if(apps is not None):
+            for appname,app in apps.iteritems():
+                applist.append(app)
 
         self.emit(Signals.recommend_ready,applist)
 
@@ -419,6 +484,7 @@ class AppManager(QObject):
             rnrStats = reslist
             self.rnrStatList = reslist
 
+
             for rnrStat in rnrStats:
                 app = self.get_application_by_name(str(rnrStat.pkgname))
                 if app is not None:
@@ -446,6 +512,18 @@ class AppManager(QObject):
             self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
             print "init models ready"
 
+    def update_rating_reviews(self,rnrStats):
+        print "update_rating_reviews:",len(rnrStats)
+        return #??????
+        for rnrStat in rnrStats:
+            self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
+
+    def update_toprated(self,rnrStats):
+        print "update_toprated:",len(rnrStats)
+        if len(rnrStats) == 0:
+            return
+        return #?????
+        self.db.init_toprated_table(rnrStats)
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):
@@ -470,11 +548,14 @@ if __name__ == "__main__":
     cat_list = appManager.get_category_list(True,"../data/category/")
 #    print appManager.cat_list
 #    print appManager.get_category_byname("office")
-    print appManager.get_category_apps('')
-#    app = appManager.get_application_by_name("gimp")
+ #   print appManager.get_category_apps('')
+    app = appManager.get_application_by_name("abe")
+    ver = app.package.candidate
+    print ver.record
+    print ver.uri
 #    print app
-    apps = appManager.get_recommend_apps()
-    print len(apps)
+#    apps = appManager.get_recommend_apps()
+    print app
 #    print app.thumbnail
 #    print app.screenshot
 #    appManager.get_application_screenshots("gimp","/home/maclin/test/")
