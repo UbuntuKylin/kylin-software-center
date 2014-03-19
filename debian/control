@@ -3,6 +3,8 @@ Section: misc
 Priority: optional
 Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
 Build-Depends: debhelper (>= 9),
+               python-distutils-extra,
+               python-dev,
 Standards-Version: 3.9.5
 Homepage: https://launchpad.net/ubuntu-kylin-software-center
 Vcs-Browser: https://code.launchpad.net/~ubuntukylin-members/ubuntu-kylin-software-center/trunk

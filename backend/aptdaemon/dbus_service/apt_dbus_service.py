@@ -88,7 +88,10 @@ class WorkThread(threading.Thread):
             if func is None:
                 print "Error action: ", item
 
-            res = func(item.pkgname,item.kwargs)
+            if item.action == AppActions.UPDATE:
+                res = func(item.kwargs)
+            else:
+                res = func(item.pkgname,item.kwargs)
             if res is False:
                 print "Action exec failed..."
 
@@ -271,6 +274,25 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print "####cancel return"
         return True
 
+    # apt-get update sa:software_fetch_signal()
+    @dbus.service.method(INTERFACE, in_signature='b', out_signature='b', sender_keyword='sender')
+    def update(self, quiet, sender=None):
+        print "####update: "
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
+        kwargs = {"quiet":str(quiet),
+                  }
+
+        item = WorkItem("",AppActions.UPDATE,kwargs)
+
+        self.add_worker_item(item)
+
+#        self.daemonApt.apt_get_update()
+
+        print "####update return"
     #????????????????????????????
 
     # check packages status by pkgNameList sa:software_check_status_signal()
@@ -283,10 +305,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
     def check_pkg_status(self, pkgName):
         return self.daemonApt.check_pkg_status(pkgName)
 
-    # apt-get update sa:software_fetch_signal()
-    @dbus.service.method(INTERFACE, in_signature='', out_signature='')
-    def apt_get_update(self):
-        self.daemonApt.apt_get_update()
+
 
     # package download status signal
     '''parm mean

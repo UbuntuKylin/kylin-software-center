@@ -13,7 +13,6 @@ arduino
 qtqr
 bzr-explorer
 pgadmin3
-kdiff3
 ninja-ide
 pinta
 scilab
@@ -21,7 +20,6 @@ eagle
 mysql-workbench
 git-cola
 poedit
-lernid
 pasaffe
 intellij-idea-ce
 python-web2py
@@ -31,7 +29,6 @@ gambas3-ide
 glade
 scratch
 turpial
-gnome-translate
 anjuta
 basic256
 bless

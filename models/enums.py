@@ -66,16 +66,6 @@ class PkgStates:
     ) = range(17)
 
 
-# application actions, this should sync with definition in apt_dbus_service
-class AppActions:
-    INSTALL = "install"
-    REMOVE = "remove"
-    UPGRADE = "upgrade"
-    CANCEL = "cancel"
-    APPLY = "apply_changes"
-    PURCHASE = "purchase"
-    UPDATE = "update"
-
 
 # transaction types
 class TransactionTypes:
@@ -135,9 +125,20 @@ class Signals:
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
 
 
+# application actions, this should sync with definition in apt_dbus_service
+class AppActions:
+    INSTALL = "install"
+    REMOVE = "remove"
+    UPGRADE = "upgrade"
+    CANCEL = "cancel"
+    APPLY = "apply_changes"
+    PURCHASE = "purchase"
+    UPDATE = "update"
+
+
 AptActionMsg = {
     "install":"安装",
-    "remove":"卸载!",
+    "remove":"卸载",
     "upgrade":"更新",
     "update":"源更新",
 }
