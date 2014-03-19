@@ -53,6 +53,8 @@ class RecommendItem(QWidget):
 
         if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png")):
             self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png"))
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg")):
+            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg"))
         else:
             self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
         # self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_ICON_PATH+str(self.app.name)+".png"))

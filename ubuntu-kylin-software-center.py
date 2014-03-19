@@ -305,32 +305,12 @@ class SoftwareCenter(QMainWindow):
 
         # advertisement
         adw = ADWidget([], self)
-        self.setAttribute(Qt.WA_X11NetWmWindowTypeDock)
-        # self.setAttribute(Qt.WA_X11NetWmWindowTypeNotification)
-
-    def eventFilter(self, obj, event):
-        if (obj == self.ui.headerWidget):
-            if (event.type() == QEvent.MouseButtonPress):
-                self.isMove = True  # True only when click the blank place on header bar
-                self.nowMX = event.globalX()
-                self.nowMY = event.globalY()
-                self.nowWX = self.x()
-                self.nowWY = self.y()
-            elif (event.type() == QEvent.MouseMove):
-                if(self.isMove):
-                    incx = event.globalX() - self.nowMX
-                    incy = event.globalY() - self.nowMY
-                    self.move(self.nowWX + incx, self.nowWY + incy)
-            elif (event.type() == QEvent.MouseButtonRelease):
-                self.isMove = False
-        return True
+        # self.setAttribute(Qt.WA_X11NetWmWindowTypeDock)
 
     def mousePressEvent(self, event):
         if (event.button() == Qt.LeftButton):
             self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
             event.accept()
-
-        # self.move(1200, 200)
 
     def mouseMoveEvent(self, event):
         if (event.buttons() == Qt.LeftButton):
