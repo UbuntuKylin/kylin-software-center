@@ -214,6 +214,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
+            kwarg = {"appname":pkgName,
+                     "action":AppActions.INSTALL,
+                     }
+            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -232,6 +236,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
+            kwarg = {"appname":pkgName,
+                     "action":AppActions.REMOVE,
+                     }
+            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -250,6 +258,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
+            kwarg = {"appname":pkgName,
+                     "action":AppActions.UPGRADE,
+                     }
+            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -322,6 +334,11 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.signal(INTERFACE, signature='sa{ss}')
     def software_fetch_signal(self, type, msg):
         pass
+
+    @dbus.service.signal(INTERFACE, signature='sa{ss}')
+    def software_auth_signal(self, type, msg):
+        pass
+
 
     # package install/update/remove signal
     '''parm mean

@@ -29,7 +29,6 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-import data
 from PyQt4 import QtCore, QtGui
 
 try:

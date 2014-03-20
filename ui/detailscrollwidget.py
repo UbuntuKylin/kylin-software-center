@@ -31,23 +31,22 @@ from ui.starwidget import StarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
 from ui.loadingdiv import *
-from models.enums import (ITEM_LABEL_STYLE,
-                          UBUNTUKYLIN_RES_TMPICON_PATH,
-                          Signals,
-                          RECOMMEND_BUTTON_BK_STYLE,
-                          UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_BUTTON_STYLE)
+from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH, Signals
 
 class DetailScrollWidget(QScrollArea):
+    mainwindow = ''
     app = ''
     sshotcount = 0
     bigsshot = ''
+    reviewpage = ''
+    currentreviewready = ''
 
     def __init__(self, parent=None):
-        QScrollArea.__init__(self,parent)
+        QScrollArea.__init__(self,parent.ui.centralwidget)
         self.detailWidget = QWidget()
         self.ui_init()
 
+        self.mainwindow = parent
         self.setGeometry(QRect(46, 113, 815, 479))
         self.setWidget(self.detailWidget)
 
@@ -77,6 +76,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
         self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
+
+        self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
         # style
         self.detailWidget.setAutoFillBackground(True)
@@ -127,46 +128,49 @@ class DetailScrollWidget(QScrollArea):
         self.ui.setupUi(self.detailWidget)
 
     # fill fast property, show ui, request remote property
-    def showSimple(self, software):
+    def showSimple(self, app):
         # clear reviews
+        self.reviewpage = 1
+        self.currentreviewready = False
         self.ui.reviewListWidget.clear()
         self.detailWidget.resize(805, 790)
         self.ui.reviewListWidget.resize(805, 0)
+        self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
         self.ui.thumbnail.hide()
 
-        self.app = software
-        self.ui.name.setText(software.name)
-        self.ui.installedVersion.setText("当前版本: " + software.installed_version)
-        self.ui.candidateVersion.setText("最新版本: " + software.candidate_version)
-        self.ui.summary.setText(software.summary)
-        self.ui.description.setText(software.description)
+        self.app = app
+        self.ui.name.setText(app.name)
+        self.ui.installedVersion.setText("当前版本: " + app.installed_version)
+        self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
+        self.ui.summary.setText(app.summary)
+        self.ui.description.setText(app.description)
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".png")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".png')}")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".jpg")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + software.name + ".jpg')}")
+        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png')}")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg')}")
         else:
             self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + "default.png')}")
 
-        size = software.packageSize
+        size = app.packageSize
         sizek = size / 1024
         self.ui.size.setText("软件大小: " + str(sizek) + " K")
 
         self.ui.gradeText1.setText("我的评分: ")
-        self.ui.gradeText2.setText("评分" + (str(software.ratings_total)) + "次")
-        self.ui.commentNumber.setText("共 " + str(software.ratings_total) + " 条评论")
+        self.ui.gradeText2.setText("评分" + (str(app.ratings_total)) + "次")
+        self.ui.commentNumber.setText("共 " + str(app.ratings_total) + " 条评论")
         self.ui.gradeText3.setText("满分5分")
-        self.ui.grade.setText(str(software.ratings_average))
-        self.star = StarWidget('big', software.ratings_average, self.detailWidget)
+        self.ui.grade.setText(str(app.ratings_average))
+        self.star = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star.move(500, 94)
 
-        if(software.is_installed):
+        if(app.is_installed):
             self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
             self.ui.status.show()
 
-            if(software.is_upgradable):
+            if(app.is_upgradable):
                 self.ui.btnInstall.setText("已安装")
                 self.ui.btnUpdate.setText("可升级")
                 self.ui.btnUninstall.setText("可卸载")
@@ -202,16 +206,23 @@ class DetailScrollWidget(QScrollArea):
 
         self.show()
 
-        # send request
-        ################
-        # show div
+        # show loading
         self.sshotload.start_loading()
         self.reviewload.start_loading()
+        # send request
+        self.mainwindow.appmgr.get_application_reviews(app.name)
+        self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def add_review(self, reviewlist):
+        # print len(reviewlist)
         for review in reviewlist:
+            # not this app's review  break
+            if(review.package_name != self.app.name):
+                break
             self.add_one_review(review)
 
+        self.reviewpage += 1
+        self.currentreviewready = True
         self.reviewload.stop_loading()
 
     def add_one_review(self, review):
@@ -240,20 +251,6 @@ class DetailScrollWidget(QScrollArea):
             self.bigsshot.bg.setStyleSheet("QLabel{background-image:url('" + self.app.screenshotfile + "');}")
 
         self.sshotload.stop_loading()
-            # self.ui.sshot.resize(img.width(), img.height())
-            # self.ui.sshot.setStyleSheet("QPushButton{background-image:url('" + self.app.screenshotfile + "');border:0px;}")
-
-        # for i in range(len(sclist)):
-        #     scfile = sclist[i]
-        #     if(i == 0):
-        #         img = QPixmap(scfile)
-        #         self.ui.thumbnail.resize(img.width(), img.height())
-        #         self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + scfile + "');border:0px;}")
-        #         self.ui.thumbnail.show()
-        #     if(i == 1):
-        #         img = QPixmap(scfile)
-        #         self.ui.sshot.resize(img.width(), img.height())
-        #         self.ui.sshot.setStyleSheet("QPushButton{background-image:url('" + scfile + "');border:0px;}")
 
     def slot_show_sshot(self):
         if(self.sshotcount > 1):
@@ -303,6 +300,18 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
             self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
 
+    def slot_scroll_end(self, now):
+        # current page not ready
+        if(self.currentreviewready == False):
+            pass
+        else:
+            max = self.verticalScrollBar().maximum()
+            if(now == max):
+                self.currentreviewready = False
+                reviewcount = self.ui.reviewListWidget.count()
+                self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
+                self.reviewload.start_loading()
+                self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
 class ScreenShotBig(QWidget):
 

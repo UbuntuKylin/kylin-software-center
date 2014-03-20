@@ -59,7 +59,8 @@ class Application:
         self.iconfile = UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
         self.screenshots = []
         self.icons = []
-        self.reviews = []
+        self.reviews = {}
+        self.reivewpage = 0
         self.rnrStat = None
         self.ratings_average = 0
         self.ratings_total = 0
@@ -128,8 +129,16 @@ class Application:
 
 
     #get the reviews object list of this application
-    def get_reviews(self):
-        return self.reviews
+    def get_reviews(self,page):
+        if self.reviews.has_key(page):
+            return self.reviews[page]
+        else:
+            return None
+
+
+    def add_reviews(self,page,reviewlist):
+        if not self.reviews.has_key(page):
+            self.reviews[page] = reviewlist
 
     def update_cache(self,apt_cache):
         if not apt_cache:

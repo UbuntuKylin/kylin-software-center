@@ -363,12 +363,12 @@
     <rect>
      <x>650</x>
      <y>640</y>
-     <width>80</width>
+     <width>120</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>条评论</string>
+    <string/>
    </property>
   </widget>
   <widget class="QListWidget" name="reviewListWidget">

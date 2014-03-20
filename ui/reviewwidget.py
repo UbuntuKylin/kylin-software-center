@@ -27,7 +27,6 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukcmtw import Ui_CommentWidget
 from ui.starwidget import StarWidget
-import data
 
 
 class ReviewWidget(QWidget):

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Wed Mar 12 10:02:04 2014
+# Created: Thu Mar 20 16:49:28 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -131,7 +131,8 @@ class Ui_DetailWidget(object):
         self.splitLine3.setText(_fromUtf8(""))
         self.splitLine3.setObjectName(_fromUtf8("splitLine3"))
         self.commentNumber = QtGui.QLabel(DetailWidget)
-        self.commentNumber.setGeometry(QtCore.QRect(650, 640, 80, 17))
+        self.commentNumber.setGeometry(QtCore.QRect(650, 640, 120, 17))
+        self.commentNumber.setText(_fromUtf8(""))
         self.commentNumber.setObjectName(_fromUtf8("commentNumber"))
         self.reviewListWidget = QtGui.QListWidget(DetailWidget)
         self.reviewListWidget.setGeometry(QtCore.QRect(0, 680, 815, 85))
@@ -153,5 +154,4 @@ class Ui_DetailWidget(object):
         self.splitText1.setText(_translate("DetailWidget", "详细介绍", None))
         self.splitText2.setText(_translate("DetailWidget", "软件截图", None))
         self.splitText3.setText(_translate("DetailWidget", "用户评论", None))
-        self.commentNumber.setText(_translate("DetailWidget", "条评论", None))
 

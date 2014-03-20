@@ -116,6 +116,9 @@ class RatingsAndReviewsAPI(PistonAPI):
  #       pdb.set_trace()
         if appname:
             appname = quote_plus(';' + appname)
+        urls = 'reviews/filter/%s/%s/%s/%s/%s%s/page/%s/%s/' % (
+            language, origin, distroseries, version, packagename,
+            appname, page, sort)
         return self._get('reviews/filter/%s/%s/%s/%s/%s%s/page/%s/%s/' % (
             language, origin, distroseries, version, packagename,
             appname, page, sort),

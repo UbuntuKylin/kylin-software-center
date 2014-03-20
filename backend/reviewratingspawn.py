@@ -151,7 +151,6 @@ class RatingsAndReviwsMethod:
         #bug lp:709408 - don't print 404 errors as traceback when api request
         #                returns 404 error
         except APIError as e:
-            print("_get_reviews_threaded: no reviews able to be retrieved for package: %s (%s, origin: %s)" % (options.pkgname, options.distroseries, options.origin))
             print("_get_reviews_threaded: no reviews able to be retrieved: %s" % e)
         except httplib2.ServerNotFoundError:
         # switch to offline mode and try again
@@ -176,6 +175,8 @@ class RatingsAndReviwsMethod:
     def get_screenshots(kwargs,queue=None):
         screenshots = []
 
+#        print "get_screenshots:",kwargs
+
         pkgname = kwargs['packagename']
         version = kwargs['version']
         cachedir = kwargs['cachedir']
@@ -188,23 +189,31 @@ class RatingsAndReviwsMethod:
 
         #if thumbnail and screenshot are not null,only get them
         if(thumbnail and screenshot and thumbnailfile and screenshotfile):
+
             try:
-                urlFile = urllib2.urlopen(thumbnail)
-                rawContent = urlFile.read()
-                if rawContent:
-                    localFile = open(thumbnailfile,"wb")
-                    localFile.write(rawContent)
-                    localFile.close()
-                    screenshot_path_list.append(thumbnailfile)
-                    queue.put_nowait(thumbnailfile)
-                urlFile = urllib2.urlopen(screenshot)
-                rawContent = urlFile.read()
-                if rawContent:
-                    localFile = open(screenshotfile,"wb")
-                    localFile.write(rawContent)
-                    localFile.close()
-                    screenshot_path_list.append(screenshotfile)
-                    queue.put_nowait(screenshotfile)
+                if not os.path.exists(thumbnailfile):
+                    urlFile = urllib2.urlopen(thumbnail)
+                    rawContent = urlFile.read()
+                    if rawContent:
+                        localFile = open(thumbnailfile,"wb")
+                        localFile.write(rawContent)
+                        localFile.close()
+                else:
+                    print "get_screenshots,exists:",thumbnailfile
+
+                screenshot_path_list.append(thumbnailfile)
+                queue.put_nowait(thumbnailfile)
+                if not os.path.exists(screenshotfile):
+                    urlFile = urllib2.urlopen(screenshot)
+                    rawContent = urlFile.read()
+                    if rawContent:
+                        localFile = open(screenshotfile,"wb")
+                        localFile.write(rawContent)
+                        localFile.close()
+                else:
+                    print "get_screenshots,exists:",screenshotfile
+                screenshot_path_list.append(screenshotfile)
+                queue.put_nowait(screenshotfile)
             except urllib2.HTTPError,e:
                 print e.code
             except urllib2.URLError,e:
@@ -234,7 +243,7 @@ class RatingsAndReviwsMethod:
             try:
                 jsonContent = json.loads(rawContent)
             except ValueError as e:
-                print("can not decode: '%s' (%s)" % (content, e))
+                print("can not decode: '%s' (%s)" % (rawContent, e))
                 jsonContent = None
                 return []
 
@@ -257,14 +266,15 @@ class RatingsAndReviwsMethod:
                     filename = item['small_image_url'].split(pkgname + '/')[1]
                     destfile = cachedir + pkgname + item['version'] + "_" + filename
 
-                    urlFile = urllib2.urlopen(item['small_image_url'])
-                    rawContent = urlFile.read()
-                    if not rawContent:
-                        continue
+                    if not os.path.exists(destfile):
+                        urlFile = urllib2.urlopen(item['small_image_url'])
+                        rawContent = urlFile.read()
+                        if not rawContent:
+                            continue
 
-                    localFile = open(destfile,"wb")
-                    localFile.write(rawContent)
-                    localFile.close()
+                        localFile = open(destfile,"wb")
+                        localFile.write(rawContent)
+                        localFile.close()
                     screenshot_path_list.append(destfile)
                     queue.put_nowait(destfile)
                     print "------screenshot queue len=",queue.qsize()

@@ -80,6 +80,7 @@ class InstallBackend(QObject):
 
             self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal)
             self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal)
+            self.iface.connect_to_signal("software_auth_signal",self._on_software_auth_signal)
         except dbus.DBusException:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
@@ -150,6 +151,17 @@ class InstallBackend(QObject):
 #            sendMsg = "安装中..." + str(kwarg['status'])
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
+
+    def _on_software_auth_signal(self,type, kwarg):
+        print "#####_on_software_auth_signal:",type,kwarg
+        sendType = "auth"
+        appname = str(kwarg['appname'])
+        sendMsg  = "操作取消"
+        action = str(kwarg['action'])
+        if type == "auth_cancel":
+            sendType = "cancel"
+
+        self.emit(Signals.dbus_apt_process,appname,sendType,action,0,sendMsg)
 
     def install_package(self,pkgname):
         self.call_dbus_iface(AppActions.INSTALL,pkgname)

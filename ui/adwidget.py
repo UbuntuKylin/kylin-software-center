@@ -64,7 +64,6 @@ class ADWidget(QWidget):
 
         if self.adl > 0:
             self.create_ads(addata, parent)
-            #self.softCount.setText(str(len(data.softwareList)))
 
             self.adtimer = QTimer(self)
             self.adtimer.timeout.connect(self.slot_adtimer_timeout)

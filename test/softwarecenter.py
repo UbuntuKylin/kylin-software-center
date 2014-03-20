@@ -24,7 +24,6 @@
 
 import sys
 import os
-import data
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import webbrowser
@@ -38,7 +37,7 @@ from ui.adwidget import *
 #????from util.async_process import AsyncProcess
 #????from util.check_software_thread import CheckSoftwareThread
 from models.advertisement import Advertisement
-import data
+
 from util import log
 from util import vfs
 

@@ -20,6 +20,7 @@
 
 from gettext import gettext as _
 import os
+import errno
 
 # reviews
  #REVIEWS_SERVER = (os.environ.get("SOFTWARE_CENTER_REVIEWS_HOST") or
@@ -93,23 +94,6 @@ class Review(object):
         return "[Review id=%s review_text='%s' reviewer_username='%s']" % (
             self.id, self.review_text, self.reviewer_username)
 
-    def __cmp__(self, other):
-        # first compare version, high version number first
-        vc = upstream_version_compare(self.version, other.version)
-        if vc != 0:
-            return vc
-        # then wilson score
-        uc = cmp(wilson_score(self.usefulness_favorable,
-                              self.usefulness_total),
-                 wilson_score(other.usefulness_favorable,
-                              other.usefulness_total))
-        if uc != 0:
-            return uc
-        # last is date
-        t1 = datetime.datetime.strptime(self.date_created, '%Y-%m-%d %H:%M:%S')
-        t2 = datetime.datetime.strptime(other.date_created,
-            '%Y-%m-%d %H:%M:%S')
-        return cmp(t1, t2)
 
     @classmethod
     def from_piston_mini_client(cls, other):
