@@ -114,8 +114,7 @@ class Signals:
     rating_reviews_ready = SIGNAL("rating-reviews-ready")
     app_reviews_ready = SIGNAL("app-reviews-ready")
     app_screenshots_ready = SIGNAL("app-screenshots-ready")
-    count_installed_ready = SIGNAL("count-installed-ready")
-    count_upgradable_ready = SIGNAL("count-upgradable-ready")
+    count_application_update = SIGNAL("count-application-update")
     show_app_detail = SIGNAL("app-show-detail")
     install_app = SIGNAL("install-app")
     remove_app = SIGNAL("remove-app")
@@ -156,3 +155,39 @@ AptProcessMsg = {
     "down_pulse":"下载进行中...",
     "down_cancel":"下载取消",
 }
+
+
+def UnicodeToAscii(src):
+    return src.encode('ascii','ignore')
+
+def AsciiToUnicode(src):
+    return src.decode('utf-8','ignore')
+
+import re
+def CheckChineseWords(src):
+    if src is None:
+        return False
+
+    uniSrc = ""
+    try:
+        uniSrc = AsciiToUnicode(src)
+    except Exception:
+        return False
+
+    zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
+    match = zhPattern.search(uniSrc)
+    if match:
+        return True
+    else:
+        return False
+
+def CheckChineseWordsForUnicode(uniSrc):
+    if uniSrc is None:
+        return False
+
+    zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
+    match = zhPattern.search(uniSrc)
+    if match:
+        return True
+    else:
+        return False

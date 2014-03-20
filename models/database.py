@@ -24,41 +24,57 @@
 
 import sqlite3
 import os
-from models.enums import UBUNTUKYLIN_DATA_PATH
+from models.enums import UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
-#DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"category.db")
-DB_PATH = "../data/category.db"
+DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+#DB_PATH = "../data/uksc.db"
 
 CREATE_CATEGORY = "create table category (name varchar(32) primary key,display_name varchar(32), \
                    priority integer, visible integer)"
 
 CREATE_APP = "create table application (id integer primary key autoincrement, language varchar(32), \
-              first_cat_name varchar(32),secondary_cat_name varchar(32), app_name varchar(32), \
-              display_name varchar(64), summary varchar(256), size integer, distroseries varchar(32),\
-              installed integer, installed_size integer, installed_version varchar(32), latest_version varchar(32), \
+              first_cat_name varchar(32),secondary_cat_name varchar(32),third_cat_name varchar(32), app_name varchar(32) unique, \
+              display_name varchar(64), summary varchar(256), description varchar(512), distroseries varchar(32), \
               rating_average float, rating_total integer, review_total integer, download_total integer)"
+
+CREATE_TOPRATED = "create table toprated (app_name varchar(32) primary key, \
+                   rating_average float, rating_total integer, rank integer)"
 
 INSERT_CATEGORY = "insert into category (name,display_name,priority,visible) \
         values('%s', '%s', %d, %d)"
 QUERY_CATEGORY = "select * from category where name='%s'"
-INSERT_APP = "insert into application (first_cat_name,secondary_cat_name,app_name,display_name,language) values \
+INSERT_APP = "insert into application (first_cat_name,secondary_cat_name,third_cat_name,app_name,display_name,language) values \
               ('%s','%s','%s','%s','zh_CN')"
-QUERY_APP = "select * from application where app_name='%s'"
+QUERY_APP = "select display_name, summary,description,rating_average,rating_total,review_total,download_total \
+               from application where app_name='%s'"
+INSERT_TOPRATED = "insert into toprated (app_name,rating_average,rating_total,rank) \
+        values('%s', %f, %d, %d)"
+QUERY_TOPRATED = "select app_name,rating_average,rating_total,rank from toprated order by rank ASC"
+RESET_TOPRATED = "delete from toprated"
 
 UPDATE_APP_CATEGORY = "update application set secondary_cat_name='%s' where app_name='%s'"
-UPDATE_APP_BASIC = "update application set summary='%s',size=%d,installed=%d,installed_size=%d, \
-        installed_version='%s', latest_version='%s', distroseries='%s' where app_name='%s'"
+UPDATE_APP_BASIC = "update application set summary='%s',description='%s',distroseries='%s' where app_name='%s'"
 UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, review_total=%d, \
         download_total=%d where app_name='%s'"
-QUERY_CATEGORY_APPS = "select * from application where first_cat_name='%s' or secondary_cat_name='%s'"
+QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s'"
 
 class Database:
 
     def __init__(self):
-        print DB_PATH
-        self.connect = sqlite3.connect(DB_PATH)
+        srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+        destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
+
+        if not os.path.exists(destFile):
+            if not os.path.exists(srcFile):
+                print "error with db file"
+                return
+            open(destFile, "wb").write(open(srcFile, "rb").read())
+
+        self.connect = sqlite3.connect(os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db"))
         self.cursor = self.connect.cursor()
-        self.catelist = []
+        self.cat_list = []
 
     def init_category_table(self):
         self.cursor.execute(CREATE_CATEGORY)
@@ -95,42 +111,79 @@ class Database:
                     self.cursor.execute(UPDATE_APP_CATEGORY % (cat_name,pkgname))
                     self.connect.commit()
 
+    def init_toprated_table(self,rnrlist):
+        print "init_toprated_table:",len(rnrlist)
+#        self.cursor.execute(CREATE_TOPRATED)
+        self.cursor.execute(RESET_TOPRATED)
+        self.connect.commit()
 
-    def get_str(self,s):
-        if isinstance(s, unicode):
-        #s=u"中文"
-            return s.encode('gb2312')
-        else:
-        #s="中文"
-            return s.decode('utf-8').encode('gb2312')
+        index = 0
+        for rnrStat in rnrlist:
+            self.cursor.execute(QUERY_APP % (str(rnrStat.pkgname)))
+            res = self.cursor.fetchall()
+            if len(res)==0:
+                print "does not exit:",str(rnrStat.pkgname)
+                continue
+
+            self.cursor.execute(INSERT_TOPRATED % (str(rnrStat.pkgname),rnrStat.ratings_average,rnrStat.ratings_total,index))
+            self.connect.commit()
+            index = index + 1
 
     def query_categories(self):
         self.cursor.execute("select * from category")
         res = self.cursor.fetchall()
-        print res
-        for item in res:
-           self.catelist.append(self.get_str(item[1]))
-           print item[1]
-#           print "item:",str((item[0]).decode('utf-8')),(str((item[1]).decode('utf-8')))
+#        print "query_categories:",len(res),res
+        return res
 
-
+    #return as (app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name)
     def query_category_apps(self,cat_name):
-        self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name))
+        self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name))
         res = self.cursor.fetchall()
-        print "apps:",len(res),res
+#        print "query_category_apps:cat_name",cat_name,len(res)
+        return res
 
-    def query_category_apps(self,cat_name):
-        self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name))
+    #return as (display_name, summary, description, rating_average,rating_total,review_total,download_total)
+    def query_application(self,pkgname):
+        self.cursor.execute(QUERY_APP % (pkgname))
         res = self.cursor.fetchall()
-        print "apps:",len(res),res
+#        print "query_application:",len(res),res
+        if len(res)==0:
+            return []
+        else:
+            return res[0]
 
+        return res
+
+    #return as (display_name, summary,rating_average,rating_total,review_total,download_total)
+    def query_app_toprated(self):
+        self.cursor.execute(QUERY_TOPRATED)
+        res = self.cursor.fetchall()
+        print "query_app_toprated:",len(res),res
+        return res
+
+    def update_app_basic(self,pkgname,summary,distroseries="trusty"):
+        print "update_app_basic:",pkgname,summary
+        self.cursor.execute(UPDATE_APP_BASIC % (summary,distroseries,pkgname))
+        self.connect.commit()
+        #res = self.cursor.fetchall()
+        #print "update_app_basic:",len(res),res
+        return True
+
+    def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
+        print "update_app_rnr:",pkgname
+        self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
+        self.connect.commit()
+        #res = self.cursor.fetchall()
+        #print "update_app_rnr:",len(res),res
+        return True
 
 if __name__ == "__main__":
     db = Database()
 #    db.init_category_table()
 #    db.init_app_table()
 #    db.query_category_apps("ubuntukylin")
-    db.query_categories()
-    print db.catelist
+#    db.query_categories()
+    db.query_application("gimp")
+    print db.cat_list
 
 

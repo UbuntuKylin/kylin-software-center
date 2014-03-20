@@ -324,7 +324,6 @@ class RatingsAndReviwsMethod:
                 pac.ratings_average = float(pac.ratings_average)
                 pac.ratings_total = int(pac.ratings_total)
 
-
             ratingAvg = range(len(ratingList))
             ratingTotal = range(len(ratingList))
             for i in range(len(ratingList)):

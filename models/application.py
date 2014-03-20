@@ -38,10 +38,11 @@ class Application:
     # work type
     mark = ''
     #
-    def __init__(self, pkgname, category_name, apt_cache):
+    def __init__(self, pkgname, displayname, category_name, apt_cache):
         if not pkgname:
             raise ValueError("Need either appname or pkgname or request")
         self.pkgname = pkgname
+        self.displayname = displayname
         self.category_name = category_name
         if not apt_cache:
             self.package = None
