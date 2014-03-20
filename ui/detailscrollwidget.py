@@ -42,7 +42,7 @@ class DetailScrollWidget(QScrollArea):
     currentreviewready = ''
 
     def __init__(self, parent=None):
-        QScrollArea.__init__(self,parent)
+        QScrollArea.__init__(self,parent.ui.centralwidget)
         self.detailWidget = QWidget()
         self.ui_init()
 
@@ -135,6 +135,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.clear()
         self.detailWidget.resize(805, 790)
         self.ui.reviewListWidget.resize(805, 0)
+        self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
         self.ui.thumbnail.hide()
@@ -205,12 +206,12 @@ class DetailScrollWidget(QScrollArea):
 
         self.show()
 
-        # send request
-        self.mainwindow.appmgr.get_application_reviews(app.name)
-        self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
         # show loading
         self.sshotload.start_loading()
         self.reviewload.start_loading()
+        # send request
+        self.mainwindow.appmgr.get_application_reviews(app.name)
+        self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def add_review(self, reviewlist):
         for review in reviewlist:
@@ -222,6 +223,7 @@ class DetailScrollWidget(QScrollArea):
         self.reviewpage += 1
         self.currentreviewready = True
         self.reviewload.stop_loading()
+        print "stop loading"
 
     def add_one_review(self, review):
         count = self.ui.reviewListWidget.count()
@@ -305,9 +307,11 @@ class DetailScrollWidget(QScrollArea):
 
         max = self.verticalScrollBar().maximum()
         if(now == max):
-            print "more review..."
-            self.mainwindow.appmgr.get_application_reviews(self.app.name)
+            reviewcount = self.ui.reviewListWidget.count()
+            self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
             self.reviewload.start_loading()
+            print "start loading"
+            self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
 class ScreenShotBig(QWidget):
 

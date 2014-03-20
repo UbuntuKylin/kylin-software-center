@@ -459,7 +459,7 @@ class AppManager(QObject):
 
     #get reviews for a package
     def get_application_reviews(self,pkgname,page=1,callback=None):
-
+        print page
         kwargs = {"language": self.language,
                   "distroseries": self.distroseries,
                   "packagename": pkgname, #multiarch..
