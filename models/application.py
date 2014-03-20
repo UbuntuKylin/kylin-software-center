@@ -63,6 +63,7 @@ class Application:
         self.rnrStat = None
         self.ratings_average = 0
         self.ratings_total = 0
+        self.review_total = 0
 
     @property
     def name(self):
@@ -85,10 +86,6 @@ class Application:
         }
 
         return self.screenshot_url
-
-    @property
-    def iconfile(self):
-        return self.iconfile
 
     @property
     def description(self):

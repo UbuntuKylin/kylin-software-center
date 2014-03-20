@@ -377,7 +377,8 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_advertisements()
         self.appmgr.get_recommend_apps()
         self.appmgr.get_toprated_stats()
-        self.appmgr.get_review_rating_stats()
+        #????we should decide when to call this to sync data from backend server
+ #       self.appmgr.get_rating_review_stats()
 
     def check_init_data_ready(self):
         LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
@@ -677,7 +678,7 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
         print "receive ratings and reviews ready, count is:",len(rnrlist)
         #app = self.appmgr.get_application_by_name("gimp")
-        self.appmgr.update_rating_reviews(rnrlist)
+        #self.appmgr.update_rating_reviews(rnrlist)
 
         self.rnr_ready = True
         self.check_init_data_ready()
@@ -700,7 +701,8 @@ class SoftwareCenter(QMainWindow):
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
 
-        self.appmgr.update_toprated(rnrlist)
+        #????we should update this when to get latest list from backend server
+#        self.appmgr.update_toprated(rnrlist)
 
         self.toprated_ready = True
         self.check_init_data_ready()

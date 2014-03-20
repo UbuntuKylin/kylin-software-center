@@ -24,7 +24,7 @@
 
 import sqlite3
 import os
-from models.enums import UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR
+from models.enums import UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
@@ -63,6 +63,7 @@ QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat
 class Database:
 
     def __init__(self):
+        self.updatecount = 0
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
         destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
 
@@ -146,19 +147,17 @@ class Database:
     def query_application(self,pkgname):
         self.cursor.execute(QUERY_APP % (pkgname))
         res = self.cursor.fetchall()
-#        print "query_application:",len(res),res
+#        print "query_application:",pkgname,len(res),res
         if len(res)==0:
             return []
         else:
             return res[0]
 
-        return res
-
-    #return as (display_name, summary,rating_average,rating_total,review_total,download_total)
+    #return as (app_name,rating_average,rating_total,rank)
     def query_app_toprated(self):
         self.cursor.execute(QUERY_TOPRATED)
         res = self.cursor.fetchall()
-        print "query_app_toprated:",len(res),res
+#        print "query_app_toprated:",len(res),res
         return res
 
     def update_app_basic(self,pkgname,summary,distroseries="trusty"):
@@ -170,12 +169,19 @@ class Database:
         return True
 
     def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
-        print "update_app_rnr:",pkgname
+        print "update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total
         self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
         self.connect.commit()
         #res = self.cursor.fetchall()
         #print "update_app_rnr:",len(res),res
+        self.updatecount += 1
         return True
+
+    def export(self):
+        self.cursor.execute("select app_name from application")
+        res = self.cursor.fetchall()
+        for item in res:
+            print UnicodeToAscii(item[0])
 
 if __name__ == "__main__":
     db = Database()
@@ -183,7 +189,8 @@ if __name__ == "__main__":
 #    db.init_app_table()
 #    db.query_category_apps("ubuntukylin")
 #    db.query_categories()
-    db.query_application("gimp")
-    print db.cat_list
+#    db.query_application("gimp")
+#    print db.cat_list
+    db.export()
 
 
