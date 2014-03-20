@@ -42,6 +42,7 @@ from enums import Signals,UnicodeToAscii,CheckChineseWords,CheckChineseWordsForU
 
 import threading
 import multiprocessing
+import Queue
 
 from operator import itemgetter
 
@@ -86,10 +87,24 @@ class ThreadWorkerDaemon(threading.Thread):
                 spawn_helper.start()
                 event.wait()
 
-                while not queue.empty():
-                    resitem = queue.get_nowait()
-                    reslist.append(resitem)
+                resLen = queue.qsize()
+                while resLen:
+                    try:
+                        count  = 0
+#                        print "@@@@@@@@@:",queue.qsize(),item
+                        while queue.qsize():
+             #               print "@@enter while"
+                            resitem = queue.get_nowait()
+             #               print "@@after get no wait"
+                            reslist.append(resitem)
+#                            print "&&&&&&get an item:",count,resitem
+                            count += 1
+                        #queue.close()
+                    except Queue.Empty:
+                        print "&&&&&&&&&&get error:",queue.qsize()
 
+                    resLen = queue.qsize()
+                print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),len(reslist)
             LOG.debug("receive data from backend process, len=%d",len(reslist))
             self.appmgr.dispatchWorkerResult(item,reslist)
 
@@ -107,7 +122,7 @@ class AppManager(QObject):
         self.cat_list = {}
         self.rnrStatList = {}
         self.language = 'zh_CN'      #'any' for all
-        self.distroseries = 'saucy'  #'any' for all
+        self.distroseries = 'any'  #'any' for all
         self.db = Database()
 
         self.worklist = []
@@ -260,22 +275,27 @@ class AppManager(QObject):
                 apps[pkgname] = app
 
                 #if there has special information in db, get them
+                #get_category_apps_from_db: 0 0
+                #display_name, summary, description, rating_average,rating_total,review_total,download_total
                 appinfo = self.db.query_application(pkgname)
                 summary = appinfo[1]
                 description = appinfo[2]
                 rating_average = appinfo[3]
                 rating_total = appinfo[4]
                 review_total = appinfo[5]
-                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+
+#                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+                if summary is not None:
                     app.summary = summary
-                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+#                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+                if description is not None:
                     app.description = description
                 if rating_average is not None:
-                    app.rating_average = rating_average
+                    app.ratings_average = float(rating_average)
                 if rating_total is not None:
-                    app.rating_total = rating_total
+                    app.ratings_total = int(rating_total)
                 if review_total is not None:
-                    app.review_total = review_total
+                    app.review_total = int(review_total)
         return apps
 
     def download_category_apps(self,cat,catdir=""):
@@ -389,8 +409,32 @@ class AppManager(QObject):
         return self.get_category_apps("ubuntukylin")
 
     #get toprated apps
+    def get_toprated_stats_from_db(self, topcount=10, callback=None):
+        print "We need to get the top 10 applications"
+        list = self.db.query_app_toprated()
+        rnrStatList = []
+        for item in list:
+            pkgname = UnicodeToAscii(item[0])
+
+            rnrStat = ReviewRatingStat(pkgname)
+            rnrStat.ratings_average = item[1]
+            rnrStat.ratings_total = item[2]
+            rnrStat.reviews_total = 0
+            rnrStat.useful = 0
+
+            rnrStatList.append(rnrStat)
+
+        return rnrStatList
+
+
+    #get toprated apps
     def get_toprated_stats(self, topcount=100, callback=None):
         print "We need to get the top 10 applications"
+
+        rnrStatList = self.get_toprated_stats_from_db(topcount,callback)
+        if(rnrStatList) >= 10:
+            self.emit(Signals.toprated_ready,rnrStatList)
+            return
 
         kwargs = {"topcount": topcount,
                   "sortingMethod": RatingSortMethods.INTEGRATE,
@@ -404,9 +448,9 @@ class AppManager(QObject):
         return []
 
     #get rating and review status
-    def get_review_rating_stats(self,callback=None):
+    def get_rating_review_stats(self,callback=None):
         print "we need to get the ratings and reviews stat"
-        item  = WorkerItem("get_review_rating_stats",None)
+        item  = WorkerItem("get_rating_review_stats",None)
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()
@@ -414,12 +458,12 @@ class AppManager(QObject):
         return []
 
     #get reviews for a package
-    def get_application_reviews(self,pkgname,callback=None):
+    def get_application_reviews(self,pkgname,page=1,callback=None):
 
         kwargs = {"language": self.language,
                   "distroseries": self.distroseries,
                   "packagename": pkgname, #multiarch..
-                  "page": int(1),
+                  "page": int(page),
                   }
 
         item  = WorkerItem("get_reviews",kwargs)
@@ -479,8 +523,8 @@ class AppManager(QObject):
             app.screenshots = screenshots
 
             self.emit(Signals.app_screenshots_ready,screenshots)
-        elif item.funcname == "get_review_rating_stats":
-            LOG.debug("review rating stats ready:%d",len(reslist))
+        elif item.funcname == "get_rating_review_stats":
+            LOG.debug("rating review stats ready:%d",len(reslist))
             rnrStats = reslist
             self.rnrStatList = reslist
 
@@ -514,7 +558,7 @@ class AppManager(QObject):
 
     def update_rating_reviews(self,rnrStats):
         print "update_rating_reviews:",len(rnrStats)
-        return #??????
+
         for rnrStat in rnrStats:
             self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
 
@@ -522,7 +566,7 @@ class AppManager(QObject):
         print "update_toprated:",len(rnrStats)
         if len(rnrStats) == 0:
             return
-        return #?????
+
         self.db.init_toprated_table(rnrStats)
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
@@ -562,7 +606,7 @@ if __name__ == "__main__":
 #    appManager.install_application("adanaxisgpl")
 #    appManager.install_application("adonthell")
 #    appManager.get_application_reviews("gimp",_reviews_ready_callback)
-#    appManager.get_review_rating_stats()
+#    appManager.get_rating_review_stats()
 #    appManager.get_toprated_stats()
     print "waiting..........\n\n"
     while True:

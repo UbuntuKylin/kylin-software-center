@@ -65,6 +65,7 @@ class RatingSortMethods:
 
 from gi.repository import GObject
 import multiprocessing
+import Queue
 import threading
 
 #a class to describe the total rating and review info
@@ -182,9 +183,6 @@ class RatingsAndReviwsMethod:
         screenshot = kwargs['screenshot']
         thumbnailfile = kwargs['thumbnailfile']
         screenshotfile = kwargs['screenshotfile']
-        print "pkgname:", pkgname
-        print "version:", version
-        print "cachdir:", cachedir
 
         screenshot_path_list = []
 
@@ -282,7 +280,7 @@ class RatingsAndReviwsMethod:
 
     #return a list of ReviewRatingStat
     @staticmethod
-    def get_review_rating_stats(kwargs=None,queue=None):
+    def get_rating_review_stats(kwargs=None,queue=None):
 
         rnrArray = {}
         try:
@@ -297,9 +295,16 @@ class RatingsAndReviwsMethod:
                 rnrStat.ratings_average = float(stat.ratings_average)
                 rnrStat.ratings_total = int(stat.ratings_total)
                 rnrStat.pkgname = stat.package_name
+                rnrStat.reviews_total = 0
+                rnrStat.useful = 0
                 rnrArray[stat.package_name] = rnrStat
 
-                queue.put_nowait(rnrStat)
+                print "####rating reivew status:",index,stat.package_name,stat.ratings_average,stat.ratings_total
+                index += 1
+                try:
+                    queue.put_nowait(rnrStat)
+                except Queue.Full:
+                    print "&&&&&&&&&&&&put exception"
             LOG.debug("got the rating and review list count:%d",len(rnrArray))
 
             return rnrArray
@@ -445,10 +450,10 @@ class RatingsAndReviewsTest:
  
        self._reviews = {}
 
-    def get_review_rating_stats(self):
-        print "get_review_rating_stats..."
-        spawn_helper = SpawnProcess("get_review_rating_stats")
-        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_review_rating_stats")
+    def get_rating_review_stats(self):
+        print "get_rating_review_stats..."
+        spawn_helper = SpawnProcess("get_rating_review_stats")
+        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_rating_review_stats")
         spawn_helper.start()
 
 
@@ -529,7 +534,7 @@ if __name__ == "__main__":
 
 
     test = RatingsAndReviewsTest()
-    test.get_review_rating_stats()
+    test.get_rating_review_stats()
 #   piston_reviews = test.start_get_reviews('gimp',_reviews_ready_callback)
 
 #   piston_reviews = test.get_reviews('gimp',_reviews_ready_callback)
