@@ -152,7 +152,7 @@ class SoftwareCenter(QMainWindow):
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
         # detail page
-        self.detailScrollWidget = DetailScrollWidget(self.ui.centralwidget)
+        self.detailScrollWidget = DetailScrollWidget(self)
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
         # loading page
         self.loadingDiv = LoadingDiv(self)
@@ -906,8 +906,8 @@ class SoftwareCenter(QMainWindow):
             print "has no such application...."
             return
         self.detailScrollWidget.showSimple(app)
-        self.appmgr.get_application_reviews(app.name)
-        self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+        # self.appmgr.get_application_reviews(app.name)
+        # self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
