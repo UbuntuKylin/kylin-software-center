@@ -27,7 +27,7 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukrcmdw import Ui_UKrcmdw
-
+from utils import run
 
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
@@ -69,8 +69,11 @@ class RecommendItem(QWidget):
         self.ui.softDescr.setText(self.app.summary)
 
         if(self.app.is_installed):
-            self.ui.btn.setText("已安装")
-            self.ui.btn.setEnabled(False)
+            if(run.get_run_command(self.app.name) == ""):
+                self.ui.btn.setText("已安装")
+                self.ui.btn.setEnabled(False)
+            else:
+                self.ui.btn.setText("启动")
         else:
             self.ui.btn.setText("安装")
 
@@ -99,11 +102,12 @@ class RecommendItem(QWidget):
         # self.setPalette(palette)
 
     def slot_btn_click(self):
-        self.ui.btn.setEnabled(False)
-        self.ui.btn.setText("正在处理")
-
-        self.emit(Signals.install_app, self.app)
-        #self.backend.install_package(self.app.name)
+        if(self.ui.btn.text() == "启动"):
+            run.run_app(self.app.name)
+        else:
+            self.ui.btn.setEnabled(False)
+            self.ui.btn.setText("正在处理")
+            self.emit(Signals.install_app, self.app)
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
@@ -112,8 +116,16 @@ class RecommendItem(QWidget):
         self.ui.btn.setText(action)
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
-                self.ui.btn.setText("启动")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
-                self.ui.btn.setText("启动")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")

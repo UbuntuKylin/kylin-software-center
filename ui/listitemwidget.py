@@ -27,6 +27,7 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
+from utils import run
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
                           LIST_BUTTON_STYLE,
@@ -103,9 +104,12 @@ class ListItemWidget(QWidget):
         if(nowpage == 'homepage'):
             self.ui.btn.setVisible(True)
             if(app.is_installed):
-                self.ui.btn.setText("启动")
                 self.ui.installedVersion.setText("已装: " + app.installed_version)
-                self.ui.btn.setEnabled(False)
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
             else:
                 self.ui.btn.setText("安装")
                 self.ui.installedVersion.setText("未安装")
@@ -136,23 +140,17 @@ class ListItemWidget(QWidget):
         self.ui.btnDetail.hide()
 
     def slot_btn_click(self):
-        self.ui.btn.setEnabled(False)
-        self.ui.btn.setText("请稍候")
-        if(self.workType == 'homepage'):
-#            print "click install"
-            self.emit(Signals.install_app, self.app)
-            # self.backend.install_package(self.app.name)
-            #data.sbo.install_software(self)
-        elif(self.workType == 'uppage'):
-#            print "click update"
-            self.emit(Signals.upgrade_app, self.app)
-            # self.backend.upgrade_package(self.app.name)
-            #data.sbo.update_software(self)
-        elif(self.workType == 'unpage'):
-#            print "click remove"
-            self.emit(Signals.remove_app, self.app)
-            # self.backend.remove_package(self.app.name)
-            #data.sbo.remove_software(self)
+        if(self.ui.btn.text() == "启动"):
+            run.run_app(self.app.name)
+        else:
+            self.ui.btn.setEnabled(False)
+            self.ui.btn.setText("请稍候")
+            if(self.workType == 'homepage'):
+                self.emit(Signals.install_app, self.app)
+            elif(self.workType == 'uppage'):
+                self.emit(Signals.upgrade_app, self.app)
+            elif(self.workType == 'unpage'):
+                self.emit(Signals.remove_app, self.app)
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
@@ -161,16 +159,16 @@ class ListItemWidget(QWidget):
 #        self.app.package = newPackage
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
-                self.ui.btn.setText("启动")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
-                self.ui.btn.setText("启动")
-#        if(self.workType == 'homepage'):
-#            self.ui.btn.setText("已安装")
-#        elif(self.workType == 'uppage'):
-#            self.ui.btn.setText("已升级")
-#        elif(self.workType == 'unpage'):
-#            self.ui.btn.setText("已卸载")
-#        elif(self.workType == 'searchpage'):
-#            self.ui.btn.setText("已完成")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")

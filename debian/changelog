@@ -1,3 +1,27 @@
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Add rank support for application and init the recommend rank.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Fri, 21 Mar 2014 18:50:13 +0800
+
+
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Integrated application startup function and change the button text.
+  * Modify the reivew ui and display procedure (bug#1295008)
+  * Change the main window drag procedure (bug#1293884)
+
+ --  Shine Huang (shine) <shenghuang@ubuntukylin.com>  Fri, 21 Mar 2014 16:30:03 +0800
+
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Add application startup function.
+  * Modify the display name of rank view.
+  * Change the setup srcipt for database.
+
+ --  Bo Wen (wenbo607) <wenbo@ubuntukylin.com >  Fri, 21 Mar 2014 12:20:03 +0800
+
+
 ubuntu-kylin-software-center (0.2.5-0ubuntu1) trusty; urgency=low
 
   * Solve the reivews fetch and scroll (bug#1291718)

@@ -124,7 +124,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.2.5")
+        self.ui.bottomText2.setText("0.2.6")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -596,11 +596,18 @@ class SoftwareCenter(QMainWindow):
         self.ads_ready = True
         self.check_init_data_ready()
 
-    def slot_recommend_apps_ready(self,applist):
-        LOG.debug("receive recommend apps ready, count is %d", len(applist))
+    def slot_recommend_apps_ready(self,applist_orig):
+        LOG.debug("receive recommend apps ready, count is %d", len(applist_orig))
         count_per_line = 3
         index = int(0)
         x = y = int(0)
+
+        cmp_rating = lambda a, b: \
+            cmp(a.rank,b.rank)
+        applist = sorted(applist_orig,
+                        cmp_rating,
+                        reverse=False)
+
         for app in applist:
             recommend = RecommendItem(app,self.backend,self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
@@ -640,7 +647,7 @@ class SoftwareCenter(QMainWindow):
             if app is not None:
                 oneitem = QListWidgetItem()
                 oneitem.setWhatsThis(pkgname)
-                rliw = RankListItemWidget(pkgname, self.ui.rankView.count() + 1)
+                rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
