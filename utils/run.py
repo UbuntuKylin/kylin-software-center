@@ -30,17 +30,25 @@ import re
 import subprocess
 
 def get_run_command(pkgname):
+    # 对一些特殊软件单独处理
+    if pkgname = 'wps-office':
+        pkgname = 'wps-office-wps'
+    elif pkgname = 'uget':
+        pkgname = 'uget-gtk'
+    elif pkgname = 'eclipse-platform':
+        pkgname = 'eclipse'
+
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     exc = fd.read()
     fd.close()
-    #print exc
+
+    command = ['']
     # 截取运行指令部分
     if exc:
         command = re.findall('Exec=(.*)',exc)
     # 有些软件Exec后面会有%U %f等，进行过滤
     if re.findall(' ',command[0]):
         command = re.findall('(.*) ',command[0])
-    #print command[0]
     return command[0]
 
 def run_app(pkgname):
