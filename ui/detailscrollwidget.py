@@ -156,7 +156,11 @@ class DetailScrollWidget(QScrollArea):
 
         size = app.packageSize
         sizek = size / 1024
-        self.ui.size.setText("软件大小: " + str(sizek) + " K")
+        #self.ui.size.setText("软件大小: " + str(sizek) + " K")
+        if(sizek < 1024):
+            self.ui.size.setText("软件大小: " + str(sizek) + " KB")
+        else:
+            self.ui.size.setText("软件大小: " + str(sizek/1024) + " MB")
 
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText("评分" + (str(app.ratings_total)) + "次")
