@@ -419,10 +419,26 @@ class Search:
 #        return doc.get_data().split()
         return pkgnamelist
 
+import axi
 
 if __name__ == "__main__":
     # search_software("office")
-    pass
+    db = xapian.Database("/var/cache/software-center/xapian")   #axi.XAPIANINDEX
+    query = xapian.Query('gimp')
+    enquire = xapian.Enquire(db)
+    enquire.set_query(query)
+    matches = enquire.get_mset(0,2048)
+
+    print "len=",len(matches)
+    count = 0
+    for item in matches:
+        doc = item.document
+        pkgname = doc.get_value(XapianValues.PKGNAME)
+        print "item:",count,pkgname
+        count += 1
+
+
+    print axi.XAPIANINDEX
 
 
 

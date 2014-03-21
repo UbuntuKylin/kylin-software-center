@@ -1,5 +1,17 @@
 ubuntu-kylin-software-center (0.2.5-0ubuntu1) trusty; urgency=low
 
+  * Solve the reivews fetch and scroll (bug#1291718)
+  * Modify the screenshot cache procedure
+  * add auth cancel support (bug#1294427)
+  * Solve the database start problem (bug#1294946)
+  * Change the file postion of search and other py files.
+  * Modify the init ratings in the database.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Thu, 20 Mar 2014 22:31:07 +0800
+
+
+ubuntu-kylin-software-center (0.2.5-0ubuntu1) trusty; urgency=low
+
   * Re-implement the category procedure by sqlite database.
   * Modify the application count procedure.(bug#1293887,bug#1293890)
   * Add exception procedure of recommend item.(bug#1291993)
