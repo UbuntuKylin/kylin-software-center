@@ -104,8 +104,12 @@ class ListItemWidget(QWidget):
         if(nowpage == 'homepage'):
             self.ui.btn.setVisible(True)
             if(app.is_installed):
-                self.ui.btn.setText("启动")
                 self.ui.installedVersion.setText("已装: " + app.installed_version)
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
             else:
                 self.ui.btn.setText("安装")
                 self.ui.installedVersion.setText("未安装")
@@ -155,16 +159,16 @@ class ListItemWidget(QWidget):
 #        self.app.package = newPackage
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
-                self.ui.btn.setText("启动")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
-                self.ui.btn.setText("启动")
-#        if(self.workType == 'homepage'):
-#            self.ui.btn.setText("已安装")
-#        elif(self.workType == 'uppage'):
-#            self.ui.btn.setText("已升级")
-#        elif(self.workType == 'unpage'):
-#            self.ui.btn.setText("已卸载")
-#        elif(self.workType == 'searchpage'):
-#            self.ui.btn.setText("已完成")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")

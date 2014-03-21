@@ -69,8 +69,11 @@ class RecommendItem(QWidget):
         self.ui.softDescr.setText(self.app.summary)
 
         if(self.app.is_installed):
-            self.ui.btn.setText("启动")
-            # self.ui.btn.setEnabled(False)
+            if(run.get_run_command(self.app.name) == ""):
+                self.ui.btn.setText("已安装")
+                self.ui.btn.setEnabled(False)
+            else:
+                self.ui.btn.setText("启动")
         else:
             self.ui.btn.setText("安装")
 
@@ -113,8 +116,16 @@ class RecommendItem(QWidget):
         self.ui.btn.setText(action)
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
-                self.ui.btn.setText("启动")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
-                self.ui.btn.setText("启动")
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")

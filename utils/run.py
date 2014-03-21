@@ -31,11 +31,11 @@ import subprocess
 
 def get_run_command(pkgname):
     # 对一些特殊软件单独处理
-    if pkgname = 'wps-office':
+    if pkgname == 'wps-office':
         pkgname = 'wps-office-wps'
-    elif pkgname = 'uget':
+    elif pkgname == 'uget':
         pkgname = 'uget-gtk'
-    elif pkgname = 'eclipse-platform':
+    elif pkgname == 'eclipse-platform':
         pkgname = 'eclipse'
 
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
