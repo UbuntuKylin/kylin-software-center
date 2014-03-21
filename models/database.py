@@ -58,7 +58,7 @@ UPDATE_APP_CATEGORY = "update application set secondary_cat_name='%s' where app_
 UPDATE_APP_BASIC = "update application set summary='%s',description='%s',distroseries='%s' where app_name='%s'"
 UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, review_total=%d, \
         download_total=%d where app_name='%s'"
-QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s'"
+QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
 
 class Database:
 
@@ -73,7 +73,7 @@ class Database:
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
-        self.connect = sqlite3.connect(os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db"))
+        self.connect = sqlite3.connect(destFile)
         self.cursor = self.connect.cursor()
         self.cat_list = []
 
@@ -138,6 +138,7 @@ class Database:
 
     #return as (app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name)
     def query_category_apps(self,cat_name):
+        print QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name)
         self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name))
         res = self.cursor.fetchall()
 #        print "query_category_apps:cat_name",cat_name,len(res)

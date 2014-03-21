@@ -71,7 +71,7 @@ class TaskListItemWidget(QWidget):
 
         self.ui.progressBar.setRange(0,100)
         self.ui.progressBar.reset()
-        self.ui.status.setText("waiting......")
+        self.ui.status.setText("等待中......")
 
     def ui_init(self):
         self.ui = Ui_TaskLIWidget()

@@ -26,7 +26,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.uksw import Ui_StarWidget
-import data
 
 
 class StarWidget(QWidget):

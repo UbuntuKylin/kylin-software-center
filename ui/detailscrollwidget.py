@@ -214,6 +214,7 @@ class DetailScrollWidget(QScrollArea):
         self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def add_review(self, reviewlist):
+        # print len(reviewlist)
         for review in reviewlist:
             # not this app's review  break
             if(review.package_name != self.app.name):
@@ -223,7 +224,6 @@ class DetailScrollWidget(QScrollArea):
         self.reviewpage += 1
         self.currentreviewready = True
         self.reviewload.stop_loading()
-        print "stop loading"
 
     def add_one_review(self, review):
         count = self.ui.reviewListWidget.count()
@@ -303,15 +303,15 @@ class DetailScrollWidget(QScrollArea):
     def slot_scroll_end(self, now):
         # current page not ready
         if(self.currentreviewready == False):
-            return
-
-        max = self.verticalScrollBar().maximum()
-        if(now == max):
-            reviewcount = self.ui.reviewListWidget.count()
-            self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
-            self.reviewload.start_loading()
-            print "start loading"
-            self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
+            pass
+        else:
+            max = self.verticalScrollBar().maximum()
+            if(now == max):
+                self.currentreviewready = False
+                reviewcount = self.ui.reviewListWidget.count()
+                self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
+                self.reviewload.start_loading()
+                self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
 class ScreenShotBig(QWidget):
 

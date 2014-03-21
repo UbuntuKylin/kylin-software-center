@@ -24,10 +24,8 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import sys
 import os
-import data
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import webbrowser
@@ -45,7 +43,8 @@ from models.advertisement import Advertisement
 #import data
 #from util import log
 from utils import vfs,log
-from data.search import *
+
+from backend.search import *
 
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
@@ -433,61 +432,6 @@ class SoftwareCenter(QMainWindow):
             oneitem.setWhatsThis(catname)
             self.ui.categoryView.addItem(oneitem)
 
-    def tmp_get_ads(self):
-        tmpads = []
-        tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.baidu.com"))
-        tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps"))
-        tmpads.append(Advertisement("qt", "pkg", "ad3.png", "qtcreator"))
-        adw = ADWidget(tmpads, self)
-
-    # delete packages from apt backend which not in category file
-    def check_software(self, sl):
-        slist = []
-        for c in os.listdir("res/category"):
-            file = open(os.path.abspath("res/category/"+c), 'r')
-            for line in file:
-                slist.append(line[:-1])
-
-        i = 0
-        while i < len(sl):
-            name = sl[i].name
-            for name_ in slist:
-                if name == name_:
-                    sl[i].category = self.scmap[name]
-                    break
-            else:
-                sl.pop(i)
-                i -= 1
-
-            i += 1
-
-        #self.appmgr.get_category_list(True)
-
-        self.emit(Signals.chksoftwareover, sl)
-
-    def _check_software(self):
-        slist = []
-        for c in os.listdir("res/category"):
-            file = open(os.path.abspath("res/category/"+c), 'r')
-            for line in file:
-                slist.append(line[:-1])
-
-        data.sbo.get_all_software()
-
-        i = 0
-        while i < len(data.softwareList):
-            name = data.softwareList[i].name
-            for name_ in slist:
-                if name == name_:
-                    data.softwareList[i].category = self.scmap[name]
-                    break
-            else:
-                data.softwareList.pop(i)
-                i -= 1
-
-            i += 1
-
-        self.emit(SIGNAL("chksoftwareover"))
 
     def show_more_search_result(self, listWidget):
         listLen = len(listWidget)
@@ -932,11 +876,9 @@ class SoftwareCenter(QMainWindow):
 
     # search
     def slot_searchDTimer_timeout(self):
-        print "=====slot_searchDTimer_timeout:"
         self.searchDTimer.stop()
         if self.ui.leSearch.text():
             s = self.ui.leSearch.text().toUtf8()
-            print "输入的QString转utf-8：" + s
             reslist = self.searchDB.search_software(s)
 
 

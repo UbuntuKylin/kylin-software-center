@@ -101,7 +101,8 @@ class ThreadWorkerDaemon(threading.Thread):
                             count += 1
                         #queue.close()
                     except Queue.Empty:
-                        print "&&&&&&&&&&get error:",queue.qsize()
+#                        print "&&&&&&&&&&get error:",queue.qsize()
+                        count  += 1
 
                     resLen = queue.qsize()
                 print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),len(reslist)
@@ -459,7 +460,6 @@ class AppManager(QObject):
 
     #get reviews for a package
     def get_application_reviews(self,pkgname,page=1,callback=None):
-        print page
         kwargs = {"language": self.language,
                   "distroseries": self.distroseries,
                   "packagename": pkgname, #multiarch..
@@ -469,8 +469,9 @@ class AppManager(QObject):
         item  = WorkerItem("get_reviews",kwargs)
 
         app = self.get_application_by_name(pkgname)
-        reviews = app.get_reviews()
-        if reviews:
+        reviews = app.get_reviews(page)
+        if reviews is not None:
+            print "get_application_reviews:directly get"
             self.dispatchWorkerResult(item,reviews)
             return reviews
 
@@ -511,9 +512,10 @@ class AppManager(QObject):
             # convert into our review objects
             LOG.debug("reviews ready:%s",len(reslist))
             reviews = reslist
+            page = item.kwargs['page']
 
             app = self.get_application_by_name(item.kwargs['packagename'])
-            app.reviews = reviews
+            app.add_reviews(page,reviews)
 
             self.emit(Signals.app_reviews_ready,reviews)
         elif item.funcname == "get_screenshots":
