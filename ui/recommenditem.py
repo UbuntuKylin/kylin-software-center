@@ -99,7 +99,7 @@ class RecommendItem(QWidget):
         # self.setPalette(palette)
 
     def slot_btn_click(self):
-        if(self.app.is_installed):
+        if(self.ui.btn.text() == "启动"):
             run.run_app(self.app.name)
         else:
             self.ui.btn.setEnabled(False)
