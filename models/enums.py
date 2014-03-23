@@ -121,6 +121,7 @@ class Signals:
     upgrade_app = SIGNAL("upgrade-app")
     dbus_apt_process = SIGNAL("dbus-apt-process")
     apt_process_finish = SIGNAL("apt-process-finish")
+    apt_process_cancel = SIGNAL("apt-process-cancel")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
 
 

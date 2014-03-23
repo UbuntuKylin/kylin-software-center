@@ -1,4 +1,10 @@
 
+ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
+
+  * Add cancel signal to list and recommend item to restore former state(bug#1295983)
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Mon, 24 Mar 2014 02:24:32 +0800
+
 ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
 
   * Modify the icons and icon procedure of recommend application(bug#1295626)

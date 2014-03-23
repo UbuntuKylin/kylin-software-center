@@ -124,7 +124,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.2.6")
+        self.ui.bottomText2.setText("0.2.7")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -918,8 +918,10 @@ class SoftwareCenter(QMainWindow):
         else:
             taskItem = self.stmap[name]
             if processtype=='cancel':
+                print "####cancel:",name,action
                 self.del_task_item(name)
                 del self.stmap[name]
+                self.emit(Signals.apt_process_cancel,name,action)
             else:
                 if processtype=='apt' and int(percent)>=200:
                     self.emit(Signals.apt_process_finish,name,action)
