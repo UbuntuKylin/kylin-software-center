@@ -2,23 +2,24 @@ Source: ubuntu-kylin-software-center
 Section: misc
 Priority: optional
 Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
-Build-Depends: debhelper (>= 9),
-               python-distutils-extra,
-               python-dev,
+Build-Depends: debhelper (>= 9), dh-python, python-dev (>= 2.6.6-3~), python-distutils-extra
 Standards-Version: 3.9.5
 Homepage: https://launchpad.net/ubuntu-kylin-software-center
+X-Python-Version: >= 2.7
 Vcs-Browser: https://code.launchpad.net/~ubuntukylin-members/ubuntu-kylin-software-center/trunk
 Vcs-Bzr: lp:ubuntu-kylin-software-center
 
 Package: ubuntu-kylin-software-center
 Architecture: any
-Depends: ${misc:Depends},
-         ${python:Depends},
-         ${shlibs:Depends},
+Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends}
 Description: Integrated tool to aid in routine system maintenance tasks
- Ubuntu Kylin Software Center is a new built software center client for Ubuntu Kylin. The aim is to improve localization experience. The applications and related data come from both ubuntu and ubuntu kylin package sources.
- . 
- Features currently included:
-  * Categories and selected applications for users
-  * Newly disigned UI
-  * Keep with ubuntu software center and hold special packages in Ubuntu Kylin archive
+ Ubuntu Kylin Software Center is a newly built software center client
+ for Ubuntu Kylin. The aim is to improve localization experience. The
+ applications and related data come from both Ubuntu and Ubuntu Kylin
+ repositories.
+ .
+ Features:
+  * Categorized and selected applications for users
+  * Newly designed user interface
+  * Work with Ubuntu software center and hold special packages from
+    Ubuntu Kylin archive
