@@ -1,6 +1,15 @@
 
 ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
 
+  * Fix the icon problem in detail view(bug#1295974)
+  * Fix the size prbolem in list and detail view(bug#1295975)
+  * Update the main icon.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Mon, 24 Mar 2014 02:24:32 +0800
+
+
+ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
+
   * Add cancel signal to list and recommend item to restore former state(bug#1295983)
 
  -- Jun Ma (maclin) <majun@ubuntukylin.com>  Mon, 24 Mar 2014 02:24:32 +0800
