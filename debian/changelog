@@ -1,3 +1,54 @@
+
+ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
+
+  * Add cancel signal to list and recommend item to restore former state(bug#1295983)
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Mon, 24 Mar 2014 02:24:32 +0800
+
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Modify the icons and icon procedure of recommend application(bug#1295626)
+  * Modify the size displayed in detail view when large than 1024K.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Fri, 21 Mar 2014 22:33:05 +0800
+
+
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Add rank support for application and init the recommend rank.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Fri, 21 Mar 2014 18:50:13 +0800
+
+
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Integrated application startup function and change the button text.
+  * Modify the reivew ui and display procedure (bug#1295008)
+  * Change the main window drag procedure (bug#1293884)
+
+ --  Shine Huang (shine) <shenghuang@ubuntukylin.com>  Fri, 21 Mar 2014 16:30:03 +0800
+
+ubuntu-kylin-software-center (0.2.6-0ubuntu1) trusty; urgency=low
+
+  * Add application startup function.
+  * Modify the display name of rank view.
+  * Change the setup srcipt for database.
+
+ --  Bo Wen (wenbo607) <wenbo@ubuntukylin.com >  Fri, 21 Mar 2014 12:20:03 +0800
+
+
+ubuntu-kylin-software-center (0.2.5-0ubuntu1) trusty; urgency=low
+
+  * Solve the reivews fetch and scroll (bug#1291718)
+  * Modify the screenshot cache procedure
+  * add auth cancel support (bug#1294427)
+  * Solve the database start problem (bug#1294946)
+  * Change the file postion of search and other py files.
+  * Modify the init ratings in the database.
+
+ -- Jun Ma (maclin) <majun@ubuntukylin.com>  Thu, 20 Mar 2014 22:31:07 +0800
+
+
 ubuntu-kylin-software-center (0.2.5-0ubuntu1) trusty; urgency=low
 
   * Re-implement the category procedure by sqlite database.

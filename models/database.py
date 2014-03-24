@@ -37,7 +37,7 @@ CREATE_CATEGORY = "create table category (name varchar(32) primary key,display_n
 CREATE_APP = "create table application (id integer primary key autoincrement, language varchar(32), \
               first_cat_name varchar(32),secondary_cat_name varchar(32),third_cat_name varchar(32), app_name varchar(32) unique, \
               display_name varchar(64), summary varchar(256), description varchar(512), distroseries varchar(32), \
-              rating_average float, rating_total integer, review_total integer, download_total integer)"
+              rating_average float, rating_total integer, review_total integer, download_total integer, rank integer)"
 
 CREATE_TOPRATED = "create table toprated (app_name varchar(32) primary key, \
                    rating_average float, rating_total integer, rank integer)"
@@ -47,7 +47,7 @@ INSERT_CATEGORY = "insert into category (name,display_name,priority,visible) \
 QUERY_CATEGORY = "select * from category where name='%s'"
 INSERT_APP = "insert into application (first_cat_name,secondary_cat_name,third_cat_name,app_name,display_name,language) values \
               ('%s','%s','%s','%s','zh_CN')"
-QUERY_APP = "select display_name, summary,description,rating_average,rating_total,review_total,download_total \
+QUERY_APP = "select display_name, summary,description,rating_average,rating_total,review_total,rank,download_total \
                from application where app_name='%s'"
 INSERT_TOPRATED = "insert into toprated (app_name,rating_average,rating_total,rank) \
         values('%s', %f, %d, %d)"
@@ -58,7 +58,7 @@ UPDATE_APP_CATEGORY = "update application set secondary_cat_name='%s' where app_
 UPDATE_APP_BASIC = "update application set summary='%s',description='%s',distroseries='%s' where app_name='%s'"
 UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, review_total=%d, \
         download_total=%d where app_name='%s'"
-QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
+QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
 
 class Database:
 
@@ -136,9 +136,9 @@ class Database:
 #        print "query_categories:",len(res),res
         return res
 
-    #return as (app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name)
+    #return as (app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank)
     def query_category_apps(self,cat_name):
-        print QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name)
+#        print QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name)
         self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name))
         res = self.cursor.fetchall()
 #        print "query_category_apps:cat_name",cat_name,len(res)

@@ -107,6 +107,7 @@ class Signals:
     getallpackagesover = SIGNAL("getallpackagesover")
     countiover = SIGNAL("countiover")
     countuover = SIGNAL("countuover")
+    task_remove = SIGNAL("taskremove")
     task_cancel = SIGNAL("taskcancel")
     ads_ready = SIGNAL("advertisements-ready")
     recommend_ready = SIGNAL("recommend-ready")
@@ -121,6 +122,7 @@ class Signals:
     upgrade_app = SIGNAL("upgrade-app")
     dbus_apt_process = SIGNAL("dbus-apt-process")
     apt_process_finish = SIGNAL("apt-process-finish")
+    apt_process_cancel = SIGNAL("apt-process-cancel")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
 
 

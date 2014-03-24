@@ -252,6 +252,6 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.categorytext.setText(_translate("MainWindow", "软件分类", None))
         self.rankText.setText(_translate("MainWindow", "排行榜", None))
-        self.btnDownTimes.setText(_translate("MainWindow", "下载排行", None))
+        self.btnDownTimes.setText(_translate("MainWindow", "综合排行", None))
         self.btnGrade.setText(_translate("MainWindow", "评分排行", None))
 

@@ -109,8 +109,6 @@ class ThreadWorkerDaemon(threading.Thread):
             LOG.debug("receive data from backend process, len=%d",len(reslist))
             self.appmgr.dispatchWorkerResult(item,reslist)
 
-
-
 #This class is the abstraction of application management
 class AppManager(QObject):
 
@@ -284,6 +282,7 @@ class AppManager(QObject):
                 rating_average = appinfo[3]
                 rating_total = appinfo[4]
                 review_total = appinfo[5]
+                rank = appinfo[6]
 
 #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
                 if summary is not None:
@@ -297,6 +296,8 @@ class AppManager(QObject):
                     app.ratings_total = int(rating_total)
                 if review_total is not None:
                     app.review_total = int(review_total)
+                if rank is not None:
+                    app.rank = int(rank)
         return apps
 
     def download_category_apps(self,cat,catdir=""):

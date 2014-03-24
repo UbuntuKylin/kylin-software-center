@@ -30,7 +30,7 @@ from ui.ukrcmdw import Ui_UKrcmdw
 from utils import run
 
 from models.enums import (ITEM_LABEL_STYLE,
-                          UBUNTUKYLIN_RES_TMPICON_PATH,
+                          UBUNTUKYLIN_RES_ICON_PATH,
                           RECOMMEND_BUTTON_BK_STYLE,
                           UBUNTUKYLIN_RES_PATH,
                           AppActions,
@@ -51,12 +51,12 @@ class RecommendItem(QWidget):
         self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png")):
-            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg")):
-            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg"))
+        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
+            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png"))
+        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
+            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg"))
         else:
-            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
+            self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
         # self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_ICON_PATH+str(self.app.name)+".png"))
         #self.ui.softIcon.setStyleSheet("QLabel{background-image:url('res/icons/" + str(self.app.name) + ".png')}")
         self.ui.softName.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
@@ -80,6 +80,7 @@ class RecommendItem(QWidget):
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
+        self.connect(self.parent,Signals.apt_process_cancel,self.slot_work_cancel)
 
     def ui_init(self):
         self.ui = Ui_UKrcmdw()
@@ -129,3 +130,17 @@ class RecommendItem(QWidget):
                     self.ui.btn.setEnabled(False)
                 else:
                     self.ui.btn.setText("启动")
+
+    def slot_work_cancel(self, pkgname,action):
+        self.ui.btn.setText(action)
+        if self.app.name == pkgname:
+            if action == AppActions.INSTALL:
+                self.ui.btn.setText("安装")
+            elif action == AppActions.REMOVE:
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btn.setText("已安装")
+                    self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.btn.setText("启动")
+            elif action == AppActions.UPGRADE:
+                self.ui.btn.setText("升级")

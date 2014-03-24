@@ -28,7 +28,7 @@ class Ui_RankListWidget(object):
         RankListWidget.setObjectName(_fromUtf8("RankListWidget"))
         RankListWidget.resize(133, 20)
         self.name = QtGui.QLabel(RankListWidget)
-        self.name.setGeometry(QtCore.QRect(32, 1, 66, 18))
+        self.name.setGeometry(QtCore.QRect(32, 1, 133, 18))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.iconbg = QtGui.QLabel(RankListWidget)
