@@ -547,6 +547,7 @@ class SoftwareCenter(QMainWindow):
         oneitem = QListWidgetItem()
         tliw = TaskListItemWidget(app,self)
         self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+        self.connect(tliw, Signals.task_remove, self.slot_remove_task)
         self.ui.taskListWidget.addItem(oneitem)
         self.ui.taskListWidget.setItemWidget(oneitem, tliw)
         self.stmap[app.name] = tliw
@@ -880,6 +881,10 @@ class SoftwareCenter(QMainWindow):
     def slot_click_cancel(self, app):
         LOG.info("cancel an task:%s",app.name)
         self.backend.cancel_package(app.name)
+
+    def slot_remove_task(self, app):
+        self.del_task_item(app.name)
+        del self.stmap[app.name]
 
     # search
     def slot_searchDTimer_timeout(self):

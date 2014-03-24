@@ -107,6 +107,7 @@ class Signals:
     getallpackagesover = SIGNAL("getallpackagesover")
     countiover = SIGNAL("countiover")
     countuover = SIGNAL("countuover")
+    task_remove = SIGNAL("taskremove")
     task_cancel = SIGNAL("taskcancel")
     ads_ready = SIGNAL("advertisements-ready")
     recommend_ready = SIGNAL("recommend-ready")

@@ -33,6 +33,7 @@ from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH
 
 class TaskListItemWidget(QWidget):
     app = ''
+    finish = False
 
     def __init__(self, app, parent=None):
         QWidget.__init__(self,parent)
@@ -100,10 +101,13 @@ class TaskListItemWidget(QWidget):
         self.ui.status.setText(msg)
 
     def slot_work_finished(self, pkgname, action):
- #       self.app.package = newPackage
         if self.app.name == pkgname:
             self.ui.progressBar.setValue(100)
             self.ui.status.setText(AptActionMsg[action]+"已经完成")
+            self.finish = True
 
     def slot_click_cancel(self):
-        self.emit(Signals.task_cancel, self.app)
+        if(self.finish == True):
+            self.emit(Signals.task_remove, self.app)
+        else:
+            self.emit(Signals.task_cancel, self.app)
