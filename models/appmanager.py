@@ -356,6 +356,23 @@ class AppManager(QObject):
 
         return None
 
+    #get package object by appname
+    def get_package_by_name(self,pkgname):
+        #print "get_package_by_name:", pkgname
+        if not pkgname:
+            return None
+
+        if self.apt_cache is None:
+            return None
+
+        package = None
+        try:
+            package = self.apt_cache[pkgname]
+        except:
+            package = None
+
+        return package
+
     def get_application_count(self,cat_name=""):
         sum_inst = 0
         sum_up = 0
@@ -365,11 +382,24 @@ class AppManager(QObject):
             cat = self.cat_list[cat_name]
             (sum_inst,sum_up, sum_all) = cat.get_application_count()
         else:
-            for (catname, cat) in self.cat_list.iteritems():
-                (inst,up, all) = cat.get_application_count()
-                sum_inst = sum_inst + inst
-                sum_up = sum_up + up
-                sum_all = sum_all + all
+            applist = self.db.query_applications()
+            for item in applist:
+                pkgname = UnicodeToAscii(item[1])
+                package = self.get_package_by_name(pkgname)
+                if package is None:
+                    continue
+
+                sum_all = sum_all + 1
+                if package.is_installed:
+                    sum_inst = sum_inst + 1
+                if package.is_upgradable:
+                    sum_up = sum_up + 1
+
+#            for (catname, cat) in self.cat_list.iteritems():
+#                (inst,up, all) = cat.get_application_count()
+#                sum_inst = sum_inst + inst
+#                sum_up = sum_up + up
+#                sum_all = sum_all + all
 
         return (sum_inst,sum_up, sum_all)
 

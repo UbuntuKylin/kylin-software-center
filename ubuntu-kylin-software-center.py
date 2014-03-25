@@ -402,9 +402,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnUn.setEnabled(True)
             self.ui.btnTask.setEnabled(True)
 
-
-            self.emit(Signals.count_application_update)
-
+#            self.emit(Signals.count_application_update)
 
             self.show()
 
@@ -674,7 +672,8 @@ class SoftwareCenter(QMainWindow):
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
-#        print "slot_count_application_update:",inst,up,all
+        print "slot_count_application_update:",inst,up,all
+
 
         LOG.debug("receive installed app count: %d", inst)
         if len(self.category)>0:

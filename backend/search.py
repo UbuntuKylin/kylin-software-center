@@ -39,6 +39,7 @@ XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT = os.path.join(
     "software-center",
     "software-center-agent.db")
 XAPIAN_PATH = os.path.join(XAPIAN_BASE_PATH, "xapian")
+
 # AXI
 APT_XAPIAN_INDEX_BASE_PATH = "/var/lib/apt-xapian-index"
 APT_XAPIAN_INDEX_DB_PATH = APT_XAPIAN_INDEX_BASE_PATH + "/index"
@@ -121,8 +122,7 @@ class StoreDatabase(GObject.GObject):
             pathname = XAPIAN_PATH
         self._db_pathname = pathname
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
-        if cache is None:
-            cache = get_pkg_info()
+
         self._aptcache = cache
         self._additional_databases = []
         # the xapian values as read from /var/lib/apt-xapian-index/values
@@ -272,7 +272,7 @@ class StoreDatabase(GObject.GObject):
         return query
 
     def get_query_list_from_search_entry(self, search_term,
-                                         category_query=None):
+        category_query=None):
         """ get xapian.Query from a search term string and a limit the
             search to the given category
         """
@@ -312,7 +312,7 @@ class StoreDatabase(GObject.GObject):
         search_term = search_term.strip()
         # get a pkg query
         if "," in search_term:
-            pkg_query = self.get_query_for_pkgnames(search_term.split(","))
+            pkg_query = get_query_for_pkgnames(search_term.split(","))
         else:
             pkg_query = xapian.Query()
             for term in search_term.split():
@@ -338,7 +338,6 @@ class StoreDatabase(GObject.GObject):
         return SearchQuery([pkg_query, fuzzy_query])
 
 
-
     def __len__(self):
         """return the doc count of the database"""
         return self.xapiandb.get_doccount()
@@ -349,23 +348,6 @@ class StoreDatabase(GObject.GObject):
             doc = self.xapiandb.get_document(it.docid)
             yield doc
 
-# singleton
-pkginfo = None
-
-
-def get_pkg_info():
-    global pkginfo
-    if pkginfo is None:
-        from softwarecenter.enums import USE_PACKAGEKIT_BACKEND
-        if not USE_PACKAGEKIT_BACKEND:
-            from softwarecenter.db.pkginfo_impl.aptcache import AptCache
-            pkginfo = AptCache()
-        else:
-            from softwarecenter.db.pkginfo_impl.packagekit import (
-                PackagekitInfo,
-            )
-            pkginfo = PackagekitInfo()
-    return pkginfo
 
 class ExecutionTime(object):
     """
@@ -392,11 +374,17 @@ class ExecutionTime(object):
         if self.with_traceback:
             log_traceback("populate model from query: '%s' (threaded: %s)")
 
-
 class Search:
     db = ''
     def __init__(self):
-        self.db = StoreDatabase("/var/cache/software-center/xapian", apt.Cache())
+        self.db = StoreDatabase(XAPIAN_PATH, apt.Cache())
+        try:
+            axi = xapian.Database(
+                APT_XAPIAN_INDEX_DB_PATH)
+#            self.db.add_database(axi)
+        except:
+            print "failed to add apt-xapian-index"
+            LOG.exception("failed to add apt-xapian-index")
 
     def search_software(self, keyword):
         """search interface"""
@@ -406,13 +394,19 @@ class Search:
         enquire = xapian.Enquire(self.db.xapiandb)
         enquire.set_query(query[1])
         matches = enquire.get_mset(0, len(self.db))
+        print "res len=",len(self.db),len(matches)
         pkgnamelist = []
         for m in matches:
             doc = m.document
-#            print(doc.get_data())
+            pkgname = doc.get_value(XapianValues.PKGNAME)
+
+            if not pkgname:
+                pkgname = doc.get_data()
+
+#            print "=====",(doc.get_data())
 #            print "appname:",doc.get_value(XapianValues.APPNAME)
 #            print "pkgname:",doc.get_value(XapianValues.PKGNAME)
-            pkgname = doc.get_value(XapianValues.PKGNAME)
+
             if pkgname:
                 pkgnamelist.append(pkgname)
 #            print(type(doc.get_data().split()))
@@ -423,11 +417,24 @@ import axi
 
 if __name__ == "__main__":
     # search_software("office")
+    s = Search()
+    res = s.search_software("wps")
+    print res
+    print "hahaha"
+
+
     db = xapian.Database("/var/cache/software-center/xapian")   #axi.XAPIANINDEX
-    query = xapian.Query('gimp')
+    query = xapian.Query('wps-office')
+    parser = xapian.QueryParser()
+    user_query = parser.parse_query("wps-office")
     enquire = xapian.Enquire(db)
     enquire.set_query(query)
     matches = enquire.get_mset(0,2048)
+
+
+#    pathname = "/var/cache/apt-xapian-index/index.1"
+#    rebuild_path = pathname + "_rb"
+#    db = xapian.WritableDatabase(rebuild_path,xapian.DB_CREATE_OR_OVERWRITE)
 
     print "len=",len(matches)
     count = 0
