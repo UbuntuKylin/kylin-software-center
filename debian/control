@@ -11,7 +11,8 @@ Vcs-Bzr: lp:ubuntu-kylin-software-center
 
 Package: ubuntu-kylin-software-center
 Architecture: any
-Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends},
+ ubuntu-kylin-software-center-common (= ${source:Version})
 Description: Integrated tool to aid in routine system maintenance tasks
  Ubuntu Kylin Software Center is a newly built software center client
  for Ubuntu Kylin. The aim is to improve localization experience. The
@@ -23,3 +24,20 @@ Description: Integrated tool to aid in routine system maintenance tasks
   * Newly designed user interface
   * Work with Ubuntu software center and hold special packages from
     Ubuntu Kylin archive
+
+Package: ubuntu-kylin-software-center-common
+Architecture: all
+Depends: ${misc:Depends}
+Description: Integrated tool to aid in routine system maintenance tasks - common files
+ Ubuntu Kylin Software Center is a newly built software center client
+ for Ubuntu Kylin. The aim is to improve localization experience. The
+ applications and related data come from both Ubuntu and Ubuntu Kylin
+ repositories.
+ .
+ Features:
+  * Categorized and selected applications for users
+  * Newly designed user interface
+  * Work with Ubuntu software center and hold special packages from
+    Ubuntu Kylin archive
+ .
+ This package provides architecture independent files.
