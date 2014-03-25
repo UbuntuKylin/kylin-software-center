@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Ubuntu Kylin SoftwareCenter
+Name=Ubuntu Kylin Software Center
 Name[zh_CN]=Ubuntu Kylin 软件中心
 Comment=Ubuntu Kylin software-center
 Exec=/usr/bin/ubuntu-kylin-software-center
