@@ -890,8 +890,10 @@ class SoftwareCenter(QMainWindow):
         self.searchDTimer.stop()
         if self.ui.leSearch.text():
             s = self.ui.leSearch.text().toUtf8()
-            reslist = self.searchDB.search_software(s)
+            if len(s) < 2:
+                return
 
+            reslist = self.searchDB.search_software(s)
 
             #返回查询结果
             LOG.debug("search result:%d",len(reslist))

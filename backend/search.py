@@ -403,14 +403,14 @@ class Search:
             if not pkgname:
                 pkgname = doc.get_data()
 
-#            print "=====",(doc.get_data())
-#            print "appname:",doc.get_value(XapianValues.APPNAME)
-#            print "pkgname:",doc.get_value(XapianValues.PKGNAME)
-
             if pkgname:
-                pkgnamelist.append(pkgname)
-#            print(type(doc.get_data().split()))
-#        return doc.get_data().split()
+                #check weather exist in the list
+                try:
+                    index = pkgnamelist.index(pkgname)
+                #not exist will raise ValueError
+                except ValueError:
+                    pkgnamelist.append(pkgname)
+
         return pkgnamelist
 
 import axi
@@ -418,13 +418,13 @@ import axi
 if __name__ == "__main__":
     # search_software("office")
     s = Search()
-    res = s.search_software("wps")
+    res = s.search_software("gso")
     print res
     print "hahaha"
 
 
     db = xapian.Database("/var/cache/software-center/xapian")   #axi.XAPIANINDEX
-    query = xapian.Query('wps-office')
+    query = xapian.Query('gso')
     parser = xapian.QueryParser()
     user_query = parser.parse_query("wps-office")
     enquire = xapian.Enquire(db)
