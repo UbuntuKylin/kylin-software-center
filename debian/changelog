@@ -1,3 +1,12 @@
+ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
+
+  * Code and file standardization by Aron for launchpad package.
+  * Solve search problem with no result or crash (bug#1294499)  
+  * Solve search entry response problem (bug#1297124)
+  
+ -- Jun Ma <maclin@ubuntukylin.com>  Wen, 26 Mar 2014 00:36:29 +0800
+
+
 ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
 
   * Initial release (LP: #1293299).
