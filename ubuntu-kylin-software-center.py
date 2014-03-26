@@ -672,20 +672,22 @@ class SoftwareCenter(QMainWindow):
         self.detailScrollWidget.add_sshot(sclist)
 
     def slot_count_application_update(self):
-        (inst,up, all) = self.appmgr.get_application_count()
+        pass
+        print "aiowhdioahdiowahdoiawhd"
+        # (inst,up, all) = self.appmgr.get_application_count()
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
 #        print "slot_count_application_update:",inst,up,all
 
-        LOG.debug("receive installed app count: %d", inst)
-        if len(self.category)>0:
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_all) +"</font> 款")
-            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_inst) +"</font> 款")
-            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_up) +"</font> 款")
-        else:
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-        self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+        # LOG.debug("receive installed app count: %d", inst)
+        # if len(self.category)>0:
+        #     self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_all) +"</font> 款")
+        #     self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_inst) +"</font> 款")
+        #     self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_up) +"</font> 款")
+        # else:
+        #     self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+        #     self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+        #     self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+        # self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
 
     def slot_goto_homepage(self, ishistory=False):
         if(ishistory == False):
