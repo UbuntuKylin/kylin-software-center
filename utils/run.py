@@ -54,3 +54,12 @@ def get_run_command(pkgname):
 def run_app(pkgname):
     cmd = get_run_command(pkgname)
     p = subprocess.Popen(cmd, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+
+def run_appa():
+    p = subprocess.Popen(["eog", "/home/shine/Downloads/009-01.png"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+
+def main():
+    run_appa()
+
+if __name__ == '__main__':
+    main()
