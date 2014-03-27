@@ -28,6 +28,7 @@ import sys
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import subprocess
 import webbrowser
 from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
@@ -38,12 +39,13 @@ from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
+from ui.confirmdialog import ConfirmDialog
 #from backend.backend_worker import BackendWorker
 from models.advertisement import Advertisement
 #import data
 #from util import log
 from utils import vfs,log
-
+from utils.history import History
 from backend.search import *
 
 from models.appmanager import AppManager
@@ -74,6 +76,8 @@ class SoftwareCenter(QMainWindow):
     searchDTimer = ''
     # fx(name, taskitem) map
     stmap = {}
+    # drag window x,y
+    dragPosition = -1
 
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
@@ -88,13 +92,10 @@ class SoftwareCenter(QMainWindow):
         windowHeight = QApplication.desktop().height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
-        from utils.history import History
         self.history = History(self.ui)
         # connect the ui signals
         # self.ui.headerWidget.installEventFilter(self)
 
-        # self.ui.btnBack.clicked.connect(self.history_back)
-        # self.ui.btnNext.clicked.connect(self.history_next)
         self.ui.btnBack.clicked.connect(self.history.history_back)
         self.ui.btnNext.clicked.connect(self.history.history_next)
         self.ui.categoryView.itemClicked.connect(self.slot_change_category)
@@ -312,7 +313,7 @@ class SoftwareCenter(QMainWindow):
             event.accept()
 
     def mouseMoveEvent(self, event):
-        if (event.buttons() == Qt.LeftButton):
+        if (event.buttons() == Qt.LeftButton and self.dragPosition != -1):
             self.move(event.globalPos() - self.dragPosition)
             event.accept()
 
@@ -405,6 +406,9 @@ class SoftwareCenter(QMainWindow):
 #            self.emit(Signals.count_application_update)
 
             self.show()
+
+        # check uksc upgradable
+        self.check_uksc_update()
 
 
     def init_category_view(self):
@@ -563,6 +567,20 @@ class SoftwareCenter(QMainWindow):
                 del delitem
                 break
 
+    def check_uksc_update(self):
+        uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
+        if(uksc != None):
+            if(uksc.is_upgradable == True):
+                cd = ConfirmDialog("软件中心有新版本，是否升级？", self)
+                self.connect(cd, SIGNAL("confirmdialogok"), self.update_uksc)
+                cd.exec_()
+
+    def update_uksc(self):
+        self.backend.upgrade_package("ubuntu-kylin-software-center")
+
+    def restart_uksc(self):
+        p = subprocess.Popen("ubuntu-kylin-software-center restart", stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+
     #-------------------------------slots-------------------------------
 
     def slot_change_category(self, citem):
@@ -672,8 +690,6 @@ class SoftwareCenter(QMainWindow):
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
-        print "slot_count_application_update:",inst,up,all
-
 
         LOG.debug("receive installed app count: %d", inst)
         if len(self.category)>0:
@@ -951,7 +967,13 @@ class SoftwareCenter(QMainWindow):
 
         #msg = "软件" + str(pkgname) + AptActionMsg[action] + "操作完成"
         msg = "软件" + AptActionMsg[action] + "操作完成"
-        self.messageBox.alert_msg(msg)
+
+        if(pkgname == "ubuntu-kylin-software-center"):
+            cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
+            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+            cd.exec_()
+        else:
+            self.messageBox.alert_msg(msg)
 
 def main():
     app = QApplication(sys.argv)
