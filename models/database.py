@@ -49,6 +49,7 @@ INSERT_APP = "insert into application (first_cat_name,secondary_cat_name,third_c
               ('%s','%s','%s','%s','zh_CN')"
 QUERY_APP = "select display_name, summary,description,rating_average,rating_total,review_total,rank,download_total \
                from application where app_name='%s'"
+QUERY_APPS = "select display_name, app_name from application"
 INSERT_TOPRATED = "insert into toprated (app_name,rating_average,rating_total,rank) \
         values('%s', %f, %d, %d)"
 QUERY_TOPRATED = "select app_name,rating_average,rating_total,rank from toprated order by rank ASC"
@@ -154,6 +155,16 @@ class Database:
         else:
             return res[0]
 
+    #return as (display_name, app_name)
+    def query_applications(self):
+        self.cursor.execute(QUERY_APPS)
+        res = self.cursor.fetchall()
+#        print "query_application:",pkgname,len(res),res
+        if len(res)==0:
+            return []
+        else:
+            return res
+
     #return as (app_name,rating_average,rating_total,rank)
     def query_app_toprated(self):
         self.cursor.execute(QUERY_TOPRATED)
@@ -193,5 +204,7 @@ if __name__ == "__main__":
 #    db.query_application("gimp")
 #    print db.cat_list
     db.export()
+
+
 
 

@@ -30,6 +30,7 @@ from ui.ukliw import Ui_Ukliw
 from utils import run
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
+                          UBUNTUKYLIN_RES_ICON_PATH,
                           LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
                           RECOMMEND_BUTTON_STYLE,
@@ -57,7 +58,12 @@ class ListItemWidget(QWidget):
         self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
+
+        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
+            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + app.name+".png"))
+        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
+            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + app.name+".jpg"))
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
             self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg")):
             self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg"))
@@ -82,14 +88,14 @@ class ListItemWidget(QWidget):
         if(sizek < 1024):
             self.ui.size.setText(str(sizek) + " KB")
         else:
-            self.ui.size.setText(str(sizek/1024) + " MB")
+            self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
 #        print "########item size:",app.name,app.packageSize,app.installedSize
         installedsize = app.installedSize
         installedsizek = installedsize / 1024
         if(installedsizek < 1024):
             self.ui.installedsize.setText(str(installedsizek) + " KB")
         else:
-            self.ui.installedsize.setText(str(installedsizek/1024) + " MB")
+            self.ui.installedsize.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
         #????放置平均得分和评论人数
  #       print "ListItemWidget: ", self.app.name, self.app.rnrStat

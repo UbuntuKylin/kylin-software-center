@@ -56,7 +56,7 @@ class Ui_DetailWidget(object):
         self.installedVersion.setText(_fromUtf8(""))
         self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
         self.size = QtGui.QLabel(DetailWidget)
-        self.size.setGeometry(QtCore.QRect(335, 87, 120, 18))
+        self.size.setGeometry(QtCore.QRect(335, 87, 150, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.gradeBG = QtGui.QLabel(DetailWidget)

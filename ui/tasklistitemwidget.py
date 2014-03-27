@@ -67,7 +67,7 @@ class TaskListItemWidget(QWidget):
         self.ui.name.setText(app.name)
 
         size = app.packageSize
-        sizek = size / 1000
+        sizek = size / 1024
         self.ui.size.setText(str(sizek) + " K")
 
         self.ui.progressBar.setRange(0,100)

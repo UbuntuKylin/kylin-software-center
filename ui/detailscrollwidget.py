@@ -31,7 +31,7 @@ from ui.starwidget import StarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
 from ui.loadingdiv import *
-from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH, Signals
+from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH, Signals
 
 class DetailScrollWidget(QScrollArea):
     mainwindow = ''
@@ -147,12 +147,16 @@ class DetailScrollWidget(QScrollArea):
         self.ui.summary.setText(app.summary)
         self.ui.description.setText(app.description)
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png')}")
+        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png')}")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg')}")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + str(app.name) + ".png')}")
         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg')}")
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + str(app.name) + ".jpg')}")
         else:
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + "default.png')}")
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
 
         size = app.packageSize
         sizek = size / 1024
@@ -160,7 +164,7 @@ class DetailScrollWidget(QScrollArea):
         if(sizek < 1024):
             self.ui.size.setText("软件大小: " + str(sizek) + " KB")
         else:
-            self.ui.size.setText("软件大小: " + str(sizek/1024) + " MB")
+            self.ui.size.setText("软件大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
 
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText("评分" + (str(app.ratings_total)) + "次")
