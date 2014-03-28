@@ -117,6 +117,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
         self.connect(self, SIGNAL("clickitem"), self.slot_show_app_detail) #????
 
+        self.connect(self, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_update)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
@@ -568,18 +569,18 @@ class SoftwareCenter(QMainWindow):
                 break
 
     def check_uksc_update(self):
-        uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
-        if(uksc != None):
-            if(uksc.is_upgradable == True):
+        self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
+        if(self.uksc != None):
+            if(self.uksc.is_upgradable == True):
                 cd = ConfirmDialog("软件中心有新版本，是否升级？", self)
                 self.connect(cd, SIGNAL("confirmdialogok"), self.update_uksc)
                 cd.exec_()
 
     def update_uksc(self):
-        self.backend.upgrade_package("ubuntu-kylin-software-center")
+        self.emit(Signals.install_app, self.uksc)
 
     def restart_uksc(self):
-        p = subprocess.Popen("ubuntu-kylin-software-center restart", stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+        p = subprocess.Popen(["ubuntu-kylin-software-center", "restart"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
 
     #-------------------------------slots-------------------------------
 
@@ -626,7 +627,7 @@ class SoftwareCenter(QMainWindow):
                         reverse=False)
 
         for app in applist:
-            recommend = RecommendItem(app,self.backend,self.ui.recommendWidget)
+            recommend = RecommendItem(app,self,self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(recommend, Signals.upgrade_app, self.slot_click_update)

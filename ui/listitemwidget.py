@@ -163,7 +163,6 @@ class ListItemWidget(QWidget):
         self.emit(Signals.show_app_detail, self.app)
 
     def slot_work_finished(self, pkgname, action):
-#        self.app.package = newPackage
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 if(run.get_run_command(self.app.name) == ""):
@@ -182,7 +181,6 @@ class ListItemWidget(QWidget):
 
 
     def slot_work_cancel(self, pkgname, action):
-#        self.app.package = newPackage
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")

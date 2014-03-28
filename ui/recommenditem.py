@@ -39,11 +39,11 @@ from models.enums import Signals
 
 class RecommendItem(QWidget):
 
-    def __init__(self,app, backend, parent=None):
+    def __init__(self,app, mainwin, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
         self.app = app
-        self.backend = backend
+        self.mainwin = mainwin
         self.parent = parent
 
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
@@ -79,8 +79,8 @@ class RecommendItem(QWidget):
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
-        self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
-        self.connect(self.parent,Signals.apt_process_cancel,self.slot_work_cancel)
+        self.connect(self.mainwin,Signals.apt_process_finish,self.slot_work_finished)
+        self.connect(self.mainwin,Signals.apt_process_cancel,self.slot_work_cancel)
 
     def ui_init(self):
         self.ui = Ui_UKrcmdw()
@@ -114,7 +114,6 @@ class RecommendItem(QWidget):
         self.emit(Signals.show_app_detail, self.app)
 
     def slot_work_finished(self, pkgname,action):
-        self.ui.btn.setText(action)
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 if(run.get_run_command(self.app.name) == ""):
@@ -132,7 +131,6 @@ class RecommendItem(QWidget):
                     self.ui.btn.setText("启动")
 
     def slot_work_cancel(self, pkgname,action):
-        self.ui.btn.setText(action)
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
