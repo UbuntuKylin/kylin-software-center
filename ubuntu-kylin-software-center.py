@@ -119,8 +119,9 @@ class SoftwareCenter(QMainWindow):
 
         self.connect(self, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
-        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_update)
+        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
+        self.connect(self,Signals.update_source,self.slot_click_update)
 
         # init text info
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
@@ -455,7 +456,7 @@ class SoftwareCenter(QMainWindow):
             liw = ListItemWidget(app, self.backend, self.nowPage, self)
             self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_update)
+            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
             self.connect(liw, Signals.remove_app, self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
@@ -493,7 +494,7 @@ class SoftwareCenter(QMainWindow):
             liw = ListItemWidget(app, self.backend, self.nowPage, self)
             self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_update)
+            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
             self.connect(liw, Signals.remove_app, self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
@@ -630,7 +631,7 @@ class SoftwareCenter(QMainWindow):
             recommend = RecommendItem(app,self,self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
-            self.connect(recommend, Signals.upgrade_app, self.slot_click_update)
+            self.connect(recommend, Signals.upgrade_app, self.slot_click_upgrade)
             self.connect(recommend, Signals.remove_app, self.slot_click_remove)
 
             if index%count_per_line == 0:
@@ -732,6 +733,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_goto_uppage(self, ishistory=False):
+
+        #????????
+#        self.emit(Signals.update_source,False)
+
         if(ishistory == False):
             self.history.history_add(self.slot_goto_uppage)
 
@@ -879,13 +884,19 @@ class SoftwareCenter(QMainWindow):
         # self.appmgr.get_application_reviews(app.name)
         # self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
+    def slot_click_update(self,quiet=False):
+        print "slot_click_update"
+        LOG.info("add an update task:%s","###")
+#????        self.add_task_item(app)
+        self.backend.update_source(quiet)
+
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
         self.add_task_item(app)
         self.backend.install_package(app.name)
 
-    def slot_click_update(self, app):
-        LOG.info("add an update task:%s",app.name)
+    def slot_click_upgrade(self, app):
+        LOG.info("add an upgrade task:%s",app.name)
         self.add_task_item(app)
         self.backend.upgrade_package(app.name)
 
@@ -932,7 +943,7 @@ class SoftwareCenter(QMainWindow):
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
 
-        if action == AppActions.UPDATE and int(percent)>=100:
+        if action == AppActions.UPDATE and int(percent)>=200:
             print "cache update finished!"
             self.appmgr.update_models(AppActions.UPDATE,"")
 

@@ -175,6 +175,9 @@ class InstallBackend(QObject):
     def cancel_package(self,pkgname):
         self.call_dbus_iface(AppActions.CANCEL,pkgname)
 
+    def update_source(self,quiet=False):
+        self.call_dbus_iface(AppActions.UPDATE,False)
+
 from PyQt4.QtGui import *
 import sys
 
