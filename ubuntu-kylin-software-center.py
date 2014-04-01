@@ -627,7 +627,7 @@ class SoftwareCenter(QMainWindow):
                         reverse=False)
 
         for app in applist:
-            recommend = RecommendItem(app,self.backend,self.ui.recommendWidget)
+            recommend = RecommendItem(app,self,self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(recommend, Signals.upgrade_app, self.slot_click_update)
