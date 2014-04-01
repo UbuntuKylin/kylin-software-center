@@ -51,13 +51,15 @@ class FetchProcess(apb.AcquireProgress):
         self.action = action
 
     def done(self, item):
-#        print 'all items download finished'
+#        print '#######all items download finished',item
         if item is not None:
             print "FetchProcess, done, Item:", self.appname,item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
+
+        print "$$$$fectchprocess####done:",kwarg
         self.dbus_service.software_fetch_signal("down_done", kwarg)
 
     def fail(self, item):
@@ -66,16 +68,18 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
+#        print "$$$$fectchprocess####fail:",kwarg
         self.dbus_service.software_fetch_signal("down_fail", kwarg)
 
     def fetch(self, item):
-#        print 'one item download finished'
+#        print 'one item download finished:',item
         if item is not None:
             print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
-                 "download_percent":str(200),
+                 "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
+
         self.dbus_service.software_fetch_signal("down_fetch", kwarg)
 
     def ims_hit(self, item):
@@ -130,9 +134,10 @@ class FetchProcess(apb.AcquireProgress):
     def stop(self):
 #        print 'fetch progress stop ...'
         kwarg = {"download_appname":self.appname,
-                 "download_percent":str(self.percent),
+                 "download_percent":str(200),
                  "action":str(self.action),
                  }
+        print "########stop:",kwarg
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
@@ -199,17 +204,6 @@ class AptDaemon():
         self.cache = apt.Cache()
         self.cache.open()
 
-    # apt-get update
-    def apt_get_update(self, kwargs=None):
-        quiet = False
-        if kwargs is not None:
-            quiet = int(kwargs["quiet"])
-
-        if quiet == False:
-            self.cache.update()
-        else:
-            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
-
     # get package by pkgName
     def get_pkg_by_name(self, pkgName):
 #        print pkgName
@@ -254,6 +248,21 @@ class AptDaemon():
         except Exception, e:
             print e
             print "update err"
+
+    # apt-get update
+    def update(self, kwargs=None):
+        quiet = False
+        if kwargs is not None:
+            quiet = int(kwargs["quiet"])
+
+        print "&&&&&&&update",quiet
+
+        if quiet == True:
+            print "quiet=True"
+            self.cache.update()
+        else:
+            print "quiet=False"
+            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
 
     # check package status by pkgName, i = installed u = can update n = notinstall
     def check_pkg_status(self, pkgName):
@@ -335,7 +344,7 @@ if __name__ == "__main__":
 
 # 	print ad.check_pkgs_status(["gedit", "cairo-dock", "unity"])
 #	print ad.check_pkgs_status_rtn_list(["gedit", "cairo-dock", "unity", "haha", "hehe"])
-# 	ad.apt_get_update()
+# 	ad.update()
     ad.add_source_ubuntukylin()
 # 	ad.remove_source_ubuntukylin()
 

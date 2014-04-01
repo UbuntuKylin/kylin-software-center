@@ -41,7 +41,7 @@ from utils import run
 
 class DetailScrollWidget(QScrollArea):
     mainwindow = ''
-    app = ''
+    app = None
     sshotcount = 0
     bigsshot = ''
     reviewpage = ''
@@ -78,7 +78,7 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
         self.ui.btnInstall.clicked.connect(self.slot_click_install)
-        self.ui.btnUpdate.clicked.connect(self.slot_click_update)
+        self.ui.btnUpdate.clicked.connect(self.slot_click_upgrade)
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
         self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
@@ -289,7 +289,7 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnUpdate.setEnabled(False)
             self.ui.btnUninstall.setEnabled(False)
 
-    def slot_click_update(self):
+    def slot_click_upgrade(self):
         self.emit(Signals.upgrade_app, self.app)
         self.ui.btnUpdate.setText("处理中")
         self.ui.btnInstall.setEnabled(False)
@@ -304,6 +304,9 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUninstall.setEnabled(False)
 
     def slot_work_finished(self, pkgname, action):
+        #add this to prevent slot received from other signal before show_detail is not called
+        if self.app is None:
+            return
 
         if self.app.name == pkgname:
 

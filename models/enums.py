@@ -116,15 +116,17 @@ class Signals:
     app_reviews_ready = SIGNAL("app-reviews-ready")
     app_screenshots_ready = SIGNAL("app-screenshots-ready")
     count_application_update = SIGNAL("count-application-update")
+    click_item = SIGNAL("clickitem")
     show_app_detail = SIGNAL("app-show-detail")
     install_app = SIGNAL("install-app")
     remove_app = SIGNAL("remove-app")
     upgrade_app = SIGNAL("upgrade-app")
+    click_update_source = SIGNAL("click-update-source")
+    update_source = SIGNAL("update-source")
     dbus_apt_process = SIGNAL("dbus-apt-process")
     apt_process_finish = SIGNAL("apt-process-finish")
     apt_process_cancel = SIGNAL("apt-process-cancel")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
-
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

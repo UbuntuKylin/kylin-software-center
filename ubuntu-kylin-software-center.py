@@ -40,6 +40,7 @@ from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 from ui.confirmdialog import ConfirmDialog
+from ui.configwidget import ConfigWidget
 #from backend.backend_worker import BackendWorker
 from models.advertisement import Advertisement
 #import data
@@ -114,13 +115,16 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
         self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.btnMin.clicked.connect(self.slot_min)
+        self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
-        self.connect(self, SIGNAL("clickitem"), self.slot_show_app_detail) #????
+        self.connect(self, Signals.click_item, self.slot_show_app_detail)
 
         self.connect(self, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
-        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_update)
+        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
+        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
+        self.connect(self,Signals.update_source,self.slot_update_source)
 
         # init text info
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
@@ -152,6 +156,8 @@ class SoftwareCenter(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
+        # config widget
+        self.configWidget = ConfigWidget(self.ui.centralwidget)
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
@@ -455,7 +461,7 @@ class SoftwareCenter(QMainWindow):
             liw = ListItemWidget(app, self.backend, self.nowPage, self)
             self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_update)
+            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
             self.connect(liw, Signals.remove_app, self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
@@ -493,7 +499,7 @@ class SoftwareCenter(QMainWindow):
             liw = ListItemWidget(app, self.backend, self.nowPage, self)
             self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_update)
+            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
             self.connect(liw, Signals.remove_app, self.slot_click_remove)
             listWidget.addItem(oneitem)
             listWidget.setItemWidget(oneitem, liw)
@@ -630,7 +636,7 @@ class SoftwareCenter(QMainWindow):
             recommend = RecommendItem(app,self,self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
-            self.connect(recommend, Signals.upgrade_app, self.slot_click_update)
+            self.connect(recommend, Signals.upgrade_app, self.slot_click_upgrade)
             self.connect(recommend, Signals.remove_app, self.slot_click_remove)
 
             if index%count_per_line == 0:
@@ -732,6 +738,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_goto_uppage(self, ishistory=False):
+
+        #????????
+#        self.emit(Signals.update_source,False)
+
         if(ishistory == False):
             self.history.history_add(self.slot_goto_uppage)
 
@@ -841,6 +851,9 @@ class SoftwareCenter(QMainWindow):
     def slot_min(self):
         self.showMinimized()
 
+    def slot_show_config(self):
+        self.configWidget.show()
+
     def slot_click_ad(self, ad):
         if(ad.type == "pkg"):
             app = self.appmgr.get_application_by_name(ad.urlorpkgid)
@@ -879,13 +892,20 @@ class SoftwareCenter(QMainWindow):
         # self.appmgr.get_application_reviews(app.name)
         # self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
+    def slot_update_source(self,quiet=False):
+        LOG.info("add an update task:%s","###")
+        self.backend.update_source(quiet)
+
+    def slot_click_update_source(self):
+        self.emit(Signals.update_source)
+
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
         self.add_task_item(app)
         self.backend.install_package(app.name)
 
-    def slot_click_update(self, app):
-        LOG.info("add an update task:%s",app.name)
+    def slot_click_upgrade(self, app):
+        LOG.info("add an upgrade task:%s",app.name)
         self.add_task_item(app)
         self.backend.upgrade_package(app.name)
 
@@ -932,7 +952,7 @@ class SoftwareCenter(QMainWindow):
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
 
-        if action == AppActions.UPDATE and int(percent)>=100:
+        if action == AppActions.UPDATE and int(percent)>=200:
             print "cache update finished!"
             self.appmgr.update_models(AppActions.UPDATE,"")
 
@@ -968,6 +988,10 @@ class SoftwareCenter(QMainWindow):
 
         #msg = "软件" + str(pkgname) + AptActionMsg[action] + "操作完成"
         msg = "软件" + AptActionMsg[action] + "操作完成"
+
+        if(action == AppActions.UPDATE):
+            print "yuan geng xin wan cheng"
+            self.configWidget.update_source_finish()
 
         if(pkgname == "ubuntu-kylin-software-center"):
             cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
