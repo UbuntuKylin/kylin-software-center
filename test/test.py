@@ -48,7 +48,13 @@ def main():
 if __name__ == "__main__":
     # main()
     # loop.run()
-    a = []
-    print a
-    del a[1231:]
-    print a
+    # a = []
+    # print a
+    # del a[1231:]
+    # print a
+    import aptsources.sourceslist
+    source = aptsources.sourceslist.SourcesList()
+    sources = source.list
+    for item in sources:
+        # print type(item)
+        print item.str()
