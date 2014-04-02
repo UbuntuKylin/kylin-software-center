@@ -88,10 +88,7 @@ class WorkThread(threading.Thread):
             if func is None:
                 print "Error action: ", item
 
-            if item.action == AppActions.UPDATE:
-                res = func(item.kwargs)
-            else:
-                res = func(item.pkgname,item.kwargs)
+            res = func(item.pkgname,item.kwargs)
             if res is False:
                 print "Action exec failed..."
 
@@ -326,7 +323,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         kwargs = {"quiet":str(quiet),
                   }
 
-        item = WorkItem("",AppActions.UPDATE,kwargs)
+        item = WorkItem("#update",AppActions.UPDATE,kwargs)
 
         self.add_worker_item(item)
 

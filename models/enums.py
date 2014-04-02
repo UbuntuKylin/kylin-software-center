@@ -123,6 +123,7 @@ class Signals:
     upgrade_app = SIGNAL("upgrade-app")
     click_update_source = SIGNAL("click-update-source")
     update_source = SIGNAL("update-source")
+    update_source_cancel = SIGNAL("update-source-cancel")
     dbus_apt_process = SIGNAL("dbus-apt-process")
     apt_process_finish = SIGNAL("apt-process-finish")
     apt_process_cancel = SIGNAL("apt-process-cancel")

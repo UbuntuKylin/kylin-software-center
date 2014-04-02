@@ -252,7 +252,7 @@ class AptDaemon():
             print "update err"
 
     # apt-get update
-    def update(self, kwargs=None):
+    def update(self, taskName, kwargs=None):
         quiet = False
         if kwargs is not None:
             quiet = int(kwargs["quiet"])
@@ -264,7 +264,7 @@ class AptDaemon():
             self.cache.update()
         else:
             print "quiet=False"
-            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
+            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
 
     # check package status by pkgName, i = installed u = can update n = notinstall
     def check_pkg_status(self, pkgName):

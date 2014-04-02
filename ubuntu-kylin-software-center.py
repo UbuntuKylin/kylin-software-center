@@ -991,7 +991,7 @@ class SoftwareCenter(QMainWindow):
 
         if(action == AppActions.UPDATE):
             print "yuan geng xin wan cheng"
-            self.configWidget.update_source_finish()
+            self.configWidget.slot_update_finish()
 
         if(pkgname == "ubuntu-kylin-software-center"):
             cd = ConfirmDialog("软件中心升级完成，重启程序？", self)

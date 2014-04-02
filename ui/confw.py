@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'confw.ui'
 #
-# Created: Tue Apr  1 14:45:29 2014
+# Created: Wed Apr  2 09:48:53 2014
 #      by: PyQt4 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -67,6 +67,17 @@ class Ui_ConfigWidget(object):
         self.cbhideubuntu.setGeometry(QtCore.QRect(210, 268, 120, 20))
         self.cbhideubuntu.setText(_fromUtf8(""))
         self.cbhideubuntu.setObjectName(_fromUtf8("cbhideubuntu"))
+        self.processwidget = QtGui.QWidget(self.sourceWidget)
+        self.processwidget.setGeometry(QtCore.QRect(15, 268, 220, 17))
+        self.processwidget.setObjectName(_fromUtf8("processwidget"))
+        self.progressBar = QtGui.QProgressBar(self.processwidget)
+        self.progressBar.setGeometry(QtCore.QRect(0, 0, 194, 17))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
+        self.btnCancel = QtGui.QPushButton(self.processwidget)
+        self.btnCancel.setGeometry(QtCore.QRect(202, -1, 18, 18))
+        self.btnCancel.setText(_fromUtf8(""))
+        self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
         self.bg = QtGui.QLabel(ConfigWidget)
         self.bg.setGeometry(QtCore.QRect(0, 0, 561, 345))
         self.bg.setText(_fromUtf8(""))
