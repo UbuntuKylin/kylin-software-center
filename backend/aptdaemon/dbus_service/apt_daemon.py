@@ -28,6 +28,7 @@
 import apt
 import aptsources.sourceslist
 import apt.progress.base as apb
+from apt.cache import FetchFailedException
 
 import locale
 
@@ -54,14 +55,13 @@ class FetchProcess(apb.AcquireProgress):
 
     def done(self, item):
 #        print '#######all items download finished',item
-        if item is not None:
-            print "FetchProcess, done, Item:", self.appname,item.shortdesc, item.uri, item.owner
+#        if item is not None:
+#            print "FetchProcess, done, Item:", self.appname,item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
 
-        print "$$$$fectchprocess####done:",kwarg
         self.dbus_service.software_fetch_signal("down_done", kwarg)
 
     def fail(self, item):
@@ -75,8 +75,8 @@ class FetchProcess(apb.AcquireProgress):
 
     def fetch(self, item):
 #        print 'one item download finished:',item
-        if item is not None:
-            print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
+#        if item is not None:
+#            print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
                  "action":str(self.action),
@@ -103,10 +103,19 @@ class FetchProcess(apb.AcquireProgress):
                  "action":str(self.action),
                  }
 
-        if self.total_bytes != 0:
-            self.percent = float(self.current_bytes * 100.0 / self.total_bytes)
+        if self.action == AppActions.UPDATE:
+            if self.total_items!= 0:
+                percent = float(self.current_items * 100.0 / self.total_items)
+                if percent > self.percent:
+                    self.percent = percent
+#                self.percent = float(self.current_items * 100.0 / self.total_items)
+        else:
+            if self.total_bytes != 0:
+                self.percent = float(self.current_bytes * 100.0 / self.total_bytes)
+
         #kwarg = "download_appname:"+ self.appname + ",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items)
 #        print "FetchProcess, pulse: ", str(self.percent)
+
 
         self.dbus_service.software_fetch_signal("down_pulse",kwarg)
 
@@ -257,14 +266,16 @@ class AptDaemon():
         if kwargs is not None:
             quiet = int(kwargs["quiet"])
 
-        print "&&&&&&&update",quiet
-
-        if quiet == True:
-            print "quiet=True"
-            self.cache.update()
-        else:
-            print "quiet=False"
-            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
+        try:
+            if quiet == True:
+                print "quiet=True"
+                self.cache.update()
+            else:
+                print "quiet=False"
+                self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
+        except Exception, e:
+            print e
+            print "update except"
 
     # check package status by pkgName, i = installed u = can update n = notinstall
     def check_pkg_status(self, pkgName):

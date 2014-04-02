@@ -25,7 +25,6 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from backend.sourcelist import SourceList
 from ui.confw import Ui_ConfigWidget
 from models.enums import Signals
 
