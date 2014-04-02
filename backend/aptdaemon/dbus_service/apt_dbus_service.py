@@ -223,7 +223,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         if not granted:
             return False
 
-        return self.remove_source(text)
+        return self.daemonApt.remove_source(text)
 
     # check ubuntukylin source is in /etc/apt/sources.list or not
     @dbus.service.method(INTERFACE, in_signature='b', out_signature='as', sender_keyword='sender')

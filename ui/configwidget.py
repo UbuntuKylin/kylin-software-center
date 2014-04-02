@@ -37,7 +37,7 @@ class ConfigWidget(QWidget):
         QWidget.__init__(self,parent)
         self.ui_init()
 
-        self.sourcelist = SourceList()
+        self.sourcelist = parent.backend
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.ui.bg.lower()
@@ -114,11 +114,7 @@ class ConfigWidget(QWidget):
 
     def fill_sourcelist(self):
         self.ui.sourceListWidget.clear()
-        slist = ''
-        if(self.ui.cbhideubuntu.isChecked()):
-            slist = self.sourcelist.get_sources_except_ubuntu()
-        else:
-            slist = self.sourcelist.get_sources()
+        slist = self.sourcelist.get_sources(self.ui.cbhideubuntu.isChecked())
         for one in slist:
             item = QListWidgetItem()
             itemw = SourceItemWidget(one, self)
@@ -138,7 +134,7 @@ class ConfigWidget(QWidget):
             self.ui.cbhideubuntu.setVisible(True)
 
     def slot_click_cancel(self):
-        self.emit(Signals.update_source_cancel)
+        self.emit(Signals.task_cancel, "#update")
 
     def slot_click_update(self):
         self.ui.progressBar.reset()
@@ -194,20 +190,21 @@ class SourceItemWidget(QWidget):
         self.sourcetext.setStyleSheet("QLabel{font-size:13px;color:#5E5B67;}")
         self.btnremove.setStyleSheet("QPushButton{border:0px;background-image:url('res/cancel.png');}")
 
-        self.type = source.type
+        slist = source.split()
+        self.type = slist[0]
         typestr = ''
-        if(source.type == "deb"):
+        if(self.type == "deb"):
             typestr = "D"
-        if(source.type == "deb-src"):
+        if(self.type == "deb-src"):
             typestr = "S"
         self.sourcetype.setText(typestr)
 
         compstr = " "
-        for comp in source.comps:
-            compstr += comp
+        for i in range(3, len(slist)):
+            compstr += slist[i]
             compstr += " "
         compstr = compstr[:-1]
-        text = str(source.uri) + " " + str(source.dist) + compstr
+        text = str(slist[1]) + " " + str(slist[2]) + compstr
         self.sourcetext.setText(text)
 
     def slot_remove_source(self):
