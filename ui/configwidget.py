@@ -27,6 +27,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from backend.sourcelist import SourceList
 from ui.confw import Ui_ConfigWidget
+from models.enums import Signals
 
 
 class ConfigWidget(QWidget):
@@ -39,7 +40,6 @@ class ConfigWidget(QWidget):
         self.sourcelist = SourceList()
 
         self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.ui.bg.lower()
         self.move(173, 138)
 
@@ -58,12 +58,14 @@ class ConfigWidget(QWidget):
         self.ui.btnReset.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.cbhideubuntu.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
 
         self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnUpdate.clicked.connect(self.slot_click_update)
         self.ui.btnAdd.clicked.connect(self.slot_click_add)
         self.ui.lesource.textChanged.connect(self.slot_le_input)
         self.ui.cbhideubuntu.stateChanged.connect(self.slot_checkstate_changed)
+        self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
 
         self.ui.text1.setText("软件源列表")
         self.ui.cbhideubuntu.setText("隐藏ubuntu源")
@@ -87,6 +89,9 @@ class ConfigWidget(QWidget):
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;}")
         self.ui.btnClose.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;background:url('res/btn2-1.png');}QPushButton:hover{background:url('res/btn2-2.png');}QPushButton:pressed{background:url('res/btn2-3.png');}")
         self.ui.cbhideubuntu.setStyleSheet("QCheckBox{border:0px;color:#1E66A4;font-size:14px;}")
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel.png');border:0px;}")
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
+                                          "QProgressBar:chunk{background-image:url('res/progress2.png');}")
         self.ui.sourceListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
@@ -95,6 +100,10 @@ class ConfigWidget(QWidget):
         self.ui.btnAdd.setEnabled(False)
         self.ui.btnReset.setEnabled(False)
         self.ui.cbhideubuntu.setChecked(True)
+        self.set_process_visiable(False)
+
+        self.ui.progressBar.setRange(0,100)
+        self.ui.progressBar.reset()
 
         self.hide()
 
@@ -116,16 +125,31 @@ class ConfigWidget(QWidget):
             self.ui.sourceListWidget.addItem(item)
             self.ui.sourceListWidget.setItemWidget(item, itemw)
 
-    def update_source_finish(self):
-        self.ui.btnUpdate.setText("    更新软件源")
-        self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;background:url('res/btnupdate.png') no-repeat;}")
-        self.ui.btnUpdate.setEnabled(True)
+    def set_process_visiable(self, flag):
+        if(flag == True):
+            self.ui.processwidget.setVisible(True)
+            self.ui.btnUpdate.setVisible(False)
+            self.ui.btnReset.setVisible(False)
+            self.ui.cbhideubuntu.setVisible(False)
+        else:
+            self.ui.processwidget.setVisible(False)
+            self.ui.btnUpdate.setVisible(True)
+            self.ui.btnReset.setVisible(True)
+            self.ui.cbhideubuntu.setVisible(True)
+
+    def slot_click_cancel(self):
+        self.emit(Signals.update_source_cancel)
 
     def slot_click_update(self):
-        self.ui.btnUpdate.setText("    正在更新源")
-        self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;background:url('res/btnupdate.png') no-repeat;}")
-        self.ui.btnUpdate.setEnabled(False)
-        self.emit(SIGNAL("click-update-source"))
+        self.ui.progressBar.reset()
+        self.set_process_visiable(True)
+        self.emit(Signals.click_update_source)
+
+    def slot_update_status_change(self, percent):
+        self.ui.progressBar.setValue(percent)
+
+    def slot_update_finish(self):
+        self.set_process_visiable(False)
 
     def slot_click_add(self):
         sourcetext = str(self.ui.lesource.text().toUtf8())
@@ -201,7 +225,6 @@ def main():
 
     globalfont = QFont()
     globalfont.setFamily("文泉驿微米黑")
-    # globalfont.setFamily("华文细黑")
     app.setFont(globalfont)
     a = ConfigWidget()
     a.show()
