@@ -39,7 +39,8 @@ from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
                           AppActions,
                           Signals,
                           AptActionMsg,
-                          AptProcessMsg)
+                          AptProcessMsg,
+                          UnicodeToAscii)
 
 import multiprocessing
 
@@ -185,9 +186,13 @@ class InstallBackend(QObject):
         return self.call_dbus_iface(AppActions.REMOVE_SOURCE,text)
 
     def get_sources(self,except_ubuntu):
-        return self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
+        list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
+        resList = []
+        for item in list:
+            newitem = UnicodeToAscii(item)
+            resList.append(newitem)
 
-
+        return resList
 
 from PyQt4.QtGui import *
 import sys
