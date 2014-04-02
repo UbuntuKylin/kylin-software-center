@@ -138,7 +138,7 @@ class ConfigWidget(QWidget):
             self.ui.cbhideubuntu.setVisible(True)
 
     def slot_click_cancel(self):
-        self.emit(Signals.update_source_cancel)
+        self.emit(Signals.task_cancel, "#update")
 
     def slot_click_update(self):
         self.ui.progressBar.reset()

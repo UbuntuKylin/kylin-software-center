@@ -124,6 +124,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
+        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
         self.connect(self,Signals.update_source,self.slot_update_source)
 
         # init text info
@@ -952,9 +953,16 @@ class SoftwareCenter(QMainWindow):
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
 
-        if action == AppActions.UPDATE and int(percent)>=200:
-            print "cache update finished!"
-            self.appmgr.update_models(AppActions.UPDATE,"")
+        if action == AppActions.UPDATE:
+            if int(percent) == 0:
+                self.configWidget.slot_update_status_change(1)
+            elif int(percent) == 100:
+                self.configWidget.slot_update_status_change(99)
+            else:
+                self.configWidget.slot_update_status_change(percent)
+            if int(percent) >= 200:
+                print "cache update finished!"
+                self.appmgr.update_models(AppActions.UPDATE,"")
 
         if self.stmap.has_key(name) is False:
             LOG.warning("there is no task for this app:%s",name)
