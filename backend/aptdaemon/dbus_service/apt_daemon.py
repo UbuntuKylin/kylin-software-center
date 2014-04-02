@@ -40,7 +40,9 @@ class AppActions:
     APPLY = "apply_changes"
     PURCHASE = "purchase"
     UPDATE = "update"
-
+    ADD_SOURCE = "add_source"
+    REMOVE_SOURCE = "remove_source"
+    GET_SOURCES = "get_sources"
 
 class FetchProcess(apb.AcquireProgress):
     '''Fetch Process'''
@@ -250,7 +252,7 @@ class AptDaemon():
             print "update err"
 
     # apt-get update
-    def update(self, kwargs=None):
+    def update(self, taskName, kwargs=None):
         quiet = False
         if kwargs is not None:
             quiet = int(kwargs["quiet"])
@@ -262,7 +264,7 @@ class AptDaemon():
             self.cache.update()
         else:
             print "quiet=False"
-            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,"",AppActions.UPDATE))
+            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
 
     # check package status by pkgName, i = installed u = can update n = notinstall
     def check_pkg_status(self, pkgName):
@@ -316,9 +318,54 @@ class AptDaemon():
         #return pkgStatusList
 
     # get all source item in /etc/apt/sources.list
-    def get_sources(self):
+    def get_sources(self, except_ubuntu):
+        slist = []
         source = aptsources.sourceslist.SourcesList()
-        return source.list
+        for one in source.list:
+            if(one.disabled == False and one.type != ""):
+                if except_ubuntu:
+                    if one.str().find(".ubuntu.com/ubuntu") == -1:
+                        slist.append(one.str())
+                    else:
+                        continue
+                else:
+                    slist.append(one.str())
+        return slist
+
+    # add source in /etc/apt/sources.list
+    def add_source(self,text):
+        source = aptsources.sourceslist.SourcesList()
+        for item in source.list:
+            if(item.str().find(text) != -1):
+                return False
+
+        slist = text.split()
+        if(len(slist) < 3): # wrong source text
+            return False
+
+        type = slist[0]
+        uri = slist[1]
+        dist = slist[2]
+        comps = []
+        for i in range(3, len(slist)):
+            comps.append(slist[i])
+        source.add(type, uri, dist, comps)
+        source.save()
+
+        return True
+
+    # remove source from /etc/apt/sources.list
+    def remove_source(self,text):
+        source = aptsources.sourceslist.SourcesList()
+        sources = source.list
+        for item in sources:
+            if(item.str().find(text) != -1):
+                source.remove(item)
+        source.save()
+
+        return True
+
+
 
     # add ubuntukylin source in /etc/apt/sources.list
     def add_source_ubuntukylin(self):

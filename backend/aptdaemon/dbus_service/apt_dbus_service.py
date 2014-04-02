@@ -88,10 +88,7 @@ class WorkThread(threading.Thread):
             if func is None:
                 print "Error action: ", item
 
-            if item.action == AppActions.UPDATE:
-                res = func(item.kwargs)
-            else:
-                res = func(item.pkgname,item.kwargs)
+            res = func(item.pkgname,item.kwargs)
             if res is False:
                 print "Action exec failed..."
 
@@ -185,9 +182,6 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         print "check_source_ubuntukylin..."
 
-        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
-        if not granted:
-            return False
         source = aptsources.sourceslist.SourcesList()
         for item in source.list:
             if(item.str().find(DEB_SOURCE_UBUNTUKYLIN) != -1):
@@ -197,6 +191,11 @@ class SoftwarecenterDbusService(dbus.service.Object):
     # add ubuntukylin source in /etc/apt/sources.list
     @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
     def add_source_ubuntukylin(self, version, sender=None):
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
         source = aptsources.sourceslist.SourcesList(())
         #????the check option should include version
         if(self.check_source_ubuntukylin() is True):
@@ -205,6 +204,32 @@ class SoftwarecenterDbusService(dbus.service.Object):
         source.add("deb", HTTP_SOURCE_UBUNTUKYLIN, osversion, "")
         source.save()
         return True
+
+    # add source in /etc/apt/sources.list
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def add_source(self, text, sender=None):
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
+        return self.daemonApt.add_source(text)
+
+    # remove source from /etc/apt/sources.list
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def remove_source(self, text, sender=None):
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            return False
+
+        return self.daemonApt.remove_source(text)
+
+    # check ubuntukylin source is in /etc/apt/sources.list or not
+    @dbus.service.method(INTERFACE, in_signature='b', out_signature='as', sender_keyword='sender')
+    def get_sources(self, except_ubuntu, sender=None):
+
+        return self.daemonApt.get_sources(except_ubuntu)
 
     # -------------------------software-center-------------------------
     # install package sa:software_fetch_signal() and software_apt_signal()
@@ -298,7 +323,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         kwargs = {"quiet":str(quiet),
                   }
 
-        item = WorkItem("",AppActions.UPDATE,kwargs)
+        item = WorkItem("#update",AppActions.UPDATE,kwargs)
 
         self.add_worker_item(item)
 

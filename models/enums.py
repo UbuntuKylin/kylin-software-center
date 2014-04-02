@@ -138,6 +138,9 @@ class AppActions:
     APPLY = "apply_changes"
     PURCHASE = "purchase"
     UPDATE = "update"
+    ADD_SOURCE = "add_source"
+    REMOVE_SOURCE = "remove_source"
+    GET_SOURCES = "get_sources"
 
 
 AptActionMsg = {

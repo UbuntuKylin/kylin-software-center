@@ -39,7 +39,8 @@ from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
                           AppActions,
                           Signals,
                           AptActionMsg,
-                          AptProcessMsg)
+                          AptProcessMsg,
+                          UnicodeToAscii)
 
 import multiprocessing
 
@@ -164,19 +165,34 @@ class InstallBackend(QObject):
         self.emit(Signals.dbus_apt_process,appname,sendType,action,0,sendMsg)
 
     def install_package(self,pkgname):
-        self.call_dbus_iface(AppActions.INSTALL,pkgname)
+        return self.call_dbus_iface(AppActions.INSTALL,pkgname)
 
     def remove_package(self,pkgname):
-        self.call_dbus_iface(AppActions.REMOVE,pkgname)
+        return self.call_dbus_iface(AppActions.REMOVE,pkgname)
 
     def upgrade_package(self,pkgname):
-        self.call_dbus_iface(AppActions.UPGRADE,pkgname)
+        return self.call_dbus_iface(AppActions.UPGRADE,pkgname)
 
     def cancel_package(self,pkgname):
-        self.call_dbus_iface(AppActions.CANCEL,pkgname)
+        return self.call_dbus_iface(AppActions.CANCEL,pkgname)
 
     def update_source(self,quiet=False):
-        self.call_dbus_iface(AppActions.UPDATE,False)
+        return self.call_dbus_iface(AppActions.UPDATE,False)
+
+    def add_source(self,text):
+        return self.call_dbus_iface(AppActions.ADD_SOURCE,text)
+
+    def remove_source(self,text):
+        return self.call_dbus_iface(AppActions.REMOVE_SOURCE,text)
+
+    def get_sources(self,except_ubuntu):
+        list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
+        resList = []
+        for item in list:
+            newitem = UnicodeToAscii(item)
+            resList.append(newitem)
+
+        return resList
 
 from PyQt4.QtGui import *
 import sys

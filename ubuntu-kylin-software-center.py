@@ -123,8 +123,6 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
-        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
-        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
         self.connect(self,Signals.update_source,self.slot_update_source)
 
         # init text info
@@ -147,6 +145,11 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
         self.appmgr.init_models()
 
+        # config widget
+        self.configWidget = ConfigWidget(self)
+        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
+        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+
         self.show()
 
     def init_main_view(self):
@@ -157,8 +160,6 @@ class SoftwareCenter(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
-        # config widget
-        self.configWidget = ConfigWidget(self.ui.centralwidget)
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
@@ -915,9 +916,9 @@ class SoftwareCenter(QMainWindow):
         self.add_task_item(app)
         self.backend.remove_package(app.name)
 
-    def slot_click_cancel(self, app):
-        LOG.info("cancel an task:%s",app.name)
-        self.backend.cancel_package(app.name)
+    def slot_click_cancel(self, appname):
+        LOG.info("cancel an task:%s",appname)
+        self.backend.cancel_package(appname)
 
     def slot_remove_task(self, app):
         self.del_task_item(app.name)

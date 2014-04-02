@@ -110,4 +110,4 @@ class TaskListItemWidget(QWidget):
         if(self.finish == True):
             self.emit(Signals.task_remove, self.app)
         else:
-            self.emit(Signals.task_cancel, self.app)
+            self.emit(Signals.task_cancel, self.app.name)
