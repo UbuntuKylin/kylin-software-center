@@ -149,6 +149,8 @@ class SoftwareCenter(QMainWindow):
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+        # alert message box
+        self.messageBox = MessageBox(self)
 
         self.show()
 
@@ -165,8 +167,6 @@ class SoftwareCenter(QMainWindow):
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
         # loading page
         self.loadingDiv = LoadingDiv(self)
-        # alert message box
-        self.messageBox = MessageBox(self)
 
         # style by code
         self.ui.headerWidget.setAutoFillBackground(True)
