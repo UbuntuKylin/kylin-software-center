@@ -31,6 +31,7 @@ from models.enums import Signals
 
 class ConfigWidget(QWidget):
     sourcelist = ''
+    iscanceled = ''
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -133,9 +134,11 @@ class ConfigWidget(QWidget):
             self.ui.cbhideubuntu.setVisible(True)
 
     def slot_click_cancel(self):
+        self.iscanceled = True
         self.emit(Signals.task_cancel, "#update")
 
     def slot_click_update(self):
+        self.iscanceled = False
         self.ui.progressBar.reset()
         self.set_process_visiable(True)
         self.emit(Signals.click_update_source)

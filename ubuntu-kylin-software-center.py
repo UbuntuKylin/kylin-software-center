@@ -1001,13 +1001,17 @@ class SoftwareCenter(QMainWindow):
         if(action == AppActions.UPDATE):
             print "yuan geng xin wan cheng"
             self.configWidget.slot_update_finish()
-
-        if(pkgname == "ubuntu-kylin-software-center"):
-            cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
-            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
-            cd.exec_()
+            if(self.configWidget.iscanceled == True):
+                self.messageBox.alert_msg("已取消更新软件源")
+            else:
+                self.messageBox.alert_msg(msg)
         else:
-            self.messageBox.alert_msg(msg)
+            if(pkgname == "ubuntu-kylin-software-center"):
+                cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
+                self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+                cd.exec_()
+            else:
+                self.messageBox.alert_msg(msg)
 
 def main():
     app = QApplication(sys.argv)
