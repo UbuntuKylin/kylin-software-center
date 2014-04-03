@@ -1,6 +1,13 @@
 
 ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
 
+  * Modify the messagebox display position after update finish.
+  * Update init application descriptions in db file.
+  
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 3 Apr 2014 13:55:09 +0800
+
+ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
+
   * Add source update function including sourcel list management ui and dbus process (bug#1301127,bug#1300592)
   * Solve application state of recommend and detail view (bug#1297858)  
   * Add update check of uksc (bug#1297574)
