@@ -129,7 +129,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.2.8")
+        self.ui.bottomText2.setText("0.2.9")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -149,6 +149,8 @@ class SoftwareCenter(QMainWindow):
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+        # alert message box
+        self.messageBox = MessageBox(self)
 
         self.show()
 
@@ -165,8 +167,6 @@ class SoftwareCenter(QMainWindow):
         self.detailScrollWidget.stackUnder(self.ui.item1Widget)
         # loading page
         self.loadingDiv = LoadingDiv(self)
-        # alert message box
-        self.messageBox = MessageBox(self)
 
         # style by code
         self.ui.headerWidget.setAutoFillBackground(True)
