@@ -1,6 +1,13 @@
 
 ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
 
+  * Add cancel support of source update.
+  * Solve multi process problem of uksc (bug#1300631).
+  
+ -- maclin <majun@ubuntukylin.com>  Sat, 5 Apr 2014 17:42:09 +0800
+
+ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
+
   * Modify the messagebox display position after update finish.
   * Update init application descriptions in db file.
   
