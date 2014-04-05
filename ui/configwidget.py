@@ -36,7 +36,7 @@ class ConfigWidget(QWidget):
         QWidget.__init__(self,parent)
         self.ui_init()
 
-        self.sourcelist = parent.backend
+        self.backend = parent.backend
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.ui.bg.lower()
@@ -113,7 +113,8 @@ class ConfigWidget(QWidget):
 
     def fill_sourcelist(self):
         self.ui.sourceListWidget.clear()
-        slist = self.sourcelist.get_sources(self.ui.cbhideubuntu.isChecked())
+        slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+
         for one in slist:
             item = QListWidgetItem()
             itemw = SourceItemWidget(one, self)
@@ -148,7 +149,7 @@ class ConfigWidget(QWidget):
 
     def slot_click_add(self):
         sourcetext = str(self.ui.lesource.text().toUtf8())
-        self.sourcelist.add_source(sourcetext)
+        self.backend.add_source(sourcetext)
         self.fill_sourcelist()
 
     def slot_le_input(self, text):

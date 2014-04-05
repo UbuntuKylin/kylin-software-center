@@ -28,6 +28,8 @@ import sys
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import dbus
+import dbus.service
 import subprocess
 import webbrowser
 from ui.mainwindow import Ui_MainWindow
@@ -51,6 +53,7 @@ from backend.search import *
 
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
+from backend.ubuntu_sw import SoftwarecenterDbusController
 
 from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                           UKSC_CACHE_DIR,AppActions,AptActionMsg)
@@ -82,6 +85,8 @@ class SoftwareCenter(QMainWindow):
 
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
+
+        self.check_single_process_by_sessionbus()
 
         # init the ui
         self.init_main_view()
@@ -153,6 +158,10 @@ class SoftwareCenter(QMainWindow):
         self.messageBox = MessageBox(self)
 
         self.show()
+
+    def show_to_frontend(self):
+        self.show()
+        self.raise_()
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -315,6 +324,31 @@ class SoftwareCenter(QMainWindow):
         # advertisement
         adw = ADWidget([], self)
         # self.setAttribute(Qt.WA_X11NetWmWindowTypeDock)
+
+
+    def check_single_process_by_sessionbus(self):
+
+        try:
+            bus = dbus.SessionBus()
+        except:
+            LOG.exception("could not initiate dbus")
+            sys.exit()
+            return
+
+        #if there is an instance running, call to bring it to frontend
+        try:
+            proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter',
+                                       '/com/ubuntukylin/softwarecenter')
+            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.softwarecenterIFace')
+
+            res = iface.bringToFront()
+
+            sys.exit()
+
+        except dbus.DBusException:
+            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
+            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+
 
     def mousePressEvent(self, event):
         if (event.button() == Qt.LeftButton):
@@ -848,6 +882,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnTask.setEnabled(True)
 
     def slot_close(self):
+        self.dbusControler.stop()
         sys.exit(0)
 
     def slot_min(self):
