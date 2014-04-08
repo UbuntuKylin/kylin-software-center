@@ -26,7 +26,8 @@ import apt
 import shutil
 import logging
 import xapian
-
+import dbus
+import dbus.service
 
 LOG = logging.getLogger("uksc")
 
@@ -177,6 +178,29 @@ def safe_makedirs(dir_path):
             else:
                 # the error is due to something else, so we want to raise it
                 raise
+
+
+class SoftwarecenterDbusController(dbus.service.Object):
+    """
+    This is a helper to provide the SoftwarecenterIFace
+
+    It provides only a bringToFront method that takes
+    additional arguments about what packages to show
+    """
+    def __init__(self, parent, bus_name,
+                 object_path='/com/ubuntukylin/softwarecenter'):
+        dbus.service.Object.__init__(self, bus_name, object_path)
+        self.parent = parent
+
+    def stop(self):
+        """ stop the dbus controller and remove from the bus """
+        self.remove_from_connection()
+
+    @dbus.service.method('com.ubuntukylin.softwarecenterIFace')
+    def bringToFront(self):
+        self.parent.show_to_frontend()
+        return True
+
 
 """
 

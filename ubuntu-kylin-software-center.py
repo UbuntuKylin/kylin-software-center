@@ -28,6 +28,8 @@ import sys
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import dbus
+import dbus.service
 import subprocess
 import webbrowser
 from ui.mainwindow import Ui_MainWindow
@@ -51,6 +53,7 @@ from backend.search import *
 
 from models.appmanager import AppManager
 from backend.installbackend import InstallBackend
+from backend.ubuntu_sw import SoftwarecenterDbusController
 
 from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                           UKSC_CACHE_DIR,AppActions,AptActionMsg)
@@ -82,6 +85,8 @@ class SoftwareCenter(QMainWindow):
 
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
+
+        self.check_single_process_by_sessionbus()
 
         # init the ui
         self.init_main_view()
@@ -153,6 +158,10 @@ class SoftwareCenter(QMainWindow):
         self.messageBox = MessageBox(self)
 
         self.show()
+
+    def show_to_frontend(self):
+        self.show()
+        self.raise_()
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -315,6 +324,31 @@ class SoftwareCenter(QMainWindow):
         # advertisement
         adw = ADWidget([], self)
         # self.setAttribute(Qt.WA_X11NetWmWindowTypeDock)
+
+
+    def check_single_process_by_sessionbus(self):
+
+        try:
+            bus = dbus.SessionBus()
+        except:
+            LOG.exception("could not initiate dbus")
+            sys.exit()
+            return
+
+        #if there is an instance running, call to bring it to frontend
+        try:
+            proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter',
+                                       '/com/ubuntukylin/softwarecenter')
+            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.softwarecenterIFace')
+
+            res = iface.bringToFront()
+
+            sys.exit()
+
+        except dbus.DBusException:
+            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
+            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+
 
     def mousePressEvent(self, event):
         if (event.button() == Qt.LeftButton):
@@ -576,6 +610,16 @@ class SoftwareCenter(QMainWindow):
                 del delitem
                 break
 
+    def reset_nav_bar(self):
+        self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnUp.setEnabled(True)
+        self.ui.btnUn.setEnabled(True)
+        self.ui.btnTask.setEnabled(True)
+        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
+        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
         if(self.uksc != None):
@@ -603,6 +647,7 @@ class SoftwareCenter(QMainWindow):
 
         # homepage is special
         if(self.nowPage == "homepage" and self.ui.allsWidget.isVisible() == False):
+            self.reset_nav_bar()
             self.ui.allsWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
@@ -848,6 +893,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnTask.setEnabled(True)
 
     def slot_close(self):
+        self.dbusControler.stop()
         sys.exit(0)
 
     def slot_min(self):
@@ -890,6 +936,8 @@ class SoftwareCenter(QMainWindow):
         if(app is None):
             print "has no such application...."
             return
+
+        self.reset_nav_bar()
         self.detailScrollWidget.showSimple(app)
         # self.appmgr.get_application_reviews(app.name)
         # self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
@@ -999,7 +1047,6 @@ class SoftwareCenter(QMainWindow):
         msg = "软件" + AptActionMsg[action] + "操作完成"
 
         if(action == AppActions.UPDATE):
-            print "yuan geng xin wan cheng"
             self.configWidget.slot_update_finish()
             if(self.configWidget.iscanceled == True):
                 self.messageBox.alert_msg("已取消更新软件源")

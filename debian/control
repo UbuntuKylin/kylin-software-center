@@ -11,7 +11,7 @@ Vcs-Bzr: lp:ubuntu-kylin-software-center
 
 Package: ubuntu-kylin-software-center
 Architecture: any
-Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends},
+Depends: ${misc:Depends}, ${python:Depends}, ${shlibs:Depends}, python-qt4, 
  ubuntu-kylin-software-center-common (= ${source:Version})
 Description: Integrated tool to aid in routine system maintenance tasks
  Ubuntu Kylin Software Center is a newly built software center client

@@ -188,6 +188,9 @@ class InstallBackend(QObject):
     def get_sources(self,except_ubuntu):
         list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
         resList = []
+        if list is None:
+            return resList
+
         for item in list:
             newitem = UnicodeToAscii(item)
             resList.append(newitem)
