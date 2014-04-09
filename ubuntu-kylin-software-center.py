@@ -610,6 +610,16 @@ class SoftwareCenter(QMainWindow):
                 del delitem
                 break
 
+    def reset_nav_bar(self):
+        self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnUp.setEnabled(True)
+        self.ui.btnUn.setEnabled(True)
+        self.ui.btnTask.setEnabled(True)
+        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
+        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
         if(self.uksc != None):
@@ -637,6 +647,7 @@ class SoftwareCenter(QMainWindow):
 
         # homepage is special
         if(self.nowPage == "homepage" and self.ui.allsWidget.isVisible() == False):
+            self.reset_nav_bar()
             self.ui.allsWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
@@ -925,6 +936,8 @@ class SoftwareCenter(QMainWindow):
         if(app is None):
             print "has no such application...."
             return
+
+        self.reset_nav_bar()
         self.detailScrollWidget.showSimple(app)
         # self.appmgr.get_application_reviews(app.name)
         # self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
