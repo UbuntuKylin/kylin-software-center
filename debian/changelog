@@ -8,8 +8,9 @@ ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
   * Add source update ui and dbus process (bug#1301127,bug#1300592)
   * Solve application state of recommend and detail view (bug#1297858)  
   * Add update check of uksc (bug#1297574)
+  * Solve the add/remove source function problem in dbus service.
   
- -- Shine <shenghuang@ubuntukylin.com>  Thu, 10 Apr 2014 15:30:12 +0800
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 10 Apr 2014 16:31:12 +0800
 
 ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
 
