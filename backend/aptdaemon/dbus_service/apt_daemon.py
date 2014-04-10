@@ -382,7 +382,7 @@ class AptDaemon():
     def add_source_ubuntukylin(self):
         source = aptsources.sourceslist.SourcesList()
         for item in source.list:
-            if(item.str().find("deb http://archive.ubuntukylin.com/ubuntukylin") != -1):
+            if(item.str().find("deb http://archive.ubuntukylin.com:10006/ubuntukylin") != -1):
                 return
 
         source.add("deb", "http://archive.ubuntukylin.com:10006/ubuntukylin/", "trusty main", "")
@@ -393,7 +393,7 @@ class AptDaemon():
         source = aptsources.sourceslist.SourcesList()
         sources = source.list
         for item in sources:
-            if(item.str().find("deb http://archive.ubuntukylin.com/ubuntukylin") != -1):
+            if(item.str().find("deb http://archive.ubuntukylin.com:10006/ubuntukylin") != -1):
                 source.remove(item)
         source.save()
 
