@@ -5,11 +5,11 @@ ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
   * Solve multi process problem of uksc (bug#1300631).
   * Modify the messagebox display position after update finish.
   * Update init application descriptions in db file.
-  * Add source update function including sourcel list management ui and dbus process (bug#1301127,bug#1300592)
+  * Add source update ui and dbus process (bug#1301127,bug#1300592)
   * Solve application state of recommend and detail view (bug#1297858)  
   * Add update check of uksc (bug#1297574)
   
- -- Shine <shenghuang@ubuntukylin.com>  Thu, 10 Apr 2014 14:30:12 +0800
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 10 Apr 2014 15:30:12 +0800
 
 ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
 
