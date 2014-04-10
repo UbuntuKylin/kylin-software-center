@@ -1,32 +1,15 @@
 ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
 
   * Solve navigation problem (bug#1291787,bug#1294425).
-  
- -- Shine <shenghuang@ubuntukylin.com>  Tue, 8 Apr 2014 14:30:12 +0800
-
-
-ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
-
   * Add cancel support of source update.
   * Solve multi process problem of uksc (bug#1300631).
-  
- -- maclin <majun@ubuntukylin.com>  Sat, 5 Apr 2014 17:42:09 +0800
-
-ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
-
   * Modify the messagebox display position after update finish.
   * Update init application descriptions in db file.
-  
- -- Shine <shenghuang@ubuntukylin.com>  Thu, 3 Apr 2014 13:55:09 +0800
-
-ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
-
   * Add source update function including sourcel list management ui and dbus process (bug#1301127,bug#1300592)
   * Solve application state of recommend and detail view (bug#1297858)  
   * Add update check of uksc (bug#1297574)
   
- -- Jun Ma <maclin@ubuntukylin.com>  Wen, 2 Apr 2014 23:54:37 +0800
-
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 10 Apr 2014 14:30:12 +0800
 
 ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
 
@@ -34,7 +17,7 @@ ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
   * Solve search problem with no result or crash (bug#1294499)  
   * Solve search entry response problem (bug#1297124)
   
- -- Jun Ma <maclin@ubuntukylin.com>  Wen, 26 Mar 2014 00:36:29 +0800
+ -- Jun Ma <maclin@ubuntukylin.com>  Wed, 26 Mar 2014 00:36:29 +0800
 
 
 ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low

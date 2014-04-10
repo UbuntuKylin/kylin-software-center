@@ -385,7 +385,7 @@ class AptDaemon():
             if(item.str().find("deb http://archive.ubuntukylin.com/ubuntukylin") != -1):
                 return
 
-        source.add("deb", "http://archive.ubuntukylin.com/ubuntukylin/", "raring main", "")
+        source.add("deb", "http://archive.ubuntukylin.com:10006/ubuntukylin/", "trusty main", "")
         source.save()
 
     # remove ubuntukylin source in /etc/apt/sources.list

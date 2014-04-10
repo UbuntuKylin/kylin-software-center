@@ -57,7 +57,6 @@ class InstallBackend(QObject):
     def __init__(self):
         QObject.__init__(self)
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
-        print locale.getlocale()
 
         self.iface = None
 
@@ -86,7 +85,7 @@ class InstallBackend(QObject):
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
-            print "dbus.DBusException error"
+            print("dbus.DBusException error")
             return False
 
         return True
@@ -109,7 +108,6 @@ class InstallBackend(QObject):
         return res
 
     def _on_software_fetch_signal(self, type, kwarg):
-#        print "_on_software_fetch_signal", type, kwarg
 
         sendType = "fetch"
         appname = str(kwarg['download_appname'])
@@ -130,7 +128,6 @@ class InstallBackend(QObject):
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
     def _on_software_apt_signal(self,type, kwarg):
-#        print "_on_software_apt_signal:", type, kwarg
         sendType = "apt"
         appname = str(kwarg['apt_appname'])
         sendMsg  = ""
@@ -138,9 +135,9 @@ class InstallBackend(QObject):
         action = str(kwarg['action'])
         sendMsg = AptActionMsg[action] + AptProcessMsg[str(type)]
 
-        if(type == "apt_pulse"):
+ #       if(type == "apt_pulse"):
 #            sendMsg = sendMsg + kwarg['status']
-            print kwarg['status']
+ #           print kwarg['status']
 #        if( type == "apt_start"):
 #            sendMsg = "安装开始..."
 #        if( type == "apt_finish"):
@@ -154,7 +151,7 @@ class InstallBackend(QObject):
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
     def _on_software_auth_signal(self,type, kwarg):
-        print "#####_on_software_auth_signal:",type,kwarg
+
         sendType = "auth"
         appname = str(kwarg['appname'])
         sendMsg  = "操作取消"
@@ -214,7 +211,7 @@ def main():
     instBackend = InstallBackend()
     instBackend.init_dbus_ifaces()
     instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
-    print "#####"
+
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"bareftp")
 #    instBackend.call_dbus_iface(UK_DBUS_METHOD.INSTALL,"gimp")
@@ -231,4 +228,3 @@ if __name__ == "__main__":
 
     main()
 
-    print "aaaa"
