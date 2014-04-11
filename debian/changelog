@@ -1,3 +1,12 @@
+ubuntu-kylin-software-center (0.2.9.2) UNRELEASED; urgency=medium
+
+  * Revert to using print statement consistently through all
+    code-base. Print functions were only partially used within some files,
+    yet an import from future was not added, nor the rest of prints
+    converted.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Fri, 11 Apr 2014 01:39:05 +0100
+
 ubuntu-kylin-software-center (0.2.9.1) trusty; urgency=medium
 
   * Switch package to native, remove broken watch file

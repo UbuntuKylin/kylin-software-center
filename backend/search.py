@@ -383,7 +383,7 @@ class Search:
                 APT_XAPIAN_INDEX_DB_PATH)
 #            self.db.add_database(axi)
         except:
-            print("failed to add apt-xapian-index")
+            print "failed to add apt-xapian-index"
             LOG.exception("failed to add apt-xapian-index")
 
     def search_software(self, keyword):
@@ -394,7 +394,7 @@ class Search:
         enquire = xapian.Enquire(self.db.xapiandb)
         enquire.set_query(query[1])
         matches = enquire.get_mset(0, len(self.db))
-        print("res len=",len(self.db),len(matches))
+        print "res len=",len(self.db),len(matches)
         pkgnamelist = []
         for m in matches:
             doc = m.document
@@ -437,7 +437,7 @@ if __name__ == "__main__":
     for item in matches:
         doc = item.document
         pkgname = doc.get_value(XapianValues.PKGNAME)
-        print("item:",count,pkgname)
+        print "item:",count,pkgname
         count += 1
 
 

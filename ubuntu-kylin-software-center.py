@@ -599,12 +599,12 @@ class SoftwareCenter(QMainWindow):
 
     def del_task_item(self, pkgname):
         count = self.ui.taskListWidget.count()
-        print("del_task_item:",count)
+        print "del_task_item:",count
         for i in range(count):
             item = self.ui.taskListWidget.item(i)
             taskitem = self.ui.taskListWidget.itemWidget(item)
             if taskitem.app.name == pkgname:
-                print("del_task_item: found an item",i,pkgname)
+                print "del_task_item: found an item",i,pkgname
                 delitem = self.ui.taskListWidget.takeItem(i)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
@@ -698,7 +698,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print("receive ratings and reviews ready, count is:",len(rnrlist))
+        print "receive ratings and reviews ready, count is:",len(rnrlist)
         #app = self.appmgr.get_application_by_name("gimp")
         #self.appmgr.update_rating_reviews(rnrlist)
 
@@ -934,7 +934,7 @@ class SoftwareCenter(QMainWindow):
             self.history.history_add(self.slot_show_app_detail, app)
 
         if(app is None):
-            print("has no such application....")
+            print "has no such application...."
             return
 
         self.reset_nav_bar()
@@ -1028,7 +1028,7 @@ class SoftwareCenter(QMainWindow):
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname,action):
-        print("slot_apt_process_finish:",pkgname,action)
+        print "slot_apt_process_finish:",pkgname,action
 
         self.appmgr.update_models(action,pkgname)
 

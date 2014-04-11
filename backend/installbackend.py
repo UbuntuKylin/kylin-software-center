@@ -65,7 +65,7 @@ class InstallBackend(QObject):
         try:
             bus = dbus.SystemBus(mainloop)
         except:
-            print ("could not initiate dbus")
+            print "could not initiate dbus"
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
             return False
 
@@ -85,7 +85,7 @@ class InstallBackend(QObject):
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
-            print("dbus.DBusException error")
+            print "dbus.DBusException error"
             return False
 
         return True
