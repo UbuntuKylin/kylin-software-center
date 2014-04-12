@@ -1,8 +1,9 @@
 ubuntu-kylin-software-center (0.2.9.2) trusty; urgency=medium
 
   * add update check when first start of uksc (bug#1306871)
+  * add app count check to prevent connection except of first start
 
- -- Jun Ma <majun@ubuntukylin.com>  Sat, 12 Apr 2014 17:40:15 +0800
+ -- Jun Ma <majun@ubuntukylin.com>  Sat, 12 Apr 2014 22:58:23 +0800
 
 ubuntu-kylin-software-center (0.2.9.1) trusty; urgency=medium
 

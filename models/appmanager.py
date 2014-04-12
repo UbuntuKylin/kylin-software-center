@@ -131,7 +131,8 @@ class AppManager(QObject):
         self.worker_thread.start()
 
     def check_update(self):
-        if self.db.is_update_needed():
+        (inst,up,total) = self.get_application_count()
+        if self.db.is_update_needed() or total<200:
             return True
         else:
             return False
