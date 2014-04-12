@@ -1,3 +1,13 @@
+ubuntu-kylin-software-center (0.2.9.1) trusty; urgency=medium
+
+  * Switch package to native, remove broken watch file
+  * Unsplit the package into a single package, it's all arch:all
+  * Add missing dependencies on: language-pack-zh-hans and
+    ubuntukylin-keyring
+  * Drop ${shlibs:Depends}
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Thu, 10 Apr 2014 18:04:59 +0100
+
 ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
 
   * Solve navigation problem (bug#1291787,bug#1294425).
@@ -19,7 +29,6 @@ ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
   * Solve search entry response problem (bug#1297124)
   
  -- Jun Ma <maclin@ubuntukylin.com>  Wed, 26 Mar 2014 00:36:29 +0800
-
 
 ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
 
