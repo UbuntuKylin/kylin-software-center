@@ -417,9 +417,12 @@ class SoftwareCenter(QMainWindow):
         self.toprated_ready = True
         self.rec_ready = False
         self.rnr_ready = True
-        self.appmgr.get_advertisements()
-        self.appmgr.get_recommend_apps()
-        self.appmgr.get_toprated_stats()
+        if self.appmgr.check_update():
+            self.backend.update_source()
+        else:
+            self.appmgr.get_advertisements()
+            self.appmgr.get_recommend_apps()
+            self.appmgr.get_toprated_stats()
         #????we should decide when to call this to sync data from backend server
  #       self.appmgr.get_rating_review_stats()
 
@@ -633,7 +636,7 @@ class SoftwareCenter(QMainWindow):
 
     def restart_uksc(self):
         p = subprocess.Popen(["ubuntu-kylin-software-center", "restart"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
-
+        sys.exit(0)
     #-------------------------------slots-------------------------------
 
     def slot_change_category(self, citem):
@@ -1049,6 +1052,13 @@ class SoftwareCenter(QMainWindow):
                 self.messageBox.alert_msg("已取消更新软件源")
             else:
                 self.messageBox.alert_msg(msg)
+
+                #restart uksc when finish update
+                if self.appmgr.check_update():
+                    self.appmgr.get_advertisements()
+                    self.appmgr.get_recommend_apps()
+                    self.appmgr.get_toprated_stats()
+
         else:
             if(pkgname == "ubuntu-kylin-software-center"):
                 cd = ConfirmDialog("软件中心升级完成，重启程序？", self)

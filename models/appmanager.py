@@ -130,6 +130,12 @@ class AppManager(QObject):
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
 
+    def check_update(self):
+        if self.db.is_update_needed():
+            return True
+        else:
+            return False
+
     #open the apt cache and get the package count
     def open_cache(self):
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
