@@ -614,11 +614,11 @@ def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
     print "\n***Enter _reviews_ready_callback..."
     print str_pkgname
     for review in reviews_data:
-      print "rating: %s  user=%s" % (review.rating,
-          review.reviewer_username)
-      print review.summary
-      print (review.review_text)
-      print "\n"
+      print("rating: %s  user=%s" % (review.rating,
+          review.reviewer_username))
+      print(review.summary)
+      print(review.review_text)
+      print("\n")
     print "\n\n"
 
 

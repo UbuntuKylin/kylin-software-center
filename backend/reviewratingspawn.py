@@ -147,17 +147,17 @@ class RatingsAndReviwsMethod:
             piston_reviews = rnrclient.get_reviews(**kwargs)
            # piston_reviews = rnrclient.get_reviews(packagename="gimp",language='zh_CN')
         except ValueError as e:
-          print "failed to parse '%s'" % e
+          print("failed to parse '%s'" % e)
         #bug lp:709408 - don't print 404 errors as traceback when api request
         #                returns 404 error
         except APIError as e:
-            print "_get_reviews_threaded: no reviews able to be retrieved: %s" % e
+            print("_get_reviews_threaded: no reviews able to be retrieved: %s" % e)
         except httplib2.ServerNotFoundError:
         # switch to offline mode and try again
             rnrclient._offline_mode = True
             piston_reviews = rnrclient.get_reviews(**kwargs)
         except:
-            print "get_reviews*****"
+            print("get_reviews*****")
 
         if piston_reviews is None:
             piston_reviews = []
@@ -197,7 +197,7 @@ class RatingsAndReviwsMethod:
                         localFile.write(rawContent)
                         localFile.close()
                 else:
-                    print "get_screenshots,exists:",thumbnailfile
+                    print("get_screenshots,exists:",thumbnailfile)
 
                 screenshot_path_list.append(thumbnailfile)
                 queue.put_nowait(thumbnailfile)
@@ -209,13 +209,13 @@ class RatingsAndReviwsMethod:
                         localFile.write(rawContent)
                         localFile.close()
                 else:
-                    print "get_screenshots,exists:",screenshotfile
+                    print("get_screenshots,exists:",screenshotfile)
                 screenshot_path_list.append(screenshotfile)
                 queue.put_nowait(screenshotfile)
             except urllib2.HTTPError,e:
-                print e.code
+                print(e.code)
             except urllib2.URLError,e:
-                print str(e)
+                print(str(e))
 
             return screenshot_path_list
         else:
@@ -229,9 +229,9 @@ class RatingsAndReviwsMethod:
                 if not rawContent:
                     return []
             except urllib2.HTTPError,e:
-                print e.code
+                print(e.code)
             except urllib2.URLError,e:
-                print str(e)
+                print(str(e))
 
             if rawContent is None:
                 return []
@@ -239,7 +239,7 @@ class RatingsAndReviwsMethod:
             try:
                 jsonContent = json.loads(rawContent)
             except ValueError as e:
-                print "can not decode: '%s' (%s)" % (rawContent, e)
+                print("can not decode: '%s' (%s)" % (rawContent, e))
                 jsonContent = None
                 return []
 
@@ -273,9 +273,9 @@ class RatingsAndReviwsMethod:
                     queue.put_nowait(destfile)
 
             except urllib2.HTTPError,e:
-                print e.code
+                print(e.code)
             except urllib2.URLError,e:
-                print str(e)
+                print(str(e))
 
         return screenshot_path_list
 
@@ -304,14 +304,14 @@ class RatingsAndReviwsMethod:
                 try:
                     queue.put_nowait(rnrStat)
                 except Queue.Full:
-                    print "queue put exception"
+                    print("queue put exception")
             LOG.debug("got the rating and review list count:%d",len(rnrArray))
 
             return rnrArray
 
         except Exception as e:
             LOG.error("exception when getting rating and review stat...")
-            print e.args
+            print(e.args)
             return {}
 
 
@@ -387,8 +387,8 @@ class RatingsAndReviwsMethod:
             return rnrStatList
 
         except Exception as e:
-            print "Error in RatingList.get_rating_list(): "
-            print e.args
+            print("Error in RatingList.get_rating_list(): ")
+            print(e.args)
             return resList
 
 
