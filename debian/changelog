@@ -1,7 +1,14 @@
-ubuntu-kylin-software-center (0.2.9.2) trusty; urgency=medium
+ubuntu-kylin-software-center (0.2.9.2) UNRELEASED; urgency=medium
 
+  [ Jun Ma ]
   * add update check when first start of uksc (bug#1306871)
   * add app count check to prevent connection except of first start
+
+  [ Dimitri John Ledkov ]
+  * Revert to using print statement consistently through all
+    code-base. Print functions were only partially used within some files,
+    yet an import from future was not added, nor the rest of prints
+    converted.
 
  -- Jun Ma <majun@ubuntukylin.com>  Sat, 12 Apr 2014 22:58:23 +0800
 
