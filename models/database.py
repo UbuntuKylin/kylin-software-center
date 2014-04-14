@@ -65,6 +65,7 @@ class Database:
 
     def __init__(self):
         self.updatecount = 0
+        self.first_start = False
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
         destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
 
@@ -73,10 +74,14 @@ class Database:
                 print "error with db file"
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
+            self.first_start = True
 
         self.connect = sqlite3.connect(destFile)
         self.cursor = self.connect.cursor()
         self.cat_list = []
+
+    def is_update_needed(self):
+        return self.first_start
 
     def init_category_table(self):
         self.cursor.execute(CREATE_CATEGORY)

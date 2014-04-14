@@ -417,9 +417,12 @@ class SoftwareCenter(QMainWindow):
         self.toprated_ready = True
         self.rec_ready = False
         self.rnr_ready = True
-        self.appmgr.get_advertisements()
-        self.appmgr.get_recommend_apps()
-        self.appmgr.get_toprated_stats()
+        if self.appmgr.check_update():
+            self.backend.update_source()
+        else:
+            self.appmgr.get_advertisements()
+            self.appmgr.get_recommend_apps()
+            self.appmgr.get_toprated_stats()
         #????we should decide when to call this to sync data from backend server
  #       self.appmgr.get_rating_review_stats()
 
@@ -599,12 +602,12 @@ class SoftwareCenter(QMainWindow):
 
     def del_task_item(self, pkgname):
         count = self.ui.taskListWidget.count()
-        print("del_task_item:",count)
+        print "del_task_item:",count
         for i in range(count):
             item = self.ui.taskListWidget.item(i)
             taskitem = self.ui.taskListWidget.itemWidget(item)
             if taskitem.app.name == pkgname:
-                print("del_task_item: found an item",i,pkgname)
+                print "del_task_item: found an item",i,pkgname
                 delitem = self.ui.taskListWidget.takeItem(i)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
@@ -633,7 +636,7 @@ class SoftwareCenter(QMainWindow):
 
     def restart_uksc(self):
         p = subprocess.Popen(["ubuntu-kylin-software-center", "restart"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
-
+        sys.exit(0)
     #-------------------------------slots-------------------------------
 
     def slot_change_category(self, citem):
@@ -698,7 +701,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print("receive ratings and reviews ready, count is:",len(rnrlist))
+        print "receive ratings and reviews ready, count is:",len(rnrlist)
         #app = self.appmgr.get_application_by_name("gimp")
         #self.appmgr.update_rating_reviews(rnrlist)
 
@@ -934,7 +937,7 @@ class SoftwareCenter(QMainWindow):
             self.history.history_add(self.slot_show_app_detail, app)
 
         if(app is None):
-            print("has no such application....")
+            print "has no such application...."
             return
 
         self.reset_nav_bar()
@@ -1028,7 +1031,7 @@ class SoftwareCenter(QMainWindow):
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname,action):
-        print("slot_apt_process_finish:",pkgname,action)
+        print "slot_apt_process_finish:",pkgname,action
 
         self.appmgr.update_models(action,pkgname)
 
@@ -1049,6 +1052,13 @@ class SoftwareCenter(QMainWindow):
                 self.messageBox.alert_msg("已取消更新软件源")
             else:
                 self.messageBox.alert_msg(msg)
+
+                #restart uksc when finish update
+                if self.appmgr.check_update():
+                    self.appmgr.get_advertisements()
+                    self.appmgr.get_recommend_apps()
+                    self.appmgr.get_toprated_stats()
+
         else:
             if(pkgname == "ubuntu-kylin-software-center"):
                 cd = ConfirmDialog("软件中心升级完成，重启程序？", self)

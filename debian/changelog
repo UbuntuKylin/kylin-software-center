@@ -1,3 +1,17 @@
+ubuntu-kylin-software-center (0.2.9.2) trusty; urgency=medium
+
+  [ Jun Ma ]
+  * add update check when first start of uksc (bug#1306871)
+  * add app count check to prevent connection except of first start
+
+  [ Dimitri John Ledkov ]
+  * Revert to using print statement consistently through all
+    code-base. Print functions were only partially used within some files,
+    yet an import from future was not added, nor the rest of prints
+    converted.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Sun, 13 Apr 2014 18:16:49 +0100
+
 ubuntu-kylin-software-center (0.2.9.1) trusty; urgency=medium
 
   * Switch package to native, remove broken watch file
@@ -28,10 +42,10 @@ ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
   * Solve search problem with no result or crash (bug#1294499)  
   * Solve search entry response problem (bug#1297124)
   
- -- Jun Ma <maclin@ubuntukylin.com>  Wed, 26 Mar 2014 00:36:29 +0800
+ -- Jun Ma <majun@ubuntukylin.com>  Wed, 26 Mar 2014 00:36:29 +0800
 
 ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
 
   * Initial release (LP: #1293299).
   
- -- Jun Ma <maclin@ubuntukylin.com>  Thu, 20 Mar 2014 10:14:56 +0800
+ -- Jun Ma <majun@ubuntukylin.com>  Thu, 20 Mar 2014 10:14:56 +0800

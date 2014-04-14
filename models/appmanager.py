@@ -130,6 +130,13 @@ class AppManager(QObject):
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
 
+    def check_update(self):
+        (inst,up,total) = self.get_application_count()
+        if self.db.is_update_needed() or total<200:
+            return True
+        else:
+            return False
+
     #open the apt cache and get the package count
     def open_cache(self):
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
@@ -607,11 +614,11 @@ def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
     print "\n***Enter _reviews_ready_callback..."
     print str_pkgname
     for review in reviews_data:
-      print("rating: %s  user=%s" % (review.rating,
-          review.reviewer_username))
-      print(review.summary)
-      print(review.review_text)
-      print("\n")
+      print "rating: %s  user=%s" % (review.rating,
+          review.reviewer_username)
+      print review.summary
+      print review.review_text
+      print "\n"
     print "\n\n"
 
 
