@@ -599,12 +599,12 @@ class SoftwareCenter(QMainWindow):
 
     def del_task_item(self, pkgname):
         count = self.ui.taskListWidget.count()
-        print "del_task_item:",count
+        print("del_task_item:",count)
         for i in range(count):
             item = self.ui.taskListWidget.item(i)
             taskitem = self.ui.taskListWidget.itemWidget(item)
             if taskitem.app.name == pkgname:
-                print "del_task_item: found an item",i,pkgname
+                print("del_task_item: found an item",i,pkgname)
                 delitem = self.ui.taskListWidget.takeItem(i)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
@@ -698,7 +698,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print "receive ratings and reviews ready, count is:",len(rnrlist)
+        print("receive ratings and reviews ready, count is:",len(rnrlist))
         #app = self.appmgr.get_application_by_name("gimp")
         #self.appmgr.update_rating_reviews(rnrlist)
 
@@ -934,7 +934,7 @@ class SoftwareCenter(QMainWindow):
             self.history.history_add(self.slot_show_app_detail, app)
 
         if(app is None):
-            print "has no such application...."
+            print("has no such application....")
             return
 
         self.reset_nav_bar()
@@ -995,7 +995,6 @@ class SoftwareCenter(QMainWindow):
             self.ui.searchMSGBar.setText("共搜索到软件 <font color='#009900'>" + str(count) + "</font> 款")
 
     def slot_search_text_change(self, text):
-  #      print "=====slot_search_text_change:",text
         self.searchDTimer.stop()
         self.searchDTimer.start(500)
 
@@ -1010,7 +1009,6 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.configWidget.slot_update_status_change(percent)
             if int(percent) >= 200:
-                print "cache update finished!"
                 self.appmgr.update_models(AppActions.UPDATE,"")
 
         if self.stmap.has_key(name) is False:
@@ -1030,13 +1028,12 @@ class SoftwareCenter(QMainWindow):
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname,action):
-        print "slot_apt_process_finish:",pkgname,action
+        print("slot_apt_process_finish:",pkgname,action)
 
         self.appmgr.update_models(action,pkgname)
 
     #update backend models ready
     def slot_apt_cache_update_ready(self, action, pkgname):
-        print "slot_apt_cache_update_ready"
 
         (inst,up, all) = self.appmgr.get_application_count(self.category)
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count()

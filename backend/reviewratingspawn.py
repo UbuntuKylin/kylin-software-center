@@ -175,8 +175,6 @@ class RatingsAndReviwsMethod:
     def get_screenshots(kwargs,queue=None):
         screenshots = []
 
-#        print "get_screenshots:",kwargs
-
         pkgname = kwargs['packagename']
         version = kwargs['version']
         cachedir = kwargs['cachedir']
@@ -199,7 +197,7 @@ class RatingsAndReviwsMethod:
                         localFile.write(rawContent)
                         localFile.close()
                 else:
-                    print "get_screenshots,exists:",thumbnailfile
+                    print("get_screenshots,exists:",thumbnailfile)
 
                 screenshot_path_list.append(thumbnailfile)
                 queue.put_nowait(thumbnailfile)
@@ -211,31 +209,29 @@ class RatingsAndReviwsMethod:
                         localFile.write(rawContent)
                         localFile.close()
                 else:
-                    print "get_screenshots,exists:",screenshotfile
+                    print("get_screenshots,exists:",screenshotfile)
                 screenshot_path_list.append(screenshotfile)
                 queue.put_nowait(screenshotfile)
             except urllib2.HTTPError,e:
-                print e.code
+                print(e.code)
             except urllib2.URLError,e:
-                print str(e)
+                print(str(e))
 
             return screenshot_path_list
         else:
             #get urls of screenshots
             screenshotURL = SCREENSHOT_JSON_URL % pkgname
 
-            print screenshotURL
             rawContent = None
             try:
                 urlFile = urllib2.urlopen(screenshotURL)
                 rawContent = urlFile.read()
-                print "good"
                 if not rawContent:
                     return []
             except urllib2.HTTPError,e:
-                print e.code
+                print(e.code)
             except urllib2.URLError,e:
-                print str(e)
+                print(str(e))
 
             if rawContent is None:
                 return []
@@ -253,8 +249,6 @@ class RatingsAndReviwsMethod:
             else:
                 # fallback to a list of screenshots as supplied by the axi
                 screenshots = []
-
-            print screenshots
 
             #we should choose the suitable ones for showing
             #????
@@ -277,14 +271,11 @@ class RatingsAndReviwsMethod:
                         localFile.close()
                     screenshot_path_list.append(destfile)
                     queue.put_nowait(destfile)
-                    print "------screenshot queue len=",queue.qsize()
 
             except urllib2.HTTPError,e:
-                print e.code
+                print(e.code)
             except urllib2.URLError,e:
-                print str(e)
-
-            print "####Revice screenshots:\n", screenshot_path_list
+                print(str(e))
 
         return screenshot_path_list
 
@@ -309,12 +300,11 @@ class RatingsAndReviwsMethod:
                 rnrStat.useful = 0
                 rnrArray[stat.package_name] = rnrStat
 
-                print "####rating reivew status:",index,stat.package_name,stat.ratings_average,stat.ratings_total
                 index += 1
                 try:
                     queue.put_nowait(rnrStat)
                 except Queue.Full:
-                    print "&&&&&&&&&&&&put exception"
+                    print("queue put exception")
             LOG.debug("got the rating and review list count:%d",len(rnrArray))
 
             return rnrArray
@@ -401,156 +391,16 @@ class RatingsAndReviwsMethod:
             print(e.args)
             return resList
 
-    @staticmethod
-    def get_reviews_list(self, str_pkgname='gimp', callback=None, page=1):
-
-        print "\nenter RatingsAndReviwsMethod, get_reviews.......\n"
-        import urllib
-
-        # force stdout to be utf-8
-        import codecs
-        sys.stdout = codecs.getwriter('utf8')(sys.stdout)
-
-        # dump all reviews
-        rnr = RatingsAndReviewsAPI(service_root="http://reviews.ubuntu.com/reviews/api/1.0")
-
-        sat_res = []
-        sat_res = rnr.server_status()
-        print sat_res
-
-        res =  rnr.review_stats()
-
-        print len(res)
-
-	    # dump all reviews
-        for stat in res:
-	    print("stats for (pkg='%s', app: '%s'):  avg=%s total=%s" % (
-	      stat.package_name, stat.app_name, stat.ratings_average,
-		  stat.ratings_total))
-	    reviews = rnr.get_reviews(
-	      language="zh_CN", origin="ubuntu", distroseries="precise",
-	      packagename=stat.package_name,
-	      appname=urllib.quote_plus(stat.app_name.encode("utf-8")))
-
-	    for review in reviews:
-	      print("rating: %s  user=%s" % (review.rating,
-		 review.reviewer_username))
-	      print(review.summary)
-	      print(review.review_text)
-	      print("\n")
-
-	    # get individual ones
-        reviews = rnr.get_reviews(language="zh_CN", origin="ubuntu",
-        distroseries="maverick", packagename="unace", appname="ACE")
-        print(reviews)
-        print(rnr.get_reviews(language="zh_CN", origin="ubuntu", distroseries="saucy",
-		          packagename="aclock.app"))
-        print(rnr.get_reviews(language="zh_CN", origin="ubuntu", distroseries="saucy",
-		          packagename="unace", appname="ACE"))
-
-
-class RatingsAndReviewsTest:
-
-    def __init__(self):
-
-       self.language = 'zh_CN'
-       self.origin = 'any'
-       self.sort_method = ReviewSortMethods.REVIEW_SORT_METHODS[0]  #set default method
-       self.distroseries = 'any'
- 
-       self._reviews = {}
-
-    def get_rating_review_stats(self):
-        print "get_rating_review_stats..."
-        spawn_helper = SpawnProcess("get_rating_review_stats")
-        spawn_helper.connect("spawn-data-available", self._on_spawndata_ready, "", "get_rating_review_stats")
-        spawn_helper.start()
-
-
-
-    def start_get_reviews(self, str_pkgname='gimp', callback=None, page=1):
-        """ public api, triggers fetching a review and calls callback
-            when its ready
-        """
-        #old parameters:translated_app, callback, page=1, language=None, sort=0, relaxed=False
-        language = self.language
-        origin = self.origin
-        distroseries = self.distroseries
-        sort_method = self.sort_method
-        version = "any"
-
-        """
-        kwargs = {"language": language, 
-                  "origin": origin,
-                  "distroseries": distroseries,
-                  "packagename": str_pkgname,#options.pkgname.split(':')[0], #multiarch..
-                  "version": version,
-                  "page": page,  #int(options.page),
-                  "sort" : sort_method,
-                 }
-        """
-        kwargs = {"language": language,
-                  "packagename": "gimp", #multiarch..
-                  "distroseries": "saucy",
-                  }
-
-        spawn_helper = SpawnProcess("get_reviews",kwargs)
-        spawn_helper.connect("data-available", self._on_reviews_ready, str_pkgname, callback)
-        spawn_helper.start()
-
-
-    def _on_spawndata_ready(self, spawn_helper, res, pkgname, func,callback=None):
-        rnrStats = res
-        rnrStatList = res
-
-        print "_on_spawndata_ready:",len(rnrStatList)
-
-        for item, rnrStat in rnrStats.iteritems():
-            print "aaaa:",rnrStat
-
- 
-    def _on_reviews_ready(self, spawn_helper, piston_reviews, str_pkgname,
-        callback):
-        # convert into our review objects
-        print "\nEnter rnrclient_uk.py, on_reviews_helper_data"
-        reviews = []
-        for r in piston_reviews:
-            reviews.append(Review.from_piston_mini_client(r))
-        # add to our dicts and run callback
-        self._reviews[str_pkgname] = reviews
-        if callback:
-           callback(str_pkgname, self._reviews[str_pkgname])
-        return False
-
-
-def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
-                        action=None, single_review=None):
-    print "\n***Enter _reviews_ready_callback..."
-    print str_pkgname
-    for review in reviews_data:
-      print("rating: %s  user=%s" % (review.rating,
-          review.reviewer_username))
-      print(review.summary)
-      print(review.review_text)
-      print("\n")
-    print "\n\n"
-
 
 if __name__ == "__main__":
 
 #   req = urllib2.Request("http://screenshots.ubuntu.com/screenshots/g/gimp/10064_small1.png")
 #   urlFile = urllib2.urlopen(req)
-#   print urlFile.info()
 
-
-    test = RatingsAndReviewsTest()
-    test.get_rating_review_stats()
 #   piston_reviews = test.start_get_reviews('gimp',_reviews_ready_callback)
 
 #   piston_reviews = test.get_reviews('gimp',_reviews_ready_callback)
-#   print piston_reviews
     while True:
-        print "********"
         time.sleep(1)
 
 

@@ -55,7 +55,7 @@ log = logging.getLogger('Daemon')
 INTERFACE = 'com.ubuntukylin.softwarecenter'
 UKPATH = '/'
 
-HTTP_SOURCE_UBUNTUKYLIN = "deb http://archive.ubuntukylin.com/ubuntukylin"
+HTTP_SOURCE_UBUNTUKYLIN = "http://archive.ubuntukylin.com:10006/ubuntukylin" 
 DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
 UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
 
@@ -199,7 +199,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         source = aptsources.sourceslist.SourcesList(())
         #????the check option should include version
         if(self.check_source_ubuntukylin() is True):
-            return True
+            return False
         osversion = str(version) + (" main")
         source.add("deb", HTTP_SOURCE_UBUNTUKYLIN, osversion, "")
         source.save()
