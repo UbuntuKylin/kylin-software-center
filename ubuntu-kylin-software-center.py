@@ -635,8 +635,8 @@ class SoftwareCenter(QMainWindow):
         self.emit(Signals.install_app, self.uksc)
 
     def restart_uksc(self):
-        p = subprocess.Popen(["ubuntu-kylin-software-center", "restart"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
-        sys.exit(0)
+        os.execv("/usr/bin/ubuntu-kylin-software-center", ["uksc"])
+
     #-------------------------------slots-------------------------------
 
     def slot_change_category(self, citem):

@@ -52,9 +52,13 @@ if __name__ == "__main__":
     # print a
     # del a[1231:]
     # print a
-    import aptsources.sourceslist
-    source = aptsources.sourceslist.SourcesList()
-    sources = source.list
-    for item in sources:
+    # import aptsources.sourceslist
+    # source = aptsources.sourceslist.SourcesList()
+    # sources = source.list
+    # for item in sources:
         # print type(item)
-        print item.str()
+        # print item.str()
+
+    import sys
+    import os
+    os.execv("/usr/bin/python", ["foo", "/home/shine/PycharmProjects/ubuntu-kylin-software-center/test/restarttext.py"])
