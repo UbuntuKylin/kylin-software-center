@@ -617,7 +617,7 @@ def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
       print "rating: %s  user=%s" % (review.rating,
           review.reviewer_username)
       print review.summary
-      print (review.review_text)
+      print review.review_text
       print "\n"
     print "\n\n"
 
