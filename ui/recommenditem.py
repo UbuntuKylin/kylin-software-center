@@ -135,6 +135,7 @@ class RecommendItem(QWidget):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
+                self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
