@@ -121,6 +121,7 @@ class RecommendItem(QWidget):
                     self.ui.btn.setEnabled(False)
                 else:
                     self.ui.btn.setText("启动")
+                    self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
