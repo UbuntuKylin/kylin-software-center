@@ -60,7 +60,7 @@ class ADWidget(QWidget):
         self.setPalette(palette)
 
         self.adl = len(addata)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 186))
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 214))
 
         if self.adl > 0:
             self.create_ads(addata, parent)
@@ -78,7 +78,7 @@ class ADWidget(QWidget):
 
     def add_advertisements(self, addata):
         self.adl = len(addata)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 186))
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 214))
         self.create_ads(addata, self.parent)
 
         self.adtimer.start(3000)
@@ -90,34 +90,34 @@ class ADWidget(QWidget):
     def ui_init(self):
         self.resize(663, 214)
         self.adContentWidget = QWidget(self)
-        self.adContentWidget.setGeometry(QRect(0, 0, 663, 186))
+        self.adContentWidget.setGeometry(QRect(0, 0, 663, 214))
         self.adContentWidget.setObjectName("adContentWidget")
-        self.softCountText1 = QLabel(self)
-        self.softCountText1.setGeometry(QRect(10, 193, 32, 17))
-        self.softCountText1.setObjectName("softCountText1")
-        self.softCountText1.setText("共有")
-        self.softCount = QLabel(self)
-        self.softCount.setGeometry(QRect(42, 193, 51, 17))
-        self.softCount.setText("")
-        self.softCount.setObjectName("softCount")
-        self.softCountText2 = QLabel(self)
-        self.softCountText2.setGeometry(QRect(97, 193, 51, 17))
-        self.softCountText2.setObjectName("softCountText2")
-        self.softCountText2.setText("款软件")
-
-        self.softCount.setAlignment(Qt.AlignCenter)
-
-        self.softCountText1.setStyleSheet("QLabel{color:#B8692C;font-size:14px;font-weight:bold;}")
-        self.softCountText2.setStyleSheet("QLabel{color:#B8692C;font-size:14px;font-weight:bold;}")
-        self.softCount.setStyleSheet("QLabel{color:#D7AF6A;font-size:16px;font-weight:bold;}")
+        # self.softCountText1 = QLabel(self)
+        # self.softCountText1.setGeometry(QRect(10, 9, 32, 17))
+        # self.softCountText1.setObjectName("softCountText1")
+        # self.softCountText1.setText("共有")
+        # self.softCount = QLabel(self)
+        # self.softCount.setGeometry(QRect(42, 9, 51, 17))
+        # self.softCount.setText("")
+        # self.softCount.setObjectName("softCount")
+        # self.softCountText2 = QLabel(self)
+        # self.softCountText2.setGeometry(QRect(97, 9, 51, 17))
+        # self.softCountText2.setObjectName("softCountText2")
+        # self.softCountText2.setText("款软件")
+        #
+        # self.softCount.setAlignment(Qt.AlignCenter)
+        #
+        # self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
+        # self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
+        # self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;font-weight:bold;}")
 
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
-        adbx = 570
+        adbx = 600
         for one in addata:
             ad = ADButton(one, self.adContentWidget)
-            ad.resize(663, 186)
+            ad.resize(663, 214)
             ad.move(adx, 0)
             adx += 663
             ad.setFocusPolicy(Qt.NoFocus)
@@ -127,9 +127,9 @@ class ADWidget(QWidget):
             self.ads.append(ad)
 
             adbtn = ADButton(i, self)
-            adbtn.resize(16, 18)
-            adbtn.move(adbx, 193)
-            adbx += 20
+            adbtn.resize(8, 8)
+            adbtn.move(adbx, 200)
+            adbx += 12
             adbtn.setFocusPolicy(Qt.NoFocus)
             adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
             adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad_immediately)
@@ -192,7 +192,8 @@ class ADWidget(QWidget):
             btn.setEnabled(flag)
 
     def update_total_count(self,count):
-        self.softCount.setText(str(count))
+        # self.softCount.setText(str(count))
+        pass
 
 class ADButton(QPushButton):
     obj = ''
