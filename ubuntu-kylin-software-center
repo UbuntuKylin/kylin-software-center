@@ -1,17 +1,3 @@
 #!/bin/sh
-
-if [ $# = 0 ]; then
-    echo "normal start"
-    cd /usr/share/ubuntu-kylin-software-center
-    python ubuntu-kylin-software-center.py
-else
-    if [ $1 = "restart" ]; then
-        echo "restart"
-        ps -ef|grep ubuntu-kylin-software-center.py|grep -v grep|cut -c 9-15|xargs kill -9
-        sleep 1
-        cd /usr/share/ubuntu-kylin-software-center
-        python ubuntu-kylin-software-center.py
-    else
-        echo "parm error"
-    fi
-fi
+cd /usr/share/ubuntu-kylin-software-center
+python ubuntu-kylin-software-center.py
