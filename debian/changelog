@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (0.2.9.3) trusty; urgency=medium
+
+  * new UI! fix bug1296054,1304264,1306137,1307275
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 18 Apr 2014 16:31:20 +0800
+
 ubuntu-kylin-software-center (0.2.9.2) trusty; urgency=medium
 
   [ Jun Ma ]
