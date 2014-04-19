@@ -61,7 +61,7 @@ class RecommendItem(QWidget):
         #self.ui.softIcon.setStyleSheet("QLabel{background-image:url('res/icons/" + str(self.app.name) + ".png')}")
         self.ui.softName.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.softDescr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
-        self.ui.btn.setStyleSheet(RECOMMEND_BUTTON_BK_STYLE % (UBUNTUKYLIN_RES_PATH+"btn-1.png"))
+        self.ui.btn.setStyleSheet(RECOMMEND_BUTTON_STYLE %(UBUNTUKYLIN_RES_PATH + "btn1-1.png",UBUNTUKYLIN_RES_PATH + "btn1-2.png",UBUNTUKYLIN_RES_PATH + "btn1-3.png"))
         #self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;color:white;font-size:14px;background-image:url('res/btn6-1.png')}QPushButton:hover{background-image:url('res/btn6-2.png')}QPushButton:pressed{background-image:url('res/btn6-3.png')}")
         self.ui.btnDetail.setStyleSheet(RECOMMEND_BUTTON_STYLE %(UBUNTUKYLIN_RES_PATH + "btn6-1.png",UBUNTUKYLIN_RES_PATH + "btn6-2.png",UBUNTUKYLIN_RES_PATH + "btn6-3.png"))
 
@@ -121,6 +121,7 @@ class RecommendItem(QWidget):
                     self.ui.btn.setEnabled(False)
                 else:
                     self.ui.btn.setText("启动")
+                    self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
@@ -134,6 +135,7 @@ class RecommendItem(QWidget):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
+                self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
