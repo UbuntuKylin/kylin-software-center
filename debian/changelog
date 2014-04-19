@@ -1,3 +1,10 @@
+ubuntu-kylin-software-center (0.2.9.5) trusty; urgency=medium
+ 
+  * update auth exception (bug#1307331)
+  * add excption procedure of package info.
+ 
+ -- Jun Ma <majun@ubuntukylin.com>  Sat, 19 Apr 2014 14:43:49 +0800
+
 ubuntu-kylin-software-center (0.2.9.4) trusty; urgency=medium
  
   * update new UI

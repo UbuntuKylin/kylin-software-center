@@ -99,15 +99,24 @@ class Application:
 
     @property
     def packageSize(self):
-        return self.package.candidate.size
+        try:
+            return self.package.candidate.size
+        except:
+            return 0
 
     @property
     def installedSize(self):
-        return self.package.candidate.installed_size
+        try:
+            return self.package.candidate.installed_size
+        except:
+            return 0
 
     @property
     def version(self):
-        return self.package.candidate.version
+        try:
+            return self.package.candidate.version
+        except:
+            return " "
 
     @property
     def is_installed(self):
@@ -122,11 +131,14 @@ class Application:
         if(self.package.installed is not None):
             return self.package.installed.version
         else:
-            return ""
+            return " "
 
     @property
     def candidate_version(self):
-        return self.package.candidate.version
+        try:
+            return self.package.candidate.version
+        except:
+            return " "
 
 
     #get the reviews object list of this application

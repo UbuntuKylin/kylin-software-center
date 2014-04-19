@@ -113,22 +113,28 @@ class SoftwarecenterDbusService(dbus.service.Object):
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
 
-    def auth_with_policykit(self, sender, action):
+    def auth_with_policykit(self, sender, action, text="要安装或卸载软件"):
         if not sender: 
             raise ValueError('sender == None')
 
 #        print "auth_with_policykit:", sender
+        granted = False
+        try:
+            obj = dbus.SystemBus().get_object('org.freedesktop.PolicyKit1',
+                                                    '/org/freedesktop/PolicyKit1/Authority')
+            policykit = dbus.Interface(obj, 'org.freedesktop.PolicyKit1.Authority')
 
-        obj = dbus.SystemBus().get_object('org.freedesktop.PolicyKit1',
-                                                '/org/freedesktop/PolicyKit1/Authority')
-        policykit = dbus.Interface(obj, 'org.freedesktop.PolicyKit1.Authority')
+            subject = ('system-bus-name', {'name': sender})
+            flags = dbus.UInt32(1)   # AllowUserInteraction flag
+            msg = text + "，您需要进行验证。"
+            details = { 'polkit.message' : msg}
+            cancel_id = '' # No cancellation id
+            (granted, notused, details) = policykit.CheckAuthorization(
+                            subject, action, details, flags, cancel_id)
+        except:
+            print "auth with except......"
+            granted = False
 
-        subject = ('system-bus-name', {'name': sender})
-        flags = dbus.UInt32(1)   # AllowUserInteraction flag
-        details = { 'polkit.message' : '要安装或卸载软件，您需要进行验证。'}
-        cancel_id = '' # No cancellation id
-        (granted, notused, details) = policykit.CheckAuthorization(
-                        subject, action, details, flags, cancel_id)
         return granted
 
     def add_worker_item(self, item):
@@ -192,7 +198,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
     def add_source_ubuntukylin(self, version, sender=None):
 
-        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要增加软件源")
         if not granted:
             return False
 
@@ -209,7 +215,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
     def add_source(self, text, sender=None):
 
-        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要增加软件源")
         if not granted:
             return False
 
@@ -242,7 +248,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             kwarg = {"appname":pkgName,
                      "action":AppActions.INSTALL,
                      }
-            self.software_auth_signal("auth_cancel", kwarg)
+#            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -264,7 +270,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             kwarg = {"appname":pkgName,
                      "action":AppActions.REMOVE,
                      }
-            self.software_auth_signal("auth_cancel", kwarg)
+#            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -286,7 +292,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             kwarg = {"appname":pkgName,
                      "action":AppActions.UPGRADE,
                      }
-            self.software_auth_signal("auth_cancel", kwarg)
+#            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -316,7 +322,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
     def update(self, quiet, sender=None):
         print "####update: "
 
-        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要更新软件源")
         if not granted:
             return False
 

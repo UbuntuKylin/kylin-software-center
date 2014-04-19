@@ -373,6 +373,8 @@ class DetailScrollWidget(QScrollArea):
                 self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
 
     def slot_work_cancel(self, pkgname, action):
+        if self.app is None:
+            return
 
         if self.app.name == pkgname:
 

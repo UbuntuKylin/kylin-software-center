@@ -171,7 +171,7 @@ class SoftwareCenter(QMainWindow):
 
         self.setWindowTitle("Ubuntu Kylin Software-Center")
         self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
 
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
@@ -439,7 +439,21 @@ class SoftwareCenter(QMainWindow):
         self.rec_ready = False
         self.rnr_ready = True
         if self.appmgr.check_update():
-            self.backend.update_source()
+
+            button=QMessageBox.question(self,"软件源更新提示",
+                                    self.tr("您是第一次运行软件中心或者软件源发生变化，\n为保证软件运行正常，您需要连接网络并更新软件源!\n是否继续?"),
+                                    "跳过", "是", "否", 0)
+            if button == 0:
+                self.appmgr.get_advertisements()
+                self.appmgr.get_recommend_apps()
+                self.appmgr.get_toprated_stats()
+            elif button == 1:
+                LOG.info("update source when first start...")
+                self.backend.update_source()
+            else:
+                LOG.warning("dbus service init failed, you choose to exit.\n\n")
+                sys.exit(0)
+                return
         else:
             self.appmgr.get_advertisements()
             self.appmgr.get_recommend_apps()
@@ -980,18 +994,23 @@ class SoftwareCenter(QMainWindow):
 
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
-        self.add_task_item(app)
-        self.backend.install_package(app.name)
+        res = self.backend.install_package(app.name)
+        if res:
+            self.add_task_item(app)
 
     def slot_click_upgrade(self, app):
         LOG.info("add an upgrade task:%s",app.name)
-        self.add_task_item(app)
-        self.backend.upgrade_package(app.name)
+
+        res = self.backend.upgrade_package(app.name)
+        if res:
+            self.add_task_item(app)
 
     def slot_click_remove(self, app):
         LOG.info("add a remove task:%s",app.name)
-        self.add_task_item(app)
-        self.backend.remove_package(app.name)
+
+        res = self.backend.remove_package(app.name)
+        if res:
+            self.add_task_item(app)
 
     def slot_click_cancel(self, appname):
         LOG.info("cancel an task:%s",appname)
