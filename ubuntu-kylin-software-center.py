@@ -237,8 +237,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
+        self.ui.lebg.stackUnder(self.ui.leSearch)
         self.ui.taskWidget.stackUnder(self.ui.headerWidget)
-        self.ui.searchWidget.stackUnder(self.ui.headerWidget)
+        self.ui.searchWidget.stackUnder(self.ui.searchBG)
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -249,8 +250,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
 
-        self.ui.searchWidget.stackUnder(self.detailScrollWidget)
-        self.ui.lebg.stackUnder(self.ui.leSearch)
 
         # erase the window edge shade from window manager in 1404
         # bm = QBitmap(self.size())
@@ -314,7 +313,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.upMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.searchMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
+        self.ui.searchMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.taskMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
         self.ui.allsHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
         self.ui.upHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
