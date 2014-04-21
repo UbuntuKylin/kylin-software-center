@@ -210,7 +210,8 @@ def main():
 
     instBackend = InstallBackend()
     instBackend.init_dbus_ifaces()
-    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
+    res = instBackend.call_dbus_iface(AppActions.INSTALL,"abe")
+    print "res=",res
 
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"bareftp")
