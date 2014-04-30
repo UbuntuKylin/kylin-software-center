@@ -394,7 +394,7 @@ class Search:
         enquire = xapian.Enquire(self.db.xapiandb)
         enquire.set_query(query[1])
         matches = enquire.get_mset(0, len(self.db))
-        print "res len=",len(self.db),len(matches)
+#        print "res len=",len(self.db),len(matches)
         pkgnamelist = []
         for m in matches:
             doc = m.document

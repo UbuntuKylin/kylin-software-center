@@ -1,3 +1,13 @@
+ubuntu-kylin-software-center (0.2.9.6) trusty; urgency=medium
+ 
+  [ Shine ]
+  * solve the search entry ui problem (bug#1309900)
+  
+  [ wenbo607 ]
+  * update the translations of some apps in feature category.
+ 
+ -- Jun Ma <majun@ubuntukylin.com>  Wed, 30 Apr 2014 14:03:20 +0800
+
 ubuntu-kylin-software-center (0.2.9.5) trusty; urgency=medium
  
   * update auth exception (bug#1307331)
