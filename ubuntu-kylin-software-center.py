@@ -91,9 +91,6 @@ class SoftwareCenter(QMainWindow):
         # init the ui
         self.init_main_view()
 
-        # show user to wait
-        self.loadingDiv.start_loading("系统正在初始化...")
-
         windowWidth = QApplication.desktop().width()
         windowHeight = QApplication.desktop().height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
@@ -152,14 +149,17 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
         self.appmgr.init_models()
 
-        # config widget
-        self.configWidget = ConfigWidget(self)
-        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
-        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
         # alert message box
         self.messageBox = MessageBox(self)
 
-        self.show()
+        #self.detailScrollWidget.hide()
+        self.ui.categoryView.hide()
+        self.ui.headerWidget.hide()
+        self.ui.centralwidget.hide()
+        self.ui.leftWidget.hide()
+
+        # show user to wait
+        self.loadingDiv.start_loading("系统正在初始化...")
 
     def show_to_frontend(self):
         self.show()
@@ -279,7 +279,7 @@ class SoftwareCenter(QMainWindow):
         self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
 
-        self.show()
+        #self.show()
 
         # style by qss
         self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
@@ -404,6 +404,12 @@ class SoftwareCenter(QMainWindow):
                 LOG.warning("dbus service init failed, you choose to exit.\n\n")
                 sys.exit(0)
 
+        # config widget
+        self.configWidget = ConfigWidget(self)
+        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
+        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+
+
         #init search
         self.searchDB = Search()
         self.searchList = {}
@@ -486,6 +492,11 @@ class SoftwareCenter(QMainWindow):
 #            self.emit(Signals.count_application_update)
 
             self.show()
+
+            self.ui.categoryView.show()
+            self.ui.headerWidget.show()
+            self.ui.centralwidget.show()
+            self.ui.leftWidget.show()
 
         # check uksc upgradable
         self.check_uksc_update()

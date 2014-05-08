@@ -153,7 +153,7 @@ class AppManager(QObject):
         self.cat_list = self.get_category_list_from_db()
 #        print "&&&&&&&&&&&:\n",self.cat_list
 
-        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+#        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
 
     def _init_toprated(self,reslist):
         #init db rank
@@ -161,8 +161,8 @@ class AppManager(QObject):
 
     def init_models(self):
 
-        self._init_models()
-        return #????
+#        self._init_models()
+#        return #????
 
         item  = WorkerItem("init_models",None)
         self.mutex.acquire()

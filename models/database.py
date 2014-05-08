@@ -76,7 +76,7 @@ class Database:
             open(destFile, "wb").write(open(srcFile, "rb").read())
             self.first_start = True
 
-        self.connect = sqlite3.connect(destFile)
+        self.connect = sqlite3.connect(destFile, check_same_thread=False)
         self.cursor = self.connect.cursor()
         self.cat_list = []
 
