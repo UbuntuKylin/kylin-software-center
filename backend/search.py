@@ -24,6 +24,7 @@ import string
 import threading
 import xapian
 import apt
+import time
 import sys
 from backend.ubuntu_sw import XapianValues
 
@@ -312,7 +313,7 @@ class StoreDatabase(GObject.GObject):
         search_term = search_term.strip()
         # get a pkg query
         if "," in search_term:
-            pkg_query = get_query_for_pkgnames(search_term.split(","))
+            pkg_query = self.get_query_for_pkgnames(search_term.split(","))
         else:
             pkg_query = xapian.Query()
             for term in search_term.split():
@@ -373,6 +374,14 @@ class ExecutionTime(object):
         logger.debug("%s: %s" % (self.info, time_spend))
         if self.with_traceback:
             log_traceback("populate model from query: '%s' (threaded: %s)")
+
+def log_traceback(info):
+    """
+    Helper that can be used as a debug helper to show what called
+    the code at this place. Logs to softwarecenter.traceback
+    """
+    logger = logging.getLogger("softwarecenter.traceback")
+    logger.debug("%s: %s" % (info, "".join(traceback.format_stack())))
 
 class Search:
     db = ''

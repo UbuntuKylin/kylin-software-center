@@ -42,7 +42,6 @@ from gi.repository import GObject
 import apt
 import aptsources.sourceslist
 import apt_pkg
-
 import time
 
 from apt_daemon import AptDaemon,AppActions
@@ -411,5 +410,5 @@ if __name__ == '__main__':
     GObject.threads_init()
     mainloop = GObject.MainLoop()
     signal.signal(signal.SIGINT, lambda : mainloop.quit())
-    Daemon(dbus.SystemBus(), mainloop)
+    SoftwarecenterDbusService(dbus.SystemBus(), mainloop)
     mainloop.run()
