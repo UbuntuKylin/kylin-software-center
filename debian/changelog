@@ -1,3 +1,15 @@
+ubuntu-kylin-software-center (0.2.9.7) trusty; urgency=medium
+ 
+  [ Jun Ma ]
+  * correct pyflakes serious warnings (bug#1306313)
+  * update initial procedure to show loading flash (bug#1317563)
+  * change sqlite connection paremeter to support multi-thread access
+  
+  [ wenbo607 ]
+  * update the description and icon of sogoupinyin (bug#1317047)
+ 
+ -- Jun Ma <majun@ubuntukylin.com>  Fri, 09 May 2014 13:55:26 +0800
+
 ubuntu-kylin-software-center (0.2.9.6) trusty; urgency=medium
  
   [ Shine ]
