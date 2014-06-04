@@ -119,6 +119,7 @@ class RatingsAndReviewsAPI(PistonAPI):
         urls = 'reviews/filter/%s/%s/%s/%s/%s%s/page/%s/%s/' % (
             language, origin, distroseries, version, packagename,
             appname, page, sort)
+
         return self._get('reviews/filter/%s/%s/%s/%s/%s%s/page/%s/%s/' % (
             language, origin, distroseries, version, packagename,
             appname, page, sort),

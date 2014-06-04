@@ -1,32 +1,9 @@
-#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-### BEGIN LICENSE
-
-# Copyright (C) 2013 National University of Defense Technology(NUDT) & Kylin Ltd
-
-# Author:
-#     Shine Huang<shenghuang@ubuntukylin.com>
-# Maintainer:
-#     Shine Huang<shenghuang@ubuntukylin.com>
-
-# This program is free software: you can redistribute it and/or modify it
-# under the terms of the GNU General Public License version 3, as published
-# by the Free Software Foundation.
+# Form implementation generated from reading ui file 'ui/ukliw.ui'
 #
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranties of
-# MERCHANTABILITY, SATISFACTORY QUALITY, or FITNESS FOR A PARTICULAR
-# PURPOSE.  See the GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-# Form implementation generated from reading ui file 'ukliw.ui'
-#
-# Created: Wed Mar  5 15:56:59 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Fri May 30 15:33:38 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -66,10 +43,6 @@ class Ui_Ukliw(object):
         self.size.setGeometry(QtCore.QRect(282, 14, 71, 20))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
-        self.installedsize = QtGui.QLabel(Ukliw)
-        self.installedsize.setGeometry(QtCore.QRect(282, 34, 71, 20))
-        self.installedsize.setText(_fromUtf8(""))
-        self.installedsize.setObjectName(_fromUtf8("installedsize"))
         self.btn = QtGui.QPushButton(Ukliw)
         self.btn.setGeometry(QtCore.QRect(593, 23, 47, 20))
         self.btn.setText(_fromUtf8(""))
@@ -86,6 +59,18 @@ class Ui_Ukliw(object):
         self.btnDetail.setGeometry(QtCore.QRect(14, 23, 40, 18))
         self.btnDetail.setText(_fromUtf8(""))
         self.btnDetail.setObjectName(_fromUtf8("btnDetail"))
+        self.installedsize = QtGui.QLabel(Ukliw)
+        self.installedsize.setGeometry(QtCore.QRect(282, 34, 71, 20))
+        self.installedsize.setText(_fromUtf8(""))
+        self.installedsize.setObjectName(_fromUtf8("installedsize"))
+        self.rating = QtGui.QLabel(Ukliw)
+        self.rating.setGeometry(QtCore.QRect(508, 34, 23, 18))
+        self.rating.setText(_fromUtf8(""))
+        self.rating.setObjectName(_fromUtf8("rating"))
+        self.ratingtext = QtGui.QLabel(Ukliw)
+        self.ratingtext.setGeometry(QtCore.QRect(528, 34, 20, 18))
+        self.ratingtext.setText(_fromUtf8(""))
+        self.ratingtext.setObjectName(_fromUtf8("ratingtext"))
 
         self.retranslateUi(Ukliw)
         QtCore.QMetaObject.connectSlotsByName(Ukliw)

@@ -31,11 +31,11 @@ from ui.starwidget import StarWidget
 
 class ReviewWidget(QWidget):
 
-    def __init__(self, review, parent=None):
+    def __init__(self, ratings_average, review, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
 
-        self.star = StarWidget('small', review.rating, self)
+        self.star = StarWidget('small', ratings_average, self)
         self.star.move(719, 42)
 
         self.ui.comment.setAlignment(Qt.AlignVCenter)
@@ -46,35 +46,11 @@ class ReviewWidget(QWidget):
         self.ui.createDate.setStyleSheet("QLabel{color:#9AA2AF;font-size:13px;}")
         self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png')}")
 
-        self.ui.userName.setText(review.reviewer_username)
-        self.ui.createDate.setText(review.date_created)
-        self.ui.comment.setText(review.review_text)
+        self.ui.userName.setText(review.user_display)
+        self.ui.createDate.setText(review.date)
+        self.ui.comment.setText(review.content)
 
     def ui_init(self):
         self.ui = Ui_CommentWidget()
         self.ui.setupUi(self)
         self.show()
-
-    def changeGrade(self, grade):
-        if(self.size == 'small'):
-            if(grade > 0):
-                self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
-            if(grade > 1):
-                self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
-            if(grade > 2):
-                self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
-            if(grade > 3):
-                self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
-            if(grade > 4):
-                self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
-        if(self.size == 'big'):
-            if(grade > 0):
-                self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
-            if(grade > 1):
-                self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
-            if(grade > 2):
-                self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
-            if(grade > 3):
-                self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
-            if(grade > 4):
-                self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")

@@ -31,28 +31,34 @@ class LoadingDiv(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
-        self.setGeometry(40, 0, 815, 611)
+        # self.setGeometry(40, 0, 815, 611)
+        #
+        # self.setAutoFillBackground(True)
+        # palette = QPalette()
+        # img = QPixmap(UBUNTUKYLIN_RES_PATH + "div1.png")
+        # palette.setBrush(QPalette.Window, QBrush(img))
+        # self.setPalette(palette)
+        #
+        # self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loading-big.gif")
+        # self.loadinggif = QLabel(self)
+        # self.loadinggif.setGeometry(815 / 2 - 25, 611 / 2 - 28, 58, 45)
+        # self.loadinggif.setMovie(self.gif)
+        # self.loadingtext = QLabel(self)
+        # self.loadingtext.setGeometry(815 / 2 - 90, 611 / 2 + 28, 200, 20)
+        # self.loadingtext.setAlignment(Qt.AlignCenter)
+        # self.loadingtext.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
 
-        self.setAutoFillBackground(True)
-        palette = QPalette()
-        img = QPixmap(UBUNTUKYLIN_RES_PATH + "div1.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.setPalette(palette)
-
+        self.setGeometry(0, 0, 815, 587)
         self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loading-big.gif")
         self.loadinggif = QLabel(self)
-        self.loadinggif.setGeometry(815 / 2 - 25, 611 / 2 - 28, 58, 45)
+        self.loadinggif.setGeometry(815 / 2 - 73, 587 / 2 - 107, 146, 214)
         self.loadinggif.setMovie(self.gif)
-        self.loadingtext = QLabel(self)
-        self.loadingtext.setGeometry(815 / 2 - 90, 611 / 2 + 28, 200, 20)
-        self.loadingtext.setAlignment(Qt.AlignCenter)
-        self.loadingtext.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
 
         self.raise_()
         self.hide()
 
     def start_loading(self, loadingText):
-        self.loadingtext.setText(loadingText)
+        # self.loadingtext.setText(loadingText)
         self.gif.start()
         self.show()
 

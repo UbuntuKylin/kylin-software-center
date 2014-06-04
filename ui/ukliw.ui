@@ -130,6 +130,32 @@
     <string/>
    </property>
   </widget>
+  <widget class="QLabel" name="rating">
+   <property name="geometry">
+    <rect>
+     <x>508</x>
+     <y>34</y>
+     <width>23</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ratingtext">
+   <property name="geometry">
+    <rect>
+     <x>528</x>
+     <y>34</y>
+     <width>20</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

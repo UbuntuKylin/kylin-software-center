@@ -135,40 +135,40 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
 class RatingsAndReviwsMethod:
 
     #return a list of Review
-    @staticmethod
-    def get_reviews(kwargs,queue=None):
-        cachedir = None
-        #cachedir = os.path.join(UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR, "rnrclient")
-        #cachedir = "/home/maclin/test"
-        rnrclient = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)  #????cache
-
-        piston_reviews = []
-        try:
-            piston_reviews = rnrclient.get_reviews(**kwargs)
-           # piston_reviews = rnrclient.get_reviews(packagename="gimp",language='zh_CN')
-        except ValueError as e:
-          print "failed to parse '%s'" % e
-        #bug lp:709408 - don't print 404 errors as traceback when api request
-        #                returns 404 error
-        except APIError as e:
-            print "_get_reviews_threaded: no reviews able to be retrieved: %s" % e
-        except httplib2.ServerNotFoundError:
-        # switch to offline mode and try again
-            rnrclient._offline_mode = True
-            piston_reviews = rnrclient.get_reviews(**kwargs)
-        except:
-            print "get_reviews*****"
-
-        if piston_reviews is None:
-            piston_reviews = []
-
-        reviews = []
-        for r in piston_reviews:
-            review = Review.from_piston_mini_client(r)
-            reviews.append(review)
-            queue.put_nowait(review)
-
-        return reviews
+    # @staticmethod
+    # def get_reviews(kwargs,queue=None):
+    #     cachedir = None
+    #     #cachedir = os.path.join(UBUNTUKYLIN_SOFTWARECENTER_CACHE_DIR, "rnrclient")
+    #     #cachedir = "/home/maclin/test"
+    #     rnrclient = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)  #????cache
+    #
+    #     piston_reviews = []
+    #     try:
+    #         piston_reviews = rnrclient.get_reviews(**kwargs)
+    #        # piston_reviews = rnrclient.get_reviews(packagename="gimp",language='zh_CN')
+    #     except ValueError as e:
+    #       print "failed to parse '%s'" % e
+    #     #bug lp:709408 - don't print 404 errors as traceback when api request
+    #     #                returns 404 error
+    #     except APIError as e:
+    #         print "_get_reviews_threaded: no reviews able to be retrieved: %s" % e
+    #     except httplib2.ServerNotFoundError:
+    #     # switch to offline mode and try again
+    #         rnrclient._offline_mode = True
+    #         piston_reviews = rnrclient.get_reviews(**kwargs)
+    #     except:
+    #         print "get_reviews*****"
+    #
+    #     if piston_reviews is None:
+    #         piston_reviews = []
+    #
+    #     reviews = []
+    #     for r in piston_reviews:
+    #         review = Review.from_piston_mini_client(r)
+    #         reviews.append(review)
+    #         queue.put_nowait(review)
+    #
+    #     return reviews
 
     #return a list of screenshot file path
     @staticmethod
