@@ -128,7 +128,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.2.9")
+        self.ui.bottomText2.setText("0.3.0")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
