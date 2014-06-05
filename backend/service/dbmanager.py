@@ -72,6 +72,7 @@ class Database:
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
         destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
 
+        # no cache file, copy
         if not os.path.exists(destFile):
             if not os.path.exists(srcFile):
                 print "error with db file"
@@ -83,6 +84,10 @@ class Database:
         self.cursor = self.connect.cursor()
         self.cat_list = []
 
+        # cache file need update, copy
+        if self.is_cachedb_need_update():
+            open(destFile, "wb").write(open(srcFile, "rb").read())
+            
         # piston remoter to ukscs
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
@@ -464,7 +469,7 @@ if __name__ == "__main__":
     # db.export()
 
     # print db.get_pagecount_by_pkgname('gimp')
-    db.check_cache_db()
+    print db.is_cachedb_need_update()
 
     # res = db.get_review_by_pkgname('gedit',2)
     # for item in res:
