@@ -245,6 +245,38 @@ class Database:
 
     expiredict = {}
 
+    def is_cachedb_need_update(self):
+        srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+
+        connectsrc = sqlite3.connect(srcFile, check_same_thread=False)
+        cursorsrc = connectsrc.cursor()
+
+        self.cursor.execute("select count(*) from sqlite_master where type='table' and name='dict'")
+        res = self.cursor.fetchall()
+        dictcount = ''
+        for item in res:
+            dictcount = item[0]
+
+        if(dictcount == 0):
+            return True
+
+        self.cursor.execute("select value from dict where key='dbversion'")
+        res = self.cursor.fetchall()
+        olddbversion = ''
+        for item in res:
+            olddbversion = int(item[0])
+
+        cursorsrc.execute("select value from dict where key='dbversion'")
+        res = cursorsrc.fetchall()
+        newdbversion = ''
+        for item in res:
+            newdbversion = int(item[0])
+
+        if(newdbversion > olddbversion):
+            return True
+
+        return False
+
     def init_expire_time_dict(self):
         pass
 
@@ -431,7 +463,8 @@ if __name__ == "__main__":
 #     db.tteete()
     # db.export()
 
-    print db.get_pagecount_by_pkgname('gimp')
+    # print db.get_pagecount_by_pkgname('gimp')
+    db.check_cache_db()
 
     # res = db.get_review_by_pkgname('gedit',2)
     # for item in res:
