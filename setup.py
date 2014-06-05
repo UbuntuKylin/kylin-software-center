@@ -6,7 +6,7 @@ from distutils.core import setup
 #import build_i18n_ext as build_i18n
 
 setup(name="ubuntu-kylin-software-center",
-      version="0.2.9",
+      version="0.3.0",
       author="Ubuntu Kylin Team",
       author_email="ubuntukylin-members@list.launchpad.net",
       url="https://launchpad.net/ubuntu-kylin-software-center",
@@ -21,6 +21,8 @@ setup(name="ubuntu-kylin-software-center",
     ('share/pixmaps/',['ubuntu-kylin-software-center.svg']),
     ('share/ubuntu-kylin-software-center-daemon/', glob.glob('backend/aptdaemon/dbus_service/*.py')),
     ('share/ubuntu-kylin-software-center/backend/piston/', glob.glob('backend/piston/*.py')),
+    ('share/ubuntu-kylin-software-center/backend/remote/', glob.glob('backend/remote/*.py')),
+    ('share/ubuntu-kylin-software-center/backend/service/', glob.glob('backend/service/*.py')),
     ('share/ubuntu-kylin-software-center/backend', glob.glob('backend/*.py')),
     ('share/ubuntu-kylin-software-center/data/ads/', glob.glob('data/ads/*.png')),
 #    ('share/ubuntu-kylin-software-center/data/category/', glob.glob('data/category/*')),
