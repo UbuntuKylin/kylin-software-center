@@ -14,7 +14,7 @@ Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}, python-qt4, ubuntukylin-keyring, language-pack-zh-hans
 Breaks: ubuntu-kylin-software-center-common
 Replaces: ubuntu-kylin-software-center-common
-Description: Integrated tool to aid in routine system maintenance tasks
+Description: Software maintenance management tools
  Ubuntu Kylin Software Center is a newly built software center client
  for Ubuntu Kylin. The aim is to improve localization experience. The
  applications and related data come from both Ubuntu and Ubuntu Kylin
