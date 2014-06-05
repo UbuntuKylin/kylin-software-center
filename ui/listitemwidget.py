@@ -27,6 +27,7 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
+from ui.starwidget import StarWidget
 from utils import run
 from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_TMPICON_PATH,
@@ -53,6 +54,8 @@ class ListItemWidget(QWidget):
         self.ui.installedsize.setAlignment(Qt.AlignRight)
         self.ui.size.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.installedsize.setStyleSheet("QLabel{font-size:13px;}")
+        self.ui.rating.setStyleSheet("QLabel{font-size:13px;color:#FF7D15;}")
+        self.ui.ratingtext.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setText("详情")
@@ -99,13 +102,21 @@ class ListItemWidget(QWidget):
 
         #????放置平均得分和评论人数
  #       print "ListItemWidget: ", self.app.name, self.app.rnrStat
-        if app.rnrStat is not None:
-            ratings_average = app.rnrStat.ratings_average
-            ratings_total = app.rnrStat.ratings_total
-            print "评分评论：",app.name, ratings_average, ratings_total
+ #        if app.rnrStat is not None:
+ #            ratings_average = app.rnrStat.ratings_average
+ #            ratings_total = app.rnrStat.ratings_total
+ #            print "评分评论：",app.name, ratings_average, ratings_total
 
         self.ui.candidateVersion.setText("最新: " + app.candidate_version)
         # self.ui.candidateVersion.setText("<font color='#FF7D15'>最新: " + software.candidate_version + "</font>")
+
+        self.star = StarWidget('small', app.ratings_average, self)
+        self.star.move(508, 17)
+        ratingstr = str(app.ratings_average)
+        if(len(ratingstr) > 3):
+            ratingstr = ratingstr[0:3]
+        self.ui.rating.setText(ratingstr)
+        self.ui.ratingtext.setText('分')
 
         if(nowpage == 'homepage'):
             self.ui.btn.setVisible(True)

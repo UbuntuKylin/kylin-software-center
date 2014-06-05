@@ -28,23 +28,22 @@ import locale
 import os
 import time
 import logging
-
-from PyQt4.QtCore import *
-
-from category import Category
-from application import Application
-from advertisement import Advertisement
-from backend.reviewratingspawn import SpawnProcess,Review,RatingSortMethods,ReviewRatingStat
-from database import Database
-
-from enums import (UBUNTUKYLIN_RES_PATH,UBUNTUKYLIN_DATA_PATH,UBUNTUKYLIN_DATA_CAT_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-from enums import Signals,UnicodeToAscii,CheckChineseWords,CheckChineseWordsForUnicode
-
 import threading
 import multiprocessing
 import Queue
 
-from operator import itemgetter
+from PyQt4.QtCore import *
+
+from models.category import Category
+from models.application import Application
+from models.advertisement import Advertisement
+from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRatingStat
+from backend.service.dbmanager import Database
+from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+from models.enums import Signals,UnicodeToAscii
+
+from backend.remote.piston_remoter import PistonRemoter
+
 
 LOG = logging.getLogger("uksc")
 
@@ -71,6 +70,8 @@ class ThreadWorkerDaemon(threading.Thread):
             item = self.appmgr.worklist.pop()
             self.appmgr.mutex.release()
 
+            print 'work thread get item : ',item.funcname
+
             if item is None:
                 continue
 
@@ -79,6 +80,8 @@ class ThreadWorkerDaemon(threading.Thread):
                 self.appmgr._update_models()
             elif item.funcname == "init_models":
                 self.appmgr._init_models()
+            elif item.funcname == "get_reviews":
+                reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
             else:
                 event = multiprocessing.Event()
                 queue = multiprocessing.Queue()
@@ -112,6 +115,9 @@ class ThreadWorkerDaemon(threading.Thread):
 #This class is the abstraction of application management
 class AppManager(QObject):
 
+    # piston remoter
+    premoter = ''
+
     #
     def __init__(self):
         #super(AppManager, self).__init__()
@@ -123,6 +129,10 @@ class AppManager(QObject):
         self.language = 'zh_CN'      #'any' for all
         self.distroseries = 'any'  #'any' for all
         self.db = Database()
+
+        # piston remoter to ukscs
+        # self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+        # self.connect(self, Signals.get_all_ratings_ready, self.slot_update_ratings)
 
         self.worklist = []
         self.mutex = threading.RLock()
@@ -192,10 +202,10 @@ class AppManager(QObject):
         cat_list = {}
         for item in list:
 #            print "categories:",item,item[0],item[1]
-            c = UnicodeToAscii(item[0])
-            zhcnc = item[1]
-            index = item[2]
-            visible = (item[3]==1)
+            c = UnicodeToAscii(item[2])
+            zhcnc = item[3]
+            index = item[4]
+            visible = (item[0]==1)
 #            print "trans:",c, zhcnc
 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
@@ -293,10 +303,10 @@ class AppManager(QObject):
                 rank = appinfo[6]
 
 #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
-                if summary is not None:
+                if summary is not None and summary != 'None':
                     app.summary = summary
 #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
-                if description is not None:
+                if description is not None and summary != 'None':
                     app.description = description
                 if rating_average is not None:
                     app.ratings_average = float(rating_average)
@@ -510,7 +520,7 @@ class AppManager(QObject):
         app = self.get_application_by_name(pkgname)
         reviews = app.get_reviews(page)
         if reviews is not None:
-            print "get_application_reviews:directly get"
+            print "get_application_reviews in memory"
             self.dispatchWorkerResult(item,reviews)
             return reviews
 
@@ -609,6 +619,22 @@ class AppManager(QObject):
             return
 
         self.db.init_toprated_table(rnrStats)
+
+
+    #------------------------0.3--------------------------
+
+    # get all app's rating & rating times
+    # def update_ratings(self):
+    #     kwargs = None
+    #
+    #     item  = WorkerItem("get_all_ratings",kwargs)
+    #
+    #     self.mutex.acquire()
+    #     self.worklist.append(item)
+    #     self.mutex.release()
+    #
+    # def slot_update_ratings(self, ratinglist):
+    #     self.db.update_ratings(ratinglist)
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):

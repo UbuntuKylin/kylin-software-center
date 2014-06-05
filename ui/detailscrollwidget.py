@@ -45,6 +45,7 @@ class DetailScrollWidget(QScrollArea):
     sshotcount = 0
     bigsshot = ''
     reviewpage = ''
+    maxpage = ''
     currentreviewready = ''
 
     def __init__(self, parent=None):
@@ -226,14 +227,16 @@ class DetailScrollWidget(QScrollArea):
         self.show()
 
         # show loading
-        self.sshotload.start_loading()
         self.reviewload.start_loading()
+        self.sshotload.start_loading()
         # send request
-        self.mainwindow.appmgr.get_application_reviews(app.name)
         self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+        self.mainwindow.appmgr.get_application_reviews(app.name)
 
     def add_review(self, reviewlist):
-        # print len(reviewlist)
+        # get maxpage
+        self.maxpage = self.mainwindow.appmgr.db.get_pagecount_by_pkgname(self.app.pkgname)
+
         for review in reviewlist:
             # not this app's review  break
             if(review.package_name != self.app.name):
@@ -251,7 +254,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.resize(805, reviewHeight)
 
         oneitem = QListWidgetItem()
-        rliw = ReviewWidget(review)
+        rliw = ReviewWidget(self.app.ratings_average, review)
         self.ui.reviewListWidget.addItem(oneitem)
         self.ui.reviewListWidget.setItemWidget(oneitem, rliw)
 
@@ -455,11 +458,13 @@ class DetailScrollWidget(QScrollArea):
         else:
             max = self.verticalScrollBar().maximum()
             if(now == max):
-                self.currentreviewready = False
-                reviewcount = self.ui.reviewListWidget.count()
-                self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
-                self.reviewload.start_loading()
-                self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
+                # maxpage check
+                if(self.reviewpage <= self.maxpage):
+                    self.currentreviewready = False
+                    reviewcount = self.ui.reviewListWidget.count()
+                    self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
+                    self.reviewload.start_loading()
+                    self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
 class ScreenShotBig(QWidget):
 

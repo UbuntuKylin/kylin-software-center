@@ -24,14 +24,10 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 import dbus
 import dbus.service
-import subprocess
 import webbrowser
+
 from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
 from ui.listitemwidget import ListItemWidget
@@ -43,23 +39,22 @@ from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 from ui.confirmdialog import ConfirmDialog
 from ui.configwidget import ConfigWidget
+
 #from backend.backend_worker import BackendWorker
-from models.advertisement import Advertisement
 #import data
 #from util import log
-from utils import vfs,log
+from utils import vfs
 from utils.history import History
 from backend.search import *
 
-from models.appmanager import AppManager
+from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
 from backend.ubuntu_sw import SoftwarecenterDbusController
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE,UBUNTUKYLIN_RES_SCREENSHOT_PATH,
-                          UKSC_CACHE_DIR,AppActions,AptActionMsg)
+from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE, AppActions,AptActionMsg)
 from models.globals import Globals
 
-from models.enums import Signals,CheckChineseWords
+from models.enums import Signals
 
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -133,7 +128,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
         self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.2.9")
+        self.ui.bottomText2.setText("0.3.0")
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -297,7 +292,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
         self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background:url('res/conf-2.png');}QPushButton:pressed{background:url('res/conf-3.png');}")
-        self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-color:#30323F;}QListWidget::item{height:41px;padding-left:20px;margin-top:0px;border:0px;color:#98999E;}QListWidget::item:hover{background-color:#282937;}QListWidget::item:selected{background-color:#232230;color:white;}")
+        self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-color:#30323F;font-size:13px;}QListWidget::item{height:36px;padding-left:24px;margin-top:0px;border:0px;color:#A8A9AE;}QListWidget::item:hover{background-color:#282937;}QListWidget::item:selected{background-color:#232230;color:white;}")
         self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
         self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
         self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
@@ -466,11 +461,19 @@ class SoftwareCenter(QMainWindow):
         #????we should decide when to call this to sync data from backend server
  #       self.appmgr.get_rating_review_stats()
 
+    # base loading finish
     def check_init_data_ready(self):
         LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
         if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
             self.loadingDiv.stop_loading()
             self.topratedload.start_loading()
+
+            # all init finished, start update cache db
+            # self.appmgr.update_ratings()
+            from backend.service.dbmanager import CacheProcess
+            cp = CacheProcess('get_all_ratings')
+            cp.daemon = True
+            cp.start()
 
     def slot_init_models_ready(self, step, message):
 
@@ -752,7 +755,7 @@ class SoftwareCenter(QMainWindow):
         #self.appmgr.update_rating_reviews(rnrlist)
 
         self.rnr_ready = True
-        self.check_init_data_ready()
+        # self.check_init_data_ready()
 
     def slot_toprated_ready(self,rnrlist):
         LOG.debug("receive toprated apps ready, count is %d", len(rnrlist))
@@ -776,7 +779,7 @@ class SoftwareCenter(QMainWindow):
 #        self.appmgr.update_toprated(rnrlist)
 
         self.toprated_ready = True
-        self.check_init_data_ready()
+        # self.check_init_data_ready()
 
         self.topratedload.stop_loading()
 
@@ -992,8 +995,6 @@ class SoftwareCenter(QMainWindow):
 
         self.reset_nav_bar()
         self.detailScrollWidget.showSimple(app)
-        # self.appmgr.get_application_reviews(app.name)
-        # self.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")

@@ -35,6 +35,9 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
+# UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+
 
 # pkg action state constants
 class PkgStates:
@@ -128,6 +131,8 @@ class Signals:
     apt_process_finish = SIGNAL("apt-process-finish")
     apt_process_cancel = SIGNAL("apt-process-cancel")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
+
+    get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
