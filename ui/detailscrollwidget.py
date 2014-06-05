@@ -227,11 +227,11 @@ class DetailScrollWidget(QScrollArea):
         self.show()
 
         # show loading
-        # self.sshotload.start_loading()
         self.reviewload.start_loading()
+        self.sshotload.start_loading()
         # send request
+        self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
         self.mainwindow.appmgr.get_application_reviews(app.name)
-        # self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
     def add_review(self, reviewlist):
         # get maxpage

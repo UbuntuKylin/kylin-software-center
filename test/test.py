@@ -60,5 +60,5 @@ if __name__ == "__main__":
         # print item.str()
 
     import sys
-    import os
-    os.execv("/usr/bin/python", ["foo", "/home/shine/PycharmProjects/ubuntu-kylin-software-center/test/restarttext.py"])
+    # import os
+    # os.execv("/usr/bin/python", ["foo", "/home/shine/PycharmProjects/ubuntu-kylin-software-center/test/restarttext.py"])
