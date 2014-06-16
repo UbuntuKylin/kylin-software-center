@@ -75,7 +75,8 @@ class PistonRemoter(PistonAPI):
 
 
 if __name__ == '__main__':
-    s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
+    s = PistonRemoter(service_root="http://service.ubuntukylin.com:8001/uksc/")
+    reslist = s._get("getallratings", scheme="http")
     #
     # try:
     # res = s.get_all_ratings()
@@ -85,14 +86,18 @@ if __name__ == '__main__':
     # print "res : ",res[0]['rating_total']
 
     # res = s.get_reviews('gedit', 2)
-    res = s.get_newest_review('gedit')
-    for r in res:
-        print r.user
-        print r.user_display
-        print r.content
-        print r.date
-        print r.aid['review_total']
-        print '\n'
+
+
+    # res = s.get_newest_review('gedit')
+    # for r in res:
+    #     print r.user
+    #     print r.user_display
+    #     print r.content
+    #     print r.date
+    #     print r.aid['review_total']
+    #     print '\n'
+
+
     # except ValueError as e:
     #     print "failed to parse '%s'" % e
     # except APIError as e:

@@ -59,6 +59,10 @@ class ADWidget(QWidget):
         palette.setBrush(QPalette.Window, QBrush(img))
         self.setPalette(palette)
 
+        self.btnground = QLabel(self)
+        self.btnground.setGeometry(590, 192, 150, 30)
+        self.btnground.raise_()
+
         self.adl = len(addata)
         self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 214))
 

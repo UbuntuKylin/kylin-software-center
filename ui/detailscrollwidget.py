@@ -54,7 +54,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui_init()
 
         self.mainwindow = parent
-        self.setGeometry(QRect(0, 82, 815, 479))
+        self.setGeometry(QRect(5, 87, 815, 505))
         self.setWidget(self.detailWidget)
 
         self.bigsshot = ScreenShotBig()
@@ -105,8 +105,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.splitLine1.setStyleSheet("QLabel{background-color:#E0E0E0;}")
         self.ui.splitLine2.setStyleSheet("QLabel{background-color:#E0E0E0;}")
         self.ui.splitLine3.setStyleSheet("QLabel{background-color:#E0E0E0;}")
-        self.ui.detailHeader.setStyleSheet("QLabel{background-image:url('res/detailheadbg.png');color:black;font-size:14px;padding-top:17px;}")
-        self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn2-1.png');border:0px;color:#497FAB;}QPushButton:hover{background:url('res/btn2-2.png');}QPushButton:pressed{background:url('res/btn2-3.png');}")
+        self.ui.detailHeader.setStyleSheet("QLabel{background-image:url('res/detailheadbg.png');color:black;font-size:16px;color:#1E66A4;}")
+        self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn1-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn1-2.png');}QPushButton:pressed{background:url('res/btn1-3.png');}")
         self.ui.candidateVersion.setStyleSheet("QLabel{color:#FF7D15;}")
         self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
         self.ui.grade.setStyleSheet("QLabel{font-size:30px;color:#1E66A4;}")

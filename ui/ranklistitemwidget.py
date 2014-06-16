@@ -37,6 +37,13 @@ class RankListItemWidget(QWidget):
         self.ui.name.setText(name)
         self.ui.iconnumber.setText(str(rank))
         self.ui.iconnumber.setAlignment(Qt.AlignCenter)
+
+        # letter spacing
+        font = QFont()
+        font.setLetterSpacing(QFont.PercentageSpacing, 95.0)
+        self.ui.name.setFont(font)
+
+        self.ui.name.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.iconnumber.setStyleSheet("QLabel{color:white;font-size:12px;}")
         if(rank < 4):
             self.ui.iconbg.setStyleSheet("QLabel{background-color:#FF7C14;}")

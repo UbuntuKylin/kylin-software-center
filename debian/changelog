@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (0.3.1.0) trusty; urgency=medium
+ 
+  * fix many ui bugs(1309906,1314590,1326681,1323227,1309515,1326679,1326689,1329186,1328749,1329642)
+ 
+ -- Shine <shenghuang@ubuntukylin.com>  Mon, 16 Jun 2014 15:06:06 +0800
+
 ubuntu-kylin-software-center (0.3.0.0) trusty; urgency=medium
  
   * new loading gif

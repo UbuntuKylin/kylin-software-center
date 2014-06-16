@@ -57,16 +57,29 @@ class RecommendItem(QWidget):
             self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg"))
         else:
             self.ui.softIcon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
-        # self.ui.softIcon.setStyleSheet(UBUNTUKYLIN_LABEL_STYLE_PATH % (UBUNTUKYLIN_RES_ICON_PATH+str(self.app.name)+".png"))
-        #self.ui.softIcon.setStyleSheet("QLabel{background-image:url('res/icons/" + str(self.app.name) + ".png')}")
-        self.ui.softName.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
+        self.ui.softName.setStyleSheet("QLabel{font-family:'ubuntu';font-size:14px;font-weight:bold;}")
         self.ui.softDescr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
         self.ui.btn.setStyleSheet(RECOMMEND_BUTTON_STYLE %(UBUNTUKYLIN_RES_PATH + "btn1-1.png",UBUNTUKYLIN_RES_PATH + "btn1-2.png",UBUNTUKYLIN_RES_PATH + "btn1-3.png"))
-        #self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;color:white;font-size:14px;background-image:url('res/btn6-1.png')}QPushButton:hover{background-image:url('res/btn6-2.png')}QPushButton:pressed{background-image:url('res/btn6-3.png')}")
         self.ui.btnDetail.setStyleSheet(RECOMMEND_BUTTON_STYLE %(UBUNTUKYLIN_RES_PATH + "btn6-1.png",UBUNTUKYLIN_RES_PATH + "btn6-2.png",UBUNTUKYLIN_RES_PATH + "btn6-3.png"))
 
+        # letter spacing
+        font = QFont()
+        font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
+        self.ui.softName.setFont(font)
+        self.ui.softDescr.setFont(font)
+        if(len(self.app.name) > 18):
+            font2 = QFont()
+            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+            self.ui.softName.setFont(font2)
+            self.ui.softName.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+        if(len(self.app.name) > 21):
+            font2 = QFont()
+            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+            self.ui.softName.setFont(font2)
+            self.ui.softName.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+
         self.ui.softName.setText(self.app.name)
-        self.ui.softDescr.setText(self.app.summary)
+        self.ui.softDescr.setText(self.app.displayname)
 
         if(self.app.is_installed):
             if(run.get_run_command(self.app.name) == ""):

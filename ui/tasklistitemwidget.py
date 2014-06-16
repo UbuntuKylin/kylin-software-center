@@ -47,9 +47,9 @@ class TaskListItemWidget(QWidget):
         self.ui.status.setWordWrap(True)
 
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
-        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel.png');border:0px;}")
-        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
-                                          "QProgressBar:chunk{background-image:url('res/progress1.png');}")
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel2.png');border:0px;}")
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg2.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
+                                          "QProgressBar:chunk{background-image:url('res/progress2.png');}")
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)

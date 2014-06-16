@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Thu Mar 20 16:49:28 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Mon Jun 16 15:04:12 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -28,7 +28,7 @@ class Ui_DetailWidget(object):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
         DetailWidget.resize(805, 790)
         self.btnCloseDetail = QtGui.QPushButton(DetailWidget)
-        self.btnCloseDetail.setGeometry(QtCore.QRect(16, 24, 60, 20))
+        self.btnCloseDetail.setGeometry(QtCore.QRect(16, 15, 62, 20))
         self.btnCloseDetail.setText(_fromUtf8(""))
         self.btnCloseDetail.setObjectName(_fromUtf8("btnCloseDetail"))
         self.detailHeader = QtGui.QLabel(DetailWidget)
@@ -56,7 +56,7 @@ class Ui_DetailWidget(object):
         self.installedVersion.setText(_fromUtf8(""))
         self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
         self.size = QtGui.QLabel(DetailWidget)
-        self.size.setGeometry(QtCore.QRect(335, 87, 150, 18))
+        self.size.setGeometry(QtCore.QRect(330, 87, 140, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.gradeBG = QtGui.QLabel(DetailWidget)

@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'confw.ui'
 #
-# Created: Wed Apr  2 09:48:53 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Fri Jun 13 10:45:29 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -26,18 +26,18 @@ except AttributeError:
 class Ui_ConfigWidget(object):
     def setupUi(self, ConfigWidget):
         ConfigWidget.setObjectName(_fromUtf8("ConfigWidget"))
-        ConfigWidget.resize(561, 345)
+        ConfigWidget.resize(539, 352)
         self.pageListWidget = QtGui.QListWidget(ConfigWidget)
-        self.pageListWidget.setGeometry(QtCore.QRect(15, 45, 120, 293))
+        self.pageListWidget.setGeometry(QtCore.QRect(3, 45, 120, 300))
         self.pageListWidget.setObjectName(_fromUtf8("pageListWidget"))
         self.sourceWidget = QtGui.QWidget(ConfigWidget)
-        self.sourceWidget.setGeometry(QtCore.QRect(134, 45, 414, 293))
+        self.sourceWidget.setGeometry(QtCore.QRect(122, 45, 414, 300))
         self.sourceWidget.setObjectName(_fromUtf8("sourceWidget"))
         self.sourceListWidget = QtGui.QListWidget(self.sourceWidget)
         self.sourceListWidget.setGeometry(QtCore.QRect(0, 25, 413, 205))
         self.sourceListWidget.setObjectName(_fromUtf8("sourceListWidget"))
         self.btnUpdate = QtGui.QPushButton(self.sourceWidget)
-        self.btnUpdate.setGeometry(QtCore.QRect(10, 268, 90, 20))
+        self.btnUpdate.setGeometry(QtCore.QRect(10, 272, 90, 20))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         self.btnAdd = QtGui.QPushButton(self.sourceWidget)
@@ -45,30 +45,26 @@ class Ui_ConfigWidget(object):
         self.btnAdd.setText(_fromUtf8(""))
         self.btnAdd.setObjectName(_fromUtf8("btnAdd"))
         self.btnReset = QtGui.QPushButton(self.sourceWidget)
-        self.btnReset.setGeometry(QtCore.QRect(107, 268, 90, 20))
+        self.btnReset.setGeometry(QtCore.QRect(107, 272, 90, 20))
         self.btnReset.setText(_fromUtf8(""))
         self.btnReset.setObjectName(_fromUtf8("btnReset"))
-        self.btnClose = QtGui.QPushButton(self.sourceWidget)
-        self.btnClose.setGeometry(QtCore.QRect(335, 268, 60, 20))
-        self.btnClose.setText(_fromUtf8(""))
-        self.btnClose.setObjectName(_fromUtf8("btnClose"))
         self.text1 = QtGui.QLabel(self.sourceWidget)
         self.text1.setGeometry(QtCore.QRect(10, 4, 80, 17))
         self.text1.setText(_fromUtf8(""))
         self.text1.setObjectName(_fromUtf8("text1"))
         self.line1 = QtGui.QLabel(self.sourceWidget)
-        self.line1.setGeometry(QtCore.QRect(87, 12, 326, 1))
+        self.line1.setGeometry(QtCore.QRect(87, 12, 310, 1))
         self.line1.setText(_fromUtf8(""))
         self.line1.setObjectName(_fromUtf8("line1"))
         self.lesource = QtGui.QLineEdit(self.sourceWidget)
         self.lesource.setGeometry(QtCore.QRect(110, 233, 285, 20))
         self.lesource.setObjectName(_fromUtf8("lesource"))
         self.cbhideubuntu = QtGui.QCheckBox(self.sourceWidget)
-        self.cbhideubuntu.setGeometry(QtCore.QRect(210, 268, 120, 20))
+        self.cbhideubuntu.setGeometry(QtCore.QRect(270, 272, 120, 20))
         self.cbhideubuntu.setText(_fromUtf8(""))
         self.cbhideubuntu.setObjectName(_fromUtf8("cbhideubuntu"))
         self.processwidget = QtGui.QWidget(self.sourceWidget)
-        self.processwidget.setGeometry(QtCore.QRect(15, 268, 220, 17))
+        self.processwidget.setGeometry(QtCore.QRect(15, 272, 220, 17))
         self.processwidget.setObjectName(_fromUtf8("processwidget"))
         self.progressBar = QtGui.QProgressBar(self.processwidget)
         self.progressBar.setGeometry(QtCore.QRect(0, 0, 194, 17))
@@ -79,9 +75,13 @@ class Ui_ConfigWidget(object):
         self.btnCancel.setText(_fromUtf8(""))
         self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
         self.bg = QtGui.QLabel(ConfigWidget)
-        self.bg.setGeometry(QtCore.QRect(0, 0, 561, 345))
+        self.bg.setGeometry(QtCore.QRect(0, 0, 539, 352))
         self.bg.setText(_fromUtf8(""))
         self.bg.setObjectName(_fromUtf8("bg"))
+        self.btnClose = QtGui.QPushButton(ConfigWidget)
+        self.btnClose.setGeometry(QtCore.QRect(516, 5, 15, 15))
+        self.btnClose.setText(_fromUtf8(""))
+        self.btnClose.setObjectName(_fromUtf8("btnClose"))
 
         self.retranslateUi(ConfigWidget)
         QtCore.QMetaObject.connectSlotsByName(ConfigWidget)

@@ -87,7 +87,7 @@ class Database:
         # cache file need update, copy
         if self.is_cachedb_need_update():
             open(destFile, "wb").write(open(srcFile, "rb").read())
-            
+
         # piston remoter to ukscs
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
@@ -428,7 +428,7 @@ class CacheProcess(multiprocessing.Process):
         if self.func == "get_all_ratings":
             from backend.remote.piston_remoter import PistonRemoter
             import json
-            premoter = PistonRemoter(service_root="http://192.168.30.12/uksc/")
+            premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
             reslist = premoter._get("getallratings", scheme="http")
             decoded = json.loads(reslist)
             print "all ratings and rating_total download over : ",len(decoded)
