@@ -50,7 +50,7 @@ class MessageBox(QObject):
         self.alertGOE = QGraphicsOpacityEffect()
 
         self.alert = QPushButton(parent)
-        self.alert.setGeometry(353, 380, 190, 95)
+        self.alert.setGeometry(317, 380, 190, 95)
         self.alert.setFocusPolicy(Qt.NoFocus)
         self.alert.setGraphicsEffect(self.alertGOE)
         self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:5px;color:#1E66A4;font-size:16px;}")

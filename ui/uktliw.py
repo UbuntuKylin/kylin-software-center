@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'uktliw.ui'
 #
-# Created: Wed Mar 12 16:08:45 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Fri Jun 13 14:42:31 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -47,7 +47,7 @@ class Ui_TaskLIWidget(object):
         self.status.setGeometry(QtCore.QRect(575, 3, 220, 39))
         self.status.setObjectName(_fromUtf8("status"))
         self.btnCancel = QtGui.QPushButton(TaskLIWidget)
-        self.btnCancel.setGeometry(QtCore.QRect(545, 13, 18, 18))
+        self.btnCancel.setGeometry(QtCore.QRect(545, 15, 14, 13))
         self.btnCancel.setText(_fromUtf8(""))
         self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
 

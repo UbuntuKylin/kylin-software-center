@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ukrliw.ui'
+# Form implementation generated from reading ui file 'ui/ukrliw.ui'
 #
-# Created: Tue Mar 11 15:16:29 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Thu Jun 12 14:04:33 2014
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -28,15 +28,15 @@ class Ui_RankListWidget(object):
         RankListWidget.setObjectName(_fromUtf8("RankListWidget"))
         RankListWidget.resize(133, 20)
         self.name = QtGui.QLabel(RankListWidget)
-        self.name.setGeometry(QtCore.QRect(32, 1, 133, 18))
+        self.name.setGeometry(QtCore.QRect(26, 1, 100, 18))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.iconbg = QtGui.QLabel(RankListWidget)
-        self.iconbg.setGeometry(QtCore.QRect(10, 3, 14, 14))
+        self.iconbg.setGeometry(QtCore.QRect(7, 3, 14, 14))
         self.iconbg.setText(_fromUtf8(""))
         self.iconbg.setObjectName(_fromUtf8("iconbg"))
         self.iconnumber = QtGui.QLabel(RankListWidget)
-        self.iconnumber.setGeometry(QtCore.QRect(11, 4, 12, 12))
+        self.iconnumber.setGeometry(QtCore.QRect(8, 4, 12, 12))
         self.iconnumber.setText(_fromUtf8(""))
         self.iconnumber.setObjectName(_fromUtf8("iconnumber"))
 

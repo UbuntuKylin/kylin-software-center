@@ -77,7 +77,7 @@ class ListItemWidget(QWidget):
         self.ui.descr.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
         self.ui.installedVersion.setStyleSheet("QLabel{font-size:13px;}")
         self.ui.candidateVersion.setStyleSheet("QLabel{font-size:13px;color:#FF7D15;}")
-        self.ui.btn.setStyleSheet(LIST_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH+"btn-small-1.png",UBUNTUKYLIN_RES_PATH+"btn-small-2.png",UBUNTUKYLIN_RES_PATH+"btn-small-3.png") )
+        self.ui.btn.setStyleSheet(LIST_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH+"btn-small2-1.png",UBUNTUKYLIN_RES_PATH+"btn-small2-2.png",UBUNTUKYLIN_RES_PATH+"btn-small2-3.png") )
 
         self.ui.name.setText(app.name)
         summ = app.summary

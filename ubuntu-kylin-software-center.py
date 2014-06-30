@@ -40,9 +40,6 @@ from ui.messagebox import MessageBox
 from ui.confirmdialog import ConfirmDialog
 from ui.configwidget import ConfigWidget
 
-#from backend.backend_worker import BackendWorker
-#import data
-#from util import log
 from utils import vfs
 from utils.history import History
 from backend.search import *
@@ -126,9 +123,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.userName.setText("未登陆")
         self.ui.userLv.setText("Lv 0")
         self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
-        self.ui.allsMSGBar.setText("已安装软件 ")
         self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText("0.3.0")
+        self.ui.bottomText2.setText(Globals.UKSC_VERSION)
 
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
@@ -139,7 +135,6 @@ class SoftwareCenter(QMainWindow):
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
 
         # init the initial data for view init
-        #self.init_models()  #????
         self.appmgr = AppManager()
         self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
         self.appmgr.init_models()
@@ -147,7 +142,6 @@ class SoftwareCenter(QMainWindow):
         # alert message box
         self.messageBox = MessageBox(self)
 
-        #self.detailScrollWidget.hide()
         self.ui.categoryView.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
@@ -170,7 +164,6 @@ class SoftwareCenter(QMainWindow):
 
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
-        # self.detailScrollWidget.stackUnder(self.ui.headerWidget)
         self.detailScrollWidget.raise_()
         # loading page
         self.loadingDiv = LoadingDiv(self)
@@ -233,7 +226,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
         self.ui.lebg.stackUnder(self.ui.leSearch)
-        self.ui.taskWidget.stackUnder(self.ui.headerWidget)
         self.ui.searchWidget.stackUnder(self.ui.searchBG)
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -246,7 +238,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.hide()
 
 
-        # erase the window edge shade from window manager in 1404
+        # erase the window edge shade from window manager in 1404beta
         # bm = QBitmap(self.size())
         # qp = QPainter()
         # qp.begin(bm)
@@ -256,7 +248,7 @@ class SoftwareCenter(QMainWindow):
         # self.setMask(bm)
 
         self.softCountText1 = QLabel(self.ui.searchBG)
-        self.softCountText1.setGeometry(QRect(10, 9, 30, 17))
+        self.softCountText1.setGeometry(QRect(10, 8, 30, 17))
         self.softCountText1.setObjectName("softCountText1")
         self.softCountText1.setText("共有")
         self.softCount = QLabel(self.ui.searchBG)
@@ -264,7 +256,7 @@ class SoftwareCenter(QMainWindow):
         self.softCount.setText("")
         self.softCount.setObjectName("softCount")
         self.softCountText2 = QLabel(self.ui.searchBG)
-        self.softCountText2.setGeometry(QRect(80, 9, 50, 17))
+        self.softCountText2.setGeometry(QRect(80, 8, 50, 17))
         self.softCountText2.setObjectName("softCountText2")
         self.softCountText2.setText("款软件")
 
@@ -274,9 +266,40 @@ class SoftwareCenter(QMainWindow):
         self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
 
+        self.ui.texticon.setText("图标")
+        self.ui.textappname.setText("软件名")
+        self.ui.textsize.setText("大小")
+        self.ui.textprocess.setText("任务进度")
+        self.ui.textstatus.setText("状态信息")
+
+        self.ui.texticon_un.setText("图标")
+        self.ui.textappname_un.setText("软件名")
+        self.ui.textsize_un.setText("大小")
+        self.ui.textversion_un.setText("版本")
+        self.ui.textrating_un.setText("评分")
+        self.ui.textaction_un.setText("操作")
+
+        self.ui.texticon_up.setText("图标")
+        self.ui.textappname_up.setText("软件名")
+        self.ui.textsize_up.setText("大小")
+        self.ui.textversion_up.setText("版本")
+        self.ui.textrating_up.setText("评分")
+        self.ui.textaction_up.setText("操作")
+
+        self.ui.texticon_all.setText("图标")
+        self.ui.textappname_all.setText("软件名")
+        self.ui.textsize_all.setText("大小")
+        self.ui.textversion_all.setText("版本")
+        self.ui.textrating_all.setText("评分")
+        self.ui.textaction_all.setText("操作")
+
         #self.show()
 
         # style by qss
+        self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
+        self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
+        self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
+        self.ui.shadowbottom.setStyleSheet("QLabel{background-image:url('res/sbottom.png')}")
         self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
         self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
@@ -309,7 +332,30 @@ class SoftwareCenter(QMainWindow):
         self.ui.upMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.searchMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.taskMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:25px;padding-left:10px;}")
+        self.ui.taskMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
+        self.ui.texticon.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textappname.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textsize.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textprocess.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textstatus.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.texticon_un.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textappname_un.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textsize_un.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textversion_un.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textrating_un.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textaction_un.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.texticon_up.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textappname_up.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textsize_up.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textversion_up.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textrating_up.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textaction_up.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.texticon_all.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textappname_all.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textsize_all.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textversion_all.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textrating_all.setStyleSheet("QLabel{font-size:14px;}")
+        self.ui.textaction_all.setStyleSheet("QLabel{font-size:14px;}")
         self.ui.allsHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
         self.ui.upHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
         self.ui.unHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
@@ -696,10 +742,12 @@ class SoftwareCenter(QMainWindow):
 
         self.switch_to_category(category,False)
 
-        # homepage is special
         if(self.nowPage == "homepage" and self.ui.allsWidget.isVisible() == False):
-            self.reset_nav_bar()
             self.ui.allsWidget.setVisible(True)
+        if(self.nowPage == "uppage" and self.ui.upWidget.isVisible() == False):
+            self.ui.upWidget.setVisible(True)
+        if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
+            self.ui.unWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
@@ -904,6 +952,7 @@ class SoftwareCenter(QMainWindow):
             self.history.history_add(self.slot_goto_taskpage)
 
         self.nowPage = 'taskpage'
+        self.emit(Signals.count_application_update)
         self.ui.categoryView.setEnabled(False)
         self.ui.categoryView.clearSelection()
         self.detailScrollWidget.hide()
@@ -930,6 +979,7 @@ class SoftwareCenter(QMainWindow):
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
+        self.reset_nav_bar()
         self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
         self.detailScrollWidget.hide()
@@ -939,14 +989,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
         self.ui.taskWidget.setVisible(False)
-        if self.nowPage == 'homepage':
-            self.ui.btnHomepage.setEnabled(True)
-        elif self.nowPage == 'uppage':
-            self.ui.btnUp.setEnabled(True)
-        elif self.nowPage == 'unpage':
-            self.ui.btnUn.setEnabled(True)
-        elif self.nowPage == 'taskpage':
-            self.ui.btnTask.setEnabled(True)
 
     def slot_close(self):
         self.dbusControler.stop()

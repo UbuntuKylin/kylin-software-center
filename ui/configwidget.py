@@ -72,9 +72,10 @@ class ConfigWidget(QWidget):
         self.ui.btnUpdate.setText("    更新软件源")
         self.ui.btnAdd.setText("    添加软件源")
         self.ui.btnReset.setText("恢复默认设置")
-        self.ui.btnClose.setText("关闭")
         sourceitem = QListWidgetItem("软件源设置")
-        sourceitem.setIcon(QIcon("res/source.png"))
+        icon = QIcon()
+        icon.addFile("res/source.png", QSize(), QIcon.Normal, QIcon.Off)
+        sourceitem.setIcon(icon)
         self.ui.pageListWidget.addItem(sourceitem)
 
         self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
@@ -87,7 +88,7 @@ class ConfigWidget(QWidget):
         self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;background:url('res/btnupdate.png') no-repeat;}")
         self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;background:url('res/btnadd.png') no-repeat;}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;}")
-        self.ui.btnClose.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;background:url('res/btn2-1.png');}QPushButton:hover{background:url('res/btn2-2.png');}QPushButton:pressed{background:url('res/btn2-3.png');}")
+        self.ui.btnClose.setStyleSheet("QPushButton{border:0px;background:url('res/close-2.png');}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.cbhideubuntu.setStyleSheet("QCheckBox{border:0px;color:#1E66A4;font-size:14px;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel.png');border:0px;}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"

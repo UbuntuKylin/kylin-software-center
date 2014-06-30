@@ -100,7 +100,7 @@ RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;co
 RECOMMEND_BUTTON_STYLE = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
 HEADER_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
 
-LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:white;font-size:14px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
 
 AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 
