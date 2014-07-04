@@ -247,7 +247,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             kwarg = {"appname":pkgName,
                      "action":AppActions.INSTALL,
                      }
-#            self.software_auth_signal("auth_cancel", kwarg)
+            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -269,7 +269,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             kwarg = {"appname":pkgName,
                      "action":AppActions.REMOVE,
                      }
-#            self.software_auth_signal("auth_cancel", kwarg)
+            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
@@ -291,7 +291,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
             kwarg = {"appname":pkgName,
                      "action":AppActions.UPGRADE,
                      }
-#            self.software_auth_signal("auth_cancel", kwarg)
+            self.software_auth_signal("auth_cancel", kwarg)
             return False
 
 
