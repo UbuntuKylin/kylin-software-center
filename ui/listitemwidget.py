@@ -86,12 +86,15 @@ class ListItemWidget(QWidget):
         #     summ += "..."
         self.ui.descr.setText(summ)
 
-        size = app.packageSize
-        sizek = size / 1024
-        if(sizek < 1024):
-            self.ui.size.setText(str(sizek) + " KB")
-        else:
-            self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
+        # size = app.packageSize
+        # sizek = size / 1024
+        # if(sizek < 1024):
+        #     self.ui.size.setText(str(sizek) + " KB")
+        # else:
+        #     self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
+        self.ui.size.setAlignment(Qt.AlignCenter)
+        self.ui.size.setText("安装后:")
+
 #        print "########item size:",app.name,app.packageSize,app.installedSize
         installedsize = app.installedSize
         installedsizek = installedsize / 1024

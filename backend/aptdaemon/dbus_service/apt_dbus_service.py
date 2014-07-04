@@ -336,6 +336,25 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         print "####update return"
     #????????????????????????????
+    # apt-get update sa:software_fetch_signal()
+    @dbus.service.method(INTERFACE, in_signature='b', out_signature='b', sender_keyword='sender')
+    def update_first(self, quiet, sender=None):
+        print "####update first: "
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要更新软件源")
+        if not granted:
+            return False
+
+        kwargs = {"quiet":str(quiet),
+                  }
+
+        item = WorkItem("#update",AppActions.UPDATE_FIRST,kwargs)
+
+        self.add_worker_item(item)
+
+#        self.daemonApt.update()
+
+        print "####update return"
 
     # check packages status by pkgNameList sa:software_check_status_signal()
     @dbus.service.method(INTERFACE, in_signature='as', out_signature='')

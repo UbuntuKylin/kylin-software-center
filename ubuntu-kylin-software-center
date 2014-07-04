@@ -1,3 +1,14 @@
 #!/bin/sh
-cd /usr/share/ubuntu-kylin-software-center
-python ubuntu-kylin-software-center.py
+if [ $# = 0 ]; then
+	echo "normal start"
+	cd /usr/share/ubuntu-kylin-software-center
+	python ubuntu-kylin-software-center.py
+else
+	if [ $1 = "-quiet" ]; then
+		echo "quiet start"
+		cd /usr/share/ubuntu-kylin-software-center
+		python ubuntu-kylin-software-center.py -quiet
+	else
+		echo "unknown option"
+	fi
+fi

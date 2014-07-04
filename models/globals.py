@@ -29,4 +29,5 @@ import os
 class Globals:
     # how many softwares show in a setp
     showSoftwareStep = 20
-    UKSC_VERSION = '0.3.1'
+    LAUNCH_MODE = 'quiet'
+    UKSC_VERSION = '0.3.2'

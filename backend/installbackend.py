@@ -61,7 +61,6 @@ class InstallBackend(QObject):
         self.iface = None
 
     def init_dbus_ifaces(self):
-
         try:
             bus = dbus.SystemBus(mainloop)
         except:
@@ -175,6 +174,9 @@ class InstallBackend(QObject):
 
     def update_source(self,quiet=False):
         return self.call_dbus_iface(AppActions.UPDATE,False)
+
+    def update_source_first_os(self,quiet=False):
+        return self.call_dbus_iface(AppActions.UPDATE_FIRST,False)
 
     def add_source(self,text):
         return self.call_dbus_iface(AppActions.ADD_SOURCE,text)

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Ubuntu Kylin Software Center
+Name[zh_CN]=Ubuntu Kylin 软件中心
+Comment=Ubuntu Kylin software-center
+Exec=/usr/bin/ubuntu-kylin-software-center -quiet
+Icon=ubuntu-kylin-software-center
+StartupNotify=true
+Terminal=false
+Type=Application
+Categories=PackageManager;GTK;Graphics;System;Settings;Viewer;
+Keywords=Sources;PPA;Install;Uninstall;Remove;Purchase;Catalogue;Store;Apps;

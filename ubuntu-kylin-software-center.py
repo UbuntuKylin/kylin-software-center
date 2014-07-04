@@ -27,20 +27,26 @@
 import dbus
 import dbus.service
 import webbrowser
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
+from ui.pointlistitemwidget import PointListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 from ui.confirmdialog import ConfirmDialog
 from ui.configwidget import ConfigWidget
+from ui.pointoutwidget import PointOutWidget
+from ui.singleprocessbar import SingleProcessBar
 
 from utils import vfs
+from utils import log
 from utils.history import History
 from backend.search import *
 
@@ -56,13 +62,12 @@ from models.enums import Signals
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 
-
 LOG = logging.getLogger("uksc")
 
 
 class SoftwareCenter(QMainWindow):
 
-    # recommend number in fill func
+    # recommend number in function "fill"
     recommendNumber = 0
     # now page
     nowPage = ''
@@ -78,81 +83,23 @@ class SoftwareCenter(QMainWindow):
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
 
+        # single check
         self.check_single_process_by_sessionbus()
 
-        # init the ui
+        # init dbus backend
+        self.init_dbus()
+
+        # init ui
         self.init_main_view()
 
-        windowWidth = QApplication.desktop().width()
-        windowHeight = QApplication.desktop().height()
-        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+        # init system tray
+        self.create_tray()
 
-        self.history = History(self.ui)
-        # connect the ui signals
-        # self.ui.headerWidget.installEventFilter(self)
+        # init main service
+        self.init_main_service()
 
-        self.ui.btnBack.clicked.connect(self.history.history_back)
-        self.ui.btnNext.clicked.connect(self.history.history_next)
-        self.ui.categoryView.itemClicked.connect(self.slot_change_category)
-        self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
-        self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.unListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.allsListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
-        self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
-        self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
-        self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
-        self.ui.btnClose.clicked.connect(self.slot_close)
-        self.ui.btnMin.clicked.connect(self.slot_min)
-        self.ui.btnConf.clicked.connect(self.slot_show_config)
-        self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
-        self.connect(self, Signals.click_item, self.slot_show_app_detail)
-
-        self.connect(self, Signals.install_app, self.slot_click_install)
-        self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
-        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
-        self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
-        self.connect(self,Signals.update_source,self.slot_update_source)
-
-        # init text info
-        self.ui.userName.setText("未登陆")
-        self.ui.userLv.setText("Lv 0")
-        self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
-        self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText(Globals.UKSC_VERSION)
-
-        self.ui.categoryView.setEnabled(False)
-        self.ui.btnUp.setEnabled(False)
-        self.ui.btnUn.setEnabled(False)
-        self.ui.btnTask.setEnabled(False)
-
-        self.searchDTimer = QTimer(self)
-        self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
-
-        # init the initial data for view init
-        self.appmgr = AppManager()
-        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
-        self.appmgr.init_models()
-
-        # alert message box
-        self.messageBox = MessageBox(self)
-
-        self.ui.categoryView.hide()
-        self.ui.headerWidget.hide()
-        self.ui.centralwidget.hide()
-        self.ui.leftWidget.hide()
-
-        # show user to wait
-        self.loadingDiv.start_loading("系统正在初始化...")
-
-    def show_to_frontend(self):
-        self.show()
-        self.raise_()
+        # check apt source and update it
+        self.check_source()
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -162,11 +109,32 @@ class SoftwareCenter(QMainWindow):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
+        windowWidth = QApplication.desktop().width()
+        windowHeight = QApplication.desktop().height()
+        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+
+        # init components
+        # point out widget
+        self.pointout = PointOutWidget(self)
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
         self.detailScrollWidget.raise_()
-        # loading page
+        # loading div
         self.loadingDiv = LoadingDiv(self)
+        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+        # alert message box
+        self.messageBox = MessageBox(self)
+        # first update process bar
+        self.updateSinglePB = SingleProcessBar(self)
+        # init config widget
+        self.configWidget = ConfigWidget(self)
+        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
+        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+        # history manager
+        self.history = History(self.ui)
+        # search trigger
+        self.searchDTimer = QTimer(self)
+        self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
 
         # style by code
         self.ui.headerWidget.setAutoFillBackground(True)
@@ -183,7 +151,6 @@ class SoftwareCenter(QMainWindow):
 
         self.ui.userWidget.setAutoFillBackground(True)
         palette = QPalette()
-        # img = QPixmap("res/categorybg.png")
         palette.setBrush(QPalette.Background, QColor(44, 46, 61))
         self.ui.userWidget.setPalette(palette)
 
@@ -231,22 +198,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.ui.allsWidget.hide()
-        self.ui.upWidget.hide()
-        self.ui.unWidget.hide()
-        self.ui.searchWidget.hide()
-        self.ui.taskWidget.hide()
-
-
-        # erase the window edge shade from window manager in 1404beta
-        # bm = QBitmap(self.size())
-        # qp = QPainter()
-        # qp.begin(bm)
-        # qp.setBrush(QColor(0, 0, 0))
-        # qp.drawRoundedRect(self.rect(), 10, 10)
-        # qp.end()
-        # self.setMask(bm)
-
         self.softCountText1 = QLabel(self.ui.searchBG)
         self.softCountText1.setGeometry(QRect(10, 8, 30, 17))
         self.softCountText1.setObjectName("softCountText1")
@@ -261,10 +212,6 @@ class SoftwareCenter(QMainWindow):
         self.softCountText2.setText("款软件")
 
         self.softCount.setAlignment(Qt.AlignCenter)
-
-        self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
 
         self.ui.texticon.setText("图标")
         self.ui.textappname.setText("软件名")
@@ -293,9 +240,16 @@ class SoftwareCenter(QMainWindow):
         self.ui.textrating_all.setText("评分")
         self.ui.textaction_all.setText("操作")
 
-        #self.show()
+        self.ui.userName.setText("未登陆")
+        self.ui.userLv.setText("Lv 0")
+        self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
+        self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
+        self.ui.bottomText2.setText(Globals.UKSC_VERSION)
 
         # style by qss
+        self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
+        self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
+        self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
         self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
         self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
         self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
@@ -382,60 +336,94 @@ class SoftwareCenter(QMainWindow):
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
-        # advertisement
-        adw = ADWidget([], self)
-        # self.setAttribute(Qt.WA_X11NetWmWindowTypeDock)
+        # signal / slot
+        self.ui.btnBack.clicked.connect(self.history.history_back)
+        self.ui.btnNext.clicked.connect(self.history.history_next)
+        self.ui.categoryView.itemClicked.connect(self.slot_change_category)
+        self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
+        self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.unListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
+        self.ui.allsListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
+        self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
+        self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
+        self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
+        self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnMin.clicked.connect(self.slot_min)
+        self.ui.btnConf.clicked.connect(self.slot_show_config)
+        self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
 
+        self.connect(self, Signals.click_item, self.slot_show_app_detail)
+        self.connect(self, Signals.install_app, self.slot_click_install)
+        self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
+        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
+        self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
+        self.connect(self, Signals.update_source,self.slot_update_source)
 
-    def check_single_process_by_sessionbus(self):
+        self.ui.categoryView.setEnabled(False)
+        self.ui.btnUp.setEnabled(False)
+        self.ui.btnUn.setEnabled(False)
+        self.ui.btnTask.setEnabled(False)
 
-        try:
-            bus = dbus.SessionBus()
-        except:
-            LOG.exception("could not initiate dbus")
-            sys.exit()
-            return
+        self.ui.allsWidget.hide()
+        self.ui.upWidget.hide()
+        self.ui.unWidget.hide()
+        self.ui.searchWidget.hide()
+        self.ui.taskWidget.hide()
+        self.ui.categoryView.hide()
+        self.ui.headerWidget.hide()
+        self.ui.centralwidget.hide()
+        self.ui.leftWidget.hide()
 
-        #if there is an instance running, call to bring it to frontend
-        try:
-            proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter',
-                                       '/com/ubuntukylin/softwarecenter')
-            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.softwarecenterIFace')
+        # loading
+        self.loadingDiv.start_loading("系统正在初始化...")
 
-            res = iface.bringToFront()
+    def create_tray(self):
+        self.actionshow = QAction("隐藏/显示", self)
+        self.actionshow.triggered.connect(self.slot_show_or_hide)
 
-            sys.exit()
+        self.actionquit = QAction("退出", self)
+        self.actionquit.triggered.connect(self.slot_close)
 
-        except dbus.DBusException:
-            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
-            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+        self.traymenu = QMenu(self)
+        self.traymenu.addAction(self.actionshow)
+        self.traymenu.addSeparator()
+        self.traymenu.addAction(self.actionquit)
 
+        self.trayicon = QSystemTrayIcon(self)
+        self.icon = QIcon("res/trayicon.png")
+        self.trayicon.setIcon(self.icon)
+        self.trayicon.setContextMenu(self.traymenu)
+        self.trayicon.activated.connect(self.slot_trayicon_activated)
 
-    def mousePressEvent(self, event):
-        if (event.button() == Qt.LeftButton):
-            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
-            event.accept()
+    def init_main_service(self):
+        self.appmgr = AppManager()
 
-    def mouseMoveEvent(self, event):
-        if (event.buttons() == Qt.LeftButton and self.dragPosition != -1):
-            self.move(event.globalPos() - self.dragPosition)
-            event.accept()
+        self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
+        self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
+        self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
+        self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
+        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
+        self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
+        self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
+        self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
 
-    def init_models(self):
-        LOG.debug("begin init_models...")
-        #init appmgr
-#        self.appmgr = AppManager()
-#        self.connect(self.appmgr,Signals.init_models_ready,self.slot_init_models_ready)
-#        self.appmgr.init_models()
-        self.init_category_view()
+        self.connect(self, Signals.count_application_update,self.slot_count_application_update)
+        self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
 
-        #init backend
+    def init_dbus(self):
         self.backend = InstallBackend()
+        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
         res = self.backend.init_dbus_ifaces()
         while res == False:
             button=QMessageBox.question(self,"初始化提示",
-                                    self.tr("DBus服务初始化失败！\n请确认是否正确安装,继续操作将不能正常进行软件安装等操作!\n是否继续?"),
-                                    "重试", "是", "否", 0)
+                                    self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+                                    "重试", "忽略", "退出", 0)
             if button == 0:
                 res = self.backend.init_dbus_ifaces()
             elif button == 1:
@@ -445,111 +433,125 @@ class SoftwareCenter(QMainWindow):
                 LOG.warning("dbus service init failed, you choose to exit.\n\n")
                 sys.exit(0)
 
-        # config widget
-        self.configWidget = ConfigWidget(self)
-        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
-        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+    def check_source(self):
+        if(self.appmgr.check_source_update()):
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                button = QMessageBox.question(self,"软件源更新提示",
+                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件中心触发此功能\n\n请选择:"),
+                                        "更新", "不更新", "", 0)
+                if button == 0:
+                    LOG.info("update source when first start...")
+                    self.updateSinglePB.show()
+                    self.backend.update_source_first_os()
+                elif button == 1:
+                    LOG.warning("dbus service init failed, you choose to exit.\n\n")
+                    sys.exit(0)
+            else:
+                button = QMessageBox.question(self,"软件源更新提示",
+                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如不更新，也可以运行软件，但大部分操作都无法执行\n\n请选择:"),
+                                        "更新", "不更新", "", 0)
 
+                # normal launch mode, show loading div this moment
+                self.show()
 
-        #init search
+                if button == 0:
+                    LOG.info("update source when first start...")
+                    self.updateSinglePB.show()
+                    self.backend.update_source_first_os()
+                elif button == 1:
+                    self.appmgr.init_models()
+        else:
+            if(Globals.LAUNCH_MODE == 'normal'):
+                self.show()
+            self.appmgr.init_models()
+
+    def check_single_process_by_sessionbus(self):
+        try:
+            bus = dbus.SessionBus()
+        except:
+            LOG.exception("could not initiate dbus")
+            sys.exit()
+            return
+
+        # if there is an instance running, call to bring it to frontend
+        try:
+            proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter', '/com/ubuntukylin/softwarecenter')
+            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.softwarecenterIFace')
+            res = iface.bringToFront()
+            sys.exit()
+
+        except dbus.DBusException:
+            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
+            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+
+    def init_last_data(self):
+        # init category list
+        self.init_category_view()
+
+        # init search
         self.searchDB = Search()
         self.searchList = {}
 
-        #init others
+        # init others
         self.category = ""
         self.nowPage = "homepage"
-        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
 
-        self.slot_goto_homepage()
-
-        #self signals
-        self.connect(self,Signals.apt_process_finish,self.slot_apt_process_finish)
-
-        #connect data signals
-        self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
-        self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
-        self.connect(self, Signals.count_application_update,self.slot_count_application_update)
-        self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
-        self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
-        self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
-        self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
-
-
-        #conncet apt signals
-        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
-
-        # request init data
+        # init data flags
         self.ads_ready = False
         self.toprated_ready = True
         self.rec_ready = False
         self.rnr_ready = True
-        if self.appmgr.check_update():
 
-            button=QMessageBox.question(self,"软件源更新提示",
-                                    self.tr("您是第一次运行软件中心或者软件源发生变化，\n为保证软件运行正常，您需要连接网络并更新软件源!\n是否继续?"),
-                                    "跳过", "是", "否", 0)
-            if button == 0:
-                self.appmgr.get_advertisements()
-                self.appmgr.get_recommend_apps()
-                self.appmgr.get_toprated_stats()
-            elif button == 1:
-                LOG.info("update source when first start...")
-                self.backend.update_source()
-            else:
-                LOG.warning("dbus service init failed, you choose to exit.\n\n")
-                sys.exit(0)
-                return
-        else:
-            self.appmgr.get_advertisements()
-            self.appmgr.get_recommend_apps()
-            self.appmgr.get_toprated_stats()
-        #????we should decide when to call this to sync data from backend server
- #       self.appmgr.get_rating_review_stats()
+        # check uksc upgradable
+        self.check_uksc_update()
 
-    # base loading finish
-    def check_init_data_ready(self):
+        self.topratedload.start_loading()
+
+        self.appmgr.get_advertisements()
+        self.appmgr.get_recommend_apps()
+        self.appmgr.get_toprated_stats()
+
+    # check base init
+    def check_init_ready(self):
         LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
+
+        # base init finished
         if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
-            self.loadingDiv.stop_loading()
-            self.topratedload.start_loading()
-
-            # all init finished, start update cache db
-            # self.appmgr.update_ratings()
-            from backend.service.dbmanager import CacheProcess
-            cp = CacheProcess('get_all_ratings')
-            cp.daemon = True
-            cp.start()
-
-    def slot_init_models_ready(self, step, message):
-
-        if step == "fail":
-            LOG.warning("init models failed:%s",message)
-            sys.exit(0)
-            return
-
-        elif step == "ok":
-            LOG.debug("init models successfully and ready to setup ui...")
-
-            self.init_models() #????
-
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
             self.ui.btnTask.setEnabled(True)
-
-#            self.emit(Signals.count_application_update)
-
-            self.show()
 
             self.ui.categoryView.show()
             self.ui.headerWidget.show()
             self.ui.centralwidget.show()
             self.ui.leftWidget.show()
 
-        # check uksc upgradable
-        self.check_uksc_update()
+            self.slot_goto_homepage()
+            self.loadingDiv.stop_loading()
+            self.trayicon.show()
 
+            # base loading finish, start backend work
+            self.start_silent_work()
+
+    def start_silent_work(self):
+        # init pointout
+        self.init_pointout()
+
+        # start update cache db
+        from backend.service.dbmanager import CacheProcess
+        cp = CacheProcess('get_all_ratings')
+        cp.daemon = True
+        cp.start()
+
+    def slot_init_models_ready(self, step, message):
+        if step == "fail":
+            LOG.warning("init models failed:%s",message)
+            sys.exit(0)
+            return
+        elif step == "ok":
+            LOG.debug("init models successfully and ready to setup ui...")
+            self.init_last_data()
 
     def init_category_view(self):
         cat_list_orgin = self.appmgr.get_category_list()
@@ -574,6 +576,19 @@ class SoftwareCenter(QMainWindow):
             oneitem.setWhatsThis(catname)
             self.ui.categoryView.addItem(oneitem)
 
+    def show_to_frontend(self):
+        self.show()
+        self.raise_()
+
+    def mousePressEvent(self, event):
+        if (event.button() == Qt.LeftButton):
+            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+            event.accept()
+
+    def mouseMoveEvent(self, event):
+        if (event.buttons() == Qt.LeftButton and self.dragPosition != -1):
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()
 
     def show_more_search_result(self, listWidget):
         listLen = len(listWidget)
@@ -731,7 +746,31 @@ class SoftwareCenter(QMainWindow):
     def restart_uksc(self):
         os.execv("/usr/bin/ubuntu-kylin-software-center", ["uksc"])
 
-    #-------------------------------slots-------------------------------
+    # get the point out app
+    def init_pointout(self):
+        # check user config is show
+        flag = self.appmgr.get_pointout_is_show_from_db()
+        if(flag == True):
+            self.get_pointout()
+
+    def get_pointout(self):
+        # find not installed pointout apps
+        pl = self.appmgr.get_pointout_apps_from_db()
+
+        if(len(pl) > 0):
+            self.pointout.ui.contentliw.clear()
+            for p in pl:
+                oneitem = QListWidgetItem()
+                pliw = PointListItemWidget(p, self.backend, self)
+                self.connect(pliw, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(pliw, Signals.install_app, self.slot_click_install)
+                self.pointout.ui.contentliw.addItem(oneitem)
+                self.pointout.ui.contentliw.setItemWidget(oneitem, pliw)
+
+            self.pointout.show_animation()
+
+
+    #--------------------------------------slots--------------------------------------
 
     def slot_change_category(self, citem):
         category = str(citem.whatsThis())
@@ -742,6 +781,8 @@ class SoftwareCenter(QMainWindow):
 
         self.switch_to_category(category,False)
 
+        if(self.nowPage == "homepage"):
+            self.reset_nav_bar()
         if(self.nowPage == "homepage" and self.ui.allsWidget.isVisible() == False):
             self.ui.allsWidget.setVisible(True)
         if(self.nowPage == "uppage" and self.ui.upWidget.isVisible() == False):
@@ -759,13 +800,11 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive ads ready, count is %d", len(adlist))
         if adlist is not None:
             adw = ADWidget(adlist, self)
-            #adw.add_advertisements(adlist)
             (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
-            # adw.update_total_count(sum_all)
             self.softCount.setText(str(sum_all))
 
         self.ads_ready = True
-        self.check_init_data_ready()
+        self.check_init_ready()
 
     def slot_recommend_apps_ready(self,applist_orig):
         LOG.debug("receive recommend apps ready, count is %d", len(applist_orig))
@@ -794,16 +833,12 @@ class SoftwareCenter(QMainWindow):
             recommend.move(x, y)
 
         self.rec_ready = True
-        self.check_init_data_ready()
+        self.check_init_ready()
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
         print "receive ratings and reviews ready, count is:",len(rnrlist)
-        #app = self.appmgr.get_application_by_name("gimp")
-        #self.appmgr.update_rating_reviews(rnrlist)
-
         self.rnr_ready = True
-        # self.check_init_data_ready()
 
     def slot_toprated_ready(self,rnrlist):
         LOG.debug("receive toprated apps ready, count is %d", len(rnrlist))
@@ -822,9 +857,6 @@ class SoftwareCenter(QMainWindow):
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
-
-        #????we should update this when to get latest list from backend server
-#        self.appmgr.update_toprated(rnrlist)
 
         self.toprated_ready = True
         # self.check_init_data_ready()
@@ -886,10 +918,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_goto_uppage(self, ishistory=False):
-
-        #????????
-#        self.emit(Signals.update_source,False)
-
         if(ishistory == False):
             self.history.history_add(self.slot_goto_uppage)
 
@@ -1000,6 +1028,16 @@ class SoftwareCenter(QMainWindow):
     def slot_show_config(self):
         self.configWidget.show()
 
+    def slot_show_or_hide(self):
+        if(self.isHidden()):
+            self.show()
+        else:
+            self.hide()
+
+    def slot_trayicon_activated(self, reason):
+        if(reason == QSystemTrayIcon.Trigger):
+            self.slot_show_or_hide()
+
     def slot_click_ad(self, ad):
         if(ad.type == "pkg"):
             app = self.appmgr.get_application_by_name(ad.urlorpkgid)
@@ -1083,7 +1121,6 @@ class SoftwareCenter(QMainWindow):
 
             reslist = self.searchDB.search_software(s)
 
-            #返回查询结果
             LOG.debug("search result:%d",len(reslist))
             self.searchList = reslist
             count = 0
@@ -1101,69 +1138,66 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
-
         if action == AppActions.UPDATE:
             if int(percent) == 0:
                 self.configWidget.slot_update_status_change(1)
             elif int(percent) == 100:
                 self.configWidget.slot_update_status_change(99)
+            elif int(percent) >= 200:
+                self.appmgr.update_models(AppActions.UPDATE,"")
             else:
                 self.configWidget.slot_update_status_change(percent)
+        elif action == AppActions.UPDATE_FIRST:
             if int(percent) >= 200:
-                self.appmgr.update_models(AppActions.UPDATE,"")
-
-        if self.stmap.has_key(name) is False:
-            LOG.warning("there is no task for this app:%s",name)
-        else:
-            taskItem = self.stmap[name]
-            if processtype=='cancel':
-                print "####cancel:",name,action
-                self.del_task_item(name)
-                del self.stmap[name]
-                self.emit(Signals.apt_process_cancel,name,action)
+                self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
             else:
-                if processtype=='apt' and int(percent)>=200:
-                    self.emit(Signals.apt_process_finish,name,action)
+                self.updateSinglePB.value_change(percent)
+        else:
+            if self.stmap.has_key(name) is False:
+                print "has no key :  ",name
+                LOG.warning("there is no task for this app:%s",name)
+            else:
+                taskItem = self.stmap[name]
+                if processtype=='cancel':
+                    self.del_task_item(name)
+                    del self.stmap[name]
+                    self.emit(Signals.apt_process_cancel,name,action)
                 else:
-                    taskItem.status_change(processtype, percent, msg)
+                    if processtype=='apt' and int(percent)>=200:
+                        self.emit(Signals.apt_process_finish,name,action)
+                    else:
+                        taskItem.status_change(processtype, percent, msg)
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname,action):
-        print "slot_apt_process_finish:",pkgname,action
-
         self.appmgr.update_models(action,pkgname)
 
-    #update backend models ready
+    # update backend models ready
     def slot_apt_cache_update_ready(self, action, pkgname):
-
-        (inst,up, all) = self.appmgr.get_application_count(self.category)
-        (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count()
-
-        self.emit(Signals.count_application_update)
-
-        #msg = "软件" + str(pkgname) + AptActionMsg[action] + "操作完成"
-        msg = "软件" + AptActionMsg[action] + "操作完成"
-
-        if(action == AppActions.UPDATE):
-            self.configWidget.slot_update_finish()
-            if(self.configWidget.iscanceled == True):
-                self.messageBox.alert_msg("已取消更新软件源")
-            else:
-                self.messageBox.alert_msg(msg)
-
-                #restart uksc when finish update
-                if self.appmgr.check_update():
-                    self.appmgr.get_advertisements()
-                    self.appmgr.get_recommend_apps()
-                    self.appmgr.get_toprated_stats()
-
+        if(action == AppActions.UPDATE_FIRST):
+            self.updateSinglePB.hide()
+            self.appmgr.init_models()
         else:
-            if(pkgname == "ubuntu-kylin-software-center"):
-                cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
-                self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
-                cd.exec_()
+            (inst,up, all) = self.appmgr.get_application_count(self.category)
+            (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count()
+            self.emit(Signals.count_application_update)
+
+            msg = "软件" + AptActionMsg[action] + "操作完成"
+
+            if(action == AppActions.UPDATE):
+                self.configWidget.slot_update_finish()
+                if(self.configWidget.iscanceled == True):
+                    self.messageBox.alert_msg("已取消更新软件源")
+                else:
+                    self.messageBox.alert_msg(msg)
             else:
-                self.messageBox.alert_msg(msg)
+                if(pkgname == "ubuntu-kylin-software-center"):
+                    cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
+                    self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+                    cd.exec_()
+                else:
+                    self.messageBox.alert_msg(msg)
+
 
 def main():
     app = QApplication(sys.argv)
@@ -1172,20 +1206,23 @@ def main():
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
-    globalfont.setFamily("文泉驿微米黑")
-    # globalfont.setFamily("华文细黑")
+    globalfont.setFamily("文泉驿微米黑")  # 文泉驿微米黑 文泉驿等宽微米黑 华文细黑
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
 
+    # check show quiet (only trayicon)
+    argn = len(sys.argv)
+    if(argn == 1):
+        Globals.LAUNCH_MODE = 'normal'
+    elif(argn > 1):
+        arg = sys.argv[1]
+        if(arg == '-quiet'):
+            Globals.LAUNCH_MODE = 'quiet'
+
     mw = SoftwareCenter()
-    mw.show()
 
     sys.exit(app.exec_())
 
 
 if __name__ == '__main__':
-
     main()
-
-
-

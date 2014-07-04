@@ -140,12 +140,15 @@ class AppManager(QObject):
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
 
-    def check_update(self):
-        (inst,up,total) = self.get_application_count()
-        #if self.db.is_update_needed() and total<300:
-        if total<500:
+    def check_source_update(self):
+        f = QFile("/var/lib/apt/periodic/update-success-stamp")
+        if(f.exists() == False):
             return True
         else:
+            # fi = QFileInfo(f)
+            # dt = fi.lastModified()
+            # return dt.toString("yyyyMMddhh")
+            # return True
             return False
 
     #open the apt cache and get the package count
@@ -556,6 +559,35 @@ class AppManager(QObject):
 
         return []
 
+    def get_pointout_apps_from_db(self):
+        # get apps from db when 0.3.3
+        wps = self.get_application_by_name("wps-office")
+        kuaipan = self.get_application_by_name("kuaipan4uk")
+        sogou = self.get_application_by_name("sogoupinyin")
+        apps = []
+        apps.append(wps)
+        apps.append(kuaipan)
+        apps.append(sogou)
+        # ===========================
+
+        pl = []
+        for app in apps:
+            if(app.is_installed == False):
+                pl.append(app)
+
+        return pl
+
+    def get_pointout_is_show_from_db(self):
+        value = self.db.get_pointout_is_show()
+        if(value == 'True'):
+            return True
+        else:
+            return False
+
+    def set_pointout_is_show(self, flag):
+        self.db.set_pointout_is_show(flag)
+
+
     def dispatchWorkerResult(self,item,reslist):
         if item.funcname == "get_reviews":
             # convert into our review objects
@@ -601,7 +633,7 @@ class AppManager(QObject):
             action = item.kwargs["action"]
             print "update apt cache ready:",len(reslist),pkgname
 
-            self.emit(Signals.apt_cache_update_ready,action, pkgname)
+            self.emit(Signals.apt_cache_update_ready, action, pkgname)
         elif item.funcname == "init_models":
             LOG.debug("init models ready")
             self.emit(Signals.init_models_ready,"ok","获取分类信息完成")

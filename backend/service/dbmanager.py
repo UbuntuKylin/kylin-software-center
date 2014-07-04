@@ -412,6 +412,22 @@ class Database:
 
         return reviews
 
+    def get_pointout_is_show(self):
+        self.cursor.execute("select value from dict where key=?", ('pointout',))
+        res = self.cursor.fetchall()
+        for item in res:
+            isshow = item[0]
+            return isshow
+
+    def set_pointout_is_show(self, flag):
+        value = ''
+        if(flag == True):
+            value = 'True'
+        else:
+            value = 'False'
+        self.cursor.execute("update dict set value=? where key='pointout'", (value,))
+        self.connect.commit()
+
 
 class CacheProcess(multiprocessing.Process):
 

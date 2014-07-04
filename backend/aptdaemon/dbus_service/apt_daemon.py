@@ -41,6 +41,7 @@ class AppActions:
     APPLY = "apply_changes"
     PURCHASE = "purchase"
     UPDATE = "update"
+    UPDATE_FIRST = "update_first"
     ADD_SOURCE = "add_source"
     REMOVE_SOURCE = "remove_source"
     GET_SOURCES = "get_sources"
@@ -103,7 +104,7 @@ class FetchProcess(apb.AcquireProgress):
                  "action":str(self.action),
                  }
 
-        if self.action == AppActions.UPDATE:
+        if self.action == AppActions.UPDATE or self.action == AppActions.UPDATE_FIRST:
             if self.total_items!= 0:
                 percent = float(self.current_items * 100.0 / self.total_items)
                 if percent > self.percent:
@@ -273,6 +274,23 @@ class AptDaemon():
             else:
                 print "quiet=False"
                 self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
+        except Exception, e:
+            print e
+            print "update except"
+
+    # apt-get update first launch os
+    def update_first(self, taskName, kwargs=None):
+        quiet = False
+        if kwargs is not None:
+            quiet = int(kwargs["quiet"])
+
+        try:
+            if quiet == True:
+                print "quiet=True"
+                self.cache.update()
+            else:
+                print "quiet=False"
+                self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE_FIRST))
         except Exception, e:
             print e
             print "update except"

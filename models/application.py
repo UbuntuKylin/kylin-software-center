@@ -140,6 +140,18 @@ class Application:
         except:
             return " "
 
+    # get total download size include dependencies
+    def get_total_size(self):
+        totalsize = 0
+        deplist = self.package.candidate.dependencies
+        for dep_l in deplist:
+            dep = dep_l[0]
+            if(dep.rawtype == 'Depends'):
+                deppackage = self.cache[dep.name]
+                if(deppackage.is_installed == False):
+                    totalsize += deppackage.candidate.size
+
+        return totalsize
 
     #get the reviews object list of this application
     def get_reviews(self,page):
