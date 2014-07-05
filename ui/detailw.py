@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Mon Jun 16 15:04:12 2014
+# Created: Wed Jun 25 10:10:06 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -56,7 +56,7 @@ class Ui_DetailWidget(object):
         self.installedVersion.setText(_fromUtf8(""))
         self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
         self.size = QtGui.QLabel(DetailWidget)
-        self.size.setGeometry(QtCore.QRect(330, 87, 140, 18))
+        self.size.setGeometry(QtCore.QRect(330, 90, 140, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.gradeBG = QtGui.QLabel(DetailWidget)
@@ -145,6 +145,10 @@ class Ui_DetailWidget(object):
         self.sshot.setGeometry(QtCore.QRect(350, 530, 1, 1))
         self.sshot.setText(_fromUtf8(""))
         self.sshot.setObjectName(_fromUtf8("sshot"))
+        self.size_install = QtGui.QLabel(DetailWidget)
+        self.size_install.setGeometry(QtCore.QRect(330, 111, 140, 18))
+        self.size_install.setText(_fromUtf8(""))
+        self.size_install.setObjectName(_fromUtf8("size_install"))
 
         self.retranslateUi(DetailWidget)
         QtCore.QMetaObject.connectSlotsByName(DetailWidget)

@@ -143,6 +143,7 @@ class AppActions:
     APPLY = "apply_changes"
     PURCHASE = "purchase"
     UPDATE = "update"
+    UPDATE_FIRST = "update_first"
     ADD_SOURCE = "add_source"
     REMOVE_SOURCE = "remove_source"
     GET_SOURCES = "get_sources"
@@ -153,6 +154,7 @@ AptActionMsg = {
     "remove":"卸载",
     "upgrade":"更新",
     "update":"源更新",
+    "update_first":"源初始化",
 }
 
 AptProcessMsg = {

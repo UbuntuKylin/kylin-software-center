@@ -30,13 +30,14 @@ from models.enums import Signals
 
 
 class ConfigWidget(QWidget):
-    sourcelist = ''
+    mainw = ''
     iscanceled = ''
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
 
+        self.mainw = parent
         self.backend = parent.backend
 
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -66,17 +67,26 @@ class ConfigWidget(QWidget):
         self.ui.lesource.textChanged.connect(self.slot_le_input)
         self.ui.cbhideubuntu.stateChanged.connect(self.slot_checkstate_changed)
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
+        self.ui.pageListWidget.itemClicked.connect(self.slot_item_clicked)
 
         self.ui.text1.setText("软件源列表")
         self.ui.cbhideubuntu.setText("隐藏ubuntu源")
         self.ui.btnUpdate.setText("    更新软件源")
         self.ui.btnAdd.setText("    添加软件源")
         self.ui.btnReset.setText("恢复默认设置")
+
         sourceitem = QListWidgetItem("软件源设置")
         icon = QIcon()
         icon.addFile("res/source.png", QSize(), QIcon.Normal, QIcon.Off)
         sourceitem.setIcon(icon)
         self.ui.pageListWidget.addItem(sourceitem)
+
+        pointoutitem = QListWidgetItem("软件推荐页")
+        pointoutitem.setWhatsThis('pointout')
+        icon = QIcon()
+        icon.addFile("res/ubuntukylin.png", QSize(), QIcon.Normal, QIcon.Off)
+        pointoutitem.setIcon(icon)
+        self.ui.pageListWidget.addItem(pointoutitem)
 
         self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
         self.ui.text1.setStyleSheet("QLabel{color:#1E66A4;font-size:14px;}")
@@ -168,6 +178,10 @@ class ConfigWidget(QWidget):
     def slot_checkstate_changed(self):
         self.fill_sourcelist()
 
+    def slot_item_clicked(self, item):
+        if(item.whatsThis() == 'pointout'):
+            self.mainw.get_pointout()
+
 
 class SourceItemWidget(QWidget):
     confw = ''
@@ -213,7 +227,7 @@ class SourceItemWidget(QWidget):
 
     def slot_remove_source(self):
         source = str(self.type) + " " + str(self.sourcetext.text().toUtf8())
-        self.confw.sourcelist.remove_source(source)
+        self.confw.backend.remove_source(source)
         self.confw.fill_sourcelist()
 
 
