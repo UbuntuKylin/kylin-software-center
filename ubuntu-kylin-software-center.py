@@ -1164,6 +1164,9 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.updateSinglePB.value_change(percent)
         else:
+            if processtype=='cancel':
+                self.emit(Signals.apt_process_cancel,name,action)
+
             if self.stmap.has_key(name) is False:
                 print "has no key :  ",name
                 LOG.warning("there is no task for this app:%s",name)
@@ -1172,7 +1175,7 @@ class SoftwareCenter(QMainWindow):
                 if processtype=='cancel':
                     self.del_task_item(name)
                     del self.stmap[name]
-                    self.emit(Signals.apt_process_cancel,name,action)
+                    #self.emit(Signals.apt_process_cancel,name,action)
                 else:
                     if processtype=='apt' and int(percent)>=200:
                         self.emit(Signals.apt_process_finish,name,action)
