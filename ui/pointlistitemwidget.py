@@ -9,7 +9,6 @@
 #     Shine Huang<shenghuang@ubuntukylin.com>
 # Maintainer:
 #     Shine Huang<shenghuang@ubuntukylin.com>
-#     maclin <majun@ubuntukylin.com>
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -109,7 +108,8 @@ class PointListItemWidget(QWidget):
         else:
             self.ui.btn.setEnabled(False)
             self.ui.btn.setText("处理中")
-            self.emit(Signals.install_app, self.app)
+            # self.emit(Signals.install_app, self.app)
+            self.emit(Signals.install_app_rcm, self.app)
             self.parent.slot_goto_taskpage()
             self.parent.show()
 

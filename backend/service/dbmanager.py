@@ -429,50 +429,6 @@ class Database:
         self.connect.commit()
 
 
-class CacheProcess(multiprocessing.Process):
-
-    def __init__(self, func, kwargs=None, event=None, queue=None):
-        super(CacheProcess, self).__init__()
-        multiprocessing.Process.__init__(self)
-        self.func = func
-        self.kwargs = kwargs
-        self.daemon = True
-        self.event = event
-        self.queue = queue
-
-    def run(self):
-        if self.func == "get_all_ratings":
-            from backend.remote.piston_remoter import PistonRemoter
-            import json
-            premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
-            reslist = premoter._get("getallratings", scheme="http")
-            decoded = json.loads(reslist)
-            print "all ratings and rating_total download over : ",len(decoded)
-
-            import sqlite3
-            destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
-            self.connect = sqlite3.connect(destFile, check_same_thread=False)
-            self.cursor = self.connect.cursor()
-
-            for rating in decoded:
-                app_name = rating['app_name']
-                # print app_name
-                rating_avg = str(rating['rating_avg'])
-                # print rating_avg
-                rating_total = str(rating['rating_total'])
-                # print rating_total
-
-                sql = "update application set rating_total=" + rating_total + ",rating_avg=" + rating_avg +" where app_name='" + app_name + "'"
-                self.cursor.execute(sql)
-            self.connect.commit()
-
-    # CACHE update rating_avg and rating_total
-    def update_ratings(self, result):
-        pass
-
-    def update_categories(self):
-        pass
-
 if __name__ == "__main__":
     db = Database()
 #    db.init_category_table()

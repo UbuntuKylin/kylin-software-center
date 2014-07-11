@@ -39,6 +39,7 @@ from models.application import Application
 from models.advertisement import Advertisement
 from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRatingStat
 from backend.service.dbmanager import Database
+from utils.slientprocess import *
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import Signals,UnicodeToAscii
 
@@ -115,10 +116,6 @@ class ThreadWorkerDaemon(threading.Thread):
 #This class is the abstraction of application management
 class AppManager(QObject):
 
-    # piston remoter
-    premoter = ''
-
-    #
     def __init__(self):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
@@ -130,15 +127,17 @@ class AppManager(QObject):
         self.distroseries = 'any'  #'any' for all
         self.db = Database()
 
-        # piston remoter to ukscs
-        # self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
-        # self.connect(self, Signals.get_all_ratings_ready, self.slot_update_ratings)
-
         self.worklist = []
         self.mutex = threading.RLock()
         self.worker_thread = ThreadWorkerDaemon(self)
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
+
+        # silent process work queue
+        self.squeue = multiprocessing.Queue()
+        self.silent_process = SlientProcess(self.squeue)
+        self.silent_process.daemon = True
+        self.silent_process.start()
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
@@ -463,7 +462,6 @@ class AppManager(QObject):
 
     #get toprated apps
     def get_toprated_stats_from_db(self, topcount=10, callback=None):
-        print "We need to get the top 10 applications"
         list = self.db.query_app_toprated()
         rnrStatList = []
         for item in list:
@@ -478,7 +476,6 @@ class AppManager(QObject):
             rnrStatList.append(rnrStat)
 
         return rnrStatList
-
 
     #get toprated apps
     def get_toprated_stats(self, topcount=100, callback=None):
@@ -653,20 +650,28 @@ class AppManager(QObject):
         self.db.init_toprated_table(rnrStats)
 
 
-    #------------------------0.3--------------------------
+    #--------------------------------0.3----------------------------------
 
-    # get all app's rating & rating times
-    # def update_ratings(self):
-    #     kwargs = None
-    #
-    #     item  = WorkerItem("get_all_ratings",kwargs)
-    #
-    #     self.mutex.acquire()
-    #     self.worklist.append(item)
-    #     self.mutex.release()
-    #
-    # def slot_update_ratings(self, ratinglist):
-    #     self.db.update_ratings(ratinglist)
+    def get_all_ratings(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_all_ratings", kwargs)
+        self.squeue.put_nowait(item)
+
+    def submit_pingback_main(self):
+        kwargs = {}
+
+        item  = SilentWorkerItem("submit_pingback_main", kwargs)
+        self.squeue.put_nowait(item)
+
+    def submit_pingback_app(self, app_name, isrcm=False):
+        kwargs = {"app_name": app_name,
+                  "isrcm": isrcm,
+                  }
+
+        item  = SilentWorkerItem("submit_pingback_app", kwargs)
+        self.squeue.put_nowait(item)
+
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):

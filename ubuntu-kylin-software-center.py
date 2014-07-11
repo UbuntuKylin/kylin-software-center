@@ -105,7 +105,7 @@ class SoftwareCenter(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.setWindowTitle("Ubuntu Kylin Software-Center")
+        self.setWindowTitle("Ubuntu Kylin 软件中心")
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
@@ -126,7 +126,7 @@ class SoftwareCenter(QMainWindow):
         self.messageBox = MessageBox(self)
         # first update process bar
         self.updateSinglePB = SingleProcessBar(self)
-        # init config widget
+        # config widget
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
@@ -365,6 +365,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
         self.connect(self, Signals.update_source,self.slot_update_source)
 
+        # widget status
         self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(False)
@@ -534,21 +535,21 @@ class SoftwareCenter(QMainWindow):
             # base loading finish, start backend work
             self.start_silent_work()
 
+    # silent background works
     def start_silent_work(self):
         # init pointout
         self.init_pointout()
 
-        # start update cache db
-        from backend.service.dbmanager import CacheProcess
-        cp = CacheProcess('get_all_ratings')
-        cp.daemon = True
-        cp.start()
+        # update cache db
+        self.appmgr.get_all_ratings()
+
+        # pingback_main
+        self.appmgr.submit_pingback_main()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
             LOG.warning("init models failed:%s",message)
             sys.exit(0)
-            return
         elif step == "ok":
             LOG.debug("init models successfully and ready to setup ui...")
             self.init_last_data()
@@ -763,7 +764,8 @@ class SoftwareCenter(QMainWindow):
                 oneitem = QListWidgetItem()
                 pliw = PointListItemWidget(p, self.backend, self)
                 self.connect(pliw, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(pliw, Signals.install_app, self.slot_click_install)
+                self.connect(pliw, Signals.install_app_rcm, self.slot_click_install_rcm)
+                # self.connect(pliw, Signals.install_app, self.slot_click_install)
                 self.pointout.ui.contentliw.addItem(oneitem)
                 self.pointout.ui.contentliw.setItemWidget(oneitem, pliw)
 
@@ -1085,9 +1087,18 @@ class SoftwareCenter(QMainWindow):
 
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
+        self.appmgr.submit_pingback_app(app.name)
         res = self.backend.install_package(app.name)
         if res:
             self.add_task_item(app)
+
+    def slot_click_install_rcm(self, app):
+        LOG.info("add an install task:%s",app.name)
+        self.appmgr.submit_pingback_app(app.name, isrcm=True)
+        res = self.backend.install_package(app.name)
+        if res:
+            self.add_task_item(app)
+
 
     def slot_click_upgrade(self, app):
         LOG.info("add an upgrade task:%s",app.name)

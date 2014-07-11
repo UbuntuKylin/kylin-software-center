@@ -180,7 +180,7 @@ class ConfigWidget(QWidget):
 
     def slot_item_clicked(self, item):
         if(item.whatsThis() == 'pointout'):
-            self.mainw.get_pointout()
+            self.mainw.pointout.show_animation()
 
 
 class SourceItemWidget(QWidget):

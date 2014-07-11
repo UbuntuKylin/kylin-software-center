@@ -36,7 +36,8 @@ UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
 # UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com/uksc/"
 
 
 # pkg action state constants
@@ -122,6 +123,7 @@ class Signals:
     click_item = SIGNAL("clickitem")
     show_app_detail = SIGNAL("app-show-detail")
     install_app = SIGNAL("install-app")
+    install_app_rcm = SIGNAL("install-app-rcm")
     remove_app = SIGNAL("remove-app")
     upgrade_app = SIGNAL("upgrade-app")
     click_update_source = SIGNAL("click-update-source")

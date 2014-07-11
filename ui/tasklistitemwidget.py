@@ -28,7 +28,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
 from models.enums import Signals,AptActionMsg
-from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH
+from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
 
 
 class TaskListItemWidget(QWidget):
@@ -55,12 +55,16 @@ class TaskListItemWidget(QWidget):
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
         img = ''
-        if(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-            img = QPixmap("data/tmpicons/" + app.name + ".png")
+        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")):
+            img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")):
+            img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")
+        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")
         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-            img = QPixmap("data/tmpicons/" + app.name + ".jpg")
+            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")
         else:
-            img = QPixmap("data/tmpicons/default.jpg")
+            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.jpg")
         img = img.scaled(32, 32)
         self.ui.icon.setPixmap(img)
 
