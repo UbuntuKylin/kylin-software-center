@@ -36,4 +36,5 @@ setup(name="ubuntu-kylin-software-center",
     ('share/ubuntu-kylin-software-center/ui/', glob.glob('ui/*')),
     ('share/ubuntu-kylin-software-center/utils/', glob.glob('utils/*')),
     ('share/ubuntu-kylin-software-center/',['ReadMe','ubuntu-kylin-software-center.py']),
+    ('../etc/xdg/autostart/',['ubuntu-kylin-software-center-autostart.desktop']),
     ])
