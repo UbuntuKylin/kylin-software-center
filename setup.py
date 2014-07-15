@@ -6,7 +6,7 @@ from distutils.core import setup
 #import build_i18n_ext as build_i18n
 
 setup(name="ubuntu-kylin-software-center",
-      version="0.3.1",
+      version="0.3.2",
       author="Ubuntu Kylin Team",
       author_email="ubuntukylin-members@list.launchpad.net",
       url="https://launchpad.net/ubuntu-kylin-software-center",
@@ -36,4 +36,5 @@ setup(name="ubuntu-kylin-software-center",
     ('share/ubuntu-kylin-software-center/ui/', glob.glob('ui/*')),
     ('share/ubuntu-kylin-software-center/utils/', glob.glob('utils/*')),
     ('share/ubuntu-kylin-software-center/',['ReadMe','ubuntu-kylin-software-center.py']),
+    ('../etc/xdg/autostart/',['ubuntu-kylin-software-center-autostart.desktop']),
     ])

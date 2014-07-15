@@ -1,3 +1,12 @@
+ubuntu-kylin-software-center (0.3.2.0) trusty; urgency=medium
+
+  * Increase the small icon, click on the optional after hide/show the main interface, exit procedures
+  * Modify the update software source of tips, dbus tips such as text and control logic 
+  * Increase start software center data record and install the software of data records
+  * fix many bugs(1329237,1326692,1297108,1340497,1323209)
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 11 Jul 2014 16:34:17 +0800 
+
 ubuntu-kylin-software-center (0.3.1.0) trusty; urgency=medium
  
   * fix many ui bugs(1309906,1314590,1326681,1323227,1309515,1326679,1326689,1329186,1328749,1329642)
