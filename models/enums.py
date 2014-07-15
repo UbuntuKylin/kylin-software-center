@@ -36,8 +36,8 @@ UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
 # UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
-# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com/uksc/"
+UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com/uksc/"
 
 
 # pkg action state constants
