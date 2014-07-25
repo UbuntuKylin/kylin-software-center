@@ -725,7 +725,7 @@
     <widget class="QLabel" name="logoImg">
      <property name="geometry">
       <rect>
-       <x>659</x>
+       <x>667</x>
        <y>18</y>
        <width>127</width>
        <height>44</height>
@@ -781,6 +781,19 @@
        <y>5</y>
        <width>15</width>
        <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnXp">
+     <property name="geometry">
+      <rect>
+       <x>559</x>
+       <y>0</y>
+       <width>101</width>
+       <height>83</height>
       </rect>
      </property>
      <property name="text">
@@ -1029,6 +1042,39 @@
     <property name="text">
      <string/>
     </property>
+   </widget>
+   <widget class="QWidget" name="xpWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>5</x>
+      <y>87</y>
+      <width>815</width>
+      <height>505</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="xpMSGBar">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>815</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="xptableWidget">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>33</y>
+       <width>815</width>
+       <height>471</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>

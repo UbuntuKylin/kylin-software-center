@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Jun 13 17:25:30 2014
+# Created: Fri Jul 25 15:28:26 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -244,7 +244,7 @@ class Ui_MainWindow(object):
         self.btnUn.setText(_fromUtf8(""))
         self.btnUn.setObjectName(_fromUtf8("btnUn"))
         self.logoImg = QtGui.QLabel(self.headerWidget)
-        self.logoImg.setGeometry(QtCore.QRect(659, 18, 127, 44))
+        self.logoImg.setGeometry(QtCore.QRect(667, 18, 127, 44))
         self.logoImg.setText(_fromUtf8(""))
         self.logoImg.setObjectName(_fromUtf8("logoImg"))
         self.btnTask = QtGui.QPushButton(self.headerWidget)
@@ -263,6 +263,10 @@ class Ui_MainWindow(object):
         self.btnConf.setGeometry(QtCore.QRect(50, 5, 15, 15))
         self.btnConf.setText(_fromUtf8(""))
         self.btnConf.setObjectName(_fromUtf8("btnConf"))
+        self.btnXp = QtGui.QPushButton(self.headerWidget)
+        self.btnXp.setGeometry(QtCore.QRect(559, 0, 101, 83))
+        self.btnXp.setText(_fromUtf8(""))
+        self.btnXp.setObjectName(_fromUtf8("btnXp"))
         self.searchWidget = QtGui.QWidget(self.centralwidget)
         self.searchWidget.setGeometry(QtCore.QRect(157, 87, 663, 479))
         self.searchWidget.setObjectName(_fromUtf8("searchWidget"))
@@ -337,6 +341,18 @@ class Ui_MainWindow(object):
         self.shadowbottom.setGeometry(QtCore.QRect(0, 592, 825, 6))
         self.shadowbottom.setText(_fromUtf8(""))
         self.shadowbottom.setObjectName(_fromUtf8("shadowbottom"))
+        self.xpWidget = QtGui.QWidget(self.centralwidget)
+        self.xpWidget.setGeometry(QtCore.QRect(5, 87, 815, 505))
+        self.xpWidget.setObjectName(_fromUtf8("xpWidget"))
+        self.xpMSGBar = QtGui.QLabel(self.xpWidget)
+        self.xpMSGBar.setGeometry(QtCore.QRect(0, 0, 815, 33))
+        self.xpMSGBar.setText(_fromUtf8(""))
+        self.xpMSGBar.setObjectName(_fromUtf8("xpMSGBar"))
+        self.xptableWidget = QtGui.QTableWidget(self.xpWidget)
+        self.xptableWidget.setGeometry(QtCore.QRect(0, 33, 815, 471))
+        self.xptableWidget.setObjectName(_fromUtf8("xptableWidget"))
+        self.xptableWidget.setColumnCount(0)
+        self.xptableWidget.setRowCount(0)
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -347,4 +363,14 @@ class Ui_MainWindow(object):
         self.rankText.setText(_translate("MainWindow", "排行榜", None))
         self.btnDownTimes.setText(_translate("MainWindow", "下载排行", None))
         self.btnGrade.setText(_translate("MainWindow", "评分排行", None))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 
