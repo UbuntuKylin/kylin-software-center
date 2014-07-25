@@ -100,6 +100,10 @@ class PistonRemoter(PistonAPI):
         postdata.isrcm = isrcm
         return self._post('pingbackapp/', data=postdata, scheme='http', content_type='application/json')
 
+    @returns_json
+    def get_categories(self):
+        return self._get("getcategories", scheme="http")
+
 
 if __name__ == '__main__':
     s = PistonRemoter(service_root="http://192.168.30.12/uksc/")

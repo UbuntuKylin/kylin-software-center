@@ -29,5 +29,12 @@ import os
 class Globals:
     # how many softwares show in a setp
     showSoftwareStep = 20
+
+    # uksc launch mode: normal / quiet
     LAUNCH_MODE = 'quiet'
+
+    # uksc version number
     UKSC_VERSION = '0.3.2'
+
+    # open with local deb file
+    LOCAL_DEB_FILE = None

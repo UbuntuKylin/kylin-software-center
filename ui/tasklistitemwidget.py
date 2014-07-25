@@ -29,13 +29,14 @@ from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
 from models.enums import Signals,AptActionMsg
 from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
+from utils.debfile import DebFile
 
 
 class TaskListItemWidget(QWidget):
     app = ''
     finish = False
 
-    def __init__(self, app, parent=None):
+    def __init__(self, app, parent=None, isdeb=False):
         QWidget.__init__(self,parent)
         self.ui_init()
         self.app = app
@@ -54,28 +55,40 @@ class TaskListItemWidget(QWidget):
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
-        img = ''
-        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")):
-            img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")):
-            img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")
+        # this is deb file task
+        if(isdeb == True):
+            self.ui.name.setText(app.name)
+            sizek = app.installedsize
+            if(sizek <= 1024):
+                self.ui.size.setText(str(sizek) + " KB")
+            else:
+                self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
+            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
+            img = img.scaled(32, 32)
+            self.ui.icon.setPixmap(img)
         else:
-            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.jpg")
-        img = img.scaled(32, 32)
-        self.ui.icon.setPixmap(img)
+            img = ''
+            if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")):
+                img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")
+            elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")):
+                img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")
+            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+                img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")
+            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
+                img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")
+            else:
+                img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
+            img = img.scaled(32, 32)
+            self.ui.icon.setPixmap(img)
 
-        self.ui.name.setText(app.name)
+            self.ui.name.setText(app.name)
 
-        size = app.packageSize
-        sizek = size / 1024
-        if(sizek < 1024):
-            self.ui.size.setText(str(sizek) + " KB")
-        else:
-            self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
+            size = app.packageSize
+            sizek = size / 1024
+            if(sizek < 1024):
+                self.ui.size.setText(str(sizek) + " KB")
+            else:
+                self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
 
         self.ui.progressBar.setRange(0,100)
         self.ui.progressBar.reset()

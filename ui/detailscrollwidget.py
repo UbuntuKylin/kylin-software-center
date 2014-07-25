@@ -37,11 +37,13 @@ from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         Signals,
                         AppActions)
 from utils import run
+from utils.debfile import DebFile
 
 
 class DetailScrollWidget(QScrollArea):
     mainwindow = ''
     app = None
+    debfile = ''
     sshotcount = 0
     bigsshot = ''
     reviewpage = ''
@@ -133,11 +135,56 @@ class DetailScrollWidget(QScrollArea):
         self.connect(self.mainwindow,Signals.apt_process_finish,self.slot_work_finished)
         self.connect(self.mainwindow,Signals.apt_process_cancel,self.slot_work_cancel)
 
-
-
     def ui_init(self):
         self.ui = Ui_DetailWidget()
         self.ui.setupUi(self.detailWidget)
+
+    def show_by_local_debfile(self, path):
+        # clear reviews
+        self.reviewpage = 1
+        self.currentreviewready = False
+        self.ui.reviewListWidget.clear()
+        self.detailWidget.resize(805, 790)
+        self.ui.reviewListWidget.resize(805, 0)
+        self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
+        # clear sshot
+        self.sshotcount = 0
+        self.ui.thumbnail.hide()
+
+        self.ui.btnUpdate.setText("不可用")
+        self.ui.btnUninstall.setText("不可用")
+        self.ui.btnUpdate.setEnabled(False)
+        self.ui.btnUninstall.setEnabled(False)
+        self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+        self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+
+        self.debfile = DebFile(path)
+        self.app = self.debfile
+
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
+        self.ui.name.setText(self.debfile.name)
+        self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
+        sizek = self.debfile.installedsize
+        if(sizek <= 1024):
+            self.ui.size.setText("安装大小: " + str(sizek) + " KB")
+        else:
+            self.ui.size.setText("安装大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
+        self.ui.description.setText(self.debfile.description)
+
+        if(self.debfile.is_installable()):
+            deps = self.debfile.get_missing_deps()
+            self.ui.summary.setText("需要安装的依赖包: " + str(deps))
+
+            self.ui.btnInstall.setText("安装此包")
+            self.ui.btnInstall.setEnabled(True)
+            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
+        else:
+            self.ui.btnInstall.setText("无法安装")
+            self.ui.btnInstall.setEnabled(False)
+            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+
+        self.show()
+        self.mainwindow.loadingDiv.stop_loading()
 
     # fill fast property, show ui, request remote property
     def showSimple(self, app):
@@ -291,6 +338,10 @@ class DetailScrollWidget(QScrollArea):
     def slot_click_install(self):
         if(self.ui.btnInstall.text() == "启动"):
             run.run_app(self.app.name)
+        elif(self.ui.btnInstall.text() == "安装此包"):
+            self.emit(Signals.install_debfile, self.debfile)
+            self.ui.btnInstall.setText("处理中")
+            self.ui.btnInstall.setEnabled(False)
         else:
             self.emit(Signals.install_app, self.app)
             self.ui.btnInstall.setText("处理中")
@@ -321,7 +372,17 @@ class DetailScrollWidget(QScrollArea):
 
             self.ui.status.show()
 
-            if action == AppActions.INSTALL:
+            if action == AppActions.INSTALLDEBFILE:
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btnInstall.setEnabled(False)
+                    self.ui.btnInstall.setText("已安装")
+                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+                else:
+                    self.ui.btnInstall.setEnabled(True)
+                    self.ui.btnInstall.setText("启动")
+                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
+
+            elif action == AppActions.INSTALL:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnInstall.setText("已安装")

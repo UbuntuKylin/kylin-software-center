@@ -28,12 +28,15 @@
 import apt
 import aptsources.sourceslist
 import apt.progress.base as apb
+from apt.debfile import DebPackage
 from apt.cache import FetchFailedException
 
 import locale
 
 # application actions, should sync with definition in models.enums
 class AppActions:
+    INSTALLDEPS = "install_deps"
+    INSTALLDEBFILE = "install_debfile"
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"
@@ -180,6 +183,8 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(self.percent),
                  "action":str(self.action),
                  }
+        if(self.action == AppActions.INSTALLDEBFILE):
+            kwarg["apt_percent"] = "50"
         self.dbus_service.software_apt_signal("apt_start", kwarg)
 
     def finish_update(self):
@@ -207,10 +212,11 @@ class AptProcess(apb.InstallProgress):
 
         self.dbus_service.software_apt_signal("apt_pulse", kwarg)
 
+
 #class AptDaemon(threading.Thread):
 class AptDaemon():
-    def __init__(self, dbus_service):
 
+    def __init__(self, dbus_service):
         self.dbus_service = dbus_service
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
         self.cache = apt.Cache()
@@ -224,6 +230,35 @@ class AptDaemon():
         except Exception, e:
             print e
             return "ERROR"
+
+    # install deb file
+    def install_debfile(self, path, kwargs=None):
+        debfile = DebPackage(path)
+        pkgName = debfile._sections["Package"]
+        try:
+            debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
+        except Exception, e:
+            print e
+            print "install debfile err"
+
+    # install deps
+    def install_deps(self, path, kwargs=None):
+        debfile = DebPackage(path)
+        pkgName = debfile._sections["Package"]
+        debfile.check()
+        deps = debfile.missing_deps
+
+        if(len(deps) > 0):
+            self.cache.open()
+            for pkgn in deps:
+                pkg = self.get_pkg_by_name(pkgn)
+                pkg.mark_install()
+
+            try:
+                self.cache.commit(FetchProcess(self.dbus_service, pkgName, AppActions.INSTALLDEPS), AptProcess(self.dbus_service, pkgName, AppActions.INSTALLDEPS))
+            except Exception, e:
+                print e
+                print "install err"
 
     # install package
     def install(self, pkgName, kwargs=None):
@@ -393,8 +428,6 @@ class AptDaemon():
         source.save()
 
         return True
-
-
 
     # add ubuntukylin source in /etc/apt/sources.list
     def add_source_ubuntukylin(self):

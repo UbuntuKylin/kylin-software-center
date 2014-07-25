@@ -122,6 +122,7 @@ class Signals:
     count_application_update = SIGNAL("count-application-update")
     click_item = SIGNAL("clickitem")
     show_app_detail = SIGNAL("app-show-detail")
+    install_debfile = SIGNAL("install-debfile")
     install_app = SIGNAL("install-app")
     install_app_rcm = SIGNAL("install-app-rcm")
     remove_app = SIGNAL("remove-app")
@@ -138,6 +139,8 @@ class Signals:
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
+    INSTALLDEPS = "install_deps"
+    INSTALLDEBFILE = "install_debfile"
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"
@@ -152,6 +155,8 @@ class AppActions:
 
 
 AptActionMsg = {
+    "install_deps":"安装依赖包",
+    "install_debfile":"安装本地包",
     "install":"安装",
     "remove":"卸载",
     "upgrade":"更新",

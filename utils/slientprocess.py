@@ -102,6 +102,11 @@ class SlientProcess(multiprocessing.Process):
         res = self.premoter.submit_pingback_app(app_name, machine, isrcm)
         return res
 
+    # get all categories data from server
+    def get_categories(self):
+        reslist = self.premoter.get_categories()
+        print "all categories download over : ",len(reslist)
+
 
 class SilentWorkerItem:
 

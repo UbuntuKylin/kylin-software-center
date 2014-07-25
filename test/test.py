@@ -62,3 +62,9 @@ if __name__ == "__main__":
     import sys
     # import os
     # os.execv("/usr/bin/python", ["foo", "/home/shine/PycharmProjects/ubuntu-kylin-software-center/test/restarttext.py"])
+    la = []
+    # la.append(1)
+    # la.append(2)
+    # la.append(3)
+    print la.pop(0)
+    print la

@@ -76,13 +76,15 @@ class WorkThread(threading.Thread):
     def run(self):
 #        print "The backend start the work thread..."
         while(True):
+
             if len(self.dbus_service.worklist) == 0:
                 time.sleep(0.5)
                 continue
+
             self.dbus_service.mutex.acquire()
-            item = self.dbus_service.worklist.pop()
+            item = self.dbus_service.worklist.pop(0) # pop(0) is get first item and remove it from list
             self.dbus_service.mutex.release()
-#            print "procing item:",item
+
             func = getattr(self.dbus_service.daemonApt,item.action)
             if func is None:
                 print "Error action: ", item
@@ -237,6 +239,41 @@ class SoftwarecenterDbusService(dbus.service.Object):
         return self.daemonApt.get_sources(except_ubuntu)
 
     # -------------------------software-center-------------------------
+
+    # install deb file
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def install_debfile(self, path, sender=None):
+        print "####install deb file: ", path
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            kwarg = {"appname":path,
+                     "action":AppActions.INSTALLDEBFILE,
+                     }
+            self.software_auth_signal("auth_cancel", kwarg)
+            return False
+
+        item = WorkItem(path, AppActions.INSTALLDEBFILE, None)
+        self.add_worker_item(item)
+        return True
+
+    # install deb file's deps
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    def install_deps(self, path, sender=None):
+        print "####install deps: ", path
+
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+        if not granted:
+            kwarg = {"appname":path,
+                     "action":AppActions.INSTALLDEPS,
+                     }
+            self.software_auth_signal("auth_cancel", kwarg)
+            return False
+
+        item = WorkItem(path, AppActions.INSTALLDEPS, None)
+        self.add_worker_item(item)
+        return True
+
     # install package sa:software_fetch_signal() and software_apt_signal()
     @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
     def install(self, pkgName, sender=None):

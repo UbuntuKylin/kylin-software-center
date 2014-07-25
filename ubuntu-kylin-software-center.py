@@ -52,7 +52,7 @@ from backend.search import *
 
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
-from backend.ubuntu_sw import SoftwarecenterDbusController
+from backend.utildbus import UtilDbus
 
 from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE, AppActions,AptActionMsg)
 from models.globals import Globals
@@ -83,8 +83,8 @@ class SoftwareCenter(QMainWindow):
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
 
-        # single check
-        self.check_single_process_by_sessionbus()
+        # singleton check
+        self.check_singleton()
 
         # init dbus backend
         self.init_dbus()
@@ -360,6 +360,7 @@ class SoftwareCenter(QMainWindow):
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
+        self.connect(self.detailScrollWidget, Signals.install_debfile, self.slot_click_install_debfile)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
@@ -466,24 +467,29 @@ class SoftwareCenter(QMainWindow):
                 self.show()
             self.appmgr.init_models()
 
-    def check_single_process_by_sessionbus(self):
+    def check_singleton(self):
         try:
             bus = dbus.SessionBus()
         except:
             LOG.exception("could not initiate dbus")
-            sys.exit()
-            return
+            sys.exit(0)
 
         # if there is an instance running, call to bring it to frontend
         try:
             proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter', '/com/ubuntukylin/softwarecenter')
-            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.softwarecenterIFace')
-            res = iface.bringToFront()
-            sys.exit()
+            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.utiliface')
+            iface.bring_to_front()
 
+            # user clicked local deb file, show info
+            if(Globals.LOCAL_DEB_FILE != None):
+                iface.show_loading_div()
+                iface.show_deb_file(Globals.LOCAL_DEB_FILE)
+            sys.exit(0)
+
+        # else startup one instance
         except dbus.DBusException:
             bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
-            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+            self.dbusControler = UtilDbus(self, bus_name)
 
     def init_last_data(self):
         # init category list
@@ -531,6 +537,10 @@ class SoftwareCenter(QMainWindow):
             self.slot_goto_homepage()
             self.loadingDiv.stop_loading()
             self.trayicon.show()
+
+            # user clicked local deb file, show info
+            if(Globals.LOCAL_DEB_FILE != None):
+                self.slot_show_deb_detail(Globals.LOCAL_DEB_FILE)
 
             # base loading finish, start backend work
             self.start_silent_work()
@@ -580,6 +590,9 @@ class SoftwareCenter(QMainWindow):
     def show_to_frontend(self):
         self.show()
         self.raise_()
+
+    def slot_show_loading_div(self):
+        self.loadingDiv.start_loading("")
 
     def mousePressEvent(self, event):
         if (event.button() == Qt.LeftButton):
@@ -701,14 +714,24 @@ class SoftwareCenter(QMainWindow):
 
         self.emit(Signals.count_application_update)
 
-    def add_task_item(self, app):
-        oneitem = QListWidgetItem()
-        tliw = TaskListItemWidget(app,self)
-        self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-        self.connect(tliw, Signals.task_remove, self.slot_remove_task)
-        self.ui.taskListWidget.addItem(oneitem)
-        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-        self.stmap[app.name] = tliw
+    def add_task_item(self, app, isdeb=False):
+        # add a deb file task
+        if(isdeb == True):
+            oneitem = QListWidgetItem()
+            tliw = TaskListItemWidget(app, self, isdeb=True)
+            # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            self.ui.taskListWidget.addItem(oneitem)
+            self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+            self.stmap[app.name] = tliw
+        else:
+            oneitem = QListWidgetItem()
+            tliw = TaskListItemWidget(app,self)
+            self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            self.ui.taskListWidget.addItem(oneitem)
+            self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+            self.stmap[app.name] = tliw
 
     def del_task_item(self, pkgname):
         count = self.ui.taskListWidget.count()
@@ -1078,12 +1101,26 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar()
         self.detailScrollWidget.showSimple(app)
 
+    def slot_show_deb_detail(self, path):
+        self.reset_nav_bar()
+        self.detailScrollWidget.show_by_local_debfile(path)
+
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")
         self.backend.update_source(quiet)
 
     def slot_click_update_source(self):
         self.emit(Signals.update_source)
+
+    def slot_click_install_debfile(self, debfile):
+        LOG.info("add an install debfile task:%s", debfile.path)
+        # install deb deps
+        res = self.backend.install_deps(debfile.path)
+        if res:
+            # install deb
+            res = self.backend.install_debfile(debfile.path)
+        if res:
+            self.add_task_item(debfile, isdeb=True)
 
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
@@ -1178,7 +1215,9 @@ class SoftwareCenter(QMainWindow):
                     #self.emit(Signals.apt_process_cancel,name,action)
                 else:
                     if processtype=='apt' and int(percent)>=200:
-                        self.emit(Signals.apt_process_finish,name,action)
+                        # (install debfile deps finish) is not the (install debfile task) finish
+                        if(action != AppActions.INSTALLDEPS):
+                            self.emit(Signals.apt_process_finish,name,action)
                     else:
                         taskItem.status_change(processtype, percent, msg)
 
@@ -1213,6 +1252,9 @@ class SoftwareCenter(QMainWindow):
                     self.messageBox.alert_msg(msg)
 
 
+def check_local_deb_file(url):
+    return os.path.isfile(url)
+
 def main():
     app = QApplication(sys.argv)
 
@@ -1232,6 +1274,12 @@ def main():
         arg = sys.argv[1]
         if(arg == '-quiet'):
             Globals.LAUNCH_MODE = 'quiet'
+        else:
+            Globals.LAUNCH_MODE = 'normal'
+            if(check_local_deb_file(arg)):
+                Globals.LOCAL_DEB_FILE = arg
+            else:
+                sys.exit(0)
 
     mw = SoftwareCenter()
 

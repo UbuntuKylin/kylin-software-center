@@ -160,6 +160,12 @@ class InstallBackend(QObject):
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,0,sendMsg)
 
+    def install_deps(self, path):
+        return self.call_dbus_iface(AppActions.INSTALLDEPS, path)
+
+    def install_debfile(self, path):
+        return self.call_dbus_iface(AppActions.INSTALLDEBFILE, path)
+
     def install_package(self,pkgname):
         return self.call_dbus_iface(AppActions.INSTALL,pkgname)
 
