@@ -64,7 +64,7 @@ UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, revi
         download_total=%d where app_name='%s'"
 QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
 
-QUERY_NAME_CATEGORIES = "select id,app_name,categories from xp order by priority asc"
+QUERY_NAME_CATEGORIES = "select id,app_name,categories,windows_app_name from xp order by priority asc"
 QUERY_APP_ACCORD_CATEGORIES = "select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
 UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
 

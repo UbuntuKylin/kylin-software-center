@@ -67,7 +67,6 @@ mainloop = DBusGMainLoop(set_as_default=True)
 
 LOG = logging.getLogger("uksc")
 
-
 class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
@@ -82,6 +81,7 @@ class SoftwareCenter(QMainWindow):
     stmap = {}
     # drag window x,y
     dragPosition = -1
+    xp_exists = 0
 
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
@@ -125,6 +125,7 @@ class SoftwareCenter(QMainWindow):
         # loading div
         self.loadingDiv = LoadingDiv(self)
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+
         # alert message box
         self.messageBox = MessageBox(self)
         # first update process bar
@@ -506,7 +507,7 @@ class SoftwareCenter(QMainWindow):
 
         # add by kobe
         # init uk xp solution
-        self.init_xp_solution_widget()
+        # self.init_xp_solution_widget()
 
         # init search
         self.searchDB = Search()
@@ -614,25 +615,35 @@ class SoftwareCenter(QMainWindow):
         uk_type_list = []#软件分类列表
         uk_list_num = []#软件每个分类的软件个数的列表
         software_list = []#xp替换软件在软件源中的有效列表
+        win_list = []#去掉重复名字后的所有windows软件名列表
+        win_all_list = []#带有重复名字的所有windows软件名列表
+
+        #------------数据验证------------
         db_list = self.appmgr.search_name_and_categories_record()
         for line in db_list:
             app = self.appmgr.get_application_by_name(line[1])
-            if app is not None:
-                self.appmgr.update_exists_data(1, int(line[0]))
+            if app is not None or line[1] == 'wine-qq' or line[1] == 'ppstream':
+                # self.appmgr.update_exists_data(1, int(line[0]))
                 xp_rows += 1
                 if line[1] not in software_list:
                     software_list.append(line[1])
                 if line[2] not in uk_type_list:
                     uk_type_list.append(line[2])
-            else:
-                if line[1] == 'wine-qq' or line[1] == 'ppstream':
-                    self.appmgr.update_exists_data(1, int(line[0]))
-                    xp_rows += 1
-                    if line[1] not in software_list:
-                        software_list.append(line[1])
-                    if line[2] not in uk_type_list:
-                        uk_type_list.append(line[2])
+                win_all_list.append(line[3])
+                if line[3] not in win_list:
+                    win_list.append(line[3])
+        # print set(win_all_list)^set(win_list)#并集
+        # print list(set(win_all_list).intersection(set(win_list)))#交集
+        tmp_pos_list = []
+        tmp_offset_list = []
+        for line in win_list:
+            num = win_all_list.count(line)
+            if num > 1:
+                win_index = win_all_list.index(line)
+                tmp_pos_list.append(win_index)
+                tmp_offset_list.append(num)
 
+        #------------表格创建和美化------------
         self.ui.xptableWidget.setRowCount(xp_rows)
         self.ui.xptableWidget.setColumnCount(5)
         self.ui.xptableWidget.setHorizontalHeaderLabels(['分类','Windows软件','替换软件','替代软件简介','替代软件状态'])
@@ -654,6 +665,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.xptableWidget.resizeColumnsToContents()
         for m in range(xp_rows):
             self.ui.xptableWidget.setRowHeight(m,40)
+        self.connect(self.ui.xptableWidget, SIGNAL("cellDoubleClicked(int, int)"), self.getItem)
+        self.ui.xptableWidget.connect(self, Signals.show_app_detail, self.slot_show_app_detail)
+        self.ui.xptableWidget.setIconSize(QSize(32, 32))
         # 表头设置
         self.ui.xptableWidget.horizontalHeader().setClickable(False)
         self.ui.xptableWidget.horizontalHeader().resizeSection(0,80)
@@ -663,6 +677,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.xptableWidget.horizontalHeader().setFixedHeight(25)
         self.ui.xptableWidget.horizontalHeader().setStretchLastSection(True)
         self.ui.xptableWidget.horizontalHeader().setStyleSheet("QHeaderView::section {background-color:#e4f1f8;color: black;}")#设置表头字体，颜色，模式  padding-left: 4px;border: 1px solid #6c6c6c;
+
+        #------------数据填充------------
         current_row = 0
         num = 0#每个分类软件在软件源中的有效个数
         self.software_index = []#显示列表中记录软件名的一个的顺序列表，方便双击时根据索引值获取软件名
@@ -672,10 +688,7 @@ class SoftwareCenter(QMainWindow):
                 if context[0] in software_list:
                     num += 1
                     self.software_index.append(context[0])
-                    if context[0] == 'wine-qq' or context[0] == 'ppstream':
-                        app.name = context[0]
-                    else:
-                        app = self.appmgr.get_application_by_name(context[0])
+                    app.name = context[0]
                     for i in range(self.ui.xptableWidget.columnCount()):
                         if i == 0:
                             cnt = category
@@ -688,7 +701,6 @@ class SoftwareCenter(QMainWindow):
                         else:
                             cnt = ''
                         if i == 1:
-                            software_icon = ''
                             if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".png")):
                                 software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".png"
                             elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".jpg")):
@@ -697,7 +709,6 @@ class SoftwareCenter(QMainWindow):
                                 software_icon = UBUNTUKYLIN_RES_WIN_PATH + "default.png"
                             self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
                         elif i == 2:
-                            software_icon = ''
                             if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png")):
                                 software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name+".png"
                             elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg")):
@@ -717,11 +728,8 @@ class SoftwareCenter(QMainWindow):
                     current_row += 1
             uk_list_num.append(num)
             num = 0
-        self.connect(self.ui.xptableWidget, SIGNAL("cellDoubleClicked(int, int)"), self.getItem)
-        self.ui.xptableWidget.connect(self, Signals.show_app_detail, self.slot_show_app_detail)
-        self.ui.xptableWidget.setIconSize(QSize(32, 32))
 
-        #合并单元格的效果:
+        #------------合并单元格------------
         # 第一个参数：要改变的单元格行数,第二个参数：要改变的单元格列数,第三个参数：需要合并的行数,第四个参数：需要合并的列数
         pre_start = 0
         for i in range(0, len(uk_list_num)):
@@ -743,6 +751,10 @@ class SoftwareCenter(QMainWindow):
                     pre_start = pre_start + int(uk_list_num[i])
                 else:
                     pre_start = pre_start + int(uk_list_num[i])#uk_list_num[i] = 1，即为该分类只存在一个软件时的处理
+        # 合并windows软件的单元格
+        for i in range(len(tmp_pos_list)):
+            self.ui.xptableWidget.setSpan(tmp_pos_list[i], 1, int(tmp_offset_list[i]), 1)
+        self.xp_exists = 1
 
     def show_to_frontend(self):
         self.show()
@@ -870,9 +882,6 @@ class SoftwareCenter(QMainWindow):
         self.show_more_software(listWidget)
 
         self.emit(Signals.count_application_update)
-
-    def switch_to_xp_category(self):
-        self.ui.xpWidget.show()
 
     def add_task_item(self, app, isdeb=False):
         # add a deb file task
@@ -1225,8 +1234,7 @@ class SoftwareCenter(QMainWindow):
             self.history.history_add(self.slot_goto_xppage)
 
         self.nowPage = 'xppage'
-        self.emit(Signals.count_application_update)
-        self.switch_to_xp_category()
+        # self.emit(Signals.count_application_update)
         self.ui.categoryView.setEnabled(False)
         self.ui.categoryView.clearSelection()
         self.detailScrollWidget.hide()
@@ -1248,6 +1256,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
+
+        if not self.xp_exists:
+            self.init_xp_solution_widget()
+            self.emit(Signals.count_application_update)
 
     def slot_close(self):
         self.dbusControler.stop()
