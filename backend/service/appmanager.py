@@ -673,6 +673,16 @@ class AppManager(QObject):
         item  = SilentWorkerItem("submit_pingback_app", kwargs)
         self.squeue.put_nowait(item)
 
+    #--------------------------------add by kobe for windows replace----------------------------------
+    def search_name_and_categories_record(self):
+        return self.db.search_name_and_categories_record()
+
+    def search_app_display_info(self, categories):
+        return self.db.search_app_display_info(categories)
+
+    def update_exists_data(self, exists, id):
+        self.db.update_exists_data(exists, id)
+
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):

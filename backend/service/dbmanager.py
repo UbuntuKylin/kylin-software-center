@@ -64,6 +64,10 @@ UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, revi
         download_total=%d where app_name='%s'"
 QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
 
+QUERY_NAME_CATEGORIES = "select id,app_name,categories from xp order by priority asc"
+QUERY_APP_ACCORD_CATEGORIES = "select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
+UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
+
 class Database:
 
     def __init__(self):
@@ -426,6 +430,29 @@ class Database:
         else:
             value = 'False'
         self.cursor.execute("update dict set value=? where key='pointout'", (value,))
+        self.connect.commit()
+
+    #------------add by kobe for windows replace------------
+    def search_name_and_categories_record(self):
+        self.cursor.execute(QUERY_NAME_CATEGORIES)
+        res = self.cursor.fetchall()
+        if len(res) == 0:
+            return []
+        else:
+            return res
+
+    #------------add by kobe for windows replace------------
+    def search_app_display_info(self, categories):
+        self.cursor.execute(QUERY_APP_ACCORD_CATEGORIES % (categories))
+        res = self.cursor.fetchall()
+        if len(res) == 0:
+            return []
+        else:
+            return res
+
+    #------------add by kobe for windows replace------------
+    def update_exists_data(self, exists, id):
+        self.cursor.execute(UPDATE_EXISTS % (exists, id))
         self.connect.commit()
 
 
