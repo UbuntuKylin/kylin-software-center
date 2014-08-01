@@ -6,7 +6,7 @@ from distutils.core import setup
 #import build_i18n_ext as build_i18n
 
 setup(name="ubuntu-kylin-software-center",
-      version="0.3.2",
+      version="0.3.3",
       author="Ubuntu Kylin Team",
       author_email="ubuntukylin-members@list.launchpad.net",
       url="https://launchpad.net/ubuntu-kylin-software-center",
