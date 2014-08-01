@@ -699,7 +699,10 @@ class SoftwareCenter(QMainWindow):
                 if context[0] in software_list:
                     # num += 1
                     self.software_index.append(context[0])
-                    app.name = context[0]
+                    if context[0] == 'wine-qq' or context[0] == 'ppstream':
+                        app.name = context[0]
+                    else:
+                        app = self.appmgr.get_application_by_name(context[0])
                     for i in range(self.ui.xptableWidget.columnCount()):
                         if i == 0:
                             cnt = category
