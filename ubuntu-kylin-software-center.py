@@ -605,8 +605,9 @@ class SoftwareCenter(QMainWindow):
     def getItem(self, row=0, column = 0):
         # print row
         # print column
-        app = self.appmgr.get_application_by_name(self.software_index[row])
-        self.emit(Signals.show_app_detail, app)
+        if self.software_index[row] not in ('ppstream', 'wine-qq'):
+            app = self.appmgr.get_application_by_name(self.software_index[row])
+            self.emit(Signals.show_app_detail, app)
 
     # add by kobe
     def init_xp_solution_widget(self):
@@ -700,7 +701,8 @@ class SoftwareCenter(QMainWindow):
                     # num += 1
                     self.software_index.append(context[0])
                     if context[0] == 'wine-qq' or context[0] == 'ppstream':
-                        app.name = context[0]
+                        # app.name = context[0]
+                        app = None
                     else:
                         app = self.appmgr.get_application_by_name(context[0])
                     for i in range(self.ui.xptableWidget.columnCount()):
@@ -723,16 +725,28 @@ class SoftwareCenter(QMainWindow):
                                 software_icon = UBUNTUKYLIN_RES_WIN_PATH + "default.png"
                             self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
                         elif i == 2:
-                            if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png")):
-                                software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name+".png"
-                            elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg")):
-                                software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name+".jpg"
-                            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
-                                software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"
-                            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg")):
-                                software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg"
+                            if context[0] in ('ppstream', 'wine-qq'):
+                                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png")):
+                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png"
+                                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg")):
+                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg"
+                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png")):
+                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png"
+                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg")):
+                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg"
+                                else:
+                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
                             else:
-                                software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
+                                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png")):
+                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png"
+                                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg")):
+                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg"
+                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png"
+                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
+                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg"
+                                else:
+                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
                             self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
                         else:
                             # self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(cnt))
