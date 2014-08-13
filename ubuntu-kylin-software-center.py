@@ -565,11 +565,12 @@ class SoftwareCenter(QMainWindow):
         # init pointout
         self.init_pointout()
 
-        # update cache db
-        self.appmgr.get_all_ratings()
-
         # pingback_main
         self.appmgr.submit_pingback_main()
+
+        # update cache db
+        self.appmgr.get_all_ratings()
+        self.appmgr.get_all_categories()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
@@ -594,7 +595,6 @@ class SoftwareCenter(QMainWindow):
             if cat.visible is False:
                 continue
             zh_name = cat.name
-
             oneitem = QListWidgetItem(zh_name)
             icon = QIcon()
             icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)

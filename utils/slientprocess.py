@@ -45,6 +45,10 @@ class SlientProcess(multiprocessing.Process):
         self.daemon = True
         self.squeue = squeue
 
+        self.destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
+        self.connect = sqlite3.connect(self.destFile, check_same_thread=False)
+        self.cursor = self.connect.cursor()
+
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
     def run(self):
@@ -65,24 +69,26 @@ class SlientProcess(multiprocessing.Process):
                 self.submit_pingback_main()
             elif item.funcname == "submit_pingback_app":
                 self.submit_pingback_app(item.kwargs)
+            elif item.funcname == "get_all_categories":
+                self.get_all_categories()
+            elif item.funcname == "get_all_rank_and_recommend":
+                self.get_all_rank_and_recommend()
 
     # update rating_avg and rating_total in cache db from server
     def get_all_ratings(self):
         reslist = self.premoter.get_all_ratings()
-        print "all ratings and rating_total download over : ",len(reslist)
-
-        destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
-        self.connect = sqlite3.connect(destFile, check_same_thread=False)
-        self.cursor = self.connect.cursor()
 
         for rating in reslist:
             app_name = rating['app_name']
             rating_avg = str(rating['rating_avg'])
             rating_total = str(rating['rating_total'])
 
-            sql = "update application set rating_total=" + rating_total + ",rating_avg=" + rating_avg +" where app_name='" + app_name + "'"
-            self.cursor.execute(sql)
+            sql = "update application set rating_total=?,rating_avg=? where app_name=?"
+            self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+
         self.connect.commit()
+
+        print "all ratings and rating_total update over : ",len(reslist)
 
     # submit pingback-main to server
     def submit_pingback_main(self):
@@ -103,9 +109,39 @@ class SlientProcess(multiprocessing.Process):
         return res
 
     # get all categories data from server
-    def get_categories(self):
-        reslist = self.premoter.get_categories()
-        print "all categories download over : ",len(reslist)
+    def get_all_categories(self):
+        reslist = self.premoter.get_all_categories()
+
+        for category in reslist:
+            cid = category['id']
+            name = category['name']
+            display_name = category['display_name']
+            priority = category['priority']
+
+            sql = "select count(*) from category where id=?"
+            self.cursor.execute(sql, (cid,))
+            res = self.cursor.fetchall()
+            isexist = ''
+            for item in res:
+                isexist = item[0]
+
+            if(isexist == 1):   # id exist, update
+                sql = "update category set name=?,display_name=?,priority=? where id=?"
+                self.cursor.execute(sql, (name,display_name,priority,cid))
+            else:               # id not exist, insert
+                sql = "insert into category(id,name,display_name,priority,visible) values(?,?,?,?,1)"
+                self.cursor.execute(sql, (cid,name,display_name,priority))
+
+        self.connect.commit()
+
+        print "all categories update over : ",len(reslist)
+
+    # get all rank and recommend data from server
+    def get_all_rank_and_recommend(self):
+        reslist = self.premoter.get_all_rank_and_recommend()
+
+        for rank in reslist:
+            pass
 
 
 class SilentWorkerItem:

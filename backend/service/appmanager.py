@@ -203,12 +203,11 @@ class AppManager(QObject):
         list = self.db.query_categories()
         cat_list = {}
         for item in list:
-#            print "categories:",item,item[0],item[1]
             c = UnicodeToAscii(item[2])
+            # c = item[2]
             zhcnc = item[3]
             index = item[4]
             visible = (item[0]==1)
-#            print "trans:",c, zhcnc
 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
@@ -657,6 +656,12 @@ class AppManager(QObject):
         kwargs = {}
 
         item = SilentWorkerItem("get_all_ratings", kwargs)
+        self.squeue.put_nowait(item)
+
+    def get_all_categories(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_all_categories", kwargs)
         self.squeue.put_nowait(item)
 
     def submit_pingback_main(self):
