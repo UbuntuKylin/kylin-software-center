@@ -30,8 +30,11 @@ class XpItemWidget(QWidget):
         self.ui.btn.setStyleSheet(LIST_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH+"btn-small2-1.png",UBUNTUKYLIN_RES_PATH+"btn-small2-2.png",UBUNTUKYLIN_RES_PATH+"btn-small2-3.png"))
 
         self.ui.btn.setVisible(True)
-        if (self.appname == 'wine-qq' or self.appname == 'ppstream'):# and self.app is None:
-            self.ui.btn.setText("安装")
+        if self.app is None:
+            if (self.appname == 'wine-qq' or self.appname == 'ppstream'):
+                self.ui.btn.setText("安装")
+            else:
+                self.ui.btn.setText("无效")
         else:
             if(app.is_installed):
                 if(run.get_run_command(self.app.name) == ""):
