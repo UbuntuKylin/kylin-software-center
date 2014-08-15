@@ -568,6 +568,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.submit_pingback_main()
 
         # update cache db
+        self.appmgr.get_newer_application_info()
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
