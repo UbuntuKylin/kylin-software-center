@@ -315,81 +315,81 @@ class RatingsAndReviwsMethod:
             return {}
 
 
-    @staticmethod
-    def get_toprated_stats(kwargs,queue=None):
-        topcount = int(kwargs['topcount'])
-        sortingMethod = kwargs['sortingMethod']
-
-        resList = {}
-
-        try:
-            rnr = RatingsAndReviewsAPI()
-            ratingList = rnr.review_stats()
-            for pac in ratingList:
-                pac.ratings_average = float(pac.ratings_average)
-                pac.ratings_total = int(pac.ratings_total)
-
-            ratingAvg = range(len(ratingList))
-            ratingTotal = range(len(ratingList))
-            for i in range(len(ratingList)):
-                ratingAvg[i] = ratingList[i].ratings_average
-                ratingTotal[i] = ratingList[i].ratings_total
-            # see http://blog.csdn.net/pi9nc/article/details/10762877 for the IMDB.COM ranking method
-            ratingWR = range(len(ratingList))  # weighted rating score for each package
-            ratedPac = 0  # number of packages have been rated by more than one user
-            scoreSum = 0  # sum score of all rating
-            rateTimesTotal = 0   # rating times in total
-            for i in range(len(ratingList)):
-                if ratingList[i].ratings_total > 0:
-                    ratedPac += 1
-                    scoreSum += ratingList[i].ratings_total * ratingList[i].ratings_average
-                    rateTimesTotal += ratingList[i].ratings_total
-            avgScoreAll = scoreSum/rateTimesTotal
-            leastRateTimes = LEAST_RATE_TIMES
-            for i in range(len(ratingList)):
-                ratingWR[i] = (leastRateTimes*avgScoreAll +
-                                    ratingList[i].ratings_total*ratingList[i].ratings_average) / \
-                                    (leastRateTimes + ratingList[i].ratings_total)
-
-            index = sorted(range(len(ratingWR)), key=lambda x: ratingWR[x], reverse=True)
-            ratingList = [ratingList[i] for i in index]
-            ratingWR = [ratingWR[i] for i in index]
-
-            if sortingMethod is None or sortingMethod == RatingSortMethods.INTEGRATE:
-                resList =  ratingList
-            if sortingMethod == RatingSortMethods.FREQ_FIRST:
-                cmp_rating = lambda x, y: \
-                    cmp(x.ratings_total * LARGE_VALUE + x.ratings_average,
-                        y.ratings_total * LARGE_VALUE + y.ratings_average)
-
-                resList = sorted(ratingList,
-                                cmp_rating,
-                                reverse=True)
-            if sortingMethod == RatingSortMethods.SCORE_FIRST:
-                cmp_rating = lambda x, y: \
-                    cmp(x.ratings_average * LARGE_VALUE + x.ratings_total,
-                        y.ratings_average * LARGE_VALUE + y.ratings_total)
-                resList = sorted(ratingList,
-                                cmp_rating,
-                                reverse=True)
-
-            resList = resList[1:topcount]
-            rnrStatList = {}
-
-            for item in resList:
-                stat = ReviewRatingStat(item.package_name)
-                stat.ratings_total = item.ratings_total
-                stat.ratings_average = item.ratings_average
-                rnrStatList[item.package_name] = stat
-
-                queue.put_nowait(stat)
-
-            return rnrStatList
-
-        except Exception as e:
-            print "Error in RatingList.get_rating_list(): "
-            print e.args
-            return resList
+    # @staticmethod
+    # def get_toprated_stats(kwargs,queue=None):
+    #     topcount = int(kwargs['topcount'])
+    #     sortingMethod = kwargs['sortingMethod']
+    #
+    #     resList = {}
+    #
+    #     try:
+    #         rnr = RatingsAndReviewsAPI()
+    #         ratingList = rnr.review_stats()
+    #         for pac in ratingList:
+    #             pac.ratings_average = float(pac.ratings_average)
+    #             pac.ratings_total = int(pac.ratings_total)
+    #
+    #         ratingAvg = range(len(ratingList))
+    #         ratingTotal = range(len(ratingList))
+    #         for i in range(len(ratingList)):
+    #             ratingAvg[i] = ratingList[i].ratings_average
+    #             ratingTotal[i] = ratingList[i].ratings_total
+    #         # see http://blog.csdn.net/pi9nc/article/details/10762877 for the IMDB.COM ranking method
+    #         ratingWR = range(len(ratingList))  # weighted rating score for each package
+    #         ratedPac = 0  # number of packages have been rated by more than one user
+    #         scoreSum = 0  # sum score of all rating
+    #         rateTimesTotal = 0   # rating times in total
+    #         for i in range(len(ratingList)):
+    #             if ratingList[i].ratings_total > 0:
+    #                 ratedPac += 1
+    #                 scoreSum += ratingList[i].ratings_total * ratingList[i].ratings_average
+    #                 rateTimesTotal += ratingList[i].ratings_total
+    #         avgScoreAll = scoreSum/rateTimesTotal
+    #         leastRateTimes = LEAST_RATE_TIMES
+    #         for i in range(len(ratingList)):
+    #             ratingWR[i] = (leastRateTimes*avgScoreAll +
+    #                                 ratingList[i].ratings_total*ratingList[i].ratings_average) / \
+    #                                 (leastRateTimes + ratingList[i].ratings_total)
+    #
+    #         index = sorted(range(len(ratingWR)), key=lambda x: ratingWR[x], reverse=True)
+    #         ratingList = [ratingList[i] for i in index]
+    #         ratingWR = [ratingWR[i] for i in index]
+    #
+    #         if sortingMethod is None or sortingMethod == RatingSortMethods.INTEGRATE:
+    #             resList =  ratingList
+    #         if sortingMethod == RatingSortMethods.FREQ_FIRST:
+    #             cmp_rating = lambda x, y: \
+    #                 cmp(x.ratings_total * LARGE_VALUE + x.ratings_average,
+    #                     y.ratings_total * LARGE_VALUE + y.ratings_average)
+    #
+    #             resList = sorted(ratingList,
+    #                             cmp_rating,
+    #                             reverse=True)
+    #         if sortingMethod == RatingSortMethods.SCORE_FIRST:
+    #             cmp_rating = lambda x, y: \
+    #                 cmp(x.ratings_average * LARGE_VALUE + x.ratings_total,
+    #                     y.ratings_average * LARGE_VALUE + y.ratings_total)
+    #             resList = sorted(ratingList,
+    #                             cmp_rating,
+    #                             reverse=True)
+    #
+    #         resList = resList[1:topcount]
+    #         rnrStatList = {}
+    #
+    #         for item in resList:
+    #             stat = ReviewRatingStat(item.package_name)
+    #             stat.ratings_total = item.ratings_total
+    #             stat.ratings_average = item.ratings_average
+    #             rnrStatList[item.package_name] = stat
+    #
+    #             queue.put_nowait(stat)
+    #
+    #         return rnrStatList
+    #
+    #     except Exception as e:
+    #         print "Error in RatingList.get_rating_list(): "
+    #         print e.args
+    #         return resList
 
 
 if __name__ == "__main__":

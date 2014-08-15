@@ -65,7 +65,11 @@ class Application:
         self.ratings_average = 0
         self.ratings_total = 0
         self.review_total = 0
-        self.rank = 32767
+
+        self.downloadrank = 32767
+        self.ratingrank = 32767
+        self.pointoutrank = 32767
+        self.recommendrank = 32767
 
     @property
     def name(self):

@@ -116,6 +116,7 @@ class Signals:
     task_cancel = SIGNAL("taskcancel")
     ads_ready = SIGNAL("advertisements-ready")
     recommend_ready = SIGNAL("recommend-ready")
+    ratingrank_ready = SIGNAL("ratingrank-ready")
     toprated_ready = SIGNAL("toprated-ready")
     rating_reviews_ready = SIGNAL("rating-reviews-ready")
     app_reviews_ready = SIGNAL("app-reviews-ready")

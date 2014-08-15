@@ -140,8 +140,23 @@ class SlientProcess(multiprocessing.Process):
     def get_all_rank_and_recommend(self):
         reslist = self.premoter.get_all_rank_and_recommend()
 
+        sql = "delete from rank"
+        self.cursor.execute(sql)
+
         for rank in reslist:
-            pass
+            rid = rank['id']
+            aid = rank['aid']['id']
+            rank_rating = rank['rank_rating']
+            rank_download = rank['rank_download']
+            rank_recommend = rank['rank_recommend']
+            rank_pointout = rank['rank_pointout']
+
+            sql = "insert into rank(id,aid_id,rank_rating,rank_download,rank_recommend,rank_pointout) values(?,?,?,?,?,?)"
+            self.cursor.execute(sql, (rid,aid,rank_rating,rank_download,rank_recommend,rank_pointout))
+
+        self.connect.commit()
+
+        print "all rank and recommend update over : ",len(reslist)
 
 
 class SilentWorkerItem:

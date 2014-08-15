@@ -419,8 +419,8 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
         self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
+        self.connect(self.appmgr, Signals.ratingrank_ready, self.slot_ratingrank_apps_ready)
         self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
         self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
@@ -519,7 +519,6 @@ class SoftwareCenter(QMainWindow):
 
         # init data flags
         self.ads_ready = False
-        self.toprated_ready = True
         self.rec_ready = False
         self.rnr_ready = True
 
@@ -530,14 +529,14 @@ class SoftwareCenter(QMainWindow):
 
         self.appmgr.get_advertisements()
         self.appmgr.get_recommend_apps()
-        self.appmgr.get_toprated_stats()
+        self.appmgr.get_ratingrank_apps()
 
     # check base init
     def check_init_ready(self):
-        LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
+        LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rnr_ready)
 
         # base init finished
-        if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
+        if self.ads_ready and self.rec_ready and self.rnr_ready:
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
@@ -571,6 +570,7 @@ class SoftwareCenter(QMainWindow):
         # update cache db
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
+        self.appmgr.get_all_rank_and_recommend()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
@@ -985,7 +985,7 @@ class SoftwareCenter(QMainWindow):
 
     def get_pointout(self):
         # find not installed pointout apps
-        pl = self.appmgr.get_pointout_apps_from_db()
+        pl = self.appmgr.get_pointout_apps()
 
         if(len(pl) > 0):
             self.pointout.ui.contentliw.clear()
@@ -1039,17 +1039,11 @@ class SoftwareCenter(QMainWindow):
         self.ads_ready = True
         self.check_init_ready()
 
-    def slot_recommend_apps_ready(self,applist_orig):
-        LOG.debug("receive recommend apps ready, count is %d", len(applist_orig))
+    def slot_recommend_apps_ready(self,applist):
+        LOG.debug("receive recommend apps ready, count is %d", len(applist))
         count_per_line = 3
         index = int(0)
         x = y = int(0)
-
-        cmp_rating = lambda a, b: \
-            cmp(a.rank,b.rank)
-        applist = sorted(applist_orig,
-                        cmp_rating,
-                        reverse=False)
 
         for app in applist:
             recommend = RecommendItem(app,self,self.ui.recommendWidget)
@@ -1068,33 +1062,24 @@ class SoftwareCenter(QMainWindow):
         self.rec_ready = True
         self.check_init_ready()
 
-    def slot_rating_reviews_ready(self,rnrlist):
-        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print "receive ratings and reviews ready, count is:",len(rnrlist)
-        self.rnr_ready = True
-
-    def slot_toprated_ready(self,rnrlist):
-        LOG.debug("receive toprated apps ready, count is %d", len(rnrlist))
+    def slot_ratingrank_apps_ready(self, applist):
+        LOG.debug("receive rating rank apps ready, count is %d", len(applist))
         self.ui.rankView.clear()
-        for i in range(len(rnrlist)):
-            if (self.ui.rankView.count() > 9):
-                break
-
-            pkgname = str(rnrlist[i].pkgname)
-            app = self.appmgr.get_application_by_name(pkgname)
-
+        for app in applist:
             if app is not None:
                 oneitem = QListWidgetItem()
-                oneitem.setWhatsThis(pkgname)
+                oneitem.setWhatsThis(app.name)
                 rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
 
-        self.toprated_ready = True
-        # self.check_init_data_ready()
-
         self.topratedload.stop_loading()
+
+    def slot_rating_reviews_ready(self,rnrlist):
+        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
+        print "receive ratings and reviews ready, count is:",len(rnrlist)
+        self.rnr_ready = True
 
     def slot_app_reviews_ready(self,reviewlist):
         LOG.debug("receive reviews for an app, count is %d", len(reviewlist))

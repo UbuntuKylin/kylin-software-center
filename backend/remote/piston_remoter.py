@@ -111,7 +111,8 @@ class PistonRemoter(PistonAPI):
 
 if __name__ == '__main__':
     s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
-    res = s.get_all_categories()
+    # res = s.get_all_categories()
+    res = s.get_all_rank_and_recommend()
     print res
     # res = s.submit_pingback_main("123123","ubuntutu","1414","0.99")
     # print res
