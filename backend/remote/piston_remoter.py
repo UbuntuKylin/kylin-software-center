@@ -108,15 +108,21 @@ class PistonRemoter(PistonAPI):
     def get_all_rank_and_recommend(self):
         return self._get("getallrankandrecommend", scheme='http')
 
+    @returns_json
+    def get_newer_application_info(self, last_update_date):
+        return self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
+
 
 if __name__ == '__main__':
     s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
-    res = s.get_all_rank_and_recommend()
-    print res
+    # res = s.get_all_rank_and_recommend()
+    # print res
     # res = s.submit_pingback_main("123123","ubuntutu","1414","0.99")
     # print res
     # res = s.submit_pingback_app("pyracerz","jioqjwfiqwf","True")
+    # print res
+    # res = s.get_newer_application_info('2014-07-23')
     # print res
     # reslist = s._get("getallratings", scheme="http")
     # reslist = s.get_all_ratings()
@@ -124,7 +130,6 @@ if __name__ == '__main__':
     # import json
     # decoded = json.loads(reslist)
     # print len(decoded)
-
     #
     # try:
     # res = s.get_all_ratings()

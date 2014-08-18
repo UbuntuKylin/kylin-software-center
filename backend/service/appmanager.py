@@ -167,10 +167,6 @@ class AppManager(QObject):
 
     #        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
 
-    def _init_toprated(self,reslist):
-        #init db rank
-        self.db.init_toprated_table(reslist)
-
     def init_models(self):
 
         #        self._init_models()
@@ -449,23 +445,6 @@ class AppManager(QObject):
         print "we need to get the applications by condition recommend"
         return self.get_category_apps("ubuntukylin")
 
-    #get toprated apps
-    def get_toprated_stats_from_db(self, topcount=10, callback=None):
-        list = self.db.query_app_toprated()
-        rnrStatList = []
-        for item in list:
-            pkgname = UnicodeToAscii(item[0])
-
-            rnrStat = ReviewRatingStat(pkgname)
-            rnrStat.ratings_average = item[1]
-            rnrStat.ratings_total = item[2]
-            rnrStat.reviews_total = 0
-            rnrStat.useful = 0
-
-            rnrStatList.append(rnrStat)
-
-        return rnrStatList
-
     #get rating and review status
     def get_rating_review_stats(self,callback=None):
         print "we need to get the ratings and reviews stat"
@@ -582,20 +561,18 @@ class AppManager(QObject):
         for rnrStat in rnrStats:
             self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
 
-    def update_toprated(self,rnrStats):
-        print "update_toprated:",len(rnrStats)
-        if len(rnrStats) == 0:
-            return
-
-        self.db.init_toprated_table(rnrStats)
-
-
     #--------------------------------0.3----------------------------------
 
     def get_all_ratings(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_all_ratings", kwargs)
+        self.squeue.put_nowait(item)
+
+    def get_newer_application_info(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_newer_application_info", kwargs)
         self.squeue.put_nowait(item)
 
     def get_all_categories(self):

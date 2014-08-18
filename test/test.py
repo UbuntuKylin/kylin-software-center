@@ -72,3 +72,6 @@ if __name__ == "__main__":
     # print la.pop(0)
     sorted(la,)
     print la
+
+    import time
+    print time.strftime('%Y-%m-%d',time.localtime())
