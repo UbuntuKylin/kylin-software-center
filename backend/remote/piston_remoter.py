@@ -101,17 +101,23 @@ class PistonRemoter(PistonAPI):
         return self._post('pingbackapp/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
-    def get_categories(self):
-        return self._get("getcategories", scheme="http")
+    def get_all_categories(self):
+        return self._get("getallcategories", scheme="http")
+
+    @returns_json
+    def get_all_rank_and_recommend(self):
+        return self._get("getallrankandrecommend", scheme='http')
 
 
 if __name__ == '__main__':
     s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
-    res = s.submit_pingback_main("123123","ubuntutu","1414","0.99")
+    # res = s.get_all_categories()
+    res = s.get_all_rank_and_recommend()
     print res
-
-    res = s.submit_pingback_app("pyracerz","jioqjwfiqwf","True")
-    print res
+    # res = s.submit_pingback_main("123123","ubuntutu","1414","0.99")
+    # print res
+    # res = s.submit_pingback_app("pyracerz","jioqjwfiqwf","True")
+    # print res
     # reslist = s._get("getallratings", scheme="http")
     # reslist = s.get_all_ratings()
     # print len(reslist)

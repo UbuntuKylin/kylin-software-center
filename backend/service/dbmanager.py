@@ -254,6 +254,7 @@ class Database:
 
     expiredict = {}
 
+    # check the ~/.cache/uksc/uksc.db version, and copy /usr/share/u../data/uksc.db to replace it
     def is_cachedb_need_update(self):
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
 
@@ -431,6 +432,36 @@ class Database:
             value = 'False'
         self.cursor.execute("update dict set value=? where key='pointout'", (value,))
         self.connect.commit()
+
+    def get_pointout_apps(self):
+        self.cursor.execute("select app_name,rank_pointout from rank,application where rank_pointout!=0 and rank.aid_id=application.id order by rank_pointout")
+        res = self.cursor.fetchall()
+        pointouts = []
+        for item in res:
+            app_name = item[0]
+            rank_pointout = item[1]
+            pointouts.append((app_name, rank_pointout))
+        return pointouts
+
+    def get_recommend_apps(self):
+        self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
+        res = self.cursor.fetchall()
+        recommends = []
+        for item in res:
+            app_name = item[0]
+            rank_recommend = item[1]
+            recommends.append((app_name, rank_recommend))
+        return recommends
+
+    def get_ratingrank_apps(self):
+        self.cursor.execute("select app_name,rank_rating from rank,application where rank_rating!=0 and rank.aid_id=application.id order by rank_rating")
+        res = self.cursor.fetchall()
+        ratingranks = []
+        for item in res:
+            app_name = item[0]
+            rank_rating = item[1]
+            ratingranks.append((app_name, rank_rating))
+        return ratingranks
 
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):

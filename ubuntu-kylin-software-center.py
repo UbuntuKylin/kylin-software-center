@@ -60,7 +60,8 @@ from models.globals import Globals
 from models.enums import Signals
 
 from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
-from ui.xpitemwidget import XpItemWidget
+from ui.xpitemwidget import XpItemWidget, DataModel
+
 
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -416,11 +417,15 @@ class SoftwareCenter(QMainWindow):
     def init_main_service(self):
         self.appmgr = AppManager()
 
+        # add by kobe for test xp
+        self.xp_exists = 0
+        self.xp_model = DataModel(self.appmgr)
+
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
         self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
+        self.connect(self.appmgr, Signals.ratingrank_ready, self.slot_ratingrank_apps_ready)
         self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
         self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
@@ -519,7 +524,6 @@ class SoftwareCenter(QMainWindow):
 
         # init data flags
         self.ads_ready = False
-        self.toprated_ready = True
         self.rec_ready = False
         self.rnr_ready = True
 
@@ -530,14 +534,14 @@ class SoftwareCenter(QMainWindow):
 
         self.appmgr.get_advertisements()
         self.appmgr.get_recommend_apps()
-        self.appmgr.get_toprated_stats()
+        self.appmgr.get_ratingrank_apps()
 
     # check base init
     def check_init_ready(self):
-        LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
+        LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rnr_ready)
 
         # base init finished
-        if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
+        if self.ads_ready and self.rec_ready and self.rnr_ready:
             self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
@@ -565,11 +569,13 @@ class SoftwareCenter(QMainWindow):
         # init pointout
         self.init_pointout()
 
-        # update cache db
-        self.appmgr.get_all_ratings()
-
         # pingback_main
         self.appmgr.submit_pingback_main()
+
+        # update cache db
+        self.appmgr.get_all_ratings()
+        self.appmgr.get_all_categories()
+        self.appmgr.get_all_rank_and_recommend()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
@@ -594,7 +600,6 @@ class SoftwareCenter(QMainWindow):
             if cat.visible is False:
                 continue
             zh_name = cat.name
-
             oneitem = QListWidgetItem(zh_name)
             icon = QIcon()
             icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)
@@ -609,57 +614,12 @@ class SoftwareCenter(QMainWindow):
             app = self.appmgr.get_application_by_name(self.software_index[row])
             self.emit(Signals.show_app_detail, app)
 
-    # add by kobe
-    def init_xp_solution_widget(self):
-        self.ui.xpWidget.setWindowOpacity(1)
-        xp_rows = 0#要建立的表格的行数
-        category_list = []#xp替换分类在xp数据表中的所有分类列表，无重复
-        category_all_list = []#xp替换分类在xp数据表中的所有分类列表，包含重复的
-        # uk_list_num = []#软件每个分类的软件个数的列表
-        software_list = []#xp替换软件在软件源中的有效列表
-        win_list = []#去掉重复名字后的所有windows软件名列表
-        win_all_list = []#带有重复名字的所有windows软件名列表
-
-        #------------数据验证------------
-        db_list = self.appmgr.search_name_and_categories_record()
-        for line in db_list:
-            app = self.appmgr.get_application_by_name(line[1])
-            if app is not None or line[1] == 'wine-qq' or line[1] == 'ppstream':
-                # self.appmgr.update_exists_data(1, int(line[0]))
-                xp_rows += 1
-                category_all_list.append(line[2])
-                win_all_list.append(line[3])
-                if line[1] not in software_list:
-                    software_list.append(line[1])
-                if line[2] not in category_list:
-                    category_list.append(line[2])
-                if line[3] not in win_list:
-                    win_list.append(line[3])
-        # print set(win_all_list)^set(win_list)#并集
-        # print list(set(win_all_list).intersection(set(win_list)))#交集
-        category_pos_list = []
-        category_offset_list = []
-        for line in category_list:
-            num = category_all_list.count(line)
-            if num > 1:
-                category_index = category_all_list.index(line)
-                category_pos_list.append(category_index)
-                category_offset_list.append(num)
-
-        tmp_pos_list = []
-        tmp_offset_list = []
-        for line in win_list:
-            num = win_all_list.count(line)
-            if num > 1:
-                win_index = win_all_list.index(line)
-                tmp_pos_list.append(win_index)
-                tmp_offset_list.append(num)
-
+    def set_tablewidget_stylesheet(self, xp_rows):
         #------------表格创建和美化------------
+        self.ui.xpWidget.setWindowOpacity(1)
         self.ui.xptableWidget.setRowCount(xp_rows)
         self.ui.xptableWidget.setColumnCount(5)
         self.ui.xptableWidget.setHorizontalHeaderLabels(['分类','Windows软件','替代软件','替代软件简介','替代软件状态'])
-        # self.ui.xptableWidget.setShowGrid(False)#不显示分割线
         self.ui.xptableWidget.setFrameShape(QFrame.NoFrame)
         self.ui.xptableWidget.setStyleSheet("gridline-color: rgb(255, 0, 0)")
         self.ui.xptableWidget.verticalHeader().setVisible(False)
@@ -667,7 +627,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.xptableWidget.setSelectionBehavior(QTableWidget.SelectRows)
         self.ui.xptableWidget.setMouseTracking(True)
         self.ui.xptableWidget.setSelectionMode(QTableWidget.SingleSelection)
-        # self.ui.xptableWidget.setAlternatingRowColors(True)#隔行改变颜色
         self.ui.xptableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.xptableWidget.horizontalHeader().setHighlightSections(False)
         self.ui.xptableWidget.setStyleSheet("QTableWidget::item:hover{background:#e4f1f8;color: black;}")
@@ -690,18 +649,15 @@ class SoftwareCenter(QMainWindow):
         self.ui.xptableWidget.horizontalHeader().setStretchLastSection(True)
         self.ui.xptableWidget.horizontalHeader().setStyleSheet("QHeaderView::section {background-color:#e4f1f8;color: black;}")#设置表头字体，颜色，模式  padding-left: 4px;border: 1px solid #6c6c6c;
 
-        #------------数据填充------------
+    def push_date_into_table(self, category_list, software_list):
         current_row = 0
-        # num = 0#每个分类软件在软件源中的有效个数
         self.software_index = []#显示列表中记录软件名的一个的顺序列表，方便双击时根据索引值获取软件名
         for category in category_list:
             app_list = self.appmgr.search_app_display_info(category)
             for context in app_list:
                 if context[0] in software_list:
-                    # num += 1
                     self.software_index.append(context[0])
                     if context[0] == 'wine-qq' or context[0] == 'ppstream':
-                        # app.name = context[0]
                         app = None
                     else:
                         app = self.appmgr.get_application_by_name(context[0])
@@ -749,7 +705,6 @@ class SoftwareCenter(QMainWindow):
                                     software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
                             self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
                         else:
-                            # self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(cnt))
                             newItem = QTableWidgetItem(cnt)
                             newItem.setTextAlignment(Qt.AlignCenter)
                             self.ui.xptableWidget.setItem(current_row,i,newItem)
@@ -757,40 +712,31 @@ class SoftwareCenter(QMainWindow):
                     self.connect(btn, Signals.install_app, self.slot_click_install)
                     self.ui.xptableWidget.setCellWidget(current_row,self.ui.xptableWidget.columnCount()-1,btn)
                     current_row += 1
-            # uk_list_num.append(num)
-            # num = 0
+
+    # add by kobe
+    def init_xp_solution_widget(self):
+        #------------获取数据------------
+        self.xp_model.init_data_model()
+        xp_rows = self.xp_model.get_table_rows_num()#要建立的表格的行数
+        (category_pos_list, category_offset_list) = self.xp_model.get_category_cell_position_offset()
+        (win_pos_list, win_offset_list) = self.xp_model.get_win_cell_position_offset()
+        category_list = self.xp_model.get_xp_category_list()#xp替换分类在xp数据表中的所有分类列表，无重复
+        software_list = self.xp_model.get_xp_software_list_()#xp替换软件在软件源中的有效列表
+
+        #------------表格创建和美化------------
+        self.set_tablewidget_stylesheet(xp_rows)
+
+        #------------数据填充------------
+        self.push_date_into_table(category_list, software_list)
 
         # 合并category的单元格
         for i in range(len(category_pos_list)):
             self.ui.xptableWidget.setSpan(category_pos_list[i], 0, int(category_offset_list[i]), 1)
 
         # 合并windows软件的单元格
-        for i in range(len(tmp_pos_list)):
-            self.ui.xptableWidget.setSpan(tmp_pos_list[i], 1, int(tmp_offset_list[i]), 1)
+        for i in range(len(win_pos_list)):
+            self.ui.xptableWidget.setSpan(win_pos_list[i], 1, int(win_offset_list[i]), 1)
         self.xp_exists = 1
-
-        #------------合并单元格------------
-        # 第一个参数：要改变的单元格行数,第二个参数：要改变的单元格列数,第三个参数：需要合并的行数,第四个参数：需要合并的列数
-        # pre_start = 0
-        # for i in range(0, len(uk_list_num)):
-        #     if i == 0:
-        #         if int(uk_list_num[i]) > 1:
-        #             self.ui.xptableWidget.setSpan(0, 0, int(uk_list_num[i]), 1)
-        #             pre_start = int(uk_list_num[i])
-        #         else:
-        #             pre_start = 1
-        #     elif i == 1:
-        #         if int(uk_list_num[i]) > 1:
-        #             self.ui.xptableWidget.setSpan(int(uk_list_num[i - 1]), 0, int(uk_list_num[i]), 1)
-        #             pre_start = pre_start + int(uk_list_num[i])
-        #         else:
-        #             pre_start = pre_start + int(uk_list_num[i])
-        #     else:
-        #         if int(uk_list_num[i]) > 1:
-        #             self.ui.xptableWidget.setSpan(pre_start, 0, int(uk_list_num[i]), 1)
-        #             pre_start = pre_start + int(uk_list_num[i])
-        #         else:
-        #             pre_start = pre_start + int(uk_list_num[i])#uk_list_num[i] = 1，即为该分类只存在一个软件时的处理
 
     def show_to_frontend(self):
         self.show()
@@ -956,6 +902,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
+        self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
@@ -985,7 +932,7 @@ class SoftwareCenter(QMainWindow):
 
     def get_pointout(self):
         # find not installed pointout apps
-        pl = self.appmgr.get_pointout_apps_from_db()
+        pl = self.appmgr.get_pointout_apps()
 
         if(len(pl) > 0):
             self.pointout.ui.contentliw.clear()
@@ -1039,17 +986,11 @@ class SoftwareCenter(QMainWindow):
         self.ads_ready = True
         self.check_init_ready()
 
-    def slot_recommend_apps_ready(self,applist_orig):
-        LOG.debug("receive recommend apps ready, count is %d", len(applist_orig))
+    def slot_recommend_apps_ready(self,applist):
+        LOG.debug("receive recommend apps ready, count is %d", len(applist))
         count_per_line = 3
         index = int(0)
         x = y = int(0)
-
-        cmp_rating = lambda a, b: \
-            cmp(a.rank,b.rank)
-        applist = sorted(applist_orig,
-                        cmp_rating,
-                        reverse=False)
 
         for app in applist:
             recommend = RecommendItem(app,self,self.ui.recommendWidget)
@@ -1068,33 +1009,24 @@ class SoftwareCenter(QMainWindow):
         self.rec_ready = True
         self.check_init_ready()
 
-    def slot_rating_reviews_ready(self,rnrlist):
-        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print "receive ratings and reviews ready, count is:",len(rnrlist)
-        self.rnr_ready = True
-
-    def slot_toprated_ready(self,rnrlist):
-        LOG.debug("receive toprated apps ready, count is %d", len(rnrlist))
+    def slot_ratingrank_apps_ready(self, applist):
+        LOG.debug("receive rating rank apps ready, count is %d", len(applist))
         self.ui.rankView.clear()
-        for i in range(len(rnrlist)):
-            if (self.ui.rankView.count() > 9):
-                break
-
-            pkgname = str(rnrlist[i].pkgname)
-            app = self.appmgr.get_application_by_name(pkgname)
-
+        for app in applist:
             if app is not None:
                 oneitem = QListWidgetItem()
-                oneitem.setWhatsThis(pkgname)
+                oneitem.setWhatsThis(app.name)
                 rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
 
-        self.toprated_ready = True
-        # self.check_init_data_ready()
-
         self.topratedload.stop_loading()
+
+    def slot_rating_reviews_ready(self,rnrlist):
+        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
+        print "receive ratings and reviews ready, count is:",len(rnrlist)
+        self.rnr_ready = True
 
     def slot_app_reviews_ready(self,reviewlist):
         LOG.debug("receive reviews for an app, count is %d", len(reviewlist))
