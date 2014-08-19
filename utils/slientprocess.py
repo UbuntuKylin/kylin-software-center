@@ -214,6 +214,5 @@ class SilentWorkerItem:
         self.funcname = funcname
         self.kwargs = kwargs
 
-
 if __name__ == "__main__":
     pass
