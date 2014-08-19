@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'confw.ui'
+# Form implementation generated from reading ui file 'ui/confw.ui'
 #
-# Created: Fri Jun 13 10:45:29 2014
+# Created: Mon Aug 18 10:13:44 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -79,7 +79,7 @@ class Ui_ConfigWidget(object):
         self.bg.setText(_fromUtf8(""))
         self.bg.setObjectName(_fromUtf8("bg"))
         self.btnClose = QtGui.QPushButton(ConfigWidget)
-        self.btnClose.setGeometry(QtCore.QRect(516, 5, 15, 15))
+        self.btnClose.setGeometry(QtCore.QRect(8, 5, 15, 15))
         self.btnClose.setText(_fromUtf8(""))
         self.btnClose.setObjectName(_fromUtf8("btnClose"))
 

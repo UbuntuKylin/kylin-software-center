@@ -183,7 +183,7 @@
   <widget class="QPushButton" name="btnClose">
    <property name="geometry">
     <rect>
-     <x>516</x>
+     <x>8</x>
      <y>5</y>
      <width>15</width>
      <height>15</height>

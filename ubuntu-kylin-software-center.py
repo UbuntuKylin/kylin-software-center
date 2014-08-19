@@ -83,9 +83,15 @@ class SoftwareCenter(QMainWindow):
     dragPosition = -1
     xp_exists = 0
 
-    def __init__(self,parent=None):
+    def __init__(self, parent=None, pointout=None):
         QMainWindow.__init__(self,parent)
 
+        if(pointout==None):
+            self.initialization()
+        else:
+            self.pointout = pointout
+
+    def initialization(self):
         # singleton check
         self.check_singleton()
 
@@ -1494,6 +1500,7 @@ class SoftwareCenter(QMainWindow):
 
 def check_local_deb_file(url):
     return os.path.isfile(url)
+
 
 def main():
     app = QApplication(sys.argv)

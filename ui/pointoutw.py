@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'pointoutw.ui'
 #
-# Created: Fri Jun 20 10:19:14 2014
+# Created: Mon Aug 18 10:07:34 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,7 +39,7 @@ class Ui_PointWidget(object):
         self.contentliw.setGeometry(QtCore.QRect(0, 103, 413, 225))
         self.contentliw.setObjectName(_fromUtf8("contentliw"))
         self.btnClose = QtGui.QPushButton(PointWidget)
-        self.btnClose.setGeometry(QtCore.QRect(393, 5, 15, 15))
+        self.btnClose.setGeometry(QtCore.QRect(5, 5, 15, 15))
         self.btnClose.setText(_fromUtf8(""))
         self.btnClose.setObjectName(_fromUtf8("btnClose"))
         self.bottom = QtGui.QLabel(PointWidget)

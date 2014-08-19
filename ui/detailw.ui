@@ -211,7 +211,7 @@
   <widget class="QPushButton" name="btnInstall">
    <property name="geometry">
     <rect>
-     <x>520</x>
+     <x>670</x>
      <y>130</y>
      <width>64</width>
      <height>22</height>
@@ -224,7 +224,7 @@
   <widget class="QPushButton" name="btnUpdate">
    <property name="geometry">
     <rect>
-     <x>595</x>
+     <x>520</x>
      <y>130</y>
      <width>64</width>
      <height>22</height>
@@ -237,7 +237,7 @@
   <widget class="QPushButton" name="btnUninstall">
    <property name="geometry">
     <rect>
-     <x>670</x>
+     <x>595</x>
      <y>130</y>
      <width>64</width>
      <height>22</height>

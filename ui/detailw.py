@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'detailw.ui'
+# Form implementation generated from reading ui file 'ui/detailw.ui'
 #
-# Created: Wed Jun 25 10:10:06 2014
+# Created: Mon Aug 18 14:19:23 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -87,15 +87,15 @@ class Ui_DetailWidget(object):
         self.splitLine1.setText(_fromUtf8(""))
         self.splitLine1.setObjectName(_fromUtf8("splitLine1"))
         self.btnInstall = QtGui.QPushButton(DetailWidget)
-        self.btnInstall.setGeometry(QtCore.QRect(520, 130, 64, 22))
+        self.btnInstall.setGeometry(QtCore.QRect(670, 130, 64, 22))
         self.btnInstall.setText(_fromUtf8(""))
         self.btnInstall.setObjectName(_fromUtf8("btnInstall"))
         self.btnUpdate = QtGui.QPushButton(DetailWidget)
-        self.btnUpdate.setGeometry(QtCore.QRect(595, 130, 64, 22))
+        self.btnUpdate.setGeometry(QtCore.QRect(520, 130, 64, 22))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         self.btnUninstall = QtGui.QPushButton(DetailWidget)
-        self.btnUninstall.setGeometry(QtCore.QRect(670, 130, 64, 22))
+        self.btnUninstall.setGeometry(QtCore.QRect(595, 130, 64, 22))
         self.btnUninstall.setText(_fromUtf8(""))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
         self.summary = QtGui.QTextEdit(DetailWidget)

@@ -254,22 +254,22 @@ class DetailScrollWidget(QScrollArea):
 
             if self.app.is_upgradable:
                 self.ui.btnUpdate.setEnabled(True)
-                self.ui.btnUpdate.setText("可升级")
+                self.ui.btnUpdate.setText("升级")
                 self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn4-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
             else:
                 self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUpdate.setText("不可升级")
+                self.ui.btnUpdate.setText("升级")
                 self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
 
-            self.ui.btnUninstall.setText("可卸载")
+            self.ui.btnUninstall.setText("卸载")
             self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
         else:
            # self.ui.status.setStyleSheet("QLabel{background-image:url('res/notinstall.png')}")
             self.ui.status.hide()
 
             self.ui.btnInstall.setText("安装")
-            self.ui.btnUpdate.setText("不可升级")
-            self.ui.btnUninstall.setText("不可卸载")
+            self.ui.btnUpdate.setText("升级")
+            self.ui.btnUninstall.setText("卸载")
             self.ui.btnInstall.setEnabled(True)
             self.ui.btnUpdate.setEnabled(False)
             self.ui.btnUninstall.setEnabled(False)
