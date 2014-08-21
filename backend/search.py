@@ -27,11 +27,8 @@ import xapian
 import apt
 import time
 import sys
-from ubuntu_sw import XapianValues
+from backend.ubuntu_sw import XapianValues
 
-
-
-#from ubuntu_sw import XapianValues
 
 from gi.repository import GObject, Gio, GLib
 from gettext import gettext as _
@@ -39,21 +36,21 @@ from xdg import BaseDirectory as xdg
 LOG = logging.getLogger(__name__)
 
 # xapian paths
-XAPIAN_BASE_PATH = "/var/cache/software-center"
+XAPIAN_BASE_PATH = "/usr/share/ubuntu-kylin-software-center/data/"
 XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT = os.path.join(
     xdg.xdg_cache_home,
     "software-center",
     "software-center-agent.db")
-XAPIAN_PATH = os.path.join(XAPIAN_BASE_PATH, "xapian")
+XAPIAN_PATH = os.path.join(XAPIAN_BASE_PATH, "ukscsource_db")
 
 # AXI
 APT_XAPIAN_INDEX_BASE_PATH = "/var/lib/apt-xapian-index"
 APT_XAPIAN_INDEX_DB_PATH = APT_XAPIAN_INDEX_BASE_PATH + "/index"
 APT_XAPIAN_INDEX_UPDATE_STAMP_PATH = (APT_XAPIAN_INDEX_BASE_PATH +
                                       "/update-timestamp")
-                         
-#uksc_xapian
-UKSC_XAPIAN_DBPATH="/usr/share/ubuntu-kylin-software-center/data/ukscsource_db" 
+                                      
+#ubuntu software-center paths
+UTSC_PATH = "/var/cache/software-center/xapian"                   
 
 def parse_axi_values_file(filename="/var/lib/apt-xapian-index/values"):
     """ parse the apt-xapian-index "values" file and provide the
@@ -126,7 +123,7 @@ class StoreDatabase(GObject.GObject):
         # initialize at creation time to avoid spurious AttributeError
         self._use_agent = False
         self._use_axi = False
-        self._use_uksc =False
+        self._use_utsc = False
 
         if pathname is None:
             pathname = XAPIAN_PATH
@@ -142,7 +139,6 @@ class StoreDatabase(GObject.GObject):
         self._db_per_thread = {}
         self._parser_per_thread = {}
         self._axi_stamp_monitor = None
-        
 
     @property
     def xapiandb(self):
@@ -161,63 +157,35 @@ class StoreDatabase(GObject.GObject):
             xapian_parser = self._get_new_xapian_parser()
             self._parser_per_thread[thread_name] = xapian_parser
         return self._parser_per_thread[thread_name]
-        
+
     def _get_new_xapiandb(self):
         xapiandb = xapian.Database(self._db_pathname)
         if self._use_axi:
             try:
-#                print "你妹夫"
                 axi = xapian.Database(
                     APT_XAPIAN_INDEX_DB_PATH)
                 xapiandb.add_database(axi)
-            except:
-                LOG.exception("failed to add apt-xapian-index")
+            except Exception as e:
+                logging.warn("failed to add apt-xapian-index db %s" % e)
         if (self._use_agent and
                 os.path.exists(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)):
             try:
-#                print "你大爷"
                 sca = xapian.Database(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)
                 xapiandb.add_database(sca)
             except Exception as e:
-                logging.warn("failed to add sca db %s" % e)
-             
-        if self._use_uksc:
-              
-            try: 
-                
-#                print UKSC_XAPIAN_DBPATH
-                ukscdb=xapian.Database(UKSC_XAPIAN_DBPATH)
-                
-                xapiandb.add_database(ukscdb)
-#                print "哈哈"
-                     
+                #logging.warn("failed to add sca db %s" % e)
+                pass
+        if self._use_utsc:
+            try:
+                utsc_xapiandb = xapian.Database(UTSC_PATH)
+                xapiandb.add_database(utsc_xapiandb)
             except Exception as e:
-                logging.warn("failed to add sca db %s" % e)
+                #logging.warn("failed to add utsc_xapiandb db %s" % e)
+                pass
+                
         for db in self._additional_databases:
             xapiandb.add_database(db)
-            
         return xapiandb
-
-
-#    def _get_new_xapiandb(self):
-#        xapiandb = xapian.Database(self._db_pathname)
-#        if self._use_axi:
-#            try:
-#                axi = xapian.Database(
-#                    APT_XAPIAN_INDEX_DB_PATH)
-#                xapiandb.add_database(axi)
-#            except:
-#                LOG.exception("failed to add apt-xapian-index")
-#        if (self._use_agent and
-#                os.path.exists(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)):
-#            try:
-#                sca = xapian.Database(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)
-#                xapiandb.add_database(sca)
-#            except Exception as e:
-#                logging.warn("failed to add sca db %s" % e)
-#        for db in self._additional_databases:
-#            xapiandb.add_database(db)
-#        return xapiandb
 
     def _get_new_xapian_parser(self):
         xapian_parser = xapian.QueryParser()
@@ -234,7 +202,7 @@ class StoreDatabase(GObject.GObject):
         xapian_parser.set_default_op(xapian.Query.OP_AND)
         return xapian_parser
 
-    def open(self, pathname=None, use_axi=True, use_agent=True,use_uksc=True):
+    def open(self, pathname=None, use_axi=True, use_agent=True,use_utsc=True):
         """ open the database """
         LOG.debug("open() database: path=%s use_axi=%s "
                           "use_agent=%s" % (pathname, use_axi, use_agent))
@@ -250,7 +218,7 @@ class StoreDatabase(GObject.GObject):
         self._use_axi = use_axi
         self._axi_values = {}
         self._use_agent = use_agent
-        self._use_uksc=use_uksc
+        self._use_utsc = use_utsc
         if use_axi:
             if self._axi_stamp_monitor:
                 self._axi_stamp_monitor.disconnect_by_func(
@@ -270,14 +238,12 @@ class StoreDatabase(GObject.GObject):
                 "changed", self._on_axi_stamp_changed)
         if use_agent:
             self.nr_databases += 1
-        
-        if use_uksc:
+        if use_utsc:
             self.nr_databases += 1
         # additional dbs
         for db in self._additional_databases:
             self.nr_databases += 1
         self.emit("open", self._db_pathname)
-
 
     def _on_axi_stamp_changed(self, monitor, afile, otherfile, event):
         # we only care about the utime() update from update-a-x-i
@@ -444,13 +410,14 @@ class Search:
         except:
             print "failed to add db"
             LOG.exception("failed to add db")
-
+        self.db.open()
+        
     def search_software(self, keyword):
         """search interface"""
         
-        self.db.open()
+#*****************************************************************************
         try:
-        #*****************************************************************************
+        
             from mmseg.search import seg_txt_search,seg_txt_2_dict
             query_string = str(keyword)
             enquire = xapian.Enquire(self.db.xapiandb)
@@ -464,12 +431,19 @@ class Search:
                 query = xapian.Query(xapian.Query.OP_AND, query_list)
             else:
                 query = query_list[0]
-            print "启用mmseg中文分词"
+#            print "*** Useing Chinese Segmentation method MMSEG to segment the input keywords ***"
 
-        except:
-    
 #*********************************************************************************
-            print "缺少中文分词mmseg依赖，启用原用分词"
+        except:   
+
+            Info = """
+*********************************************************
+There is no Chinese Segmentation method MMSEG in
+your system.For better useing of ubuntu-kylin-software-center,
+please install chinese Segmentation method MMSEG .
+*********************************************************
+"""
+            print Info
             query_string = self.db.get_query_list_from_search_entry(str(keyword))
             enquire = xapian.Enquire(self.db.xapiandb)
             query = query_string[1]
@@ -513,13 +487,5 @@ if __name__ == "__main__":
     
     s = Search()
 #    uksc_xapiandb=s.db._get_new_xapiandb()
-    res = s.search_software("软件中心")
-
-
-
-
-
-
-
-
+    res = s.search_software("ubuntu-kylin-software-center")
 
