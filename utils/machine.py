@@ -27,20 +27,22 @@ import platform
 from models.globals import Globals
 
 
-# the machine-id which from dbus calculates
+# new version no longer send dbus id
 def get_machine_id():
-    fpath = '/var/lib/dbus/machine-id'
-    if(os.path.exists(fpath) and os.path.isfile(fpath)):
-        f = open(fpath, 'r')
-        id = f.read()
-        f.close()
-        id = id.replace('\n','')
-        if(id == ''):
-            return 'unknown'
-        else:
-            return id
-    else:
-        return 'unknown'
+    # fpath = '/var/lib/dbus/machine-id'
+    # if(os.path.exists(fpath) and os.path.isfile(fpath)):
+    #     f = open(fpath, 'r')
+    #     id = f.read()
+    #     f.close()
+    #     id = id.replace('\n','')
+    #     if(id == ''):
+    #         return 'unknown'
+    #     else:
+    #         return id
+    # else:
+    #     return 'unknown'
+
+    return 'empty'
 
 # the linux distribution of this machine
 def get_distro_info():
