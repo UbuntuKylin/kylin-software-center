@@ -103,7 +103,7 @@ class SoftwareCenter(QMainWindow):
         self.init_main_view()
 
         # init system tray
-        self.create_tray()
+        # self.create_tray()
 
         # init main service
         self.init_main_service()
@@ -368,7 +368,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
         self.ui.btnXp.pressed.connect(self.slot_goto_xppage)
-        self.ui.btnClose.clicked.connect(self.hide)
+        # self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
@@ -561,7 +562,7 @@ class SoftwareCenter(QMainWindow):
 
             self.slot_goto_homepage()
             self.loadingDiv.stop_loading()
-            self.trayicon.show()
+            # self.trayicon.show()
 
             # user clicked local deb file, show info
             if(Globals.LOCAL_DEB_FILE != None):
