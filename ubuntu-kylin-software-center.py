@@ -68,6 +68,7 @@ mainloop = DBusGMainLoop(set_as_default=True)
 
 LOG = logging.getLogger("uksc")
 
+
 class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
@@ -84,15 +85,9 @@ class SoftwareCenter(QMainWindow):
     dragPosition = -1
     xp_exists = 0
 
-    def __init__(self, parent=None, pointout=None):
+    def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
 
-        if(pointout==None):
-            self.initialization()
-        else:
-            self.pointout = pointout
-
-    def initialization(self):
         # singleton check
         self.check_singleton()
 
@@ -103,7 +98,7 @@ class SoftwareCenter(QMainWindow):
         self.init_main_view()
 
         # init system tray
-        self.create_tray()
+        # self.create_tray()
 
         # init main service
         self.init_main_service()
@@ -124,6 +119,7 @@ class SoftwareCenter(QMainWindow):
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
         # init components
+
         # point out widget
         self.pointout = PointOutWidget(self)
         # detail page
@@ -368,7 +364,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
         self.ui.btnXp.pressed.connect(self.slot_goto_xppage)
-        self.ui.btnClose.clicked.connect(self.hide)
+        # self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
@@ -462,6 +459,10 @@ class SoftwareCenter(QMainWindow):
                 button = QMessageBox.question(self,"软件源更新提示",
                                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件中心触发此功能\n\n请选择:"),
                                         "更新", "不更新", "", 0)
+
+                # show loading and update processbar this moment
+                self.show()
+
                 if button == 0:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
@@ -471,10 +472,10 @@ class SoftwareCenter(QMainWindow):
                     sys.exit(0)
             else:
                 button = QMessageBox.question(self,"软件源更新提示",
-                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如不更新，也可以运行软件，但大部分操作都无法执行\n\n请选择:"),
+                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件中心，但部分操作无法执行\n\n请选择:"),
                                         "更新", "不更新", "", 0)
 
-                # normal launch mode, show loading div this moment
+                # show loading and update processbar this moment
                 self.show()
 
                 if button == 0:
@@ -561,11 +562,14 @@ class SoftwareCenter(QMainWindow):
 
             self.slot_goto_homepage()
             self.loadingDiv.stop_loading()
-            self.trayicon.show()
+            # self.trayicon.show()
 
             # user clicked local deb file, show info
             if(Globals.LOCAL_DEB_FILE != None):
                 self.slot_show_deb_detail(Globals.LOCAL_DEB_FILE)
+
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                self.hide()
 
             # base loading finish, start backend work
             self.start_silent_work()
@@ -953,6 +957,10 @@ class SoftwareCenter(QMainWindow):
                 self.pointout.ui.contentliw.setItemWidget(oneitem, pliw)
 
             self.pointout.show_animation()
+        else:
+            # in quiet mode, no pointout app.  quit uksc
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                self.slot_close()
 
 
     #--------------------------------------slots--------------------------------------
@@ -1460,7 +1468,7 @@ def main():
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
 
-    # check show quiet (only trayicon)
+    # check show quiet
     argn = len(sys.argv)
     if(argn == 1):
         Globals.LAUNCH_MODE = 'normal'

@@ -208,7 +208,9 @@ class AptProcess(apb.InstallProgress):
 
 def main():
     a = BackendApt()
-    a.install_deps(["abe","gedit","indicator-china-weather"])
+    # pkg = a.get_pkg_in_cache("kuaipan4uk")
+    # print pkg
+    # a.install_deps(["abe","gedit","indicator-china-weather"])
     # a.get_all_packages()
     # print a.get_package_by_name("abe")
     # pkg = a.get_pkg_in_cache("abe")
