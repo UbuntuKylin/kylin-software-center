@@ -108,7 +108,6 @@ class PointListItemWidget(QWidget):
         else:
             self.ui.btn.setEnabled(False)
             self.ui.btn.setText("处理中")
-            # self.emit(Signals.install_app, self.app)
             self.emit(Signals.install_app_rcm, self.app)
             self.parent.slot_goto_taskpage()
             self.parent.show()

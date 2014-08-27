@@ -26,6 +26,8 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.pointoutw import Ui_PointWidget
+from models.globals import Globals
+import sys
 
 
 class PointOutWidget(QWidget):
@@ -69,7 +71,7 @@ class PointOutWidget(QWidget):
         self.ui.contentliw.setFocusPolicy(Qt.NoFocus)
         self.ui.cbisshow.setFocusPolicy(Qt.NoFocus)
 
-        self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.cbisshow.stateChanged.connect(self.slot_checkstate_changed)
 
         self.ui.header.setStyleSheet("QLabel{background-image:url('res/pointheader.png');}")
@@ -86,6 +88,14 @@ class PointOutWidget(QWidget):
         self.ui = Ui_PointWidget()
         self.ui.setupUi(self)
         self.show()
+
+    def slot_close(self):
+        # if only pointout widget shown, close pointout must close whole uksc too
+        if(self.mainw.isHidden() == True):
+            self.mainw.dbusControler.stop()
+            sys.exit(0)
+        else:
+            self.hide()
 
     def slot_checkstate_changed(self):
         flag = self.ui.cbisshow.isChecked()

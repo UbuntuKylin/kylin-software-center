@@ -39,7 +39,7 @@ from models.application import Application
 from models.advertisement import Advertisement
 from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRatingStat
 from backend.service.dbmanager import Database
-from utils.slientprocess import *
+from utils.silentprocess import *
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import Signals,UnicodeToAscii
 
@@ -135,7 +135,7 @@ class AppManager(QObject):
 
         # silent process work queue
         self.squeue = multiprocessing.Queue()
-        self.silent_process = SlientProcess(self.squeue)
+        self.silent_process = SilentProcess(self.squeue)
         self.silent_process.daemon = True
         self.silent_process.start()
 
@@ -160,18 +160,9 @@ class AppManager(QObject):
 
     def _init_models(self):
         self.open_cache()
-
-        #self.cat_list = self.download_category_list()
         self.cat_list = self.get_category_list_from_db()
-    #        print "&&&&&&&&&&&:\n",self.cat_list
-
-    #        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
 
     def init_models(self):
-
-        #        self._init_models()
-        #        return #????
-
         item  = WorkerItem("init_models",None)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -211,68 +202,11 @@ class AppManager(QObject):
 
         return cat_list
 
-    def download_category_list(self,catdir=""):
-        #first load the categories from directory
-        if not catdir:
-            catdir = UBUNTUKYLIN_DATA_CAT_PATH
-
-        cat_list = {}
-        index = 0
-        for c in os.listdir(catdir):
-            visible = True
-            zhcnc = ''
-            if(c == 'ubuntukylin'):
-                zhcnc = 'Ubuntu Kylin'
-                index = 0
-            if(c == 'necessary'):
-                zhcnc = '装机必备'
-                index = 1
-            if(c == 'office'):
-                zhcnc = '办公软件'
-                index = 2
-            if(c == 'devel'):
-                zhcnc = '编程开发'
-                index = 3
-            if(c == 'graphic'):
-                zhcnc = '图形图像'
-                index = 4
-            if(c == 'multimedia'):
-                zhcnc = '影音播放'
-                index = 5
-            if(c == 'internet'):
-                zhcnc = '网络工具'
-                index = 6
-            if(c == 'game'):
-                zhcnc = '游戏娱乐'
-                index = 7
-            if(c == 'profession'):
-                zhcnc = '专业软件'
-                index = 8
-            if(c == 'other'):
-                zhcnc = '其他软件'
-                index = 9
-            if(c == 'recommend'):
-                zhcnc = '热门推荐'
-                index = 10
-                visible = False
-            if(c == 'toprated'):
-                zhcnc = '排行榜'
-                index = 11
-                visible = False
-
-            icon = UBUNTUKYLIN_RES_PATH + c + ".png"
-            cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c,catdir))
-            cat_list[c] = cat
-
-        #self.cat_list = cat_list
-        return cat_list
-
-    #get category list
+    # get category list
     def get_category_list(self, reload=False, catdir=""):
         if reload is False:
             return self.cat_list
 
-        #cat_list = self.download_category_list(catdir)
         cat_list = self.get_category_list_from_db()
 
         return cat_list
@@ -463,7 +397,7 @@ class AppManager(QObject):
                   "page": int(page),
                   }
 
-        item  = WorkerItem("get_reviews",kwargs)
+        item = WorkerItem("get_reviews",kwargs)
 
         app = self.get_application_by_name(pkgname)
         reviews = app.get_reviews(page)
@@ -492,7 +426,7 @@ class AppManager(QObject):
                   "cachedir": cachedir, #result directory
         }
 
-        item  = WorkerItem("get_screenshots",kwargs)
+        item = WorkerItem("get_screenshots",kwargs)
 
         if app.screenshots:
             self.dispatchWorkerResult(item,app.screenshots)
@@ -590,7 +524,7 @@ class AppManager(QObject):
     def submit_pingback_main(self):
         kwargs = {}
 
-        item  = SilentWorkerItem("submit_pingback_main", kwargs)
+        item = SilentWorkerItem("submit_pingback_main", kwargs)
         self.squeue.put_nowait(item)
 
     def submit_pingback_app(self, app_name, isrcm=False):
@@ -598,7 +532,7 @@ class AppManager(QObject):
                   "isrcm": isrcm,
                   }
 
-        item  = SilentWorkerItem("submit_pingback_app", kwargs)
+        item = SilentWorkerItem("submit_pingback_app", kwargs)
         self.squeue.put_nowait(item)
 
     # get recommend apps
