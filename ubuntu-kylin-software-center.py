@@ -144,17 +144,10 @@ class SoftwareCenter(QMainWindow):
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
 
         # style by code
-        self.ui.headerWidget.setAutoFillBackground(True)
+        self.ui.centralwidget.setAutoFillBackground(True)
         palette = QPalette()
-        img = QPixmap("res/header.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.ui.headerWidget.setPalette(palette)
-
-        self.ui.searchBG.setAutoFillBackground(True)
-        palette = QPalette()
-        img = QPixmap("res/bg-search.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.ui.searchBG.setPalette(palette)
+        palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        self.ui.centralwidget.setPalette(palette)
 
         # self.ui.userWidget.setAutoFillBackground(True)
         # palette = QPalette()
@@ -258,6 +251,7 @@ class SoftwareCenter(QMainWindow):
         self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
         self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
+        self.ui.navWidget.setStyleSheet("QWidget{background-image:url('res/nav-bg.png');}")
         # self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
         # self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
         # self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
@@ -265,6 +259,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
         # self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
@@ -1469,7 +1464,8 @@ def main():
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
-    globalfont.setFamily("文泉驿微米黑")  # 文泉驿微米黑 文泉驿等宽微米黑 华文细黑
+    globalfont.setFamily("宋体")  # 宋体 文泉驿微米黑 文泉驿等宽微米黑 华文细黑
+    # globalfont.setPixelSize(13)
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
 

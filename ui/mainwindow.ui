@@ -127,10 +127,10 @@
     <widget class="QWidget" name="allsWidget" native="true">
      <property name="geometry">
       <rect>
-       <x>152</x>
-       <y>82</y>
-       <width>663</width>
-       <height>479</height>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
       </rect>
      </property>
      <widget class="QListWidget" name="allsListWidget">
@@ -253,8 +253,8 @@
       <rect>
        <x>20</x>
        <y>36</y>
-       <width>860</width>
-       <height>565</height>
+       <width>880</width>
+       <height>572</height>
       </rect>
      </property>
      <widget class="QLabel" name="xpMSGBar">
@@ -284,10 +284,10 @@
     <widget class="QWidget" name="unWidget" native="true">
      <property name="geometry">
       <rect>
-       <x>152</x>
-       <y>82</y>
-       <width>663</width>
-       <height>479</height>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
       </rect>
      </property>
      <widget class="QListWidget" name="unListWidget">
@@ -410,8 +410,8 @@
       <rect>
        <x>20</x>
        <y>36</y>
-       <width>860</width>
-       <height>565</height>
+       <width>880</width>
+       <height>572</height>
       </rect>
      </property>
      <widget class="QWidget" name="recommendWidget" native="true">
@@ -562,10 +562,10 @@
     <widget class="QWidget" name="searchWidget" native="true">
      <property name="geometry">
       <rect>
-       <x>152</x>
-       <y>82</y>
-       <width>663</width>
-       <height>479</height>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
       </rect>
      </property>
      <widget class="QListWidget" name="searchListWidget">
@@ -609,9 +609,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>82</y>
-       <width>815</width>
-       <height>505</height>
+       <y>0</y>
+       <width>350</width>
+       <height>608</height>
       </rect>
      </property>
      <widget class="QLabel" name="taskHeader">
@@ -719,10 +719,10 @@
     <widget class="QWidget" name="upWidget" native="true">
      <property name="geometry">
       <rect>
-       <x>152</x>
-       <y>82</y>
-       <width>663</width>
-       <height>479</height>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
       </rect>
      </property>
      <widget class="QListWidget" name="upListWidget">
