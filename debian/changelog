@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
+
+  * fix broken
+
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 28 Aug 2014 15:11:20 +0800
+
 ubuntu-kylin-software-center (0.3.4.0) utopic; urgency=medium
 
   * Part of the data migration to the server: classification, software information, 
@@ -5,6 +11,7 @@ ubuntu-kylin-software-center (0.3.4.0) utopic; urgency=medium
   * xapian Chinese word search
   * All interfaces such as buttons close to the upper left corner of unity
   * Part of the interface optimization
+  * Remove the software center tray
 
  -- Shine <shenghuang@ubuntukylin.com>  Fri, 22 Aug 2014 15:31:31 +0800
 
