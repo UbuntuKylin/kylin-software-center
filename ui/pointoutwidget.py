@@ -48,7 +48,7 @@ class PointOutWidget(QWidget):
         self.ui_init()
 
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        # self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.setWindowTitle("推荐安装")
 
         self.mainw = parent

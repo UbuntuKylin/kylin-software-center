@@ -27,6 +27,10 @@
 import os
 
 class Globals:
+    # mainwindow size
+    MAINWIDTH = 980
+    MAINHEIGHT = 608
+
     # how many softwares show in a setp
     showSoftwareStep = 20
 
