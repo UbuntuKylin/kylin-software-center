@@ -9,6 +9,8 @@ from defer import inline_callbacks
 from aptdaemon import policykit1
 
 
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 loop = gobject.MainLoop()
 
 def on_finished(trans, exit):
@@ -62,16 +64,22 @@ if __name__ == "__main__":
     import sys
     # import os
     # os.execv("/usr/bin/python", ["foo", "/home/shine/PycharmProjects/ubuntu-kylin-software-center/test/restarttext.py"])
-    la = []
-    la.append(1)
-    la.append(2)
-    la.append(5)
-    la.append(7)
-    la.append(4)
-    la.append(3)
-    # print la.pop(0)
-    sorted(la,)
-    print la
+    # la = []
+    # la.append(1)
+    # la.append(2)
+    # la.append(5)
+    # la.append(7)
+    # la.append(4)
+    # la.append(3)
+    # sorted(la,)
+    # print la
 
-    import time
-    print time.strftime('%Y-%m-%d',time.localtime())
+    # import time
+    # print time.strftime('%Y-%m-%d',time.localtime())
+
+    db = QFontDatabase()
+    for fm in db.families():
+        print fm
+
+    # for f in fm:
+    #     print f

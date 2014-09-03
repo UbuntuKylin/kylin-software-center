@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*
 __author__ = 'shine'
 
-import sys
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 class SoftwareCenter(QMainWindow):
@@ -50,11 +53,16 @@ def main():
     globalfont.setFamily("文泉驿微米黑")
     app.setFont(globalfont)
 
-    mw = SoftwareCenter()
-    windowWidth = QApplication.desktop().width()
-    windowHeight = QApplication.desktop().height()
-    mw.move((windowWidth - mw.width()) / 2, (windowHeight - mw.height()) / 2)
-    mw.show()
+    # mw = SoftwareCenter()
+    # windowWidth = QApplication.desktop().width()
+    # windowHeight = QApplication.desktop().height()
+    # mw.move((windowWidth - mw.width()) / 2, (windowHeight - mw.height()) / 2)
+    # mw.show()
+
+
+    db = QFontDatabase()
+    for fm in db.families():
+        print fm
 
     sys.exit(app.exec_())
 

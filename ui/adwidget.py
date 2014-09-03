@@ -92,7 +92,7 @@ class ADWidget(QWidget):
         self.show()
 
     def ui_init(self):
-        self.resize(663, 214)
+        self.resize(860, 220)
         self.adContentWidget = QWidget(self)
         self.adContentWidget.setGeometry(QRect(0, 0, 663, 214))
         self.adContentWidget.setObjectName("adContentWidget")

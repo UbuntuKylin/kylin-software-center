@@ -54,3 +54,9 @@ class RankListItemWidget(QWidget):
         self.ui = Ui_RankListWidget()
         self.ui.setupUi(self)
         self.show()
+
+    def enterEvent(self, event):
+        self.resize(200, 52)
+
+    def leaveEvent(self, event):
+        self.resize(200, 24)

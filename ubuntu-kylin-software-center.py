@@ -32,6 +32,7 @@ from PyQt4.QtCore import *
 
 from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
+from ui.normalcard import NormalCard
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
@@ -62,6 +63,9 @@ from models.enums import Signals
 from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
 from ui.xpitemwidget import XpItemWidget, DataModel
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -102,6 +106,9 @@ class SoftwareCenter(QMainWindow):
 
         # init main service
         self.init_main_service()
+
+        # check ukid
+        self.check_user()
 
         # check apt source and update it
         self.check_source()
@@ -146,42 +153,26 @@ class SoftwareCenter(QMainWindow):
         # style by code
         self.ui.centralwidget.setAutoFillBackground(True)
         palette = QPalette()
-        palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        # palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
         self.ui.centralwidget.setPalette(palette)
-
-        # self.ui.userWidget.setAutoFillBackground(True)
-        # palette = QPalette()
-        # palette.setBrush(QPalette.Background, QColor(44, 46, 61))
-        # self.ui.userWidget.setPalette(palette)
-
-        self.ui.recommendWidget.setAutoFillBackground(True)
-        palette = QPalette()
-        palette.setColor(QPalette.Background, Qt.white)
-        self.ui.recommendWidget.setPalette(palette)
 
         self.ui.rankWidget.setAutoFillBackground(True)
         palette = QPalette()
-        palette.setColor(QPalette.Background, Qt.white)
+        # palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
         self.ui.rankWidget.setPalette(palette)
 
-        # self.ui.bottomWidget.setAutoFillBackground(True)
-        # palette = QPalette()
-        # img = QPixmap("res/foot.png")
-        # palette.setBrush(QPalette.Window, QBrush(img))
-        # self.ui.bottomWidget.setPalette(palette)
-
         # self.ui.categoryView.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnDay.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnWeek.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnMonth.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnDownTimes.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnGrade.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMin.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnMaxNormal.setFocusPolicy(Qt.NoFocus)
         self.ui.btnConf.setFocusPolicy(Qt.NoFocus)
-        # self.ui.btnBack.setFocusPolicy(Qt.NoFocus)
-        # self.ui.btnNext.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnXp.setFocusPolicy(Qt.NoFocus)
@@ -193,26 +184,34 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
-        self.ui.lebg.stackUnder(self.ui.leSearch)
-        self.ui.searchWidget.stackUnder(self.ui.searchBG)
+        # self.ui.lebg.stackUnder(self.ui.leSearch)
+        self.ui.leSearch.stackUnder(self.ui.lebg)
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.softCountText1 = QLabel(self.ui.searchBG)
-        self.softCountText1.setGeometry(QRect(10, 8, 30, 17))
+        self.softCountText1 = QLabel(self.ui.homeMsgWidget)
+        self.softCountText1.setGeometry(QRect(744, 14, 50, 15))
         self.softCountText1.setObjectName("softCountText1")
         self.softCountText1.setText("共有")
-        self.softCount = QLabel(self.ui.searchBG)
-        self.softCount.setGeometry(QRect(34, 8, 50, 17))
+        self.softCount = QLabel(self.ui.homeMsgWidget)
+        self.softCount.setGeometry(QRect(770, 14, 50, 15))
         self.softCount.setText("")
         self.softCount.setObjectName("softCount")
-        self.softCountText2 = QLabel(self.ui.searchBG)
-        self.softCountText2.setGeometry(QRect(80, 8, 50, 17))
+        self.softCountText2 = QLabel(self.ui.homeMsgWidget)
+        self.softCountText2.setGeometry(QRect(818, 14, 44, 15))
         self.softCountText2.setObjectName("softCountText2")
         self.softCountText2.setText("款软件")
 
         self.softCount.setAlignment(Qt.AlignCenter)
+
+        self.ui.btnLogin.setText("请登录")
+        self.ui.btnReg.setText("免费注册")
+        self.ui.welcometext.setText("欢迎您")
+        self.ui.btnLogout.setText("退出")
+
+        self.ui.hometext1.setText("推荐软件")
+        self.ui.hometext2.setText("评分排行")
 
         self.ui.texticon.setText("图标")
         self.ui.textappname.setText("软件名")
@@ -243,14 +242,24 @@ class SoftwareCenter(QMainWindow):
 
         # self.ui.userName.setText("未登陆")
         # self.ui.userLv.setText("Lv 0")
-        self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
-        # self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        # self.ui.bottomText2.setText(Globals.UKSC_VERSION)
+        self.ui.leSearch.setPlaceholderText("请输入您要搜索的软件")
+
 
         # style by qss
-        self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
+        self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
+        self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+        self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
+        self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
+        self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+        self.softCountText1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+        self.softCountText2.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+        self.softCount.setStyleSheet("QLabel{color:#FA7053;font-size:15px;}")
+        self.ui.hometext1.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.navWidget.setStyleSheet("QWidget{background-image:url('res/nav-bg.png');}")
         # self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
         # self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
@@ -265,24 +274,27 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-        self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search.png')}")
-        self.ui.leSearch.setStyleSheet("QLineEdit{background-image:url('res/searchc.png');border:0px;color:#DDDDDD;font-size:14px;}")
+        self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
+        self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
+        # self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EAF0F3;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{border:1px solid #0396DC;}QLineEdit:focus{border:1px solid #0396DC;color:#666666;}")
+
         # self.ui.userLabel.setStyleSheet("QLabel{background-image:url('res/user.png')}")
         # self.ui.userName.setStyleSheet("QLabel{color:white;}")
         # self.ui.userLv.setStyleSheet("QLabel{color:white;}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
+        self.ui.btnMaxNormal.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
         self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background:url('res/conf-2.png');}QPushButton:pressed{background:url('res/conf-3.png');}")
         # self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-color:#30323F;font-size:13px;}QListWidget::item{height:36px;padding-left:24px;margin-top:0px;border:0px;color:#A8A9AE;}QListWidget::item:hover{background-color:#282937;}QListWidget::item:selected{background-color:#232230;color:white;}")
-        self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
-        self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
-        self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:20px;border:0px;}QListWidget::item:selected{color:black;}")
-        self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
-        self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
-        self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
-        self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
-        self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
+        # self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
+        # self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
+        # self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EAF0F3;}QListWidget::item{height:24px;border:0px;font-size:13px;color:#666666;}QListWidget::item:hover{height:52;}")
+        # self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
+        # self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
+        # self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
+        # self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
+        # self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
         # self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
         # self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
         # self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
@@ -355,6 +367,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
+        self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
         self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
@@ -507,6 +520,10 @@ class SoftwareCenter(QMainWindow):
         except dbus.DBusException:
             bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
             self.dbusControler = UtilDbus(self, bus_name)
+
+    def check_user(self):
+        self.ui.beforeLoginWidget.show()
+        self.ui.afterLoginWidget.hide()
 
     def init_last_data(self):
         # init category list
@@ -850,6 +867,8 @@ class SoftwareCenter(QMainWindow):
         listWidget = ''
         if(self.nowPage == "homepage"):
             listWidget = self.ui.allsListWidget
+        elif(self.nowPage == "allpage"):
+            listWidget = self.ui.allsListWidget
         elif(self.nowPage == "uppage"):
             listWidget = self.ui.upListWidget
         elif(self.nowPage == "unpage"):
@@ -963,7 +982,7 @@ class SoftwareCenter(QMainWindow):
                 self.slot_close()
 
 
-    #--------------------------------------slots--------------------------------------
+    #-------------------------------------------------slots-------------------------------------------------
 
     def slot_change_category(self, citem):
         category = str(citem.whatsThis())
@@ -994,7 +1013,8 @@ class SoftwareCenter(QMainWindow):
     def slot_advertisement_ready(self,adlist):
         LOG.debug("receive ads ready, count is %d", len(adlist))
         if adlist is not None:
-            adw = ADWidget(adlist, self)
+            self.adw = ADWidget(adlist, self)
+            self.adw.move(0, 44)
             (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
             self.softCount.setText(str(sum_all))
 
@@ -1008,16 +1028,16 @@ class SoftwareCenter(QMainWindow):
         x = y = int(0)
 
         for app in applist:
-            recommend = RecommendItem(app,self,self.ui.recommendWidget)
+            recommend = NormalCard(app, self.ui.recommendWidget)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
-            self.connect(recommend, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(recommend, Signals.remove_app, self.slot_click_remove)
+            self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
+            self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
 
-            if index%count_per_line == 0:
+            if index % count_per_line == 0:
                 x = 0
-            x = int(index%count_per_line)*176
-            y = int(index/count_per_line)*88
+            x = int(index % count_per_line) * (212 + 2)
+            y = int(index / count_per_line) * (88 + 2)
             index = index + 1
             recommend.move(x, y)
 
@@ -1081,7 +1101,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(True)
+        # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
         self.ui.rankWidget.setVisible(True)
         self.ui.allsWidget.setVisible(False)
@@ -1091,11 +1111,43 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(False)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
         self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
+        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
+        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+
+    def slot_goto_allpage(self):
+        if self.nowPage != 'allpage':
+            forceChange = True
+        else:
+            forceChange = False
+        self.nowPage = 'allpage'
+        # self.ui.categoryView.setEnabled(True)
+        self.switch_to_category(self.category,forceChange)
+        self.detailScrollWidget.hide()
+        # self.ui.searchBG.setVisible(True)
+        self.ui.homepageWidget.setVisible(False)
+        self.ui.allsWidget.setVisible(True)
+        self.ui.upWidget.setVisible(False)
+        self.ui.unWidget.setVisible(False)
+        self.ui.xpWidget.setVisible(False)
+        self.ui.searchWidget.setVisible(False)
+        self.ui.taskWidget.setVisible(False)
+        self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(False)
+        self.ui.btnUp.setEnabled(True)
+        self.ui.btnUn.setEnabled(True)
+        self.ui.btnTask.setEnabled(True)
+        self.ui.btnXp.setEnabled(True)
+        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -1114,7 +1166,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(True)
+        # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(True)
@@ -1123,11 +1175,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
         self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -1146,7 +1200,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(True)
+        # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1155,11 +1209,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(True)
         self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -1174,7 +1230,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(False)
+        # self.ui.searchBG.setVisible(False)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1183,11 +1239,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.setVisible(True)
         self.ui.xpWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(False)
         self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
@@ -1221,7 +1279,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(False)
+        # self.ui.searchBG.setVisible(False)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1230,11 +1288,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.setVisible(False)
         self.ui.xpWidget.setVisible(True)
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
         self.ui.btnXp.setEnabled(False)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -1464,8 +1524,23 @@ def main():
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
-    globalfont.setFamily("宋体")  # 宋体 文泉驿微米黑 文泉驿等宽微米黑 华文细黑
-    # globalfont.setPixelSize(13)
+    # globalfont.setFamily("")
+    # 文泉驿微米黑
+    # 文泉驿等宽微米黑
+    # 方正书宋_GBK
+    # 方正仿宋_GBK
+    # 方正姚体_GBK
+    # 方正宋体S-超大字符集
+    # 方正宋体S-超大字符集(SIP)
+    # 方正小标宋_GBK
+    # 方正楷体_GBK
+    # 方正细黑一_GBK
+    # 方正行楷_GBK
+    # 方正超粗黑_GBK
+    # 方正隶书_GBK
+    # 方正魏碑_GBK
+    # 方正黑体_GBK
+    globalfont.setPixelSize(14)
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
 
