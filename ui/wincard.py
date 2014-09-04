@@ -36,10 +36,10 @@ from models.enums import Signals
 
 class WinCard(QWidget):
 
-    def __init__(self, aa, app, parent=None):
+    def __init__(self, winstat, app, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
-        self.aa = aa
+        self.winstat = winstat
         self.app = app
 
         self.switchTimer = QTimer(self)
@@ -78,62 +78,30 @@ class WinCard(QWidget):
         palette.setBrush(QPalette.Base, QBrush(QColor(255,0,0,0)))
         self.ui.description.setPalette(palette)
 
-        # palette = QPalette()
         img = QPixmap("res/arrowhead.png")
-        # palette.setBrush(QPalette.Window, QBrush(img))
-        # self.ui.arronicon.setPalette(palette)
-
-        # aab = QPixmap("res/arrowhead.png")
         self.ui.arronicon.setPixmap(img)
 
-        # self.captcha_view = QtGui.QLabel(SetUpAccountPage)
-        # sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # sizePolicy.setHeightForWidth(self.captcha_view.sizePolicy().hasHeightForWidth())
-        # self.captcha_view.setSizePolicy(sizePolicy)
-        # self.captcha_view.setMinimumSize(QtCore.QSize(300, 70))
-        # self.captcha_view.setMaximumSize(QtCore.QSize(300, 70))
-        # self.captcha_view.setAutoFillBackground(False)
-        # self.captcha_view.setStyleSheet(_fromUtf8("background-color: white"))
-        # self.captcha_view.setFrameShape(QtGui.QFrame.NoFrame)
-        # self.ui.captcha_view.setPixmap(pixmap_image)
-
         # win frame
-        if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.aa.windows_app_name) + ".png")):
-            # palette = QPalette()
-            # img = QPixmap("res/wincard-base.png")
-            # palette.setBrush(QPalette.Window, QBrush(img))
-            # self.ui.detailWidget.setPalette(palette)
-            # imgScaled = QImage()
-            # imgScaled= imgScaled.scaled(48, 48, Qt.KeepAspectRatio)
-            # self.ui.winicon.setPixmap(QPixmap.fromImage(imgScaled))
-            # self.ui.winicon.setMinimumSize(QSize(48, 48))
-            # self.ui.winicon.setMaximumSize(QSize(48, 48))
-            self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.aa.windows_app_name) + ".png"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.aa.windows_app_name) + ".jpg")):
-            self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.aa.windows_app_name) + ".jpg"))
+        if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png")):
+            self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png"))
+        elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".jpg")):
+            self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".jpg"))
         else:
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + "default.png"))
-        self.ui.winname.setText(self.aa.windows_app_name)
-        self.ui.wintext.setText(self.aa.display_name_windows)
-        self.ui.winbake.setText(self.aa.category)
-        # component shadow
-        # shadowe = QGraphicsDropShadowEffect(self)
-        # shadowe.setOffset(-2, 2)    # direction
-        # shadowe.setColor(Qt.gray)
-        # shadowe.setBlurRadius(4)
-        # self.setGraphicsEffect(shadowe)
+        self.ui.winname.setText(self.winstat.windows_app_name)
+        self.ui.wintext.setText(self.winstat.display_name_windows)
+        self.ui.winbake.setText(self.winstat.category)
+
         if self.app is None:
-            if (self.aa.app_name == 'wine-qq' or self.aa.app_name == 'ppstream'):
-                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.aa.app_name) + ".png")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.aa.app_name) + ".png"))
-                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.aa.app_name) + ".jpg")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.aa.app_name) + ".jpg"))
-                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.aa.app_name) + ".png")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.aa.app_name) + ".png"))
-                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.aa.app_name) + ".jpg")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.aa.app_name) + ".jpg"))
+            if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
+                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".png")):
+                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".png"))
+                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".jpg")):
+                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".jpg"))
+                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".png")):
+                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".png"))
+                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".jpg")):
+                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".jpg"))
                 else:
                     self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
         else:
@@ -156,13 +124,13 @@ class WinCard(QWidget):
         self.ui.name.setFont(font)
         self.ui.description.setFont(font)
         if self.app is None:
-            if (self.aa.app_name == 'wine-qq' or self.aa.app_name == 'ppstream'):
-                if(len(self.aa.app_name) > 20):
+            if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
+                if(len(self.winstat.app_name) > 20):
                     font2 = QFont()
                     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
                     self.ui.name.setFont(font2)
                     self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-                if(len(self.aa.app_name) > 24):
+                if(len(self.winstat.app_name) > 24):
                     font2 = QFont()
                     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
                     self.ui.name.setFont(font2)
@@ -180,11 +148,11 @@ class WinCard(QWidget):
                 self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
 
         if self.app is None:
-            if (self.aa.app_name == 'wine-qq' or self.aa.app_name == 'ppstream'):
+            if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 self.ui.size.setText("")
-                self.ui.name.setText(self.aa.app_name)
-                self.ui.named.setText(self.aa.app_name)
-                self.ui.description.setText(self.aa.app_name)
+                self.ui.name.setText(self.winstat.app_name)
+                self.ui.named.setText(self.winstat.app_name)
+                self.ui.description.setText(self.winstat.app_name)
                 # rating star
                 star = StarWidget("small", 5, self.ui.baseWidget)
                 star.move(181, 56)
@@ -199,12 +167,9 @@ class WinCard(QWidget):
             self.ui.name.setText(self.app.displayname)
             self.ui.named.setText(self.app.displayname)
             self.ui.description.setText(self.app.description)
-            # rating star
-            # star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
-            # star.move(181, 65)
 
         if self.app is None:
-            if (self.aa.app_name == 'wine-qq' or self.aa.app_name == 'ppstream'):
+            if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 self.ui.btn.setText("安装")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-install-border.png');}")
@@ -228,8 +193,6 @@ class WinCard(QWidget):
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
-        # self.connect(self.mainwin,Signals.apt_process_finish,self.slot_work_finished)
-        # self.connect(self.mainwin,Signals.apt_process_cancel,self.slot_work_cancel)
 
     def ui_init(self):
         self.ui = Ui_WinCard()
@@ -275,9 +238,9 @@ class WinCard(QWidget):
                 self.ui.baseWidget.move(0, 0)
 
     def slot_btn_click(self):
-        if self.appname == 'wine-qq':# and self.app is None:
+        if self.winstat.app_name == 'wine-qq':
             webbrowser.open_new_tab('http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1')
-        elif self.appname == 'ppstream':# and self.app is None:
+        elif self.winstat.app_name == 'ppstream':
             webbrowser.open_new_tab('http://dl.pps.tv/pps_linux_download.html')
         else:
             if(self.ui.btn.text() == "启动"):
@@ -308,7 +271,7 @@ class WinCard(QWidget):
                 else:
                     self.ui.btn.setText("启动")
 
-    def slot_work_cancel(self, pkgname,action):
+    def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
@@ -321,8 +284,8 @@ class WinCard(QWidget):
                     self.ui.btn.setText("启动")
             elif action == AppActions.UPGRADE:
                 self.ui.btn.setText("升级")
-#
-#
+
+
 class WinGather(object):
     def __init__(self,app_name,display_name,windows_app_name,display_name_windows,description,category):
         self.app_name = app_name
@@ -331,3 +294,18 @@ class WinGather(object):
         self.display_name_windows = display_name_windows
         self.description = description
         self.category = category
+
+
+class DataModel():
+    def __init__(self, appmgr):
+        self.appmgr = appmgr
+        self.category_list = []#win替换分类在xp数据表中的所有分类列表，无重复
+
+    def init_data_model(self):
+        db_list = self.appmgr.search_name_and_categories_record()
+        for line in db_list:
+            if line[2] not in self.category_list:
+                self.category_list.append(line[2])
+
+    def get_win_category_list(self):
+        return self.category_list
