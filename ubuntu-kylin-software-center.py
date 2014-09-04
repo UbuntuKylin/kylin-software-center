@@ -33,6 +33,7 @@ from PyQt4.QtCore import *
 from ui.mainwindow import Ui_MainWindow
 from ui.recommenditem import RecommendItem
 from ui.normalcard import NormalCard
+from ui.wincard import WinCard, WinGather
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
@@ -245,6 +246,19 @@ class SoftwareCenter(QMainWindow):
         self.ui.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
 
+        #kobe 0904
+        self.ui.wintitle.setText("Windowns常用软件替换")
+        self.ui.winlabel1.setText("共有")
+        # self.ui.wincountlabel.setText("37")
+        self.ui.wincountlabel.setAlignment(Qt.AlignCenter)
+        self.ui.winlabel2.setText("款软件")
+        self.ui.winline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.wintitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.winlabel1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+        self.ui.winlabel2.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+        self.ui.wincountlabel.setStyleSheet("QLabel{color:#FA7053;font-size:15px;}")
+
+
         # style by qss
         self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
@@ -303,7 +317,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.searchMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
         self.ui.taskMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
-        self.ui.xpMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
+        # self.ui.xpMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
         self.ui.texticon.setStyleSheet("QLabel{font-size:14px;}")
         self.ui.textappname.setStyleSheet("QLabel{font-size:14px;}")
         self.ui.textsize.setStyleSheet("QLabel{font-size:14px;}")
@@ -398,7 +412,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
-        self.ui.xpWidget.hide()
+        # self.ui.xpWidget.hide()
+        self.ui.winpageWidget.hide()
         # self.ui.categoryView.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
@@ -430,6 +445,7 @@ class SoftwareCenter(QMainWindow):
 
         # add by kobe for test xp
         self.xp_exists = 0
+        self.winnum = 0
         self.xp_model = DataModel(self.appmgr)
 
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
@@ -636,135 +652,216 @@ class SoftwareCenter(QMainWindow):
             # self.ui.categoryView.addItem(oneitem)
 
     def getItem(self, row=0, column = 0):
+        pass
         # print row
         # print column
-        if self.software_index[row] not in ('ppstream', 'wine-qq'):
-            app = self.appmgr.get_application_by_name(self.software_index[row])
-            self.emit(Signals.show_app_detail, app)
+        # if self.software_index[row] not in ('ppstream', 'wine-qq'):
+        #     app = self.appmgr.get_application_by_name(self.software_index[row])
+        #     self.emit(Signals.show_app_detail, app)
 
     def set_tablewidget_stylesheet(self, xp_rows):
+        pass
         #------------表格创建和美化------------
-        self.ui.xpWidget.setWindowOpacity(1)
-        self.ui.xptableWidget.setRowCount(xp_rows)
-        self.ui.xptableWidget.setColumnCount(5)
-        self.ui.xptableWidget.setHorizontalHeaderLabels(['分类','Windows软件','替代软件','替代软件简介','替代软件状态'])
-        self.ui.xptableWidget.setFrameShape(QFrame.NoFrame)
-        self.ui.xptableWidget.setStyleSheet("gridline-color: rgb(255, 0, 0)")
-        self.ui.xptableWidget.verticalHeader().setVisible(False)
-        self.ui.xptableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.ui.xptableWidget.setSelectionBehavior(QTableWidget.SelectRows)
-        self.ui.xptableWidget.setMouseTracking(True)
-        self.ui.xptableWidget.setSelectionMode(QTableWidget.SingleSelection)
-        self.ui.xptableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.ui.xptableWidget.horizontalHeader().setHighlightSections(False)
-        self.ui.xptableWidget.setStyleSheet("QTableWidget::item:hover{background:#e4f1f8;color: black;}")
-        self.ui.xptableWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.xptableWidget.resizeColumnsToContents()
-        for m in range(xp_rows):
-            self.ui.xptableWidget.setRowHeight(m,40)
-        self.connect(self.ui.xptableWidget, SIGNAL("cellDoubleClicked(int, int)"), self.getItem)
-        self.ui.xptableWidget.connect(self, Signals.show_app_detail, self.slot_show_app_detail)
-        self.ui.xptableWidget.setIconSize(QSize(32, 32))
-        # 表头设置
-        self.ui.xptableWidget.horizontalHeader().setClickable(False)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(0,100)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(1,150)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(2,150)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(3,310)
-        self.ui.xptableWidget.horizontalHeader().setFixedHeight(25)
-        self.ui.xptableWidget.horizontalHeader().setStretchLastSection(True)
-        self.ui.xptableWidget.horizontalHeader().setStyleSheet("QHeaderView::section {background-color:#e4f1f8;color: black;}")#设置表头字体，颜色，模式  padding-left: 4px;border: 1px solid #6c6c6c;
+        # self.ui.xpWidget.setWindowOpacity(1)
+        # self.ui.xptableWidget.setRowCount(xp_rows)
+        # self.ui.xptableWidget.setColumnCount(5)
+        # self.ui.xptableWidget.setHorizontalHeaderLabels(['分类','Windows软件','替代软件','替代软件简介','替代软件状态'])
+        # self.ui.xptableWidget.setFrameShape(QFrame.NoFrame)
+        # self.ui.xptableWidget.setStyleSheet("gridline-color: rgb(255, 0, 0)")
+        # self.ui.xptableWidget.verticalHeader().setVisible(False)
+        # self.ui.xptableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
+        # self.ui.xptableWidget.setSelectionBehavior(QTableWidget.SelectRows)
+        # self.ui.xptableWidget.setMouseTracking(True)
+        # self.ui.xptableWidget.setSelectionMode(QTableWidget.SingleSelection)
+        # self.ui.xptableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.ui.xptableWidget.horizontalHeader().setHighlightSections(False)
+        # self.ui.xptableWidget.setStyleSheet("QTableWidget::item:hover{background:#e4f1f8;color: black;}")
+        # self.ui.xptableWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
+        #                                                          "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
+        #                                                          "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
+        # self.ui.xptableWidget.resizeColumnsToContents()
+        # for m in range(xp_rows):
+        #     self.ui.xptableWidget.setRowHeight(m,40)
+        # self.connect(self.ui.xptableWidget, SIGNAL("cellDoubleClicked(int, int)"), self.getItem)
+        # self.ui.xptableWidget.connect(self, Signals.show_app_detail, self.slot_show_app_detail)
+        # self.ui.xptableWidget.setIconSize(QSize(32, 32))
+        # # 表头设置
+        # self.ui.xptableWidget.horizontalHeader().setClickable(False)
+        # self.ui.xptableWidget.horizontalHeader().resizeSection(0,100)
+        # self.ui.xptableWidget.horizontalHeader().resizeSection(1,150)
+        # self.ui.xptableWidget.horizontalHeader().resizeSection(2,150)
+        # self.ui.xptableWidget.horizontalHeader().resizeSection(3,310)
+        # self.ui.xptableWidget.horizontalHeader().setFixedHeight(25)
+        # self.ui.xptableWidget.horizontalHeader().setStretchLastSection(True)
+        # self.ui.xptableWidget.horizontalHeader().setStyleSheet("QHeaderView::section {background-color:#e4f1f8;color: black;}")#设置表头字体，颜色，模式  padding-left: 4px;border: 1px solid #6c6c6c;
 
     def push_date_into_table(self, category_list, software_list):
-        current_row = 0
-        self.software_index = []#显示列表中记录软件名的一个的顺序列表，方便双击时根据索引值获取软件名
-        for category in category_list:
-            app_list = self.appmgr.search_app_display_info(category)
-            for context in app_list:
-                if context[0] in software_list:
-                    self.software_index.append(context[0])
-                    if context[0] == 'wine-qq' or context[0] == 'ppstream':
-                        app = None
-                    else:
-                        app = self.appmgr.get_application_by_name(context[0])
-                    for i in range(self.ui.xptableWidget.columnCount()):
-                        if i == 0:
-                            cnt = category
-                        elif i == 1:
-                            cnt = context[3]
-                        elif i == 2:
-                            cnt = context[1]
-                        elif i == 3:
-                            cnt = context[4]
-                        else:
-                            cnt = ''
-                        if i == 1:
-                            if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".png")):
-                                software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".png"
-                            elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".jpg")):
-                                software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".jpg"
-                            else:
-                                software_icon = UBUNTUKYLIN_RES_WIN_PATH + "default.png"
-                            self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
-                        elif i == 2:
-                            if context[0] in ('ppstream', 'wine-qq'):
-                                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg"
-                                else:
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
-                            else:
-                                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg"
-                                else:
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
-                            self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
-                        else:
-                            newItem = QTableWidgetItem(cnt)
-                            newItem.setTextAlignment(Qt.AlignCenter)
-                            self.ui.xptableWidget.setItem(current_row,i,newItem)
-                    btn = XpItemWidget(context[0], app, self.backend, self)
-                    self.connect(btn, Signals.install_app, self.slot_click_install)
-                    self.ui.xptableWidget.setCellWidget(current_row,self.ui.xptableWidget.columnCount()-1,btn)
-                    current_row += 1
+        pass
+        # current_row = 0
+        # self.software_index = []#显示列表中记录软件名的一个的顺序列表，方便双击时根据索引值获取软件名
+        # for category in category_list:
+        #     app_list = self.appmgr.search_app_display_info(category)
+        #     for context in app_list:
+        #         if context[0] in software_list:
+        #             self.software_index.append(context[0])
+        #             if context[0] == 'wine-qq' or context[0] == 'ppstream':
+        #                 app = None
+        #             else:
+        #                 app = self.appmgr.get_application_by_name(context[0])
+        #             for i in range(self.ui.xptableWidget.columnCount()):
+        #                 if i == 0:
+        #                     cnt = category
+        #                 elif i == 1:
+        #                     cnt = context[3]
+        #                 elif i == 2:
+        #                     cnt = context[1]
+        #                 elif i == 3:
+        #                     cnt = context[4]
+        #                 else:
+        #                     cnt = ''
+        #                 if i == 1:
+        #                     if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".png")):
+        #                         software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".png"
+        #                     elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".jpg")):
+        #                         software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".jpg"
+        #                     else:
+        #                         software_icon = UBUNTUKYLIN_RES_WIN_PATH + "default.png"
+        #                     self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
+        #                 elif i == 2:
+        #                     if context[0] in ('ppstream', 'wine-qq'):
+        #                         if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png")):
+        #                             software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png"
+        #                         elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg")):
+        #                             software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg"
+        #                         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png")):
+        #                             software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png"
+        #                         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg")):
+        #                             software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg"
+        #                         else:
+        #                             software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
+        #                     else:
+        #                         if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png")):
+        #                             software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png"
+        #                         elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg")):
+        #                             software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg"
+        #                         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
+        #                             software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png"
+        #                         elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
+        #                             software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg"
+        #                         else:
+        #                             software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
+        #                     self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
+        #                 else:
+        #                     newItem = QTableWidgetItem(cnt)
+        #                     newItem.setTextAlignment(Qt.AlignCenter)
+        #                     self.ui.xptableWidget.setItem(current_row,i,newItem)
+        #             btn = XpItemWidget(context[0], app, self.backend, self)
+        #             self.connect(btn, Signals.install_app, self.slot_click_install)
+        #             self.ui.xptableWidget.setCellWidget(current_row,self.ui.xptableWidget.columnCount()-1,btn)
+        #             current_row += 1
 
     # add by kobe
     def init_xp_solution_widget(self):
+        # def slot_recommend_apps_ready(self,applist):
+    # LOG.debug("receive recommend apps ready, count is %d", len(applist))
+        self.winnum = 0
+        count_per_line = 2
+        index = int(0)
+        x = y = int(0)
+
+        # for app in applist:
+        #     recommend = NormalCard(app, self.ui.recommendWidget)
+        #     # self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
+        #     # self.connect(recommend, Signals.install_app, self.slot_click_install)
+        #     # self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
+        #     # self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
+        #
+        #     if index % count_per_line == 0:
+        #         x = 0
+        #     x = int(index % count_per_line) * (212 + 2)
+        #     y = int(index / count_per_line) * (88 + 2)
+        #     index = index + 1
+        #     recommend.move(x, y)
+        #
+        # self.rec_ready = True
+        # self.check_init_ready()
+        # pass
         #------------获取数据------------
         self.xp_model.init_data_model()
-        xp_rows = self.xp_model.get_table_rows_num()#要建立的表格的行数
-        (category_pos_list, category_offset_list) = self.xp_model.get_category_cell_position_offset()
-        (win_pos_list, win_offset_list) = self.xp_model.get_win_cell_position_offset()
+        # applist = self.xp_model.get_soft_app_list()
+        # for app in applist:
+        #得到xp表中所有按优先级排序的软件名列表
+
         category_list = self.xp_model.get_xp_category_list()#xp替换分类在xp数据表中的所有分类列表，无重复
-        software_list = self.xp_model.get_xp_software_list_()#xp替换软件在软件源中的有效列表
 
-        #------------表格创建和美化------------
-        self.set_tablewidget_stylesheet(xp_rows)
+        # applist = self.xp_model.get_soft_app_list()
+        # for eachapp in applist:
+        #     app = self.appmgr.get_application_by_name(eachapp)
+        #     if app is not None:
+        #         recommend = WinCard("kobe", "lixiang", app, self.ui.winListWidget)
+        #     # self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
+        #     # self.connect(recommend, Signals.install_app, self.slot_click_install)
+        #     # self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
+        #     # self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
+        #
+        #         if index % count_per_line == 0:
+        #             x = 0
+        #         x = int(index % count_per_line) * (420 + 2)
+        #         y = int(index / count_per_line) * (88 + 2)
+        #         index = index + 1
+        #         recommend.move(x, y)
 
-        #------------数据填充------------
-        self.push_date_into_table(category_list, software_list)
 
-        # 合并category的单元格
-        for i in range(len(category_pos_list)):
-            self.ui.xptableWidget.setSpan(category_pos_list[i], 0, int(category_offset_list[i]), 1)
 
-        # 合并windows软件的单元格
-        for i in range(len(win_pos_list)):
-            self.ui.xptableWidget.setSpan(win_pos_list[i], 1, int(win_offset_list[i]), 1)
+        for category in category_list:
+            app_list = self.appmgr.search_app_display_info(category)
+            #"select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
+            for context in app_list:
+                if context[0] == 'wine-qq' or context[0] == 'ppstream':
+                    self.winnum += 1
+                    app = None
+                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    recommend = WinCard(winstat, app, self.ui.winListWidget)
+                    if index % count_per_line == 0:
+                        x = 0
+                    x = int(index % count_per_line) * (427 + 2)
+                    y = int(index / count_per_line) * (88 + 2)
+                    index = index + 1
+                    recommend.move(x, y)
+                else:
+                    app = self.appmgr.get_application_by_name(context[0])
+                    if app is not None:
+                        self.winnum += 1
+                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    recommend = WinCard(winstat, app, self.ui.winListWidget)
+                    if index % count_per_line == 0:
+                        x = 0
+                    x = int(index % count_per_line) * (427 + 2)
+                    y = int(index / count_per_line) * (88 + 2)
+                    index = index + 1
+                    recommend.move(x, y)
         self.xp_exists = 1
+
+        # xp_rows = self.xp_model.get_table_rows_num()#要建立的表格的行数
+        # (category_pos_list, category_offset_list) = self.xp_model.get_category_cell_position_offset()
+        # (win_pos_list, win_offset_list) = self.xp_model.get_win_cell_position_offset()
+        # category_list = self.xp_model.get_xp_category_list()#xp替换分类在xp数据表中的所有分类列表，无重复
+        # software_list = self.xp_model.get_xp_software_list_()#xp替换软件在软件源中的有效列表
+        #
+        # #------------表格创建和美化------------
+        # self.set_tablewidget_stylesheet(xp_rows)
+        #
+        # #------------数据填充------------
+        # self.push_date_into_table(category_list, software_list)
+        #
+        # # 合并category的单元格
+        # for i in range(len(category_pos_list)):
+        #     self.ui.xptableWidget.setSpan(category_pos_list[i], 0, int(category_offset_list[i]), 1)
+        #
+        # # 合并windows软件的单元格
+        # for i in range(len(win_pos_list)):
+        #     self.ui.xptableWidget.setSpan(win_pos_list[i], 1, int(win_offset_list[i]), 1)
+        # self.xp_exists = 1
 
     def show_to_frontend(self):
         self.show()
@@ -1001,8 +1098,10 @@ class SoftwareCenter(QMainWindow):
             self.ui.upWidget.setVisible(True)
         if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
             self.ui.unWidget.setVisible(True)
-        if(self.nowPage == "xppage" and self.ui.xpWidget.isVisible() == False):
-            self.ui.xpWidget.setVisible(True)
+        if(self.nowPage == "xppage" and self.ui.winpageWidget.isVisible() == False):
+            self.ui.winpageWidget.setVisible(True)
+        # if(self.nowPage == "xppage" and self.ui.xpWidget.isVisible() == False):
+        #     self.ui.xpWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
@@ -1087,7 +1186,8 @@ class SoftwareCenter(QMainWindow):
             self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
             self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
         self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-        self.ui.xpMSGBar.setText("当前可替换 <font color='#009900'>" + str(self.ui.xptableWidget.rowCount()) + "</font> 款软件")
+        # self.ui.xpMSGBar.setText("当前可替换 <font color='#009900'>" + str(self.ui.xptableWidget.rowCount()) + "</font> 款软件")
+        self.ui.wincountlabel.setText(str(self.winnum))
 
     def slot_goto_homepage(self, ishistory=False):
         # if(ishistory == False):
@@ -1107,7 +1207,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(False)
@@ -1137,7 +1238,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.allsWidget.setVisible(True)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
@@ -1171,7 +1273,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(True)
         self.ui.unWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
@@ -1205,7 +1308,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.allsWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(True)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
@@ -1237,7 +1341,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(True)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
         self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
@@ -1268,7 +1373,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
         self.ui.taskWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
+
 
     def slot_goto_xppage(self, ishistory=False):
         # if(ishistory == False):
@@ -1286,7 +1393,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(True)
+        # self.ui.xpWidget.setVisible(True)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(True)
+        # self.ui.winMsgWidget.show()
         self.ui.btnHomepage.setEnabled(True)
         self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
@@ -1299,7 +1409,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
-
         if not self.xp_exists:
             self.init_xp_solution_widget()
             self.emit(Signals.count_application_update)

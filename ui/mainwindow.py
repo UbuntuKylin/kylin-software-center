@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/mainwindow.ui'
+# Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Sep  3 11:37:33 2014
+# Created: Thu Sep  4 15:41:44 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -101,18 +101,6 @@ class Ui_MainWindow(object):
         self.textaction_all.setGeometry(QtCore.QRect(600, 58, 50, 17))
         self.textaction_all.setText(_fromUtf8(""))
         self.textaction_all.setObjectName(_fromUtf8("textaction_all"))
-        self.xpWidget = QtGui.QWidget(self.rightWidget)
-        self.xpWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
-        self.xpWidget.setObjectName(_fromUtf8("xpWidget"))
-        self.xpMSGBar = QtGui.QLabel(self.xpWidget)
-        self.xpMSGBar.setGeometry(QtCore.QRect(0, 0, 815, 33))
-        self.xpMSGBar.setText(_fromUtf8(""))
-        self.xpMSGBar.setObjectName(_fromUtf8("xpMSGBar"))
-        self.xptableWidget = QtGui.QTableWidget(self.xpWidget)
-        self.xptableWidget.setGeometry(QtCore.QRect(0, 33, 815, 471))
-        self.xptableWidget.setObjectName(_fromUtf8("xptableWidget"))
-        self.xptableWidget.setColumnCount(0)
-        self.xptableWidget.setRowCount(0)
         self.unWidget = QtGui.QWidget(self.rightWidget)
         self.unWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.unWidget.setObjectName(_fromUtf8("unWidget"))
@@ -331,6 +319,38 @@ class Ui_MainWindow(object):
         self.btnMaxNormal.setGeometry(QtCore.QRect(56, 0, 28, 36))
         self.btnMaxNormal.setText(_fromUtf8(""))
         self.btnMaxNormal.setObjectName(_fromUtf8("btnMaxNormal"))
+        self.winpageWidget = QtGui.QWidget(self.rightWidget)
+        self.winpageWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
+        self.winpageWidget.setObjectName(_fromUtf8("winpageWidget"))
+        self.winListWidget = QtGui.QWidget(self.winpageWidget)
+        self.winListWidget.setGeometry(QtCore.QRect(0, 45, 875, 521))
+        self.winListWidget.setObjectName(_fromUtf8("winListWidget"))
+        self.winMsgWidget = QtGui.QWidget(self.winpageWidget)
+        self.winMsgWidget.setGeometry(QtCore.QRect(0, 0, 860, 44))
+        self.winMsgWidget.setObjectName(_fromUtf8("winMsgWidget"))
+        self.winrightWidget = QtGui.QWidget(self.winMsgWidget)
+        self.winrightWidget.setGeometry(QtCore.QRect(600, 0, 260, 44))
+        self.winrightWidget.setObjectName(_fromUtf8("winrightWidget"))
+        self.wincountlabel = QtGui.QLabel(self.winrightWidget)
+        self.wincountlabel.setGeometry(QtCore.QRect(177, 14, 41, 15))
+        self.wincountlabel.setText(_fromUtf8(""))
+        self.wincountlabel.setObjectName(_fromUtf8("wincountlabel"))
+        self.winlabel1 = QtGui.QLabel(self.winrightWidget)
+        self.winlabel1.setGeometry(QtCore.QRect(147, 14, 31, 15))
+        self.winlabel1.setText(_fromUtf8(""))
+        self.winlabel1.setObjectName(_fromUtf8("winlabel1"))
+        self.winlabel2 = QtGui.QLabel(self.winrightWidget)
+        self.winlabel2.setGeometry(QtCore.QRect(218, 14, 41, 15))
+        self.winlabel2.setText(_fromUtf8(""))
+        self.winlabel2.setObjectName(_fromUtf8("winlabel2"))
+        self.wintitle = QtGui.QLabel(self.winMsgWidget)
+        self.wintitle.setGeometry(QtCore.QRect(0, 10, 301, 20))
+        self.wintitle.setText(_fromUtf8(""))
+        self.wintitle.setObjectName(_fromUtf8("wintitle"))
+        self.winline = QtGui.QLabel(self.winMsgWidget)
+        self.winline.setGeometry(QtCore.QRect(0, 36, 858, 1))
+        self.winline.setText(_fromUtf8(""))
+        self.winline.setObjectName(_fromUtf8("winline"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
