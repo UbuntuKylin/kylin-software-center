@@ -25,47 +25,75 @@
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from models.enums import UBUNTUKYLIN_RES_PATH
+import sip
+
 
 class CardWidget(QWidget):
 
-    def __init__(self, addata, parent=None):
+    cardcount = 0
+    number_per_row = -1
+    itemwidth = -1
+    itemheight = -1
+
+    def __init__(self, itemwidth, itemheight, cardspacing, parent=None):
         QWidget.__init__(self, parent)
 
-        self.alertTimer = QTimer(self)
-        self.alertTimer.timeout.connect(self.slot_alert_step)
-        self.alertDelayTimer = QTimer(self)
-        self.alertDelayTimer.timeout.connect(self.slot_hide_alert)
-        self.alertGOE = QGraphicsOpacityEffect()
+        self.itemwidth = itemwidth
+        self.itemheight = itemheight
+        self.cardspacing = cardspacing
 
-        self.alert = QPushButton(parent)
-        self.alert.setGeometry(317, 380, 190, 95)
-        self.alert.setFocusPolicy(Qt.NoFocus)
-        self.alert.setGraphicsEffect(self.alertGOE)
-        self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:5px;color:#1E66A4;font-size:16px;}")
-        self.alert.clicked.connect(self.alert.hide)
-        self.alert.hide()
+        self.scrollArea = QScrollArea(self)
+        self.cardPanel = QWidget()
+        self.scrollArea.setWidget(self.cardPanel)
+        self.scrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
-    def alert_msg(self, alertText):
-        self.ay = 380
-        self.ao = 0.0
-        self.alertGOE.setOpacity(self.ao)
-        self.alert.setText(alertText)
-        self.alert.show()
-        self.alertTimer.start(12)
+        self.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
-    def slot_alert_step(self):
-        if(self.ao < 1):
-            self.ao += 0.015
-            self.alertGOE.setOpacity(self.ao)
-        if(self.ay <= 250):
-            self.alertTimer.stop()
-            # close after * second
-            self.alertDelayTimer.start(4000)
-        else:
-            self.ay -= 2
-            self.alert.move(self.alert.x(), self.ay)
+    # calculate data
+    def calculate_data(self):
+        # the 'QScrollArea' inside radius is 1px smaller than 'QWidget', fix it.
+        self.scrollArea.setGeometry(-1, -1, self.width() + 2, self.height() + 2)
+        self.cardPanel.setGeometry(0, 0, self.width(), self.height())
 
-    def slot_hide_alert(self):
-        self.alert.hide()
-        self.alertDelayTimer.stop()
+        self.number_per_row = (self.width() + self.cardspacing) / (self.itemwidth + self.cardspacing)
+
+    def add_card(self, card):
+        x = int(self.cardcount % self.number_per_row) * (self.itemwidth + self.cardspacing)
+        y = int(self.cardcount / self.number_per_row) * (self.itemheight + self.cardspacing)
+
+        # resize the widget to adapt items
+        nowHeight = y + self.itemheight
+        if(nowHeight >= self.cardPanel.height()):
+            self.cardPanel.resize(self.cardPanel.width(), nowHeight)
+
+        card.move(x, y)
+        self.cardcount = self.cardcount + 1
+
+    def verticalScrollBar(self):
+        return self.scrollArea.verticalScrollBar()
+
+    def scrollToTop(self):
+        vsb = self.scrollArea.verticalScrollBar()
+        vsb.setValue(0)
+
+    # count the cards
+    def count(self):
+        cards = self.cardPanel.children()
+        return len(cards)
+
+    # remove all item
+    def clear(self):
+        cards = self.cardPanel.children()
+        for card in cards:
+            sip.delete(card)
+
+        self.cardPanel.setGeometry(0, 0, self.width(), self.height())
+        self.cardcount = 0
