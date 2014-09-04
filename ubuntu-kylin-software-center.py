@@ -31,7 +31,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from ui.mainwindow import Ui_MainWindow
-from ui.recommenditem import RecommendItem
+from ui.rcmdcard import RcmdCard
 from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather
 from ui.listitemwidget import ListItemWidget
@@ -46,23 +46,23 @@ from ui.confirmdialog import ConfirmDialog
 from ui.configwidget import ConfigWidget
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
+from ui.xpitemwidget import XpItemWidget, DataModel
+from ui.cardwidget import CardWidget
 
 from utils import vfs
 from utils import log
-# from utils.history import History
 from backend.search import *
 
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE, AppActions,AptActionMsg)
+from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
 from models.globals import Globals
 
 from models.enums import Signals
 
 from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
-from ui.xpitemwidget import XpItemWidget, DataModel
 
 import sys
 reload(sys)
@@ -102,9 +102,6 @@ class SoftwareCenter(QMainWindow):
         # init ui
         self.init_main_view()
 
-        # init system tray
-        # self.create_tray()
-
         # init main service
         self.init_main_service()
 
@@ -129,6 +126,14 @@ class SoftwareCenter(QMainWindow):
 
         # point out widget
         self.pointout = PointOutWidget(self)
+        # recommend card widget
+        self.recommendWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.homepageWidget)
+        self.recommendWidget.setGeometry(0, 298, 640, 268)
+        self.recommendWidget.calculate_data()
+        # un card widget
+        self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.unWidget)
+        self.unListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 466)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.unListWidget.calculate_data()
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
         self.detailScrollWidget.raise_()
@@ -303,7 +308,7 @@ class SoftwareCenter(QMainWindow):
         # self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
         # self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
         # self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EAF0F3;}QListWidget::item{height:24px;border:0px;font-size:13px;color:#666666;}QListWidget::item:hover{height:52;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;font-size:13px;color:#666666;}QListWidget::item:hover{height:52;}")
         # self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
         # self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
         # self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
@@ -380,6 +385,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.unListWidget.scrollArea.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
         self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
         self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
@@ -388,6 +394,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnXp.pressed.connect(self.slot_goto_xppage)
         # self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnClose.clicked.connect(self.slot_close)
+        self.ui.btnMaxNormal.clicked.connect(self.slot_max_normal)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
@@ -421,24 +428,6 @@ class SoftwareCenter(QMainWindow):
 
         # loading
         self.launchLoadingDiv.start_loading("系统正在初始化...")
-
-    def create_tray(self):
-        self.actionshow = QAction("隐藏/显示", self)
-        self.actionshow.triggered.connect(self.slot_show_or_hide)
-
-        self.actionquit = QAction("退出", self)
-        self.actionquit.triggered.connect(self.slot_close)
-
-        self.traymenu = QMenu(self)
-        self.traymenu.addAction(self.actionshow)
-        self.traymenu.addSeparator()
-        self.traymenu.addAction(self.actionquit)
-
-        self.trayicon = QSystemTrayIcon(self)
-        self.icon = QIcon("res/trayicon.png")
-        self.trayicon.setIcon(self.icon)
-        self.trayicon.setContextMenu(self.traymenu)
-        self.trayicon.activated.connect(self.slot_trayicon_activated)
 
     def init_main_service(self):
         self.appmgr = AppManager()
@@ -543,7 +532,7 @@ class SoftwareCenter(QMainWindow):
 
     def init_last_data(self):
         # init category list
-        self.init_category_view()
+        # self.init_category_view()
 
         # add by kobe
         # init uk xp solution
@@ -590,7 +579,7 @@ class SoftwareCenter(QMainWindow):
 
             self.slot_goto_homepage()
             self.launchLoadingDiv.stop_loading()
-            self.resize(Globals.MAINWIDTH, Globals.MAINHEIGHT)
+            self.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
             windowWidth = QApplication.desktop().width()
             windowHeight = QApplication.desktop().height()
@@ -892,7 +881,7 @@ class SoftwareCenter(QMainWindow):
             if count < listLen:
                 count = count + 1
                 continue
-            if(count > (Globals.showSoftwareStep + listLen)):
+            if(count > (Globals.SOFTWARE_STEP_NUM + listLen)):
                 break
 
             oneitem = QListWidgetItem()
@@ -910,66 +899,60 @@ class SoftwareCenter(QMainWindow):
     def show_more_software(self, listWidget):
         if self.nowPage == "searchpage":
             self.show_more_search_result(listWidget)
-            return True
-
-        listLen = listWidget.count()
-
-        apps = self.appmgr.get_category_apps(self.category)
-
-        count = 0
-        for pkgname, app in apps.iteritems():
-
-            if self.nowPage ==  "uppage":
-                if app.is_installed is False:
-                    continue
-                if app.is_installed is True and app.is_upgradable is False:
-                    continue
-            if self.nowPage == "unpage" and app.is_installed is False:
-                continue
-
-            if count < listLen:
-                count = count + 1
-                continue
-            if(count > (Globals.showSoftwareStep + listLen)):
-                break
-
-            oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage, self)
-            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(liw, Signals.remove_app, self.slot_click_remove)
-            listWidget.addItem(oneitem)
-            listWidget.setItemWidget(oneitem, liw)
-            count = count + 1
-
-        return True
-
-    def switch_category(self):
-        listWidget = self.get_current_listWidget()
-        nowCategory = listWidget.whatsThis()
-
-        if(self.nowPage == 'homepage'):
-            self.ui.categoryView.clearSelection()
         else:
-            if(nowCategory == ''):
-                self.ui.categoryView.clearSelection()
-            else:
-                for i in range(self.ui.categoryView.count()):
-                    item = self.ui.categoryView.item(i)
-                    if(item.whatsThis() == nowCategory):
-                        item.setSelected(True)
+            listLen = listWidget.count()
+            apps = self.appmgr.get_category_apps(self.category)
+
+            count = 0
+            for pkgname, app in apps.iteritems():
+
+                if self.nowPage ==  "uppage":
+                    if app.is_installed is False:
+                        continue
+                    if app.is_installed is True and app.is_upgradable is False:
+                        continue
+                if self.nowPage == "unpage" and app.is_installed is False:
+                    continue
+
+                if count < listLen:
+                    count = count + 1
+                    continue
+
+                # if(count > (Globals.showSoftwareStep + listLen)):
+                #     break
+
+
+                # oneitem = QListWidgetItem()
+                # liw = ListItemWidget(app, self.nowPage, self)
+                # self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
+                # self.connect(liw, Signals.install_app, self.slot_click_install)
+                # self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
+                # self.connect(liw, Signals.remove_app, self.slot_click_remove)
+                # listWidget.addItem(oneitem)
+                # listWidget.setItemWidget(oneitem, liw)
+
+                card = NormalCard(app, self.nowPage, self.unListWidget.cardPanel)
+                self.unListWidget.add_card(card)
+                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(card, Signals.install_app, self.slot_click_install)
+                self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                self.connect(card, Signals.remove_app, self.slot_click_remove)
+                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
+                count = count + 1
+
+                if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                    break
 
     def get_current_listWidget(self):
         listWidget = ''
-        if(self.nowPage == "homepage"):
-            listWidget = self.ui.allsListWidget
-        elif(self.nowPage == "allpage"):
+        if(self.nowPage == "allpage"):
             listWidget = self.ui.allsListWidget
         elif(self.nowPage == "uppage"):
             listWidget = self.ui.upListWidget
         elif(self.nowPage == "unpage"):
-            listWidget = self.ui.unListWidget
+            listWidget = self.unListWidget
         elif(self.nowPage == "searchpage"):
             listWidget = self.ui.searchListWidget
         return listWidget
@@ -979,14 +962,14 @@ class SoftwareCenter(QMainWindow):
         if self.category == category and forcechange == False:
             return
 
-        if( category is not None):
+        if(category is not None):
             self.category = category
 
         listWidget = self.get_current_listWidget()
 
         listWidget.scrollToTop()            # if not, the func will trigger slot_softwidget_scroll_end()
         listWidget.setWhatsThis(category)   # use whatsThis() to save each selected category
-        listWidget.clear()
+        listWidget.clear()                  # empty it
 
         self.show_more_software(listWidget)
 
@@ -1031,6 +1014,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setEnabled(True)
         self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -1088,7 +1072,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.searchWidget.setVisible(False)
             self.nowPage = self.hisPage
 
-        self.switch_to_category(category,False)
+        self.switch_to_category(category, False)
 
         if(self.nowPage == "homepage"):
             self.reset_nav_bar()
@@ -1122,23 +1106,14 @@ class SoftwareCenter(QMainWindow):
 
     def slot_recommend_apps_ready(self,applist):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
-        count_per_line = 3
-        index = int(0)
-        x = y = int(0)
 
         for app in applist:
-            recommend = NormalCard(app, self.ui.recommendWidget)
+            recommend = RcmdCard(app, self.recommendWidget.cardPanel)
+            self.recommendWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
-
-            if index % count_per_line == 0:
-                x = 0
-            x = int(index % count_per_line) * (212 + 2)
-            y = int(index / count_per_line) * (88 + 2)
-            index = index + 1
-            recommend.move(x, y)
 
         self.rec_ready = True
         self.check_init_ready()
@@ -1199,7 +1174,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = False
         self.nowPage = 'homepage'
         # self.ui.categoryView.setEnabled(True)
-        self.switch_to_category(self.category,forceChange)
+        # self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
@@ -1301,7 +1276,7 @@ class SoftwareCenter(QMainWindow):
 
         self.nowPage = 'unpage'
         # self.ui.categoryView.setEnabled(True)
-        self.switch_to_category(self.category,forceChange)
+        self.switch_to_category(self.category, forceChange)
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
@@ -1417,6 +1392,9 @@ class SoftwareCenter(QMainWindow):
         self.dbusControler.stop()
         sys.exit(0)
 
+    def slot_max_normal(self):
+        self.unListWidget.clear()
+
     def slot_min(self):
         self.showMinimized()
 
@@ -1461,13 +1439,6 @@ class SoftwareCenter(QMainWindow):
             LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_show_app_detail, app)
-
-        if(app is None):
-            print "has no such application...."
-            return
-
         self.reset_nav_bar()
         self.detailScrollWidget.showSimple(app)
 

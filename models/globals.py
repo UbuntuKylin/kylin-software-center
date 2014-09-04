@@ -28,11 +28,15 @@ import os
 
 class Globals:
     # mainwindow size
-    MAINWIDTH = 980
-    MAINHEIGHT = 608
+    MAIN_WIDTH = 980
+    MAIN_HEIGHT = 608
+
+    # card format
+    NORMALCARD_WIDTH = 212
+    NORMALCARD_HEIGHT = 88
 
     # how many softwares show in a setp
-    showSoftwareStep = 20
+    SOFTWARE_STEP_NUM = 24
 
     # uksc launch mode: normal / quiet
     LAUNCH_MODE = 'quiet'
