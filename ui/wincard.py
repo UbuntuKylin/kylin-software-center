@@ -109,6 +109,10 @@ class WinCard(QWidget):
                 self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png"))
             elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
                 self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg"))
+            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png")):
+                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png"))
+            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg")):
+                self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg"))
             else:
                 self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
 
@@ -153,9 +157,6 @@ class WinCard(QWidget):
                 self.ui.name.setText(self.winstat.app_name)
                 self.ui.named.setText(self.winstat.app_name)
                 self.ui.description.setText(self.winstat.app_name)
-                # rating star
-                star = StarWidget("small", 5, self.ui.baseWidget)
-                star.move(181, 56)
         else:
             # convert size
             installedsize = self.app.installedSize
@@ -253,37 +254,39 @@ class WinCard(QWidget):
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
 
-    def slot_work_finished(self, pkgname,action):
-        if self.app.name == pkgname:
-            if action == AppActions.INSTALL:
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setEnabled(False)
-                else:
-                    self.ui.btn.setText("启动")
-                    self.ui.btn.setEnabled(True)
-            elif action == AppActions.REMOVE:
-                self.ui.btn.setText("安装")
-            elif action == AppActions.UPGRADE:
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setEnabled(False)
-                else:
-                    self.ui.btn.setText("启动")
+    def slot_work_finished(self, pkgname, action):
+        if self.app is not None:
+            if self.app.name == pkgname:
+                if action == AppActions.INSTALL:
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
+                    else:
+                        self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
+                elif action == AppActions.REMOVE:
+                    self.ui.btn.setText("安装")
+                elif action == AppActions.UPGRADE:
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
+                    else:
+                        self.ui.btn.setText("启动")
 
     def slot_work_cancel(self, pkgname, action):
-        if self.app.name == pkgname:
-            if action == AppActions.INSTALL:
-                self.ui.btn.setText("安装")
-                self.ui.btn.setEnabled(True)
-            elif action == AppActions.REMOVE:
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setEnabled(False)
-                else:
-                    self.ui.btn.setText("启动")
-            elif action == AppActions.UPGRADE:
-                self.ui.btn.setText("升级")
+        if self.app is not None:
+            if self.app.name == pkgname:
+                if action == AppActions.INSTALL:
+                    self.ui.btn.setText("安装")
+                    self.ui.btn.setEnabled(True)
+                elif action == AppActions.REMOVE:
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
+                    else:
+                        self.ui.btn.setText("启动")
+                elif action == AppActions.UPGRADE:
+                    self.ui.btn.setText("升级")
 
 
 class WinGather(object):

@@ -36,10 +36,10 @@ from ui.rcmdcard import RcmdCard
 from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather, DataModel
 from ui.cardwidget import CardWidget
+from ui.pointcard import PointCard
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
-from ui.pointlistitemwidget import PointListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
@@ -48,7 +48,6 @@ from ui.confirmdialog import ConfirmDialog
 from ui.configwidget import ConfigWidget
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
-# from ui.xpitemwidget import XpItemWidget, DataModel
 
 from utils import vfs
 from utils import log
@@ -131,6 +130,15 @@ class SoftwareCenter(QMainWindow):
         self.pointout = PointOutWidget(self)
         # category bar
         self.categoryBar = CategoryBar(self.ui.rightWidget)
+
+        self.pointout.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        self.pointout.setPalette(palette)
+        self.pointListWidget = CardWidget(212, 88, 4, self.pointout.ui.contentliw)
+        self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
+        self.pointListWidget.calculate_data()
+
         # recommend card widget
         self.recommendWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.homepageWidget)
         self.recommendWidget.setGeometry(0, 298, 640, 268)
@@ -409,7 +417,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
-        # self.ui.xpWidget.hide()
         self.ui.winpageWidget.hide()
         # self.ui.categoryView.hide()
         self.ui.headerWidget.hide()
@@ -835,16 +842,14 @@ class SoftwareCenter(QMainWindow):
         pl = self.appmgr.get_pointout_apps()
 
         if(len(pl) > 0):
-            self.pointout.ui.contentliw.clear()
             for p in pl:
-                oneitem = QListWidgetItem()
-                pliw = PointListItemWidget(p, self.backend, self)
-                self.connect(pliw, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(pliw, Signals.install_app_rcm, self.slot_click_install_rcm)
-                # self.connect(pliw, Signals.install_app, self.slot_click_install)
-                self.pointout.ui.contentliw.addItem(oneitem)
-                self.pointout.ui.contentliw.setItemWidget(oneitem, pliw)
-
+                card = PointCard(p, self.nowPage, self.pointListWidget.cardPanel)
+                self.pointListWidget.add_card(card)
+                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(card, Signals.install_app, self.slot_click_install)
+                self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
+                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
             self.pointout.show_animation()
         else:
             # in quiet mode, no pointout app.  quit uksc
