@@ -121,6 +121,7 @@ class Signals:
     app_reviews_ready = SIGNAL("app-reviews-ready")
     app_screenshots_ready = SIGNAL("app-screenshots-ready")
     count_application_update = SIGNAL("count-application-update")
+    click_categoy = SIGNAL("clickcategory")
     click_item = SIGNAL("clickitem")
     show_app_detail = SIGNAL("app-show-detail")
     install_debfile = SIGNAL("install-debfile")

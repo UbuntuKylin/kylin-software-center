@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'uktliw.ui'
+# Form implementation generated from reading ui file 'ui/uktliw.ui'
 #
-# Created: Fri Jun 13 14:42:31 2014
+# Created: Fri Sep  5 14:31:53 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,9 +26,9 @@ except AttributeError:
 class Ui_TaskLIWidget(object):
     def setupUi(self, TaskLIWidget):
         TaskLIWidget.setObjectName(_fromUtf8("TaskLIWidget"))
-        TaskLIWidget.resize(805, 45)
+        TaskLIWidget.resize(300, 64)
         self.icon = QtGui.QLabel(TaskLIWidget)
-        self.icon.setGeometry(QtCore.QRect(10, 7, 32, 32))
+        self.icon.setGeometry(QtCore.QRect(8, 8, 48, 48))
         self.icon.setText(_fromUtf8(""))
         self.icon.setObjectName(_fromUtf8("icon"))
         self.name = QtGui.QLabel(TaskLIWidget)
@@ -36,18 +36,18 @@ class Ui_TaskLIWidget(object):
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.size = QtGui.QLabel(TaskLIWidget)
-        self.size.setGeometry(QtCore.QRect(261, 14, 66, 18))
+        self.size.setGeometry(QtCore.QRect(60, 34, 66, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.progressBar = QtGui.QProgressBar(TaskLIWidget)
-        self.progressBar.setGeometry(QtCore.QRect(343, 14, 194, 17))
+        self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
         self.progressBar.setProperty("value", 24)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.status = QtGui.QLabel(TaskLIWidget)
-        self.status.setGeometry(QtCore.QRect(575, 3, 220, 39))
+        self.status.setGeometry(QtCore.QRect(-100, -100, 1, 1))
         self.status.setObjectName(_fromUtf8("status"))
         self.btnCancel = QtGui.QPushButton(TaskLIWidget)
-        self.btnCancel.setGeometry(QtCore.QRect(545, 15, 14, 13))
+        self.btnCancel.setGeometry(QtCore.QRect(260, 27, 14, 13))
         self.btnCancel.setText(_fromUtf8(""))
         self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
 
