@@ -124,7 +124,7 @@
       <height>608</height>
      </rect>
     </property>
-    <widget class="QWidget" name="allsWidget" native="true">
+    <widget class="QWidget" name="allWidget" native="true">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -133,151 +133,56 @@
        <height>572</height>
       </rect>
      </property>
-     <widget class="QListWidget" name="allsListWidget">
+     <widget class="QLabel" name="allline">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>79</y>
-        <width>663</width>
-        <height>400</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="allsHeader">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>55</y>
-        <width>663</width>
-        <height>24</height>
+        <y>44</y>
+        <width>860</width>
+        <height>1</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="allsMSGBar">
+     <widget class="QLabel" name="allcount">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>663</width>
-        <height>55</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textsize_all">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>58</y>
+        <x>772</x>
+        <y>20</y>
         <width>50</width>
-        <height>17</height>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="textrating_all">
+     <widget class="QLabel" name="alltext1">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>58</y>
-        <width>60</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textappname_all">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>58</y>
-        <width>170</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="texticon_all">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>58</y>
-        <width>30</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textversion_all">
-      <property name="geometry">
-       <rect>
-        <x>375</x>
-        <y>58</y>
-        <width>100</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textaction_all">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>58</y>
+        <x>749</x>
+        <y>20</y>
         <width>50</width>
-        <height>17</height>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-    </widget>
-    <widget class="QWidget" name="xpWidget" native="true">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>36</y>
-       <width>880</width>
-       <height>572</height>
-      </rect>
-     </property>
-     <widget class="QLabel" name="xpMSGBar">
+     <widget class="QLabel" name="alltext2">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>815</width>
-        <height>33</height>
+        <x>818</x>
+        <y>20</y>
+        <width>44</width>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
        <string/>
-      </property>
-     </widget>
-     <widget class="QTableWidget" name="xptableWidget">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>33</y>
-        <width>815</width>
-        <height>471</height>
-       </rect>
       </property>
      </widget>
     </widget>
@@ -290,114 +195,52 @@
        <height>572</height>
       </rect>
      </property>
-     <widget class="QListWidget" name="unListWidget">
+     <widget class="QLabel" name="unline">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>79</y>
-        <width>663</width>
-        <height>400</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="unHeader">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>55</y>
-        <width>663</width>
-        <height>24</height>
+        <y>44</y>
+        <width>860</width>
+        <height>1</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="unMSGBar">
+     <widget class="QLabel" name="uncount">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>663</width>
-        <height>55</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textappname_un">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>58</y>
-        <width>170</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textsize_un">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>58</y>
+        <x>777</x>
+        <y>20</y>
         <width>50</width>
-        <height>17</height>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="textrating_un">
+     <widget class="QLabel" name="untext1">
       <property name="geometry">
        <rect>
-        <x>510</x>
-        <y>58</y>
-        <width>60</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textversion_un">
-      <property name="geometry">
-       <rect>
-        <x>375</x>
-        <y>58</y>
-        <width>100</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="texticon_un">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>58</y>
-        <width>30</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textaction_un">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>58</y>
+        <x>750</x>
+        <y>20</y>
         <width>50</width>
-        <height>17</height>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="untext2">
+      <property name="geometry">
+       <rect>
+        <x>818</x>
+        <y>20</y>
+        <width>44</width>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
@@ -627,36 +470,52 @@
        <height>572</height>
       </rect>
      </property>
-     <widget class="QListWidget" name="searchListWidget">
+     <widget class="QLabel" name="searchline">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>79</y>
-        <width>663</width>
-        <height>400</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="searchHeader">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>55</y>
-        <width>663</width>
-        <height>24</height>
+        <y>44</y>
+        <width>860</width>
+        <height>1</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="searchMSGBar">
+     <widget class="QLabel" name="searchcount">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>663</width>
-        <height>55</height>
+        <x>777</x>
+        <y>20</y>
+        <width>50</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="searchtext1">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>20</y>
+        <width>50</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="searchtext2">
+      <property name="geometry">
+       <rect>
+        <x>818</x>
+        <y>20</y>
+        <width>44</width>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
@@ -669,109 +528,18 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>350</width>
-       <height>608</height>
+       <width>320</width>
+       <height>600</height>
       </rect>
      </property>
-     <widget class="QLabel" name="taskHeader">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>815</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="taskMSGBar">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>815</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QListWidget" name="taskListWidget">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>54</y>
-        <width>815</width>
-        <height>451</height>
+        <x>10</x>
+        <y>10</y>
+        <width>300</width>
+        <height>680</height>
        </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="texticon">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>33</y>
-        <width>30</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textappname">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>33</y>
-        <width>170</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textsize">
-      <property name="geometry">
-       <rect>
-        <x>270</x>
-        <y>33</y>
-        <width>50</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textprocess">
-      <property name="geometry">
-       <rect>
-        <x>350</x>
-        <y>33</y>
-        <width>100</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textstatus">
-      <property name="geometry">
-       <rect>
-        <x>585</x>
-        <y>33</y>
-        <width>100</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
       </property>
      </widget>
     </widget>
@@ -784,114 +552,52 @@
        <height>572</height>
       </rect>
      </property>
-     <widget class="QListWidget" name="upListWidget">
+     <widget class="QLabel" name="upline">
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>79</y>
-        <width>663</width>
-        <height>400</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="upHeader">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>55</y>
-        <width>663</width>
-        <height>24</height>
+        <y>44</y>
+        <width>860</width>
+        <height>1</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="upMSGBar">
+     <widget class="QLabel" name="upcount">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>663</width>
-        <height>55</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textrating_up">
-      <property name="geometry">
-       <rect>
-        <x>510</x>
-        <y>58</y>
-        <width>60</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textsize_up">
-      <property name="geometry">
-       <rect>
-        <x>300</x>
-        <y>58</y>
+        <x>777</x>
+        <y>20</y>
         <width>50</width>
-        <height>17</height>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="textversion_up">
+     <widget class="QLabel" name="uptext1">
       <property name="geometry">
        <rect>
-        <x>375</x>
-        <y>58</y>
-        <width>100</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="texticon_up">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>58</y>
-        <width>30</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textappname_up">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>58</y>
-        <width>170</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="textaction_up">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>58</y>
+        <x>750</x>
+        <y>20</y>
         <width>50</width>
-        <height>17</height>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="uptext2">
+      <property name="geometry">
+       <rect>
+        <x>818</x>
+        <y>20</y>
+        <width>44</width>
+        <height>15</height>
        </rect>
       </property>
       <property name="text">
@@ -987,6 +693,81 @@
         <y>0</y>
         <width>28</width>
         <height>36</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="winpageWidget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
+      </rect>
+     </property>
+     <widget class="QLabel" name="wincountlabel">
+      <property name="geometry">
+       <rect>
+        <x>777</x>
+        <y>20</y>
+        <width>50</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="winlabel1">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>20</y>
+        <width>50</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="wintitle">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>26</y>
+        <width>301</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="winlabel2">
+      <property name="geometry">
+       <rect>
+        <x>818</x>
+        <y>20</y>
+        <width>44</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="winline">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>44</y>
+        <width>860</width>
+        <height>1</height>
        </rect>
       </property>
       <property name="text">

@@ -46,11 +46,12 @@ class TaskListItemWidget(QWidget):
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
         self.ui.status.setAlignment(Qt.AlignTop)
         self.ui.status.setWordWrap(True)
+        self.ui.progressBar.lower()
 
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel2.png');border:0px;}")
-        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg2.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
-                                          "QProgressBar:chunk{background-image:url('res/progress2.png');}")
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
+                                          "QProgressBar:chunk{background-color:#5DC4FE;}")
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
@@ -64,7 +65,7 @@ class TaskListItemWidget(QWidget):
             else:
                 self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
             img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
-            img = img.scaled(32, 32)
+            # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
         else:
             img = ''
@@ -78,7 +79,7 @@ class TaskListItemWidget(QWidget):
                 img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")
             else:
                 img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
-            img = img.scaled(32, 32)
+            # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
 
             self.ui.name.setText(app.name)

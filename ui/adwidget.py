@@ -30,6 +30,10 @@ from models.advertisement import Advertisement
 from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
 
 class ADWidget(QWidget):
+    # ad width
+    adwidth = 860
+    # ad height
+    adheight = 220
     # ad model list
     ads = []
     # adbtn list
@@ -53,18 +57,22 @@ class ADWidget(QWidget):
 
         self.parent = parent
 
-        self.setAutoFillBackground(True)
-        palette = QPalette()
-        img = QPixmap("res/adback.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.setPalette(palette)
+        # self.setAutoFillBackground(True)
+        # palette = QPalette()
+        # img = QPixmap("res/adback.png")
+        # palette.setBrush(QPalette.Window, QBrush(img))
+        # self.setPalette(palette)
+
+        self.adsshadow = QLabel(self)
+        self.adsshadow.setGeometry(0, 202, 860, 18)
+        self.adsshadow.setStyleSheet("QLabel{background-image:url('res/ads-shadow.png')}")
 
         self.btnground = QLabel(self)
-        self.btnground.setGeometry(590, 192, 150, 30)
+        self.btnground.setGeometry(787, 181, 150, 30)
         self.btnground.raise_()
 
         self.adl = len(addata)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 214))
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
 
         if self.adl > 0:
             self.create_ads(addata, parent)
@@ -78,23 +86,25 @@ class ADWidget(QWidget):
 
             self.slot_change_ad(self.adi)
 
+        self.adsshadow.raise_()
         self.show()
 
     def add_advertisements(self, addata):
         self.adl = len(addata)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * 663, 214))
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
         self.create_ads(addata, self.parent)
 
         self.adtimer.start(3000)
 
         self.slot_change_ad(self.adi)
 
+        self.adsshadow.raise_()
         self.show()
 
     def ui_init(self):
         self.resize(860, 220)
         self.adContentWidget = QWidget(self)
-        self.adContentWidget.setGeometry(QRect(0, 0, 663, 214))
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adwidth, self.adheight))
         self.adContentWidget.setObjectName("adContentWidget")
         # self.softCountText1 = QLabel(self)
         # self.softCountText1.setGeometry(QRect(10, 9, 32, 17))
@@ -118,12 +128,12 @@ class ADWidget(QWidget):
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
-        adbx = 600
+        adbx = 800
         for one in addata:
             ad = ADButton(one, self.adContentWidget)
-            ad.resize(663, 214)
+            ad.resize(self.adwidth, self.adheight)
             ad.move(adx, 0)
-            adx += 663
+            adx += self.adwidth
             ad.setFocusPolicy(Qt.NoFocus)
             ad.setCursor(Qt.PointingHandCursor)
             ad.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic))
@@ -132,7 +142,7 @@ class ADWidget(QWidget):
 
             adbtn = ADButton(i, self)
             adbtn.resize(8, 8)
-            adbtn.move(adbx, 200)
+            adbtn.move(adbx, 189)
             adbx += 12
             adbtn.setFocusPolicy(Qt.NoFocus)
             adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
@@ -147,7 +157,7 @@ class ADWidget(QWidget):
             adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
         self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/adbtn-2.png');border:0px;}")
 
-        self.adx = self.adi * 663 * - 1
+        self.adx = self.adi * self.adwidth * - 1
         self.adContentWidget.move(self.adx, 0)
 
         self.admtimer.stop()
@@ -164,8 +174,8 @@ class ADWidget(QWidget):
             adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
         self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/adbtn-2.png');border:0px;}")
 
-        # self.adContentWidget.move(i * 663 * -1, 0)
-        self.distance = self.adi * 663 - self.adContentWidget.x()
+        # self.adContentWidget.move(i * self.adwidth * -1, 0)
+        self.distance = self.adi * self.adwidth - self.adContentWidget.x()
         # self.adtimer.stop()
         self.admtimer.stop()
         self.admtimer.start(12)
@@ -179,8 +189,8 @@ class ADWidget(QWidget):
         self.slot_change_ad(self.adi)
 
     def slot_admtimer_update(self):
-        if(self.adx - self.adi * 663 * -1 <= 8):
-            self.adx = self.adi * 663 * - 1
+        if(self.adx - self.adi * self.adwidth * -1 <= 8):
+            self.adx = self.adi * self.adwidth * - 1
             self.adContentWidget.move(self.adx, 0)
 
             self.lock_adbs(True)

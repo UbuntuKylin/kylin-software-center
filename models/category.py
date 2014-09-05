@@ -46,25 +46,25 @@ class Category:
     def name(self):
         return self.display_name
 
-    @property
-    def category_name(self):
-        return self.cat_name
+    # @property
+    # def category_name(self):
+    #     return self.category_name
 
-    @property
-    def apps(self):
-        return self.apps
+    # @property
+    # def apps(self):
+    #     return self.apps
 
-    @property
-    def iconfile(self):
-        return self.iconfile
+    # @property
+    # def iconfile(self):
+    #     return self.iconfile
 
-    @property
-    def index(self):
-        return self.index
+    # @property
+    # def index(self):
+    #     return self.index
 
-    @property
-    def visible(self):
-        return self.visible
+    # @property
+    # def visible(self):
+    #     return self.visible
 
 
     #get app by name

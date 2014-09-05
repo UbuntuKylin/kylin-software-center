@@ -42,11 +42,10 @@ class ListItemWidget(QWidget):
     app = ''
     workType = ''
 
-    def __init__(self, app, backend, nowpage, parent=None):
+    def __init__(self, app, nowpage, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
         self.app = app
-        self.backend = backend
         self.workType = nowpage
         self.parent = parent
 
@@ -184,6 +183,7 @@ class ListItemWidget(QWidget):
                     self.ui.btn.setEnabled(False)
                 else:
                     self.ui.btn.setText("启动")
+                    self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
@@ -193,11 +193,11 @@ class ListItemWidget(QWidget):
                 else:
                     self.ui.btn.setText("启动")
 
-
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
+                self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")

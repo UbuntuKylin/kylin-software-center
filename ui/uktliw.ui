@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>805</width>
-    <height>45</height>
+    <width>300</width>
+    <height>64</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QLabel" name="icon">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>7</y>
-     <width>32</width>
-     <height>32</height>
+     <x>8</x>
+     <y>8</y>
+     <width>48</width>
+     <height>48</height>
     </rect>
    </property>
    <property name="text">
@@ -42,8 +42,8 @@
   <widget class="QLabel" name="size">
    <property name="geometry">
     <rect>
-     <x>261</x>
-     <y>14</y>
+     <x>60</x>
+     <y>34</y>
      <width>66</width>
      <height>18</height>
     </rect>
@@ -55,10 +55,10 @@
   <widget class="QProgressBar" name="progressBar">
    <property name="geometry">
     <rect>
-     <x>343</x>
-     <y>14</y>
-     <width>194</width>
-     <height>17</height>
+     <x>0</x>
+     <y>0</y>
+     <width>300</width>
+     <height>64</height>
     </rect>
    </property>
    <property name="value">
@@ -68,18 +68,18 @@
   <widget class="QLabel" name="status">
    <property name="geometry">
     <rect>
-     <x>575</x>
-     <y>3</y>
-     <width>220</width>
-     <height>39</height>
+     <x>-100</x>
+     <y>-100</y>
+     <width>1</width>
+     <height>1</height>
     </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="btnCancel">
    <property name="geometry">
     <rect>
-     <x>545</x>
-     <y>15</y>
+     <x>260</x>
+     <y>27</y>
      <width>14</width>
      <height>13</height>
     </rect>
@@ -88,6 +88,12 @@
     <string/>
    </property>
   </widget>
+  <zorder>progressBar</zorder>
+  <zorder>icon</zorder>
+  <zorder>name</zorder>
+  <zorder>size</zorder>
+  <zorder>status</zorder>
+  <zorder>btnCancel</zorder>
  </widget>
  <resources/>
  <connections/>

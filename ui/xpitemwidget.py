@@ -107,60 +107,89 @@ class DataModel():
         self.appmgr = appmgr
         self.xp_rows = 0#要建立的表格的行数
         self.category_list = []#xp替换分类在xp数据表中的所有分类列表，无重复
-        self.software_list = []#xp替换软件在软件源中的有效列表
-        self.category_pos_list = []
-        self.category_offset_list = []
-        self.win_pos_list = []
-        self.win_offset_list = []
+        # self.software_list = []#xp替换软件在软件源中的有效列表
+        # self.category_pos_list = []
+        # self.category_offset_list = []
+        # self.win_pos_list = []
+        # self.win_offset_list = []
+
+        self.win_replace_list = []
+        self.linux_soft_list = []
+        self.soft_app_list = []
 
     def init_data_model(self):
-        category_all_list = []#xp替换分类在xp数据表中的所有分类列表，包含重复的
-        win_list = []#去掉重复名字后的所有windows软件名列表
-        win_all_list = []#带有重复名字的所有windows软件名列表
+        # category_all_list = []#xp替换分类在xp数据表中的所有分类列表，包含重复的
+        # win_list = []#去掉重复名字后的所有windows软件名列表
+        # win_all_list = []#带有重复名字的所有windows软件名列表
 
         #------------数据验证------------
         db_list = self.appmgr.search_name_and_categories_record()
+        # print db_list
+        # self.linux_soft_list.append("ubuntu-kylin-software-center")
+        # self.linux_soft_list.append("wps-office")
         for line in db_list:
-            app = self.appmgr.get_application_by_name(line[1])
-            if app is not None or line[1] == 'wine-qq' or line[1] == 'ppstream':
-                # self.appmgr.update_exists_data(1, int(line[0]))
-                self.xp_rows += 1
-                category_all_list.append(line[2])
-                win_all_list.append(line[3])
-                if line[1] not in self.software_list:
-                    self.software_list.append(line[1])
+            if line[1] not in('wine-qq', 'ppstream'):
+                self.linux_soft_list.append(line[1])
+                # print line[2]
                 if line[2] not in self.category_list:
                     self.category_list.append(line[2])
-                if line[3] not in win_list:
-                    win_list.append(line[3])
+            # app = self.appmgr.get_application_by_name(line[1])
+            # if app is not None:
+            #     self.soft_app_list.append(app)
+            # if app is not None or line[1] == 'wine-qq' or line[1] == 'ppstream':
+            #     self.linux_soft_list.append(line[1])
+            #     self.win_replace_list.append(line[3])
+        # print self.linux_soft_list
+        # print self.win_replace_list
+            # print app
+            # if app is not None or line[1] == 'wine-qq' or line[1] == 'ppstream':
+            #     # self.appmgr.update_exists_data(1, int(line[0]))
+            #     self.xp_rows += 1
+            #     category_all_list.append(line[2])
+            #     win_all_list.append(line[3])
+            #     if line[1] not in self.software_list:
+            #         self.software_list.append(line[1])
+            #     if line[2] not in self.category_list:
+            #         self.category_list.append(line[2])
+            #     if line[3] not in win_list:
+            #         win_list.append(line[3])
         # print set(win_all_list)^set(win_list)#并集
         # print list(set(win_all_list).intersection(set(win_list)))#交集
 
-        for line in self.category_list:
-            num = category_all_list.count(line)
-            if num > 1:
-                category_index = category_all_list.index(line)
-                self.category_pos_list.append(category_index)
-                self.category_offset_list.append(num)
+        # for line in self.category_list:
+        #     num = category_all_list.count(line)
+        #     if num > 1:
+        #         category_index = category_all_list.index(line)
+        #         self.category_pos_list.append(category_index)
+        #         self.category_offset_list.append(num)
+        #
+        # for line in win_list:
+        #     num = win_all_list.count(line)
+        #     if num > 1:
+        #         win_index = win_all_list.index(line)
+        #         self.win_pos_list.append(win_index)
+        #         self.win_offset_list.append(num)
 
-        for line in win_list:
-            num = win_all_list.count(line)
-            if num > 1:
-                win_index = win_all_list.index(line)
-                self.win_pos_list.append(win_index)
-                self.win_offset_list.append(num)
-
-    def get_category_cell_position_offset(self):
-        return (self.category_pos_list, self.category_offset_list)
-
-    def get_win_cell_position_offset(self):
-        return (self.win_pos_list, self.win_offset_list)
-
-    def get_table_rows_num(self):
-        return self.xp_rows
-
+    # def get_category_cell_position_offset(self):
+    #     return (self.category_pos_list, self.category_offset_list)
+    #
+    # def get_win_cell_position_offset(self):
+    #     return (self.win_pos_list, self.win_offset_list)
+    #
+    # def get_table_rows_num(self):
+    #     return self.xp_rows
+    #
     def get_xp_category_list(self):
         return self.category_list
+    #
+    # def get_xp_software_list_(self):
+    #     return self.software_list
 
-    def get_xp_software_list_(self):
-        return self.software_list
+    # def get_win_soft_list(self):
+    #     return self.win_replace_list
+
+    def get_soft_app_list(self):
+        return self.linux_soft_list
+
+    #pyuic4 -o ukwincard.py ukwincard.ui
+    #pyuic4 -o mainwindow.py mainwindow.ui

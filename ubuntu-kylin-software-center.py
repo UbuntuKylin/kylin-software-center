@@ -31,12 +31,15 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from ui.mainwindow import Ui_MainWindow
-from ui.recommenditem import RecommendItem
+from ui.categorybar import CategoryBar
+from ui.rcmdcard import RcmdCard
 from ui.normalcard import NormalCard
+from ui.wincard import WinCard, WinGather, DataModel
+from ui.cardwidget import CardWidget
+from ui.pointcard import PointCard
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
-from ui.pointlistitemwidget import PointListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
@@ -48,20 +51,18 @@ from ui.singleprocessbar import SingleProcessBar
 
 from utils import vfs
 from utils import log
-# from utils.history import History
 from backend.search import *
 
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE, AppActions,AptActionMsg)
+from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
 from models.globals import Globals
 
 from models.enums import Signals
 
 from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
-from ui.xpitemwidget import XpItemWidget, DataModel
 
 import sys
 reload(sys)
@@ -87,7 +88,9 @@ class SoftwareCenter(QMainWindow):
     stmap = {}
     # drag window x,y
     dragPosition = -1
-    xp_exists = 0
+    win_exists = 0
+    # task page show/hide flag
+    isTaskPageShown = False
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
@@ -100,9 +103,6 @@ class SoftwareCenter(QMainWindow):
 
         # init ui
         self.init_main_view()
-
-        # init system tray
-        # self.create_tray()
 
         # init main service
         self.init_main_service()
@@ -128,6 +128,41 @@ class SoftwareCenter(QMainWindow):
 
         # point out widget
         self.pointout = PointOutWidget(self)
+        # category bar
+        self.categoryBar = CategoryBar(self.ui.rightWidget)
+
+        self.pointout.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        self.pointout.setPalette(palette)
+        self.pointListWidget = CardWidget(212, 88, 4, self.pointout.ui.contentliw)
+        self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
+        self.pointListWidget.calculate_data()
+
+        # recommend card widget
+        self.recommendWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.homepageWidget)
+        self.recommendWidget.setGeometry(0, 298, 640, 268)
+        self.recommendWidget.calculate_data()
+        # all card widget
+        self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.allWidget)
+        self.allListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.allListWidget.calculate_data()
+        # up card widget
+        self.upListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.upWidget)
+        self.upListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.upListWidget.calculate_data()
+        # un card widget
+        self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.unWidget)
+        self.unListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.unListWidget.calculate_data()
+        # search card widget
+        self.searchListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.searchWidget)
+        self.searchListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.searchListWidget.calculate_data()
+        # win card widget
+        self.winListWidget = CardWidget(427, 88, 6, self.ui.winpageWidget)
+        self.winListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)
+        self.winListWidget.calculate_data()
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
         self.detailScrollWidget.raise_()
@@ -144,8 +179,6 @@ class SoftwareCenter(QMainWindow):
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
-        # history manager
-        # self.history = History(self.ui)
         # search trigger
         self.searchDTimer = QTimer(self)
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
@@ -163,7 +196,18 @@ class SoftwareCenter(QMainWindow):
         palette.setColor(QPalette.Background, QColor(238, 237, 240))
         self.ui.rankWidget.setPalette(palette)
 
-        # self.ui.categoryView.setFocusPolicy(Qt.NoFocus)
+        self.ui.taskWidget.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        self.ui.taskWidget.setPalette(palette)
+
+        shadowe = QGraphicsDropShadowEffect(self)
+        shadowe.setOffset(5, 5)    # direction
+        shadowe.setColor(Qt.gray)
+        shadowe.setBlurRadius(5)
+        self.ui.taskWidget.setGraphicsEffect(shadowe)
+
+
         self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
@@ -177,32 +221,32 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnXp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
-        self.ui.allsListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.upListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.unListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.allListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.upListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.unListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
         # self.ui.lebg.stackUnder(self.ui.leSearch)
         self.ui.leSearch.stackUnder(self.ui.lebg)
+        self.ui.taskWidget.raise_()
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.softCountText1 = QLabel(self.ui.homeMsgWidget)
-        self.softCountText1.setGeometry(QRect(744, 14, 50, 15))
+        self.softCountText1.setGeometry(QRect(749, 14, 50, 15))
         self.softCountText1.setObjectName("softCountText1")
         self.softCountText1.setText("共有")
         self.softCount = QLabel(self.ui.homeMsgWidget)
-        self.softCount.setGeometry(QRect(770, 14, 50, 15))
+        self.softCount.setGeometry(QRect(772, 14, 50, 15))
         self.softCount.setText("")
         self.softCount.setObjectName("softCount")
         self.softCountText2 = QLabel(self.ui.homeMsgWidget)
         self.softCountText2.setGeometry(QRect(818, 14, 44, 15))
         self.softCountText2.setObjectName("softCountText2")
         self.softCountText2.setText("款软件")
-
         self.softCount.setAlignment(Qt.AlignCenter)
 
         self.ui.btnLogin.setText("请登录")
@@ -213,39 +257,62 @@ class SoftwareCenter(QMainWindow):
         self.ui.hometext1.setText("推荐软件")
         self.ui.hometext2.setText("评分排行")
 
-        self.ui.texticon.setText("图标")
-        self.ui.textappname.setText("软件名")
-        self.ui.textsize.setText("大小")
-        self.ui.textprocess.setText("任务进度")
-        self.ui.textstatus.setText("状态信息")
-
-        self.ui.texticon_un.setText("图标")
-        self.ui.textappname_un.setText("软件名")
-        self.ui.textsize_un.setText("大小")
-        self.ui.textversion_un.setText("版本")
-        self.ui.textrating_un.setText("评分")
-        self.ui.textaction_un.setText("操作")
-
-        self.ui.texticon_up.setText("图标")
-        self.ui.textappname_up.setText("软件名")
-        self.ui.textsize_up.setText("大小")
-        self.ui.textversion_up.setText("版本")
-        self.ui.textrating_up.setText("评分")
-        self.ui.textaction_up.setText("操作")
-
-        self.ui.texticon_all.setText("图标")
-        self.ui.textappname_all.setText("软件名")
-        self.ui.textsize_all.setText("大小")
-        self.ui.textversion_all.setText("版本")
-        self.ui.textrating_all.setText("评分")
-        self.ui.textaction_all.setText("操作")
-
-        # self.ui.userName.setText("未登陆")
-        # self.ui.userLv.setText("Lv 0")
         self.ui.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
 
         # style by qss
+        self.ui.alltext1.setText("共有")
+        self.ui.alltext1.setAlignment(Qt.AlignLeft)
+        self.ui.alltext2.setAlignment(Qt.AlignLeft)
+        self.ui.allcount.setAlignment(Qt.AlignCenter)
+        self.ui.alltext2.setText("款软件")
+        self.ui.allline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.alltext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.alltext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.allcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.uptext1.setText("可升级")
+        self.ui.uptext1.setAlignment(Qt.AlignLeft)
+        self.ui.uptext2.setAlignment(Qt.AlignLeft)
+        self.ui.upcount.setAlignment(Qt.AlignCenter)
+        self.ui.uptext2.setText("款软件")
+        self.ui.upline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.uptext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.uptext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.upcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.untext1.setText("已安装")
+        self.ui.untext1.setAlignment(Qt.AlignLeft)
+        self.ui.untext2.setAlignment(Qt.AlignLeft)
+        self.ui.uncount.setAlignment(Qt.AlignCenter)
+        self.ui.untext2.setText("款软件")
+        self.ui.unline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.untext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.untext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.uncount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.searchtext1.setText("搜索到")
+        self.ui.searchtext1.setAlignment(Qt.AlignLeft)
+        self.ui.searchtext2.setAlignment(Qt.AlignLeft)
+        self.ui.searchcount.setAlignment(Qt.AlignCenter)
+        self.ui.searchtext2.setText("款软件")
+        self.ui.searchline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.searchtext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.searchtext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.searchcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.wintitle.setText("Windowns常用软件替换")
+        self.ui.winlabel1.setText("可替换")
+        self.ui.winlabel1.setAlignment(Qt.AlignLeft)
+        self.ui.winlabel2.setAlignment(Qt.AlignLeft)
+        self.ui.wincountlabel.setAlignment(Qt.AlignCenter)
+        self.ui.winlabel2.setText("款软件")
+        self.ui.winline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.wintitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.winlabel1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.winlabel2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.wincountlabel.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
         self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
@@ -261,6 +328,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.navWidget.setStyleSheet("QWidget{background-image:url('res/nav-bg.png');}")
+        # self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;}")
         # self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
         # self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
         # self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
@@ -289,83 +357,32 @@ class SoftwareCenter(QMainWindow):
         # self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
         # self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
         # self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EAF0F3;}QListWidget::item{height:24px;border:0px;font-size:13px;color:#666666;}QListWidget::item:hover{height:52;}")
-        # self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
-        # self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
-        # self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
-        # self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
-        # self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        # self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
-        # self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        # self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.upMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.searchMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.taskMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
-        self.ui.xpMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
-        self.ui.texticon.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textprocess.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textstatus.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.texticon_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textversion_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textrating_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textaction_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.texticon_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textversion_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textrating_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textaction_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.texticon_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textversion_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textrating_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textaction_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.allsHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.upHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.unHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.searchHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.taskHeader.setStyleSheet("QLabel{background-image:url('res/taskwidgetheader.png')}")
-        self.ui.allsListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.upListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.unListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.searchListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.taskListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:45;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.allsListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.upListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.unListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.searchListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
+        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
+        self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
         # signal / slot
-        # self.ui.btnBack.clicked.connect(self.history.history_back)
-        # self.ui.btnNext.clicked.connect(self.history.history_next)
         # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
-        self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.unListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.allsListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.ui.allListWidget.itemClicked.connect(self.slot_click_item)
+        # self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
+        # self.unListWidget.itemClicked.connect(self.slot_click_item)
+        # self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
+        # self.ui.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
         self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
         self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
@@ -374,17 +391,19 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnXp.pressed.connect(self.slot_goto_xppage)
         # self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnClose.clicked.connect(self.slot_close)
+        self.ui.btnMaxNormal.clicked.connect(self.slot_max_normal)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
+        self.connect(self, Signals.update_source,self.slot_update_source)
+        self.connect(self.categoryBar, Signals.click_categoy, self.slot_change_category)
         self.connect(self.detailScrollWidget, Signals.install_debfile, self.slot_click_install_debfile)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
-        self.connect(self, Signals.update_source,self.slot_update_source)
 
         # widget status
         # self.ui.categoryView.setEnabled(False)
@@ -393,12 +412,12 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setEnabled(False)
         self.ui.btnXp.setEnabled(False)
 
-        self.ui.allsWidget.hide()
+        self.ui.allWidget.hide()
         self.ui.upWidget.hide()
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
-        self.ui.xpWidget.hide()
+        self.ui.winpageWidget.hide()
         # self.ui.categoryView.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
@@ -407,30 +426,11 @@ class SoftwareCenter(QMainWindow):
         # loading
         self.launchLoadingDiv.start_loading("系统正在初始化...")
 
-    def create_tray(self):
-        self.actionshow = QAction("隐藏/显示", self)
-        self.actionshow.triggered.connect(self.slot_show_or_hide)
-
-        self.actionquit = QAction("退出", self)
-        self.actionquit.triggered.connect(self.slot_close)
-
-        self.traymenu = QMenu(self)
-        self.traymenu.addAction(self.actionshow)
-        self.traymenu.addSeparator()
-        self.traymenu.addAction(self.actionquit)
-
-        self.trayicon = QSystemTrayIcon(self)
-        self.icon = QIcon("res/trayicon.png")
-        self.trayicon.setIcon(self.icon)
-        self.trayicon.setContextMenu(self.traymenu)
-        self.trayicon.activated.connect(self.slot_trayicon_activated)
-
     def init_main_service(self):
         self.appmgr = AppManager()
-
-        # add by kobe for test xp
-        self.xp_exists = 0
-        self.xp_model = DataModel(self.appmgr)
+        self.win_exists = 0
+        self.winnum = 0
+        self.win_model = DataModel(self.appmgr)
 
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -522,16 +522,15 @@ class SoftwareCenter(QMainWindow):
             self.dbusControler = UtilDbus(self, bus_name)
 
     def check_user(self):
+
+        # check user status from SSO module
+
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
 
     def init_last_data(self):
-        # init category list
+        # init category bar
         self.init_category_view()
-
-        # add by kobe
-        # init uk xp solution
-        # self.init_xp_solution_widget()
 
         # init search
         self.searchDB = Search()
@@ -574,7 +573,7 @@ class SoftwareCenter(QMainWindow):
 
             self.slot_goto_homepage()
             self.launchLoadingDiv.stop_loading()
-            self.resize(Globals.MAINWIDTH, Globals.MAINHEIGHT)
+            self.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
             windowWidth = QApplication.desktop().width()
             windowHeight = QApplication.desktop().height()
@@ -615,156 +614,42 @@ class SoftwareCenter(QMainWindow):
 
     def init_category_view(self):
         cat_list_orgin = self.appmgr.get_category_list()
+        self.categoryBar.init_categories(cat_list_orgin)
+        self.categoryBar.hide()
 
-        cmp_rating = lambda x, y: \
-            cmp(x[1].index,y[1].index)
-        cat_list = sorted(cat_list_orgin.iteritems(),
-                        cmp_rating,
-                        reverse=False)
+    # add by kobe
+    def init_win_solution_widget(self):
+        self.winnum = 0
+        self.win_model.init_data_model()
+        category_list = self.win_model.get_win_category_list()#win替换分类在xp数据表中的所有分类列表，无重复
 
-        for item in cat_list:
-            catname = item[0]
-            cat = item[1]
-            if cat.visible is False:
-                continue
-            zh_name = cat.name
-            oneitem = QListWidgetItem(zh_name)
-            icon = QIcon()
-            icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)
-            oneitem.setIcon(icon)
-            oneitem.setWhatsThis(catname)
-            # self.ui.categoryView.addItem(oneitem)
-
-    def getItem(self, row=0, column = 0):
-        # print row
-        # print column
-        if self.software_index[row] not in ('ppstream', 'wine-qq'):
-            app = self.appmgr.get_application_by_name(self.software_index[row])
-            self.emit(Signals.show_app_detail, app)
-
-    def set_tablewidget_stylesheet(self, xp_rows):
-        #------------表格创建和美化------------
-        self.ui.xpWidget.setWindowOpacity(1)
-        self.ui.xptableWidget.setRowCount(xp_rows)
-        self.ui.xptableWidget.setColumnCount(5)
-        self.ui.xptableWidget.setHorizontalHeaderLabels(['分类','Windows软件','替代软件','替代软件简介','替代软件状态'])
-        self.ui.xptableWidget.setFrameShape(QFrame.NoFrame)
-        self.ui.xptableWidget.setStyleSheet("gridline-color: rgb(255, 0, 0)")
-        self.ui.xptableWidget.verticalHeader().setVisible(False)
-        self.ui.xptableWidget.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.ui.xptableWidget.setSelectionBehavior(QTableWidget.SelectRows)
-        self.ui.xptableWidget.setMouseTracking(True)
-        self.ui.xptableWidget.setSelectionMode(QTableWidget.SingleSelection)
-        self.ui.xptableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.ui.xptableWidget.horizontalHeader().setHighlightSections(False)
-        self.ui.xptableWidget.setStyleSheet("QTableWidget::item:hover{background:#e4f1f8;color: black;}")
-        self.ui.xptableWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.xptableWidget.resizeColumnsToContents()
-        for m in range(xp_rows):
-            self.ui.xptableWidget.setRowHeight(m,40)
-        self.connect(self.ui.xptableWidget, SIGNAL("cellDoubleClicked(int, int)"), self.getItem)
-        self.ui.xptableWidget.connect(self, Signals.show_app_detail, self.slot_show_app_detail)
-        self.ui.xptableWidget.setIconSize(QSize(32, 32))
-        # 表头设置
-        self.ui.xptableWidget.horizontalHeader().setClickable(False)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(0,100)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(1,150)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(2,150)
-        self.ui.xptableWidget.horizontalHeader().resizeSection(3,310)
-        self.ui.xptableWidget.horizontalHeader().setFixedHeight(25)
-        self.ui.xptableWidget.horizontalHeader().setStretchLastSection(True)
-        self.ui.xptableWidget.horizontalHeader().setStyleSheet("QHeaderView::section {background-color:#e4f1f8;color: black;}")#设置表头字体，颜色，模式  padding-left: 4px;border: 1px solid #6c6c6c;
-
-    def push_date_into_table(self, category_list, software_list):
-        current_row = 0
-        self.software_index = []#显示列表中记录软件名的一个的顺序列表，方便双击时根据索引值获取软件名
         for category in category_list:
             app_list = self.appmgr.search_app_display_info(category)
             for context in app_list:
-                if context[0] in software_list:
-                    self.software_index.append(context[0])
-                    if context[0] == 'wine-qq' or context[0] == 'ppstream':
-                        app = None
-                    else:
-                        app = self.appmgr.get_application_by_name(context[0])
-                    for i in range(self.ui.xptableWidget.columnCount()):
-                        if i == 0:
-                            cnt = category
-                        elif i == 1:
-                            cnt = context[3]
-                        elif i == 2:
-                            cnt = context[1]
-                        elif i == 3:
-                            cnt = context[4]
-                        else:
-                            cnt = ''
-                        if i == 1:
-                            if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".png")):
-                                software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".png"
-                            elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(context[2]) + ".jpg")):
-                                software_icon = UBUNTUKYLIN_RES_WIN_PATH + context[2]+".jpg"
-                            else:
-                                software_icon = UBUNTUKYLIN_RES_WIN_PATH + "default.png"
-                            self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
-                        elif i == 2:
-                            if context[0] in ('ppstream', 'wine-qq'):
-                                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + context[0] + ".jpg"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + context[0] + ".jpg"
-                                else:
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
-                            else:
-                                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png"
-                                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg"
-                                else:
-                                    software_icon = UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"
-                            self.ui.xptableWidget.setItem(current_row, i, QTableWidgetItem(QIcon(software_icon), cnt))
-                        else:
-                            newItem = QTableWidgetItem(cnt)
-                            newItem.setTextAlignment(Qt.AlignCenter)
-                            self.ui.xptableWidget.setItem(current_row,i,newItem)
-                    btn = XpItemWidget(context[0], app, self.backend, self)
-                    self.connect(btn, Signals.install_app, self.slot_click_install)
-                    self.ui.xptableWidget.setCellWidget(current_row,self.ui.xptableWidget.columnCount()-1,btn)
-                    current_row += 1
-
-    # add by kobe
-    def init_xp_solution_widget(self):
-        #------------获取数据------------
-        self.xp_model.init_data_model()
-        xp_rows = self.xp_model.get_table_rows_num()#要建立的表格的行数
-        (category_pos_list, category_offset_list) = self.xp_model.get_category_cell_position_offset()
-        (win_pos_list, win_offset_list) = self.xp_model.get_win_cell_position_offset()
-        category_list = self.xp_model.get_xp_category_list()#xp替换分类在xp数据表中的所有分类列表，无重复
-        software_list = self.xp_model.get_xp_software_list_()#xp替换软件在软件源中的有效列表
-
-        #------------表格创建和美化------------
-        self.set_tablewidget_stylesheet(xp_rows)
-
-        #------------数据填充------------
-        self.push_date_into_table(category_list, software_list)
-
-        # 合并category的单元格
-        for i in range(len(category_pos_list)):
-            self.ui.xptableWidget.setSpan(category_pos_list[i], 0, int(category_offset_list[i]), 1)
-
-        # 合并windows软件的单元格
-        for i in range(len(win_pos_list)):
-            self.ui.xptableWidget.setSpan(win_pos_list[i], 1, int(win_offset_list[i]), 1)
-        self.xp_exists = 1
+                if context[0] == 'wine-qq' or context[0] == 'ppstream':
+                    self.winnum += 1
+                    app = None
+                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    self.winListWidget.add_card(card)
+                    self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                    self.connect(card, Signals.install_app, self.slot_click_install)
+                    self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                    self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                    self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                else:
+                    app = self.appmgr.get_application_by_name(context[0])
+                    if app is not None:
+                        self.winnum += 1
+                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    self.winListWidget.add_card(card)
+                    self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                    self.connect(card, Signals.install_app, self.slot_click_install)
+                    self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                    self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                    self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+        self.win_exists = 1
 
     def show_to_frontend(self):
         self.show()
@@ -784,7 +669,7 @@ class SoftwareCenter(QMainWindow):
             event.accept()
 
     def show_more_search_result(self, listWidget):
-        listLen = len(listWidget)
+        listLen = listWidget.count()
 
         count = 0
         for appname in self.searchList:
@@ -795,86 +680,76 @@ class SoftwareCenter(QMainWindow):
             if count < listLen:
                 count = count + 1
                 continue
-            if(count > (Globals.showSoftwareStep + listLen)):
-                break
 
-            oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage, self)
-            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(liw, Signals.remove_app, self.slot_click_remove)
-            listWidget.addItem(oneitem)
-            listWidget.setItemWidget(oneitem, liw)
+            # oneitem = QListWidgetItem()
+            # liw = ListItemWidget(app, self.backend, self.nowPage, self)
+            # self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
+            # self.connect(liw, Signals.install_app, self.slot_click_install)
+            # self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
+            # self.connect(liw, Signals.remove_app, self.slot_click_remove)
+            # listWidget.addItem(oneitem)
+            # listWidget.setItemWidget(oneitem, liw)
+
+            card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+            listWidget.add_card(card)
+            self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+            self.connect(card, Signals.install_app, self.slot_click_install)
+            self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+            self.connect(card, Signals.remove_app, self.slot_click_remove)
+            self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+            self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
             count = count + 1
 
-        return True
+            if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                break
 
     def show_more_software(self, listWidget):
         if self.nowPage == "searchpage":
             self.show_more_search_result(listWidget)
-            return True
-
-        listLen = listWidget.count()
-
-        apps = self.appmgr.get_category_apps(self.category)
-
-        count = 0
-        for pkgname, app in apps.iteritems():
-
-            if self.nowPage ==  "uppage":
-                if app.is_installed is False:
-                    continue
-                if app.is_installed is True and app.is_upgradable is False:
-                    continue
-            if self.nowPage == "unpage" and app.is_installed is False:
-                continue
-
-            if count < listLen:
-                count = count + 1
-                continue
-            if(count > (Globals.showSoftwareStep + listLen)):
-                break
-
-            oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage, self)
-            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(liw, Signals.remove_app, self.slot_click_remove)
-            listWidget.addItem(oneitem)
-            listWidget.setItemWidget(oneitem, liw)
-            count = count + 1
-
-        return True
-
-    def switch_category(self):
-        listWidget = self.get_current_listWidget()
-        nowCategory = listWidget.whatsThis()
-
-        if(self.nowPage == 'homepage'):
-            self.ui.categoryView.clearSelection()
         else:
-            if(nowCategory == ''):
-                self.ui.categoryView.clearSelection()
-            else:
-                for i in range(self.ui.categoryView.count()):
-                    item = self.ui.categoryView.item(i)
-                    if(item.whatsThis() == nowCategory):
-                        item.setSelected(True)
+            listLen = listWidget.count()
+            apps = self.appmgr.get_category_apps(self.category)
+
+            count = 0
+            for pkgname, app in apps.iteritems():
+
+                if self.nowPage ==  "uppage":
+                    if app.is_installed is False:
+                        continue
+                    if app.is_installed is True and app.is_upgradable is False:
+                        continue
+                if self.nowPage == "unpage" and app.is_installed is False:
+                    continue
+
+                if count < listLen:
+                    count = count + 1
+                    continue
+
+                card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+                listWidget.add_card(card)
+                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(card, Signals.install_app, self.slot_click_install)
+                self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                self.connect(card, Signals.remove_app, self.slot_click_remove)
+                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
+                count = count + 1
+
+                if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                    break
 
     def get_current_listWidget(self):
         listWidget = ''
-        if(self.nowPage == "homepage"):
-            listWidget = self.ui.allsListWidget
-        elif(self.nowPage == "allpage"):
-            listWidget = self.ui.allsListWidget
+        if(self.nowPage == "allpage"):
+            listWidget = self.allListWidget
         elif(self.nowPage == "uppage"):
-            listWidget = self.ui.upListWidget
+            listWidget = self.upListWidget
         elif(self.nowPage == "unpage"):
-            listWidget = self.ui.unListWidget
+            listWidget = self.unListWidget
         elif(self.nowPage == "searchpage"):
-            listWidget = self.ui.searchListWidget
+            listWidget = self.searchListWidget
         return listWidget
 
     def switch_to_category(self, category, forcechange):
@@ -882,14 +757,14 @@ class SoftwareCenter(QMainWindow):
         if self.category == category and forcechange == False:
             return
 
-        if( category is not None):
+        if(category is not None):
             self.category = category
 
         listWidget = self.get_current_listWidget()
 
         listWidget.scrollToTop()            # if not, the func will trigger slot_softwidget_scroll_end()
         listWidget.setWhatsThis(category)   # use whatsThis() to save each selected category
-        listWidget.clear()
+        listWidget.clear()                  # empty it
 
         self.show_more_software(listWidget)
 
@@ -929,11 +804,13 @@ class SoftwareCenter(QMainWindow):
 
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
         self.ui.btnXp.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -965,16 +842,14 @@ class SoftwareCenter(QMainWindow):
         pl = self.appmgr.get_pointout_apps()
 
         if(len(pl) > 0):
-            self.pointout.ui.contentliw.clear()
             for p in pl:
-                oneitem = QListWidgetItem()
-                pliw = PointListItemWidget(p, self.backend, self)
-                self.connect(pliw, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(pliw, Signals.install_app_rcm, self.slot_click_install_rcm)
-                # self.connect(pliw, Signals.install_app, self.slot_click_install)
-                self.pointout.ui.contentliw.addItem(oneitem)
-                self.pointout.ui.contentliw.setItemWidget(oneitem, pliw)
-
+                card = PointCard(p, self.nowPage, self.pointListWidget.cardPanel)
+                self.pointListWidget.add_card(card)
+                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(card, Signals.install_app, self.slot_click_install)
+                self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
+                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
             self.pointout.show_animation()
         else:
             # in quiet mode, no pointout app.  quit uksc
@@ -984,30 +859,28 @@ class SoftwareCenter(QMainWindow):
 
     #-------------------------------------------------slots-------------------------------------------------
 
-    def slot_change_category(self, citem):
-        category = str(citem.whatsThis())
-
+    def slot_change_category(self, category):
         if(self.nowPage == "searchpage"):
             self.ui.searchWidget.setVisible(False)
             self.nowPage = self.hisPage
 
-        self.switch_to_category(category,False)
+        self.switch_to_category(category, False)
 
         if(self.nowPage == "homepage"):
             self.reset_nav_bar()
-        if(self.nowPage == "homepage" and self.ui.allsWidget.isVisible() == False):
-            self.ui.allsWidget.setVisible(True)
+        if(self.nowPage == "allpage" and self.ui.allWidget.isVisible() == False):
+            self.ui.allWidget.setVisible(True)
         if(self.nowPage == "uppage" and self.ui.upWidget.isVisible() == False):
             self.ui.upWidget.setVisible(True)
         if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
             self.ui.unWidget.setVisible(True)
-        if(self.nowPage == "xppage" and self.ui.xpWidget.isVisible() == False):
-            self.ui.xpWidget.setVisible(True)
+        if(self.nowPage == "xppage" and self.ui.winpageWidget.isVisible() == False):
+            self.ui.winpageWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
         max = listWidget.verticalScrollBar().maximum()
-        if(now == max):
+        if(now > (max - (max / 10))):
             self.show_more_software(listWidget)
 
     def slot_advertisement_ready(self,adlist):
@@ -1023,23 +896,14 @@ class SoftwareCenter(QMainWindow):
 
     def slot_recommend_apps_ready(self,applist):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
-        count_per_line = 3
-        index = int(0)
-        x = y = int(0)
 
         for app in applist:
-            recommend = NormalCard(app, self.ui.recommendWidget)
+            recommend = RcmdCard(app, self.recommendWidget.cardPanel)
+            self.recommendWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
-
-            if index % count_per_line == 0:
-                x = 0
-            x = int(index % count_per_line) * (212 + 2)
-            y = int(index / count_per_line) * (88 + 2)
-            index = index + 1
-            recommend.move(x, y)
 
         self.rec_ready = True
         self.check_init_ready()
@@ -1078,36 +942,34 @@ class SoftwareCenter(QMainWindow):
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
 
         LOG.debug("receive installed app count: %d", inst)
-        if len(self.category)>0:
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_all) +"</font> 款")
-            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_inst) +"</font> 款")
-            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_up) +"</font> 款")
+        if len(self.category) > 0:
+            self.ui.allcount.setText(str(all))
+            self.ui.uncount.setText(str(inst))
+            self.ui.upcount.setText(str(up))
         else:
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-        self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-        self.ui.xpMSGBar.setText("当前可替换 <font color='#009900'>" + str(self.ui.xptableWidget.rowCount()) + "</font> 款软件")
+            self.ui.allcount.setText(str(all))
+            self.ui.uncount.setText(str(inst))
+            self.ui.upcount.setText(str(up))
+
+        self.ui.wincountlabel.setText(str(self.winnum))
 
     def slot_goto_homepage(self, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_goto_homepage)
-
-        if self.nowPage != 'homepage':
-            forceChange = True
-        else:
-            forceChange = False
+        # if self.nowPage != 'homepage':
+        #     forceChange = True
+        # else:
+        #     forceChange = False
         self.nowPage = 'homepage'
-        # self.ui.categoryView.setEnabled(True)
-        self.switch_to_category(self.category,forceChange)
+        self.categoryBar.hide()
+        # self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
         self.ui.rankWidget.setVisible(True)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(False)
@@ -1130,14 +992,15 @@ class SoftwareCenter(QMainWindow):
             forceChange = False
         self.nowPage = 'allpage'
         # self.ui.categoryView.setEnabled(True)
+        self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(True)
+        self.ui.allWidget.setVisible(True)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
@@ -1154,9 +1017,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_uppage(self, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_goto_uppage)
-
         if self.nowPage != 'uppage':
             forceChange = True
         else:
@@ -1164,14 +1024,15 @@ class SoftwareCenter(QMainWindow):
 
         self.nowPage = 'uppage'
         # self.ui.categoryView.setEnabled(True)
+        self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(True)
         self.ui.unWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
@@ -1188,9 +1049,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_unpage(self, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_goto_unpage)
-
         if self.nowPage != 'unpage':
             forceChange = True
         else:
@@ -1198,14 +1056,15 @@ class SoftwareCenter(QMainWindow):
 
         self.nowPage = 'unpage'
         # self.ui.categoryView.setEnabled(True)
-        self.switch_to_category(self.category,forceChange)
+        self.categoryBar.show()
+        self.switch_to_category(self.category, forceChange)
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(True)
-        self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
@@ -1221,72 +1080,49 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
-    def slot_goto_taskpage(self, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_goto_taskpage)
-
-        self.nowPage = 'taskpage'
-        self.emit(Signals.count_application_update)
-        # self.ui.categoryView.setEnabled(False)
-        # self.ui.categoryView.clearSelection()
-        self.detailScrollWidget.hide()
-        # self.ui.searchBG.setVisible(False)
-        self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
-        self.ui.upWidget.setVisible(False)
-        self.ui.unWidget.setVisible(False)
-        self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(True)
-        self.ui.xpWidget.setVisible(False)
-        self.ui.btnHomepage.setEnabled(True)
-        self.ui.btnAll.setEnabled(True)
-        self.ui.btnUp.setEnabled(True)
-        self.ui.btnUn.setEnabled(True)
-        self.ui.btnTask.setEnabled(False)
-        self.ui.btnXp.setEnabled(True)
-        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
-        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
-        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
-        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
-
     def goto_search_page(self, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.goto_search_page)
-
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
         self.reset_nav_bar()
+        self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
         self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
         self.ui.taskWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
+
+    def slot_goto_taskpage(self, ishistory=False):
+        if(self.isTaskPageShown == False):
+            self.ui.taskWidget.setVisible(True)
+            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
+        else:
+            self.ui.taskWidget.setVisible(False)
+            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
+        self.isTaskPageShown = not self.isTaskPageShown
+        self.nowPage = 'taskpage'
 
     def slot_goto_xppage(self, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_goto_xppage)
-
         self.nowPage = 'xppage'
         # self.emit(Signals.count_application_update)
+        self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
         self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(False)
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
-        self.ui.xpWidget.setVisible(True)
+        self.ui.winpageWidget.setVisible(True)
         self.ui.btnHomepage.setEnabled(True)
         self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
@@ -1299,14 +1135,16 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
-
-        if not self.xp_exists:
-            self.init_xp_solution_widget()
+        if not self.win_exists:
+            self.init_win_solution_widget()
             self.emit(Signals.count_application_update)
 
     def slot_close(self):
         self.dbusControler.stop()
         sys.exit(0)
+
+    def slot_max_normal(self):
+        self.unListWidget.clear()
 
     def slot_min(self):
         self.showMinimized()
@@ -1331,17 +1169,17 @@ class SoftwareCenter(QMainWindow):
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
 
-    def slot_click_item(self, item):
-        liw = ''
-        if(self.nowPage == 'homepage'):
-            liw = self.ui.allsListWidget.itemWidget(item)
-        if(self.nowPage == 'uppage'):
-            liw = self.ui.upListWidget.itemWidget(item)
-        if(self.nowPage == 'unpage'):
-            liw = self.ui.unListWidget.itemWidget(item)
-        if(self.nowPage == 'searchpage'):
-            liw = self.ui.searchListWidget.itemWidget(item)
-        self.emit(SIGNAL("clickitem"), liw.app)
+    # def slot_click_item(self, item):
+    #     liw = ''
+    #     if(self.nowPage == 'homepage'):
+    #         liw = self.allListWidget.itemWidget(item)
+    #     if(self.nowPage == 'uppage'):
+    #         liw = self.upListWidget.itemWidget(item)
+    #     if(self.nowPage == 'unpage'):
+    #         liw = self.unListWidget.itemWidget(item)
+    #     if(self.nowPage == 'searchpage'):
+    #         liw = self.searchListWidget.itemWidget(item)
+    #     self.emit(SIGNAL("clickitem"), liw.app)
 
     def slot_click_rank_item(self, item):
         pkgname = item.whatsThis()
@@ -1352,13 +1190,6 @@ class SoftwareCenter(QMainWindow):
             LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app, ishistory=False):
-        # if(ishistory == False):
-        #     self.history.history_add(self.slot_show_app_detail, app)
-
-        if(app is None):
-            print "has no such application...."
-            return
-
         self.reset_nav_bar()
         self.detailScrollWidget.showSimple(app)
 
@@ -1439,7 +1270,7 @@ class SoftwareCenter(QMainWindow):
                     continue
                 count = count + 1
             self.goto_search_page()
-            self.ui.searchMSGBar.setText("共搜索到软件 <font color='#009900'>" + str(count) + "</font> 款")
+            self.ui.searchcount.setText(str(count))
 
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()
