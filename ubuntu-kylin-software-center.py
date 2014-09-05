@@ -131,7 +131,7 @@ class SoftwareCenter(QMainWindow):
         self.recommendWidget.calculate_data()
         # un card widget
         self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.unWidget)
-        self.unListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 466)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.unListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.unListWidget.calculate_data()
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
@@ -991,7 +991,7 @@ class SoftwareCenter(QMainWindow):
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
         max = listWidget.verticalScrollBar().maximum()
-        if(now == max):
+        if(now > (max - (max / 10))):
             self.show_more_software(listWidget)
 
     def slot_advertisement_ready(self,adlist):
