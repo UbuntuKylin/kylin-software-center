@@ -248,39 +248,6 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="xpWidget" native="true">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>36</y>
-       <width>880</width>
-       <height>572</height>
-      </rect>
-     </property>
-     <widget class="QLabel" name="xpMSGBar">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>815</width>
-        <height>33</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QTableWidget" name="xptableWidget">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>33</y>
-        <width>815</width>
-        <height>471</height>
-       </rect>
-      </property>
-     </widget>
-    </widget>
     <widget class="QWidget" name="unWidget" native="true">
      <property name="geometry">
       <rect>
@@ -987,6 +954,81 @@
         <y>0</y>
         <width>28</width>
         <height>36</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="winpageWidget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
+      </rect>
+     </property>
+     <widget class="QLabel" name="wincountlabel">
+      <property name="geometry">
+       <rect>
+        <x>770</x>
+        <y>26</y>
+        <width>50</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="winlabel1">
+      <property name="geometry">
+       <rect>
+        <x>744</x>
+        <y>26</y>
+        <width>50</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="wintitle">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>26</y>
+        <width>301</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="winlabel2">
+      <property name="geometry">
+       <rect>
+        <x>818</x>
+        <y>26</y>
+        <width>44</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="winline">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>43</y>
+        <width>858</width>
+        <height>1</height>
        </rect>
       </property>
       <property name="text">
