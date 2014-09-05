@@ -27,6 +27,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.pointoutw import Ui_PointWidget
 from models.globals import Globals
+from ui.cardwidget import CardWidget
 import sys
 
 
@@ -60,6 +61,11 @@ class PointOutWidget(QWidget):
         self.py = self.dheight
         self.ty = self.dheight - self.height()
 
+        self.mainw.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        self.mainw.setPalette(palette)
+
         self.pointoutTimer = QTimer(self)
         self.pointoutTimer.timeout.connect(self.slot_show_animation_step)
         self.pointoutGOE = QGraphicsOpacityEffect()
@@ -68,21 +74,21 @@ class PointOutWidget(QWidget):
         self.ui.cbisshow.setText("下次启动提示")
         self.ui.title.setText("安装以下常用软件  提高系统使用体验")
 
+        self.ui.title.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.contentliw.setFocusPolicy(Qt.NoFocus)
         self.ui.cbisshow.setFocusPolicy(Qt.NoFocus)
+        # self.ui.bottom.setFocusPolicy(Qt.NoFocus)
 
         self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.cbisshow.stateChanged.connect(self.slot_checkstate_changed)
 
-        self.ui.header.setStyleSheet("QLabel{background-image:url('res/pointheader.png');}")
-        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-2.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        self.ui.title.setStyleSheet("QLabel{background-color:#E7EDF0;font-size:14px;padding-left:10px;}")
-        self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
+        self.ui.logo.setStyleSheet("background-image:url('res/logo-tooltip.png');}")#QLabel{background-color:#0f84bc;
+        self.ui.header.setStyleSheet("QLabel{background-color:#0f84bc;}")
+        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        self.ui.title.setStyleSheet("QLabel{background-color:#E7EDF0;font-size:14px;}")#padding-left:10px;
+        # self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
         self.ui.cbisshow.setStyleSheet("QCheckBox{border:0px;font-size:13px;}")
-        self.ui.contentliw.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:74px;margin-top:-1px;border:1px solid #d5e3ec;}")
-        self.ui.contentliw.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:5px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
     def ui_init(self):
         self.ui = Ui_PointWidget()
