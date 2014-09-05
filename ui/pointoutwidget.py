@@ -61,10 +61,15 @@ class PointOutWidget(QWidget):
         self.py = self.dheight
         self.ty = self.dheight - self.height()
 
-        self.mainw.setAutoFillBackground(True)
+        # self.mainw.setAutoFillBackground(True)
+        # palette = QPalette()
+        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        # self.mainw.setPalette(palette)
+
+        self.setAutoFillBackground(True)
         palette = QPalette()
         palette.setColor(QPalette.Background, QColor(238, 237, 240))
-        self.mainw.setPalette(palette)
+        self.setPalette(palette)
 
         self.pointoutTimer = QTimer(self)
         self.pointoutTimer.timeout.connect(self.slot_show_animation_step)
@@ -74,7 +79,7 @@ class PointOutWidget(QWidget):
         self.ui.cbisshow.setText("下次启动提示")
         self.ui.title.setText("安装以下常用软件  提高系统使用体验")
 
-        self.ui.title.setFocusPolicy(Qt.NoFocus)
+        # self.ui.title.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.contentliw.setFocusPolicy(Qt.NoFocus)
         self.ui.cbisshow.setFocusPolicy(Qt.NoFocus)
@@ -83,12 +88,12 @@ class PointOutWidget(QWidget):
         self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.cbisshow.stateChanged.connect(self.slot_checkstate_changed)
 
-        self.ui.logo.setStyleSheet("background-image:url('res/logo-tooltip.png');}")#QLabel{background-color:#0f84bc;
+        self.ui.logo.setStyleSheet("QLabel{background-image:url('res/logo-tooltip.png');}")#QLabel{background-color:#0f84bc;
         self.ui.header.setStyleSheet("QLabel{background-color:#0f84bc;}")
-        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        self.ui.title.setStyleSheet("QLabel{background-color:#E7EDF0;font-size:14px;}")#padding-left:10px;
-        # self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
+        self.ui.btnClose.setStyleSheet("QPushButton{border:0px;background-image:url('res/close-1.png');}QPushButton:pressed{background-image:url('res/close-3.png');}")
+        self.ui.title.setStyleSheet("QLabel{background-color:#E7EDF0;font-size:14px;}")
         self.ui.cbisshow.setStyleSheet("QCheckBox{border:0px;font-size:13px;}")
+        # self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
 
     def ui_init(self):
         self.ui = Ui_PointWidget()

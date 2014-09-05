@@ -89,8 +89,6 @@ class SoftwareCenter(QMainWindow):
     # drag window x,y
     dragPosition = -1
     win_exists = 0
-    # task page show/hide flag
-    isTaskPageShown = False
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
@@ -126,19 +124,13 @@ class SoftwareCenter(QMainWindow):
 
         # init components
 
-        # point out widget
-        self.pointout = PointOutWidget(self)
         # category bar
         self.categoryBar = CategoryBar(self.ui.rightWidget)
-
-        self.pointout.setAutoFillBackground(True)
-        palette = QPalette()
-        palette.setColor(QPalette.Background, QColor(238, 237, 240))
-        self.pointout.setPalette(palette)
+        # point out widget
+        self.pointout = PointOutWidget(self)
         self.pointListWidget = CardWidget(212, 88, 4, self.pointout.ui.contentliw)
         self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
         self.pointListWidget.calculate_data()
-
         # recommend card widget
         self.recommendWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.homepageWidget)
         self.recommendWidget.setGeometry(0, 298, 640, 268)
@@ -1098,14 +1090,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.winpageWidget.setVisible(False)
 
     def slot_goto_taskpage(self, ishistory=False):
-        if(self.isTaskPageShown == False):
+        if(self.ui.taskWidget.isHidden() == True):
             self.ui.taskWidget.setVisible(True)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
         else:
             self.ui.taskWidget.setVisible(False)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
-        self.isTaskPageShown = not self.isTaskPageShown
         self.nowPage = 'taskpage'
 
     def slot_goto_xppage(self, ishistory=False):
