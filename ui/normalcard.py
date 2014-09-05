@@ -158,8 +158,7 @@ class NormalCard(QWidget):
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
         elif(nowpage == 'searchpage'):
-            self.ui.btn.setText("")
-            self.ui.btn.setEnabled(False)
+            self.ui.btn.setText("查看详情")
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
 
@@ -212,6 +211,8 @@ class NormalCard(QWidget):
     def slot_btn_click(self):
         if(self.ui.btn.text() == "启动"):
             run.run_app(self.app.name)
+        elif(self.workType == "searchpage"):
+            self.emit(Signals.show_app_detail, self.app)
         else:
             self.ui.btn.setEnabled(False)
             self.ui.btn.setText("正在处理")

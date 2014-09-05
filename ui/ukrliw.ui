@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>133</width>
-    <height>20</height>
+    <width>200</width>
+    <height>24</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,36 +16,23 @@
   <widget class="QLabel" name="name">
    <property name="geometry">
     <rect>
-     <x>26</x>
-     <y>1</y>
-     <width>100</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="iconbg">
-   <property name="geometry">
-    <rect>
-     <x>7</x>
-     <y>3</y>
-     <width>14</width>
-     <height>14</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="iconnumber">
-   <property name="geometry">
-    <rect>
-     <x>8</x>
+     <x>32</x>
      <y>4</y>
-     <width>12</width>
-     <height>12</height>
+     <width>150</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="number">
+   <property name="geometry">
+    <rect>
+     <x>4</x>
+     <y>4</y>
+     <width>18</width>
+     <height>16</height>
     </rect>
    </property>
    <property name="text">

@@ -51,7 +51,7 @@ class DetailScrollWidget(QScrollArea):
     currentreviewready = ''
 
     def __init__(self, parent=None):
-        QScrollArea.__init__(self,parent.ui.centralwidget)
+        QScrollArea.__init__(self,parent.ui.rightWidget)
         self.detailWidget = QWidget()
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet("QWidget{border:0px;}")
@@ -59,8 +59,8 @@ class DetailScrollWidget(QScrollArea):
 
         self.mainwindow = parent
         self.setGeometry(QRect(5, 87, 860, 565))
+        # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
         self.setWidget(self.detailWidget)
-
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
 

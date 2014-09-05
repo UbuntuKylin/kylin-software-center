@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>539</width>
-    <height>352</height>
+    <width>568</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,37 +16,37 @@
   <widget class="QListWidget" name="pageListWidget">
    <property name="geometry">
     <rect>
-     <x>3</x>
-     <y>45</y>
-     <width>120</width>
-     <height>300</height>
+     <x>16</x>
+     <y>32</y>
+     <width>96</width>
+     <height>327</height>
     </rect>
    </property>
   </widget>
   <widget class="QWidget" name="sourceWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>122</x>
-     <y>45</y>
-     <width>414</width>
-     <height>300</height>
+     <x>112</x>
+     <y>11</y>
+     <width>440</width>
+     <height>348</height>
     </rect>
    </property>
    <widget class="QListWidget" name="sourceListWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>25</y>
-      <width>413</width>
-      <height>205</height>
+      <x>16</x>
+      <y>66</y>
+      <width>408</width>
+      <height>220</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="btnUpdate">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>272</y>
+      <x>121</x>
+      <y>320</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -58,8 +58,8 @@
    <widget class="QPushButton" name="btnAdd">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>233</y>
+      <x>16</x>
+      <y>320</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -71,8 +71,8 @@
    <widget class="QPushButton" name="btnReset">
     <property name="geometry">
      <rect>
-      <x>107</x>
-      <y>272</y>
+      <x>226</x>
+      <y>320</y>
       <width>90</width>
       <height>20</height>
      </rect>
@@ -84,8 +84,8 @@
    <widget class="QLabel" name="text1">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>4</y>
+      <x>16</x>
+      <y>36</y>
       <width>80</width>
       <height>17</height>
      </rect>
@@ -97,11 +97,14 @@
    <widget class="QLabel" name="line1">
     <property name="geometry">
      <rect>
-      <x>87</x>
-      <y>12</y>
-      <width>310</width>
+      <x>16</x>
+      <y>57</y>
+      <width>440</width>
       <height>1</height>
      </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
     </property>
     <property name="text">
      <string/>
@@ -110,19 +113,19 @@
    <widget class="QLineEdit" name="lesource">
     <property name="geometry">
      <rect>
-      <x>110</x>
-      <y>233</y>
-      <width>285</width>
+      <x>25</x>
+      <y>292</y>
+      <width>391</width>
       <height>20</height>
      </rect>
     </property>
    </widget>
-   <widget class="QCheckBox" name="cbhideubuntu">
+   <widget class="QPushButton" name="cbhideubuntu">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>272</y>
-      <width>120</width>
+      <x>331</x>
+      <y>320</y>
+      <width>100</width>
       <height>20</height>
      </rect>
     </property>
@@ -133,12 +136,25 @@
    <widget class="QWidget" name="processwidget" native="true">
     <property name="geometry">
      <rect>
-      <x>15</x>
-      <y>272</y>
-      <width>220</width>
-      <height>17</height>
+      <x>16</x>
+      <y>320</y>
+      <width>231</width>
+      <height>20</height>
      </rect>
     </property>
+    <widget class="QPushButton" name="btnCancel">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>0</y>
+       <width>18</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
     <widget class="QProgressBar" name="progressBar">
      <property name="geometry">
       <rect>
@@ -152,28 +168,66 @@
       <number>24</number>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnCancel">
-     <property name="geometry">
-      <rect>
-       <x>202</x>
-       <y>-1</y>
-       <width>18</width>
-       <height>18</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
    </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>110</x>
+      <y>324</y>
+      <width>1</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>215</x>
+      <y>324</y>
+      <width>1</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>324</y>
+      <width>1</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <zorder>processwidget</zorder>
+   <zorder>btnUpdate</zorder>
+   <zorder>btnAdd</zorder>
+   <zorder>btnReset</zorder>
+   <zorder>text1</zorder>
+   <zorder>line1</zorder>
+   <zorder>lesource</zorder>
+   <zorder>cbhideubuntu</zorder>
+   <zorder>label_2</zorder>
+   <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>sourceListWidget</zorder>
   </widget>
   <widget class="QLabel" name="bg">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>539</width>
-     <height>352</height>
+     <width>568</width>
+     <height>380</height>
     </rect>
    </property>
    <property name="text">
@@ -183,10 +237,23 @@
   <widget class="QPushButton" name="btnClose">
    <property name="geometry">
     <rect>
-     <x>8</x>
-     <y>5</y>
-     <width>15</width>
-     <height>15</height>
+     <x>128</x>
+     <y>11</y>
+     <width>36</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>32</y>
+     <width>96</width>
+     <height>1</height>
     </rect>
    </property>
    <property name="text">
@@ -197,6 +264,7 @@
   <zorder>pageListWidget</zorder>
   <zorder>sourceWidget</zorder>
   <zorder>btnClose</zorder>
+  <zorder>label</zorder>
  </widget>
  <resources/>
  <connections/>
