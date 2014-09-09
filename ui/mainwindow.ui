@@ -75,7 +75,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnXp">
+    <widget class="QPushButton" name="btnWin">
      <property name="geometry">
       <rect>
        <x>0</x>

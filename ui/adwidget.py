@@ -128,7 +128,7 @@ class ADWidget(QWidget):
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
-        adbx = 800
+        adbx = 770#800
         for one in addata:
             ad = ADButton(one, self.adContentWidget)
             ad.resize(self.adwidth, self.adheight)
@@ -141,9 +141,9 @@ class ADWidget(QWidget):
             self.ads.append(ad)
 
             adbtn = ADButton(i, self)
-            adbtn.resize(8, 8)
+            adbtn.resize(10, 10)
             adbtn.move(adbx, 189)
-            adbx += 12
+            adbx += 16
             adbtn.setFocusPolicy(Qt.NoFocus)
             adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
             adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad_immediately)

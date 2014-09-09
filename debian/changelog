@@ -1,8 +1,9 @@
 ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
 
   * fix broken
+  * Modify widget.
 
- -- Shine <shenghuang@ubuntukylin.com>  Thu, 28 Aug 2014 15:11:20 +0800
+ -- Shine <shenghuang@ubuntukylin.com>  Tue, 09 Sep 2014 15:58:50 +0800
 
 ubuntu-kylin-software-center (0.3.4.0) utopic; urgency=medium
 

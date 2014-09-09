@@ -57,9 +57,10 @@ class PointOutWidget(QWidget):
         desktopw = QDesktopWidget()
         self.dwidth = desktopw.screenGeometry().width()
         self.dheight = desktopw.screenGeometry().height()
-        self.px = self.dwidth - self.width()
-        self.py = self.dheight
-        self.ty = self.dheight - self.height()
+
+        self.px = self.dwidth
+        self.py = self.dheight - self.height()
+        self.tx = self.dwidth - self.width()
 
         # self.mainw.setAutoFillBackground(True)
         # palette = QPalette()
@@ -116,7 +117,7 @@ class PointOutWidget(QWidget):
         flag = self.mainw.appmgr.get_pointout_is_show_from_db()
         self.ui.cbisshow.setChecked(flag)
 
-        self.py = self.dheight
+        self.px = self.dwidth
         self.move(self.px, self.py)
         self.po = 0.0
         self.pointoutGOE.setOpacity(self.po)
@@ -127,12 +128,12 @@ class PointOutWidget(QWidget):
         if(self.po < 1):
             self.po += 0.011
             self.pointoutGOE.setOpacity(self.po)
-        if(self.py > self.ty):
-            self.py -= 4
-            self.move(self.x(), self.py)
+        if(self.px > self.tx):
+            self.px -= 4
+            self.move(self.px, self.y())
         else:
             self.pointoutTimer.stop()
-            self.move(self.x(), self.ty)
+            self.move(self.tx, self.y())
             self.pointoutGOE.setOpacity(self.po)
 
 

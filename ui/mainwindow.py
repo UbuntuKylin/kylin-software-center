@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/mainwindow.ui'
+# Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Sep  5 15:02:15 2014
+# Created: Tue Sep  9 15:22:04 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,10 +48,10 @@ class Ui_MainWindow(object):
         self.btnUn.setGeometry(QtCore.QRect(0, 344, 80, 88))
         self.btnUn.setText(_fromUtf8(""))
         self.btnUn.setObjectName(_fromUtf8("btnUn"))
-        self.btnXp = QtGui.QPushButton(self.navWidget)
-        self.btnXp.setGeometry(QtCore.QRect(0, 432, 80, 88))
-        self.btnXp.setText(_fromUtf8(""))
-        self.btnXp.setObjectName(_fromUtf8("btnXp"))
+        self.btnWin = QtGui.QPushButton(self.navWidget)
+        self.btnWin.setGeometry(QtCore.QRect(0, 432, 80, 88))
+        self.btnWin.setText(_fromUtf8(""))
+        self.btnWin.setObjectName(_fromUtf8("btnWin"))
         self.btnTask = QtGui.QPushButton(self.navWidget)
         self.btnTask.setGeometry(QtCore.QRect(0, 520, 80, 88))
         self.btnTask.setText(_fromUtf8(""))

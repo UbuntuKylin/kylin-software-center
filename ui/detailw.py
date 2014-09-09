@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Fri Sep  5 17:22:52 2014
+# Created: Tue Sep  9 15:56:43 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -41,7 +41,7 @@ class Ui_DetailWidget(object):
         self.status.setText(_fromUtf8(""))
         self.status.setObjectName(_fromUtf8("status"))
         self.name = QtGui.QLabel(DetailWidget)
-        self.name.setGeometry(QtCore.QRect(95, 67, 200, 19))
+        self.name.setGeometry(QtCore.QRect(95, 67, 371, 19))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.candidateVersion = QtGui.QLabel(DetailWidget)
@@ -103,15 +103,15 @@ class Ui_DetailWidget(object):
         self.splitText2.setGeometry(QtCore.QRect(25, 600, 66, 17))
         self.splitText2.setObjectName(_fromUtf8("splitText2"))
         self.btnUpdate = QtGui.QPushButton(DetailWidget)
-        self.btnUpdate.setGeometry(QtCore.QRect(570, 70, 64, 22))
+        self.btnUpdate.setGeometry(QtCore.QRect(685, 70, 148, 40))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         self.btnInstall = QtGui.QPushButton(DetailWidget)
-        self.btnInstall.setGeometry(QtCore.QRect(720, 70, 64, 22))
+        self.btnInstall.setGeometry(QtCore.QRect(684, 70, 148, 40))
         self.btnInstall.setText(_fromUtf8(""))
         self.btnInstall.setObjectName(_fromUtf8("btnInstall"))
         self.btnUninstall = QtGui.QPushButton(DetailWidget)
-        self.btnUninstall.setGeometry(QtCore.QRect(645, 70, 64, 22))
+        self.btnUninstall.setGeometry(QtCore.QRect(684, 70, 148, 40))
         self.btnUninstall.setText(_fromUtf8(""))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
         self.grade = QtGui.QLabel(DetailWidget)

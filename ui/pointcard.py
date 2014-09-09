@@ -141,42 +141,80 @@ class PointCard(QWidget):
         self.ui.setupUi(self)
         self.show()
 
+    # def enterEvent(self, event):
+    #     self.switchDirection = 'right'
+    #     self.switch_animation()
+    #
+    # def leaveEvent(self, event):
+    #     self.switchDirection = 'left'
+    #     self.switch_animation()
+    #
+    # def switch_animation(self):
+    #     if(self.switchDirection == 'right'):
+    #         self.px = -212
+    #         self.switchTimer.stop()
+    #         self.switchTimer.start(12)
+    #     else:
+    #         self.px = 0
+    #         self.switchTimer.stop()
+    #         self.switchTimer.start(12)
+    #
+    # def slot_switch_animation_step(self):
+    #     if(self.switchDirection == 'right'):
+    #         if(self.px < 0):
+    #             self.px += 4
+    #             self.ui.detailWidget.move(self.px, 0)
+    #             self.ui.baseWidget.move(self.px + 212, 0)
+    #         else:
+    #             self.switchTimer.stop()
+    #             self.ui.detailWidget.move(0, 0)
+    #             self.ui.baseWidget.move(0 + 212, 0)
+    #     else:
+    #         if(self.px > -212):
+    #             self.px -= 4
+    #             self.ui.detailWidget.move(self.px, 0)
+    #             self.ui.baseWidget.move(self.px + 212, 0)
+    #         else:
+    #             self.switchTimer.stop()
+    #             self.ui.detailWidget.move(-212, 0)
+    #             self.ui.baseWidget.move(0, 0)
+
     def enterEvent(self, event):
-        self.switchDirection = 'right'
+        self.switchDirection = 'down'
         self.switch_animation()
 
     def leaveEvent(self, event):
-        self.switchDirection = 'left'
+        self.switchDirection = 'up'
         self.switch_animation()
 
     def switch_animation(self):
-        if(self.switchDirection == 'right'):
-            self.px = -212
+        if(self.switchDirection == 'down'):
+            self.py = -88
             self.switchTimer.stop()
             self.switchTimer.start(12)
         else:
-            self.px = 0
+            self.py = 0
             self.switchTimer.stop()
             self.switchTimer.start(12)
 
     def slot_switch_animation_step(self):
-        if(self.switchDirection == 'right'):
-            if(self.px < 0):
-                self.px += 4
-                self.ui.detailWidget.move(self.px, 0)
-                self.ui.baseWidget.move(self.px + 212, 0)
+        if(self.switchDirection == 'down'):
+            if(self.py < 0):
+                self.py += 4
+                self.ui.detailWidget.move(0, self.py)
+                self.ui.baseWidget.move(0, self.py + 88)
             else:
                 self.switchTimer.stop()
                 self.ui.detailWidget.move(0, 0)
-                self.ui.baseWidget.move(0 + 212, 0)
+                self.ui.baseWidget.move(0, 0 + 88)
         else:
-            if(self.px > -212):
-                self.px -= 4
-                self.ui.detailWidget.move(self.px, 0)
-                self.ui.baseWidget.move(self.px + 212, 0)
+            if(self.py > -88):
+                self.py -= 4
+                self.ui.detailWidget.move(0, self.py)
+                self.ui.baseWidget.move(0, self.py + 88)
             else:
                 self.switchTimer.stop()
-                self.ui.detailWidget.move(-212, 0)
+                self.ui.detailWidget.move(0, -88)
                 self.ui.baseWidget.move(0, 0)
 
     def slot_btn_click(self):
