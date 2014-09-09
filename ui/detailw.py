@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Tue Sep  9 15:56:43 2014
+# Created: Tue Sep  9 17:39:49 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -82,6 +82,7 @@ class Ui_DetailWidget(object):
         self.splitText3.setObjectName(_fromUtf8("splitText3"))
         self.reviewListWidget = QtGui.QListWidget(DetailWidget)
         self.reviewListWidget.setGeometry(QtCore.QRect(25, 760, 810, 85))
+        self.reviewListWidget.setAutoFillBackground(True)
         self.reviewListWidget.setObjectName(_fromUtf8("reviewListWidget"))
         self.thumbnail = QtGui.QPushButton(DetailWidget)
         self.thumbnail.setGeometry(QtCore.QRect(350, 500, 1, 1))
@@ -115,7 +116,7 @@ class Ui_DetailWidget(object):
         self.btnUninstall.setText(_fromUtf8(""))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
         self.grade = QtGui.QLabel(DetailWidget)
-        self.grade.setGeometry(QtCore.QRect(96, 630, 41, 41))
+        self.grade.setGeometry(QtCore.QRect(85, 628, 60, 41))
         self.grade.setText(_fromUtf8(""))
         self.grade.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.grade.setObjectName(_fromUtf8("grade"))

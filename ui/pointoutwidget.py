@@ -122,14 +122,14 @@ class PointOutWidget(QWidget):
         self.po = 0.0
         self.pointoutGOE.setOpacity(self.po)
         self.show()
-        self.pointoutTimer.start(12)
+        self.pointoutTimer.start(2)
 
     def slot_show_animation_step(self):
         if(self.po < 1):
             self.po += 0.011
             self.pointoutGOE.setOpacity(self.po)
         if(self.px > self.tx):
-            self.px -= 4
+            self.px -= 1
             self.move(self.px, self.y())
         else:
             self.pointoutTimer.stop()

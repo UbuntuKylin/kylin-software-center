@@ -201,6 +201,9 @@
      <height>85</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="thumbnail">
    <property name="geometry">
@@ -309,9 +312,9 @@
   <widget class="QLabel" name="grade">
    <property name="geometry">
     <rect>
-     <x>96</x>
-     <y>630</y>
-     <width>41</width>
+     <x>85</x>
+     <y>628</y>
+     <width>60</width>
      <height>41</height>
     </rect>
    </property>
@@ -351,6 +354,32 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <zorder>splitText2</zorder>
+  <zorder>btnCloseDetail</zorder>
+  <zorder>icon</zorder>
+  <zorder>status</zorder>
+  <zorder>name</zorder>
+  <zorder>candidateVersion</zorder>
+  <zorder>installedVersion</zorder>
+  <zorder>size</zorder>
+  <zorder>splitText1</zorder>
+  <zorder>summary</zorder>
+  <zorder>description</zorder>
+  <zorder>sshotBG</zorder>
+  <zorder>btnSshotBack</zorder>
+  <zorder>btnSshotNext</zorder>
+  <zorder>splitText3</zorder>
+  <zorder>reviewListWidget</zorder>
+  <zorder>thumbnail</zorder>
+  <zorder>sshot</zorder>
+  <zorder>size_install</zorder>
+  <zorder>gradeBG</zorder>
+  <zorder>btnUpdate</zorder>
+  <zorder>btnInstall</zorder>
+  <zorder>btnUninstall</zorder>
+  <zorder>grade</zorder>
+  <zorder>gradeText1</zorder>
+  <zorder>gradeText2</zorder>
  </widget>
  <resources/>
  <connections/>

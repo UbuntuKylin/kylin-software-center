@@ -126,7 +126,7 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
         self.ui.candidateVersion.setStyleSheet("QLabel{color:#FF7D15;}")
         # self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
-        self.ui.grade.setStyleSheet("QLabel{font-size:30px;color:#1E66A4;}")
+        self.ui.grade.setStyleSheet("QLabel{font-size:42px;color:#FA7053;}")
         self.ui.gradeText2.setStyleSheet("QLabel{font-size:13px;}")
         # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
         self.ui.summary.setStyleSheet("QTextEdit{border:0px;}")
@@ -145,7 +145,7 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.sshotBG.setStyleSheet("QLabel{background-image:url('res/sshotbg.png')}")
         self.ui.btnSshotBack.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-back-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-back-2')}QPushButton:pressed{background-image:url('res/btn-sshot-back-2')}")
         self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-2')}")
-        self.ui.reviewListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
+        self.ui.reviewListWidget.setStyleSheet("QListWidget{background-color:transparent; border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
 
         self.ui.thumbnail.hide()
 
@@ -274,7 +274,7 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.grade.setStyleSheet("QLabel{text-align:center;}")
         self.ui.grade.setText(str(app.ratings_average))
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
-        self.star.move(68, 665)
+        self.star.move(65, 665)
         self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star2.move(710, 653)
 

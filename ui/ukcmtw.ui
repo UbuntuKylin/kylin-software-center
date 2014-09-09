@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>10</y>
-     <width>61</width>
-     <height>61</height>
+     <y>14</y>
+     <width>32</width>
+     <height>32</height>
     </rect>
    </property>
    <property name="text">
@@ -29,7 +29,7 @@
   <widget class="QLabel" name="userName">
    <property name="geometry">
     <rect>
-     <x>95</x>
+     <x>60</x>
      <y>10</y>
      <width>130</width>
      <height>17</height>
@@ -42,10 +42,10 @@
   <widget class="QLabel" name="commentBG">
    <property name="geometry">
     <rect>
-     <x>85</x>
+     <x>60</x>
      <y>30</y>
-     <width>708</width>
-     <height>39</height>
+     <width>728</width>
+     <height>36</height>
     </rect>
    </property>
    <property name="text">
@@ -55,8 +55,8 @@
   <widget class="QLabel" name="comment">
    <property name="geometry">
     <rect>
-     <x>100</x>
-     <y>33</y>
+     <x>75</x>
+     <y>30</y>
      <width>600</width>
      <height>34</height>
     </rect>
