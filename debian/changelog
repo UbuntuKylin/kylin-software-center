@@ -1,7 +1,12 @@
+ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
+
+  * Modify widget.
+
+ -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Tue, 09 Sep 2014 18:12:53 +0800
+
 ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
 
   * fix broken
-  * Modify widget.
 
  -- Shine <shenghuang@ubuntukylin.com>  Tue, 09 Sep 2014 15:58:50 +0800
 
