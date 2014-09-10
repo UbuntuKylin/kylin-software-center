@@ -44,6 +44,11 @@ class PointCard(QWidget):
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
+        # add by kobe: delay show animation
+        self.showDelay = False
+        self.delayTimer = QTimer(self)
+        self.delayTimer.timeout.connect(self.slot_show_delay_animation)
+
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
 
@@ -180,12 +185,23 @@ class PointCard(QWidget):
     #             self.ui.baseWidget.move(0, 0)
 
     def enterEvent(self, event):
-        self.switchDirection = 'down'
-        self.switch_animation()
+        self.delayTimer.start(300)
+        # self.switchDirection = 'down'
+        # self.switch_animation()
 
     def leaveEvent(self, event):
-        self.switchDirection = 'up'
+        if self.delayTimer.isActive():
+            self.delayTimer.stop()
+        if self.showDelay:
+            self.showDelay = False
+            self.switchDirection = 'up'
+            self.switch_animation()
+
+    def slot_show_delay_animation(self):
+        self.delayTimer.stop()
+        self.switchDirection = 'down'
         self.switch_animation()
+        self.showDelay = True
 
     def switch_animation(self):
         if(self.switchDirection == 'down'):
