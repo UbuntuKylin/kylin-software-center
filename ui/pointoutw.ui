@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>413</width>
-    <height>355</height>
+    <width>512</width>
+    <height>260</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>413</width>
-     <height>69</height>
+     <width>48</width>
+     <height>260</height>
     </rect>
    </property>
    <property name="text">
@@ -29,10 +29,10 @@
   <widget class="QLabel" name="title">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>69</y>
-     <width>413</width>
-     <height>34</height>
+     <x>60</x>
+     <y>12</y>
+     <width>341</width>
+     <height>15</height>
     </rect>
    </property>
    <property name="text">
@@ -42,33 +42,20 @@
   <widget class="QListWidget" name="contentliw">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>103</y>
-     <width>413</width>
-     <height>225</height>
+     <x>60</x>
+     <y>40</y>
+     <width>428</width>
+     <height>180</height>
     </rect>
    </property>
   </widget>
   <widget class="QPushButton" name="btnClose">
    <property name="geometry">
     <rect>
-     <x>393</x>
-     <y>5</y>
-     <width>15</width>
-     <height>15</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="bottom">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>328</y>
-     <width>413</width>
-     <height>29</height>
+     <x>484</x>
+     <y>0</y>
+     <width>28</width>
+     <height>36</height>
     </rect>
    </property>
    <property name="text">
@@ -78,10 +65,23 @@
   <widget class="QCheckBox" name="cbisshow">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>330</y>
+     <x>60</x>
+     <y>229</y>
      <width>120</width>
      <height>22</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="logo">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>48</width>
+     <height>48</height>
     </rect>
    </property>
    <property name="text">

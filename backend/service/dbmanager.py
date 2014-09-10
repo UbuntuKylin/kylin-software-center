@@ -7,8 +7,9 @@
 
 # Author:
 #     maclin <majun@ubuntukylin.com>
+#     Shine Huang<shenghuang@ubuntukylin.com>
 # Maintainer:
-#     maclin <majun@ubuntukylin.com>
+#     Shine Huang<shenghuang@ubuntukylin.com>
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -26,49 +27,30 @@ import sqlite3
 import os
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-import multiprocessing
 from backend.remote.piston_remoter import PistonRemoter
 
+from shutil import copytree, ignore_patterns
 DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+XAPIAN_DB_SOURCE_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"xapiandb")
 #DB_PATH = "../data/uksc.db"
 
-CREATE_CATEGORY = "create table category (name varchar(32) primary key,display_name varchar(32), \
-                   priority integer, visible integer)"
-
-CREATE_APP = "create table application (id integer primary key autoincrement, language varchar(32), \
-              first_cat_name varchar(32),secondary_cat_name varchar(32),third_cat_name varchar(32), app_name varchar(32) unique, \
-              display_name varchar(64), summary varchar(256), description varchar(512), distroseries varchar(32), \
-              rating_average float, rating_total integer, review_total integer, download_total integer, rank integer)"
-
-CREATE_TOPRATED = "create table toprated (app_name varchar(32) primary key, \
-                   rating_average float, rating_total integer, rank integer)"
-
-INSERT_CATEGORY = "insert into category (name,display_name,priority,visible) \
-        values('%s', '%s', %d, %d)"
 QUERY_CATEGORY = "select * from category where name='%s'"
-INSERT_APP = "insert into application (first_cat_name,secondary_cat_name,third_cat_name,app_name,display_name,language) values \
-              ('%s','%s','%s','%s','zh_CN')"
 QUERY_APP = "select display_name, summary,description,rating_avg,rating_total,review_total,rank,download_total \
                from application where app_name='%s'"
 QUERY_APPS = "select display_name_cn, app_name from application"
-INSERT_TOPRATED = "insert into toprated (app_name,rating_average,rating_total,rank) \
-        values('%s', %f, %d, %d)"
-QUERY_TOPRATED = "select app_name,rating_average,rating_total,rank from toprated order by rank ASC"
-RESET_TOPRATED = "delete from toprated"
-
-UPDATE_APP_CATEGORY = "update application set secondary_cat_name='%s' where app_name='%s'"
-UPDATE_APP_BASIC = "update application set summary='%s',description='%s',distroseries='%s' where app_name='%s'"
 UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, review_total=%d, \
         download_total=%d where app_name='%s'"
 QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
+
+QUERY_NAME_CATEGORIES = "select id,app_name,categories,windows_app_name from xp order by priority asc"
+QUERY_APP_ACCORD_CATEGORIES = "select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
+UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
+
 
 class Database:
 
     def __init__(self):
         self.updatecount = 0
-        self.first_start = False
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
         destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
 
@@ -78,7 +60,6 @@ class Database:
                 print "error with db file"
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
-            self.first_start = True
 
         self.connect = sqlite3.connect(destFile, check_same_thread=False)
         self.cursor = self.connect.cursor()
@@ -90,76 +71,26 @@ class Database:
 
         # piston remoter to ukscs
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+        
+#___________________________add by zhangxin for xapiandb update___________________________#
 
-    def is_update_needed(self):
-        return self.first_start
+        xapian_srcFile = XAPIAN_DB_SOURCE_PATH
+        xapian_destFile = os.path.join(UKSC_CACHE_DIR,"xapiandb")
 
-    def init_category_table(self):
-        self.cursor.execute(CREATE_CATEGORY)
+        # no cache file, copy
+        if not os.path.exists(xapian_destFile):
+            if not os.path.exists(xapian_srcFile):
+                print "No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/"
+                return
+            copytree(xapian_srcFile,xapian_destFile)
 
-        self.cursor.execute(INSERT_CATEGORY % ('ubuntukylin','Ubuntu Kylin',0,1))
-        self.cursor.execute(INSERT_CATEGORY % ('necessary','装机必备',1,1))
-        self.cursor.execute(INSERT_CATEGORY % ('office','办公软件',2,1))
-        self.cursor.execute(INSERT_CATEGORY % ('devel','编程开发',3,1))
-        self.cursor.execute(INSERT_CATEGORY % ('graphic','图形图像',4,1))
-        self.cursor.execute(INSERT_CATEGORY % ('multimedia','影音播放',5,1))
-        self.cursor.execute(INSERT_CATEGORY % ('internet','网络工具',6,1))
-        self.cursor.execute(INSERT_CATEGORY % ('game','游戏娱乐',7,1))
-        self.cursor.execute(INSERT_CATEGORY % ('profession','专业软件',8,1))
-        self.cursor.execute(INSERT_CATEGORY % ('other','其他软件',9,1))
-        self.cursor.execute(INSERT_CATEGORY % ('recommend','热门推荐',10,0))
-        self.cursor.execute(INSERT_CATEGORY % ('toprated','排行榜',11,0))
-        self.connect.commit()
-
-    def init_app_table(self):
-        self.cursor.execute(CREATE_APP)
-
-        count = 0
-        for cat_name in os.listdir("../data/category/"):
-            fpath = "../data/category/" + cat_name
-            file = open("../data/category/" + cat_name, 'r')
-            for line in file:
-                pkgname = line.strip('\n')
-                self.cursor.execute(QUERY_APP % (pkgname))
-                res = self.cursor.fetchall()
-                if len(res)==0:
-                    self.cursor.execute(INSERT_APP % (cat_name,"",pkgname,pkgname))
-                    self.connect.commit()
-                else:
-                    self.cursor.execute(UPDATE_APP_CATEGORY % (cat_name,pkgname))
-                    self.connect.commit()
-
-    def init_toprated_table(self,rnrlist):
-        print "init_toprated_table:",len(rnrlist)
-#        self.cursor.execute(CREATE_TOPRATED)
-        self.cursor.execute(RESET_TOPRATED)
-        self.connect.commit()
-
-        index = 0
-        for rnrStat in rnrlist:
-            self.cursor.execute(QUERY_APP % (str(rnrStat.pkgname)))
-            res = self.cursor.fetchall()
-            if len(res)==0:
-                print "does not exit:",str(rnrStat.pkgname)
-                continue
-
-            self.cursor.execute(INSERT_TOPRATED % (str(rnrStat.pkgname),rnrStat.ratings_average,rnrStat.ratings_total,index))
-            self.connect.commit()
-            index = index + 1
+            print " Xapiandb has been copy from /usr/share/ubuntu-kylin-software-center/data/xapiandb"
 
     def query_categories(self):
         self.cursor.execute("select * from category")
         res = self.cursor.fetchall()
 #        print "query_categories:",len(res),res
         return res
-
-    #return as (app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank)
-#     def query_category_apps(self,cat_name):
-# #        print QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name)
-#         self.cursor.execute(QUERY_CATEGORY_APPS % (cat_name,cat_name,cat_name))
-#         res = self.cursor.fetchall()
-# #        print "query_category_apps:cat_name",cat_name,len(res)
-#         return res
 
     def query_category_apps(self, cate_name):
         al = ''
@@ -214,21 +145,6 @@ class Database:
         else:
             return res
 
-    #return as (app_name,rating_average,rating_total,rank)
-    def query_app_toprated(self):
-        self.cursor.execute(QUERY_TOPRATED)
-        res = self.cursor.fetchall()
-#        print "query_app_toprated:",len(res),res
-        return res
-
-    def update_app_basic(self,pkgname,summary,distroseries="trusty"):
-        print "update_app_basic:",pkgname,summary
-        self.cursor.execute(UPDATE_APP_BASIC % (summary,distroseries,pkgname))
-        self.connect.commit()
-        #res = self.cursor.fetchall()
-        #print "update_app_basic:",len(res),res
-        return True
-
     def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
         print "update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total
         self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
@@ -238,18 +154,12 @@ class Database:
         self.updatecount += 1
         return True
 
-    def export(self):
-        self.cursor.execute("select app_name from application")
-        res = self.cursor.fetchall()
-        for item in res:
-            print UnicodeToAscii(item[0])
-
-
     #---------------------------------0.3----------------------------------
 
 
     expiredict = {}
 
+    # check the ~/.cache/uksc/uksc.db version, and copy /usr/share/u../data/uksc.db to replace it
     def is_cachedb_need_update(self):
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
 
@@ -281,12 +191,6 @@ class Database:
             return True
 
         return False
-
-    def init_expire_time_dict(self):
-        pass
-
-    def check_expire_time(self, type):
-        return self.expiredict[type]
 
     def get_pagecount_by_pkgname(self, package_name):
         self.cursor.execute("select review_total from application where app_name=?", (package_name,))
@@ -428,61 +332,62 @@ class Database:
         self.cursor.execute("update dict set value=? where key='pointout'", (value,))
         self.connect.commit()
 
+    def get_pointout_apps(self):
+        self.cursor.execute("select app_name,rank_pointout from rank,application where rank_pointout!=0 and rank.aid_id=application.id order by rank_pointout")
+        res = self.cursor.fetchall()
+        pointouts = []
+        for item in res:
+            app_name = item[0]
+            rank_pointout = item[1]
+            pointouts.append((app_name, rank_pointout))
+        return pointouts
 
-class CacheProcess(multiprocessing.Process):
+    def get_recommend_apps(self):
+        self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
+        res = self.cursor.fetchall()
+        recommends = []
+        for item in res:
+            app_name = item[0]
+            rank_recommend = item[1]
+            recommends.append((app_name, rank_recommend))
+        return recommends
 
-    def __init__(self, func, kwargs=None, event=None, queue=None):
-        super(CacheProcess, self).__init__()
-        multiprocessing.Process.__init__(self)
-        self.func = func
-        self.kwargs = kwargs
-        self.daemon = True
-        self.event = event
-        self.queue = queue
+    def get_ratingrank_apps(self):
+        self.cursor.execute("select app_name,rank_rating from rank,application where rank_rating!=0 and rank.aid_id=application.id order by rank_rating")
+        res = self.cursor.fetchall()
+        ratingranks = []
+        for item in res:
+            app_name = item[0]
+            rank_rating = item[1]
+            ratingranks.append((app_name, rank_rating))
+        return ratingranks
 
-    def run(self):
-        if self.func == "get_all_ratings":
-            from backend.remote.piston_remoter import PistonRemoter
-            import json
-            premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
-            reslist = premoter._get("getallratings", scheme="http")
-            decoded = json.loads(reslist)
-            print "all ratings and rating_total download over : ",len(decoded)
+    #------------add by kobe for windows replace------------
+    def search_name_and_categories_record(self):
+        self.cursor.execute(QUERY_NAME_CATEGORIES)
+        res = self.cursor.fetchall()
+        if len(res) == 0:
+            return []
+        else:
+            return res
 
-            import sqlite3
-            destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
-            self.connect = sqlite3.connect(destFile, check_same_thread=False)
-            self.cursor = self.connect.cursor()
+    #------------add by kobe for windows replace------------
+    def search_app_display_info(self, categories):
+        self.cursor.execute(QUERY_APP_ACCORD_CATEGORIES % (categories))
+        res = self.cursor.fetchall()
+        if len(res) == 0:
+            return []
+        else:
+            return res
 
-            for rating in decoded:
-                app_name = rating['app_name']
-                # print app_name
-                rating_avg = str(rating['rating_avg'])
-                # print rating_avg
-                rating_total = str(rating['rating_total'])
-                # print rating_total
+    #------------add by kobe for windows replace------------
+    def update_exists_data(self, exists, id):
+        self.cursor.execute(UPDATE_EXISTS % (exists, id))
+        self.connect.commit()
 
-                sql = "update application set rating_total=" + rating_total + ",rating_avg=" + rating_avg +" where app_name='" + app_name + "'"
-                self.cursor.execute(sql)
-            self.connect.commit()
-
-    # CACHE update rating_avg and rating_total
-    def update_ratings(self, result):
-        pass
-
-    def update_categories(self):
-        pass
 
 if __name__ == "__main__":
     db = Database()
-#    db.init_category_table()
-#    db.init_app_table()
-#    db.query_category_apps("ubuntukylin")
-#    db.query_categories()
-#    db.query_application("gimp")
-#    print db.cat_list
-#     db.tteete()
-    # db.export()
 
     # print db.get_pagecount_by_pkgname('gimp')
     print db.is_cachedb_need_update()

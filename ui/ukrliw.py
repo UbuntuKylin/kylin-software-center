@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/ukrliw.ui'
 #
-# Created: Thu Jun 12 14:04:33 2014
+# Created: Fri Sep  5 15:34:51 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,19 +26,15 @@ except AttributeError:
 class Ui_RankListWidget(object):
     def setupUi(self, RankListWidget):
         RankListWidget.setObjectName(_fromUtf8("RankListWidget"))
-        RankListWidget.resize(133, 20)
+        RankListWidget.resize(200, 24)
         self.name = QtGui.QLabel(RankListWidget)
-        self.name.setGeometry(QtCore.QRect(26, 1, 100, 18))
+        self.name.setGeometry(QtCore.QRect(32, 4, 150, 16))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
-        self.iconbg = QtGui.QLabel(RankListWidget)
-        self.iconbg.setGeometry(QtCore.QRect(7, 3, 14, 14))
-        self.iconbg.setText(_fromUtf8(""))
-        self.iconbg.setObjectName(_fromUtf8("iconbg"))
-        self.iconnumber = QtGui.QLabel(RankListWidget)
-        self.iconnumber.setGeometry(QtCore.QRect(8, 4, 12, 12))
-        self.iconnumber.setText(_fromUtf8(""))
-        self.iconnumber.setObjectName(_fromUtf8("iconnumber"))
+        self.number = QtGui.QLabel(RankListWidget)
+        self.number.setGeometry(QtCore.QRect(4, 4, 18, 16))
+        self.number.setText(_fromUtf8(""))
+        self.number.setObjectName(_fromUtf8("number"))
 
         self.retranslateUi(RankListWidget)
         QtCore.QMetaObject.connectSlotsByName(RankListWidget)

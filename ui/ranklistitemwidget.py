@@ -35,22 +35,24 @@ class RankListItemWidget(QWidget):
         self.ui_init()
 
         self.ui.name.setText(name)
-        self.ui.iconnumber.setText(str(rank))
-        self.ui.iconnumber.setAlignment(Qt.AlignCenter)
+        self.ui.number.setText(str(rank))
+        self.ui.number.setAlignment(Qt.AlignCenter)
 
         # letter spacing
-        font = QFont()
-        font.setLetterSpacing(QFont.PercentageSpacing, 95.0)
-        self.ui.name.setFont(font)
+        # font = QFont()
+        # font.setLetterSpacing(QFont.PercentageSpacing, 95.0)
+        # self.ui.name.setFont(font)
 
-        self.ui.name.setStyleSheet("QLabel{font-size:13px;}")
-        self.ui.iconnumber.setStyleSheet("QLabel{color:white;font-size:12px;}")
-        if(rank < 4):
-            self.ui.iconbg.setStyleSheet("QLabel{background-color:#FF7C14;}")
-        else:
-            self.ui.iconbg.setStyleSheet("QLabel{background-color:#2B8AC2;}")
+        self.ui.name.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
+        self.ui.number.setStyleSheet("QLabel{font-size:15px;font-style:italic;color:#999999;}")
 
     def ui_init(self):
         self.ui = Ui_RankListWidget()
         self.ui.setupUi(self)
         self.show()
+
+    def enterEvent(self, event):
+        self.resize(200, 52)
+
+    def leaveEvent(self, event):
+        self.resize(200, 24)

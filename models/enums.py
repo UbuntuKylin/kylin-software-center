@@ -35,7 +35,7 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-# UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+#UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
 
@@ -94,6 +94,7 @@ safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
 UBUNTUKYLIN_RES_TMPICON_PATH = UBUNTUKYLIN_DATA_PATH + "tmpicons/"
 UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
+UBUNTUKYLIN_RES_WIN_PATH = UBUNTUKYLIN_DATA_PATH + "winicons/"
 
 ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s)}")
 RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
@@ -114,14 +115,18 @@ class Signals:
     task_cancel = SIGNAL("taskcancel")
     ads_ready = SIGNAL("advertisements-ready")
     recommend_ready = SIGNAL("recommend-ready")
+    ratingrank_ready = SIGNAL("ratingrank-ready")
     toprated_ready = SIGNAL("toprated-ready")
     rating_reviews_ready = SIGNAL("rating-reviews-ready")
     app_reviews_ready = SIGNAL("app-reviews-ready")
     app_screenshots_ready = SIGNAL("app-screenshots-ready")
     count_application_update = SIGNAL("count-application-update")
+    click_categoy = SIGNAL("clickcategory")
     click_item = SIGNAL("clickitem")
     show_app_detail = SIGNAL("app-show-detail")
+    install_debfile = SIGNAL("install-debfile")
     install_app = SIGNAL("install-app")
+    install_app_rcm = SIGNAL("install-app-rcm")
     remove_app = SIGNAL("remove-app")
     upgrade_app = SIGNAL("upgrade-app")
     click_update_source = SIGNAL("click-update-source")
@@ -136,6 +141,8 @@ class Signals:
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
+    INSTALLDEPS = "install_deps"
+    INSTALLDEBFILE = "install_debfile"
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"
@@ -150,6 +157,8 @@ class AppActions:
 
 
 AptActionMsg = {
+    "install_deps":"安装依赖包",
+    "install_debfile":"安装本地包",
     "install":"安装",
     "remove":"卸载",
     "upgrade":"更新",

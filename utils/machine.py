@@ -24,36 +24,58 @@
 
 import os
 import platform
+from models.globals import Globals
 
 
-# the machine-id which from dbus calculates
+# new version no longer send dbus id
 def get_machine_id():
-    fpath = '/var/lib/dbus/machine-id'
-    if(os.path.exists(fpath) and os.path.isfile(fpath)):
-        f = open(fpath, 'r')
-        id = f.read()
-        f.close()
-        id = id.replace('\n','')
-        if(id == ''):
-            return 'unknown'
-        else:
-            return id
-    else:
-        return 'unknown'
+    # fpath = '/var/lib/dbus/machine-id'
+    # if(os.path.exists(fpath) and os.path.isfile(fpath)):
+    #     f = open(fpath, 'r')
+    #     id = f.read()
+    #     f.close()
+    #     id = id.replace('\n','')
+    #     if(id == ''):
+    #         return 'unknown'
+    #     else:
+    #         return id
+    # else:
+    #     return 'unknown'
+
+    return 'empty'
 
 # the linux distribution of this machine
 def get_distro_info():
     ufpath = '/etc/ubuntukylin-release'
     if(os.path.exists(ufpath) and os.path.isfile(ufpath)):
-        pass
+        uf = open(ufpath)
+        lines = uf.readlines()
+        rtn = []
+        for line in lines:
+            kv = line.split('=')
+            if (kv[0] == 'DISTRIB_ID'):
+                v = kv[1]
+                rtn.append(v[:-1])
+            if (kv[0] == 'DISTRIB_RELEASE'):
+                v = kv[1]
+                rtn.append(v[:-1])
+        uf.close()
+        return rtn
     else:
         dist = platform.dist()
         distname = dist[0]
-        return distname
+        distversion = dist[1]
+        return [distname, distversion]
+
+# uksc version
+def get_uksc_version():
+    return Globals.UKSC_VERSION
+
 
 def main():
     print get_machine_id()
     print get_distro_info()
+    print get_uksc_version()
 
 if __name__ == '__main__':
     main()

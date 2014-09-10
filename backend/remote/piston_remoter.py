@@ -35,6 +35,9 @@ from piston_mini_client import (
 from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
 import httplib2
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 class ReviewUK(PistonResponseObject):
@@ -51,6 +54,15 @@ class ReviewUK(PistonResponseObject):
     """
     pass
 
+
+class PingbackmainRequest(PistonSerializable):
+    _atts = ('machine', 'distro', 'version_os', 'version_uksc')
+
+
+class PingbackappRequest(PistonSerializable):
+    _atts = ('app_name', 'machine', 'isrcm')
+
+
 class PistonRemoter(PistonAPI):
 
     default_service_observe = 'observe'
@@ -63,8 +75,6 @@ class PistonRemoter(PistonAPI):
 
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
-        # start = (page - 1) * 10
-        # range_ = 10
         return self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
 
     @returns_list_of(ReviewUK)
@@ -73,10 +83,60 @@ class PistonRemoter(PistonAPI):
         range_ = 1
         return self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
 
+    @returns_json
+    def submit_pingback_main(self, machine, distro, version_os, version_uksc):
+        postdata = PingbackmainRequest()
+        postdata.machine = machine
+        postdata.distro = distro
+        postdata.version_os = version_os
+        postdata.version_uksc = version_uksc
+        return self._post('pingbackmain/', data=postdata, scheme='http', content_type='application/json')
+
+    @returns_json
+    def submit_pingback_app(self, app_name, machine, isrcm):
+        postdata = PingbackappRequest()
+        postdata.app_name = app_name
+        postdata.machine = machine
+        postdata.isrcm = isrcm
+        return self._post('pingbackapp/', data=postdata, scheme='http', content_type='application/json')
+
+    @returns_json
+    def get_all_categories(self):
+        return self._get("getallcategories", scheme="http")
+
+    @returns_json
+    def get_all_rank_and_recommend(self):
+        return self._get("getallrankandrecommend", scheme='http')
+
+    @returns_json
+    def get_newer_application_info(self, last_update_date):
+        return self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
+        
+    @returns_json
+    def get_all_app_info(self):
+        return self._get('getallappinfo/?', scheme="http")
+    
+    @returns_json
+    def get_newer_app_info(self, the_latest_update_time):
+        return self._get('getnewerappinfo/?update_datetime=%s' % the_latest_update_time, scheme="http")
 
 if __name__ == '__main__':
-    s = PistonRemoter(service_root="http://service.ubuntukylin.com:8001/uksc/")
-    reslist = s._get("getallratings", scheme="http")
+    s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
+    # res = s.get_all_categories()
+    # res = s.get_all_rank_and_recommend()
+    # print res
+    # res = s.submit_pingback_main("123123","ubuntutu","1414","0.99")
+    # print res
+    # res = s.submit_pingback_app("pyracerz","jioqjwfiqwf","True")
+    # print res
+    # res = s.get_newer_application_info('2014-07-23')
+    # print res
+    # reslist = s._get("getallratings", scheme="http")
+    # reslist = s.get_all_ratings()
+    # print len(reslist)
+    # import json
+    # decoded = json.loads(reslist)
+    # print len(decoded)
     #
     # try:
     # res = s.get_all_ratings()

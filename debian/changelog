@@ -1,6 +1,52 @@
-ubuntu-kylin-software-center (0.3.1.0) trusty; urgency=medium
+ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
+
+  * Modify widget.
+
+ -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Tue, 09 Sep 2014 18:12:53 +0800
+
+ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
+
+  * fix broken
+
+ -- Shine <shenghuang@ubuntukylin.com>  Tue, 09 Sep 2014 15:58:50 +0800
+
+ubuntu-kylin-software-center (0.3.4.0) utopic; urgency=medium
+
+  * Part of the data migration to the server: classification, software information, 
+    charts, recommended, pointout installation
+  * xapian Chinese word search
+  * All interfaces such as buttons close to the upper left corner of unity
+  * Part of the interface optimization
+  * Remove the software center tray
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 22 Aug 2014 15:31:31 +0800
+
+ubuntu-kylin-software-center (0.3.3.0) utopic; urgency=medium
+
+  * .deb package can choose the right software center opens, 
+    support the installation of deb files
+  * windows software alternative solutions to help users quickly find 
+    popular software windows in our system
+  * Add pchome wallpaper to Home Advertising
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 01 Aug 2014 09:47:36 +0800 
+
+ubuntu-kylin-software-center (0.3.2.0) utopic; urgency=medium
+
+  * Increase the small icon, click on the optional after hide/show the
+    main interface, exit procedures
+  * Modify the update software source of tips, dbus tips such as text
+    and control logic 
+  * Increase start software center data record and install the software 
+    of data records
+  * Fix many bugs (LP: #1329237, #1326692, #1297108, #1340497, #1323209)
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 11 Jul 2014 16:34:17 +0800 
+
+ubuntu-kylin-software-center (0.3.1.0) utopic; urgency=medium
  
-  * fix many ui bugs(1309906,1314590,1326681,1323227,1309515,1326679,1326689,1329186,1328749,1329642)
+  * fix many ui bugs (LP: #1309906, #1314590, #1326681, #1323227, #1309515,
+    #1326679, #1326689, #1329186, #1328749, #1329642)
  
  -- Shine <shenghuang@ubuntukylin.com>  Mon, 16 Jun 2014 15:06:06 +0800
 

@@ -27,7 +27,22 @@
 import os
 
 class Globals:
+    # mainwindow size
+    MAIN_WIDTH = 980
+    MAIN_HEIGHT = 608
+
+    # card format
+    NORMALCARD_WIDTH = 212
+    NORMALCARD_HEIGHT = 88
+
     # how many softwares show in a setp
-    showSoftwareStep = 20
+    SOFTWARE_STEP_NUM = 24
+
+    # uksc launch mode: normal / quiet
     LAUNCH_MODE = 'quiet'
-    UKSC_VERSION = '0.3.2'
+
+    # uksc version number
+    UKSC_VERSION = '0.3.4'
+
+    # open with local deb file
+    LOCAL_DEB_FILE = None

@@ -31,11 +31,15 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from ui.mainwindow import Ui_MainWindow
-from ui.recommenditem import RecommendItem
+from ui.categorybar import CategoryBar
+from ui.rcmdcard import RcmdCard
+from ui.normalcard import NormalCard
+from ui.wincard import WinCard, WinGather, DataModel
+from ui.cardwidget import CardWidget
+from ui.pointcard import PointCard
 from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
-from ui.pointlistitemwidget import PointListItemWidget
 from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
@@ -47,17 +51,22 @@ from ui.singleprocessbar import SingleProcessBar
 
 from utils import vfs
 from utils import log
-from utils.history import History
 from backend.search import *
 
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
-from backend.ubuntu_sw import SoftwarecenterDbusController
+from backend.utildbus import UtilDbus
 
-from models.enums import (UBUNTUKYLIN_RES_PATH,HEADER_BUTTON_STYLE, AppActions,AptActionMsg)
+from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
 from models.globals import Globals
 
 from models.enums import Signals
+
+from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
+
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -79,12 +88,13 @@ class SoftwareCenter(QMainWindow):
     stmap = {}
     # drag window x,y
     dragPosition = -1
+    win_exists = 0
 
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
 
-        # single check
-        self.check_single_process_by_sessionbus()
+        # singleton check
+        self.check_singleton()
 
         # init dbus backend
         self.init_dbus()
@@ -92,11 +102,11 @@ class SoftwareCenter(QMainWindow):
         # init ui
         self.init_main_view()
 
-        # init system tray
-        self.create_tray()
-
         # init main service
         self.init_main_service()
+
+        # check ukid
+        self.check_user()
 
         # check apt source and update it
         self.check_source()
@@ -105,310 +115,322 @@ class SoftwareCenter(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.setWindowTitle("Ubuntu Kylin Software-Center")
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        # do not cover the launch loading div
+        self.resize(0,0)
 
-        windowWidth = QApplication.desktop().width()
-        windowHeight = QApplication.desktop().height()
-        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+        self.setWindowTitle("Ubuntu Kylin 软件中心")
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        # self.setAttribute(Qt.WA_TranslucentBackground, True)
 
         # init components
+
+        # category bar
+        self.categoryBar = CategoryBar(self.ui.rightWidget)
         # point out widget
         self.pointout = PointOutWidget(self)
+        self.pointListWidget = CardWidget(212, 88, 4, self.pointout.ui.contentliw)
+        self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
+        self.pointListWidget.calculate_data()
+        # recommend card widget
+        self.recommendWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.homepageWidget)
+        self.recommendWidget.setGeometry(0, 298, 640, 268)
+        self.recommendWidget.calculate_data()
+        # all card widget
+        self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.allWidget)
+        self.allListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.allListWidget.calculate_data()
+        # up card widget
+        self.upListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.upWidget)
+        self.upListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.upListWidget.calculate_data()
+        # un card widget
+        self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.unWidget)
+        self.unListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.unListWidget.calculate_data()
+        # search card widget
+        self.searchListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.searchWidget)
+        self.searchListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.searchListWidget.calculate_data()
+        # win card widget
+        self.winListWidget = CardWidget(427, 88, 6, self.ui.winpageWidget)
+        self.winListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)
+        self.winListWidget.calculate_data()
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
+        # self.detailScrollWidget.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 565))
+        self.detailScrollWidget.move(20, 40)
         self.detailScrollWidget.raise_()
         # loading div
+        self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+
         # alert message box
         self.messageBox = MessageBox(self)
         # first update process bar
         self.updateSinglePB = SingleProcessBar(self)
-        # init config widget
+        # config widget
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
-        # history manager
-        self.history = History(self.ui)
         # search trigger
         self.searchDTimer = QTimer(self)
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
 
         # style by code
-        self.ui.headerWidget.setAutoFillBackground(True)
+        self.ui.centralwidget.setAutoFillBackground(True)
         palette = QPalette()
-        img = QPixmap("res/header.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.ui.headerWidget.setPalette(palette)
-
-        self.ui.searchBG.setAutoFillBackground(True)
-        palette = QPalette()
-        img = QPixmap("res/bg-search.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.ui.searchBG.setPalette(palette)
-
-        self.ui.userWidget.setAutoFillBackground(True)
-        palette = QPalette()
-        palette.setBrush(QPalette.Background, QColor(44, 46, 61))
-        self.ui.userWidget.setPalette(palette)
-
-        self.ui.recommendWidget.setAutoFillBackground(True)
-        palette = QPalette()
-        palette.setColor(QPalette.Background, Qt.white)
-        self.ui.recommendWidget.setPalette(palette)
+        # palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        self.ui.centralwidget.setPalette(palette)
 
         self.ui.rankWidget.setAutoFillBackground(True)
         palette = QPalette()
-        palette.setColor(QPalette.Background, Qt.white)
+        # palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
         self.ui.rankWidget.setPalette(palette)
 
-        self.ui.bottomWidget.setAutoFillBackground(True)
+        self.ui.taskWidget.setAutoFillBackground(True)
         palette = QPalette()
-        img = QPixmap("res/foot.png")
-        palette.setBrush(QPalette.Window, QBrush(img))
-        self.ui.bottomWidget.setPalette(palette)
+        palette.setColor(QPalette.Background, QColor(234, 240, 243))
+        self.ui.taskWidget.setPalette(palette)
 
-        self.ui.categoryView.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnDay.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnWeek.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnMonth.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnDownTimes.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnGrade.setFocusPolicy(Qt.NoFocus)
+        shadowe = QGraphicsDropShadowEffect(self)
+        shadowe.setOffset(5, 5)    # direction
+        shadowe.setColor(Qt.gray)
+        shadowe.setBlurRadius(5)
+        self.ui.taskWidget.setGraphicsEffect(shadowe)
+
+
+        self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMin.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnMaxNormal.setFocusPolicy(Qt.NoFocus)
         self.ui.btnConf.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnBack.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnNext.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
-        self.ui.allsListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.upListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.unListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.allListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.upListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.unListWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
-        self.ui.lebg.stackUnder(self.ui.leSearch)
-        self.ui.searchWidget.stackUnder(self.ui.searchBG)
+        # self.ui.lebg.stackUnder(self.ui.leSearch)
+        self.ui.leSearch.stackUnder(self.ui.lebg)
+        self.ui.taskWidget.raise_()
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.softCountText1 = QLabel(self.ui.searchBG)
-        self.softCountText1.setGeometry(QRect(10, 8, 30, 17))
+        self.softCountText1 = QLabel(self.ui.homeMsgWidget)
+        self.softCountText1.setGeometry(QRect(749, 14, 50, 15))
         self.softCountText1.setObjectName("softCountText1")
         self.softCountText1.setText("共有")
-        self.softCount = QLabel(self.ui.searchBG)
-        self.softCount.setGeometry(QRect(34, 8, 50, 17))
+        self.softCount = QLabel(self.ui.homeMsgWidget)
+        self.softCount.setGeometry(QRect(772, 14, 50, 15))
         self.softCount.setText("")
         self.softCount.setObjectName("softCount")
-        self.softCountText2 = QLabel(self.ui.searchBG)
-        self.softCountText2.setGeometry(QRect(80, 8, 50, 17))
+        self.softCountText2 = QLabel(self.ui.homeMsgWidget)
+        self.softCountText2.setGeometry(QRect(818, 14, 44, 15))
         self.softCountText2.setObjectName("softCountText2")
         self.softCountText2.setText("款软件")
-
         self.softCount.setAlignment(Qt.AlignCenter)
 
-        self.ui.texticon.setText("图标")
-        self.ui.textappname.setText("软件名")
-        self.ui.textsize.setText("大小")
-        self.ui.textprocess.setText("任务进度")
-        self.ui.textstatus.setText("状态信息")
+        self.ui.btnLogin.setText("请登录")
+        self.ui.btnReg.setText("免费注册")
+        self.ui.welcometext.setText("欢迎您")
+        self.ui.btnLogout.setText("退出")
 
-        self.ui.texticon_un.setText("图标")
-        self.ui.textappname_un.setText("软件名")
-        self.ui.textsize_un.setText("大小")
-        self.ui.textversion_un.setText("版本")
-        self.ui.textrating_un.setText("评分")
-        self.ui.textaction_un.setText("操作")
+        self.ui.hometext1.setText("推荐软件")
+        self.ui.hometext2.setText("评分排行")
 
-        self.ui.texticon_up.setText("图标")
-        self.ui.textappname_up.setText("软件名")
-        self.ui.textsize_up.setText("大小")
-        self.ui.textversion_up.setText("版本")
-        self.ui.textrating_up.setText("评分")
-        self.ui.textaction_up.setText("操作")
+        self.ui.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
-        self.ui.texticon_all.setText("图标")
-        self.ui.textappname_all.setText("软件名")
-        self.ui.textsize_all.setText("大小")
-        self.ui.textversion_all.setText("版本")
-        self.ui.textrating_all.setText("评分")
-        self.ui.textaction_all.setText("操作")
-
-        self.ui.userName.setText("未登陆")
-        self.ui.userLv.setText("Lv 0")
-        self.ui.leSearch.setPlaceholderText("请输入想要搜索的软件")
-        self.ui.bottomText1.setText("Ubuntu Kylin软件中心")
-        self.ui.bottomText2.setText(Globals.UKSC_VERSION)
 
         # style by qss
-        self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;}")
-        self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
-        self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
-        self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
-        self.ui.shadowbottom.setStyleSheet("QLabel{background-image:url('res/sbottom.png')}")
-        self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
-        self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
+        self.ui.alltext1.setText("共有")
+        self.ui.alltext1.setAlignment(Qt.AlignLeft)
+        self.ui.alltext2.setAlignment(Qt.AlignLeft)
+        self.ui.allcount.setAlignment(Qt.AlignCenter)
+        self.ui.alltext2.setText("款软件")
+        self.ui.allline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.alltext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.alltext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.allcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.uptext1.setText("可升级")
+        self.ui.uptext1.setAlignment(Qt.AlignLeft)
+        self.ui.uptext2.setAlignment(Qt.AlignLeft)
+        self.ui.upcount.setAlignment(Qt.AlignCenter)
+        self.ui.uptext2.setText("款软件")
+        self.ui.upline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.uptext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.uptext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.upcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.untext1.setText("已安装")
+        self.ui.untext1.setAlignment(Qt.AlignLeft)
+        self.ui.untext2.setAlignment(Qt.AlignLeft)
+        self.ui.uncount.setAlignment(Qt.AlignCenter)
+        self.ui.untext2.setText("款软件")
+        self.ui.unline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.untext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.untext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.uncount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.searchtext1.setText("搜索到")
+        self.ui.searchtext1.setAlignment(Qt.AlignLeft)
+        self.ui.searchtext2.setAlignment(Qt.AlignLeft)
+        self.ui.searchcount.setAlignment(Qt.AlignCenter)
+        self.ui.searchtext2.setText("款软件")
+        self.ui.searchline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.searchtext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.searchtext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.searchcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.wintitle.setText("Windowns常用软件替换")
+        self.ui.winlabel1.setText("可替换")
+        self.ui.winlabel1.setAlignment(Qt.AlignLeft)
+        self.ui.winlabel2.setAlignment(Qt.AlignLeft)
+        self.ui.wincountlabel.setAlignment(Qt.AlignCenter)
+        self.ui.winlabel2.setText("款软件")
+        self.ui.winline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.wintitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.winlabel1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.winlabel2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.wincountlabel.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
+        self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
+        self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+        self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
+        self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
+        self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+        self.softCountText1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+        self.softCountText2.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+        self.softCount.setStyleSheet("QLabel{color:#FA7053;font-size:15px;}")
+        self.ui.hometext1.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.navWidget.setStyleSheet("QWidget{background-image:url('res/nav-bg.png');}")
+        # self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;}")
+        # self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
+        # self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
+        # self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
+        # self.ui.shadowbottom.setStyleSheet("QLabel{background-image:url('res/sbottom.png')}")
+        # self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
+        # self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-        self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search.png')}")
-        self.ui.leSearch.setStyleSheet("QLineEdit{background-image:url('res/searchc.png');border:0px;color:#DDDDDD;font-size:14px;}")
-        self.ui.userLabel.setStyleSheet("QLabel{background-image:url('res/user.png')}")
-        self.ui.userName.setStyleSheet("QLabel{color:white;}")
-        self.ui.userLv.setStyleSheet("QLabel{color:white;}")
+        self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
+        self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
+        # self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EAF0F3;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{border:1px solid #0396DC;}QLineEdit:focus{border:1px solid #0396DC;color:#666666;}")
+
+        # self.ui.userLabel.setStyleSheet("QLabel{background-image:url('res/user.png')}")
+        # self.ui.userName.setStyleSheet("QLabel{color:white;}")
+        # self.ui.userLv.setStyleSheet("QLabel{color:white;}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
+        self.ui.btnMaxNormal.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
         self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background:url('res/conf-2.png');}QPushButton:pressed{background:url('res/conf-3.png');}")
-        self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-color:#30323F;font-size:13px;}QListWidget::item{height:36px;padding-left:24px;margin-top:0px;border:0px;color:#A8A9AE;}QListWidget::item:hover{background-color:#282937;}QListWidget::item:selected{background-color:#232230;color:white;}")
-        self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
-        self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
-        self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:20px;border:0px;}QListWidget::item:selected{color:black;}")
-        self.ui.btnDay.setStyleSheet("QPushButton{background-image:url('res/day1.png');border:0px;}")
-        self.ui.btnWeek.setStyleSheet("QPushButton{background-image:url('res/week1.png');border:0px;}")
-        self.ui.btnMonth.setStyleSheet("QPushButton{background-image:url('res/month1.png');border:0px;}")
-        self.ui.btnDownTimes.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:white;border:0px;}")
-        self.ui.btnGrade.setStyleSheet("QPushButton{font-size:14px;color:#2B8AC2;background-color:#C3E0F4;border:0px;}")
-        self.ui.bottomImg.setStyleSheet("QLabel{background-image:url('res/bottomicon.png')}")
-        self.ui.bottomText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.ui.bottomText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        self.ui.allsMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.upMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.unMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.searchMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:32px;padding-left:7px;}")
-        self.ui.taskMSGBar.setStyleSheet("QLabel{background-color:white;font-size:14px;padding-top:2px;padding-left:2px;}")
-        self.ui.texticon.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textprocess.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textstatus.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.texticon_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textversion_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textrating_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textaction_un.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.texticon_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textversion_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textrating_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textaction_up.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.texticon_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textappname_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textsize_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textversion_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textrating_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.textaction_all.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.allsHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.upHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.unHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.searchHeader.setStyleSheet("QLabel{background-image:url('res/listwidgetheader.png')}")
-        self.ui.taskHeader.setStyleSheet("QLabel{background-image:url('res/taskwidgetheader.png')}")
-        self.ui.allsListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.upListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.unListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.searchListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:66px;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.taskListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:45;margin-top:-1px;border:1px solid #d5e3ec;}QListWidget::item:hover{background-color:#E4F1F8;}")
-        self.ui.allsListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.upListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.unListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.searchListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
+        # self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-color:#30323F;font-size:13px;}QListWidget::item{height:36px;padding-left:24px;margin-top:0px;border:0px;color:#A8A9AE;}QListWidget::item:hover{background-color:#282937;}QListWidget::item:selected{background-color:#232230;color:white;}")
+        # self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
+        # self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
+        # self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
+        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
+        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
+        self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
         # signal / slot
-        self.ui.btnBack.clicked.connect(self.history.history_back)
-        self.ui.btnNext.clicked.connect(self.history.history_next)
-        self.ui.categoryView.itemClicked.connect(self.slot_change_category)
+        # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
-        self.ui.allsListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.unListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
-        self.ui.allsListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        self.ui.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.ui.allListWidget.itemClicked.connect(self.slot_click_item)
+        # self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
+        # self.unListWidget.itemClicked.connect(self.slot_click_item)
+        # self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
+        # self.ui.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        # self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
+        self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
         self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
-        self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnWin.pressed.connect(self.slot_goto_winpage)
+        # self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnClose.clicked.connect(self.slot_close)
+        self.ui.btnMaxNormal.clicked.connect(self.slot_max_normal)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
+        self.connect(self, Signals.update_source,self.slot_update_source)
+        self.connect(self.categoryBar, Signals.click_categoy, self.slot_change_category)
+        self.connect(self.detailScrollWidget, Signals.install_debfile, self.slot_click_install_debfile)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
-        self.connect(self, Signals.update_source,self.slot_update_source)
 
-        self.ui.categoryView.setEnabled(False)
+        # widget status
+        # self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(False)
+        self.ui.btnWin.setEnabled(False)
 
-        self.ui.allsWidget.hide()
+        self.ui.allWidget.hide()
         self.ui.upWidget.hide()
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
-        self.ui.categoryView.hide()
+        self.ui.winpageWidget.hide()
+        # self.ui.categoryView.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
-        self.ui.leftWidget.hide()
+        # self.ui.leftWidget.hide()
 
         # loading
-        self.loadingDiv.start_loading("系统正在初始化...")
-
-    def create_tray(self):
-        self.actionshow = QAction("隐藏/显示", self)
-        self.actionshow.triggered.connect(self.slot_show_or_hide)
-
-        self.actionquit = QAction("退出", self)
-        self.actionquit.triggered.connect(self.slot_close)
-
-        self.traymenu = QMenu(self)
-        self.traymenu.addAction(self.actionshow)
-        self.traymenu.addSeparator()
-        self.traymenu.addAction(self.actionquit)
-
-        self.trayicon = QSystemTrayIcon(self)
-        self.icon = QIcon("res/trayicon.png")
-        self.trayicon.setIcon(self.icon)
-        self.trayicon.setContextMenu(self.traymenu)
-        self.trayicon.activated.connect(self.slot_trayicon_activated)
+        self.launchLoadingDiv.start_loading("系统正在初始化...")
 
     def init_main_service(self):
         self.appmgr = AppManager()
+        self.win_exists = 0
+        self.winnum = 0
+        self.win_model = DataModel(self.appmgr)
 
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
         self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
+        self.connect(self.appmgr, Signals.ratingrank_ready, self.slot_ratingrank_apps_ready)
         self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.connect(self.appmgr, Signals.toprated_ready, self.slot_toprated_ready)
         self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
@@ -439,6 +461,10 @@ class SoftwareCenter(QMainWindow):
                 button = QMessageBox.question(self,"软件源更新提示",
                                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件中心触发此功能\n\n请选择:"),
                                         "更新", "不更新", "", 0)
+
+                # show loading and update processbar this moment
+                self.show()
+
                 if button == 0:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
@@ -448,10 +474,10 @@ class SoftwareCenter(QMainWindow):
                     sys.exit(0)
             else:
                 button = QMessageBox.question(self,"软件源更新提示",
-                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如不更新，也可以运行软件，但大部分操作都无法执行\n\n请选择:"),
+                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件中心，但部分操作无法执行\n\n请选择:"),
                                         "更新", "不更新", "", 0)
 
-                # normal launch mode, show loading div this moment
+                # show loading and update processbar this moment
                 self.show()
 
                 if button == 0:
@@ -465,27 +491,39 @@ class SoftwareCenter(QMainWindow):
                 self.show()
             self.appmgr.init_models()
 
-    def check_single_process_by_sessionbus(self):
+    def check_singleton(self):
         try:
             bus = dbus.SessionBus()
         except:
             LOG.exception("could not initiate dbus")
-            sys.exit()
-            return
+            sys.exit(0)
 
         # if there is an instance running, call to bring it to frontend
         try:
             proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter', '/com/ubuntukylin/softwarecenter')
-            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.softwarecenterIFace')
-            res = iface.bringToFront()
-            sys.exit()
+            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.utiliface')
+            iface.bring_to_front()
 
+            # user clicked local deb file, show info
+            if(Globals.LOCAL_DEB_FILE != None):
+                iface.show_loading_div()
+                iface.show_deb_file(Globals.LOCAL_DEB_FILE)
+            sys.exit(0)
+
+        # else startup one instance
         except dbus.DBusException:
             bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
-            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+            self.dbusControler = UtilDbus(self, bus_name)
+
+    def check_user(self):
+
+        # check user status from SSO module
+
+        self.ui.beforeLoginWidget.show()
+        self.ui.afterLoginWidget.hide()
 
     def init_last_data(self):
-        # init category list
+        # init category bar
         self.init_category_view()
 
         # init search
@@ -498,7 +536,6 @@ class SoftwareCenter(QMainWindow):
 
         # init data flags
         self.ads_ready = False
-        self.toprated_ready = True
         self.rec_ready = False
         self.rnr_ready = True
 
@@ -509,76 +546,112 @@ class SoftwareCenter(QMainWindow):
 
         self.appmgr.get_advertisements()
         self.appmgr.get_recommend_apps()
-        self.appmgr.get_toprated_stats()
+        self.appmgr.get_ratingrank_apps()
 
     # check base init
     def check_init_ready(self):
-        LOG.debug("check init data stat:%d,%d,%d,%d",self.ads_ready,self.toprated_ready,self.rec_ready,self.rnr_ready)
+        LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rnr_ready)
 
         # base init finished
-        if self.ads_ready and self.toprated_ready and self.rec_ready and self.rnr_ready:
-            self.ui.categoryView.setEnabled(True)
+        if self.ads_ready and self.rec_ready and self.rnr_ready:
+            # self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
             self.ui.btnTask.setEnabled(True)
+            self.ui.btnWin.setEnabled(True)
 
-            self.ui.categoryView.show()
+            # self.ui.categoryView.show()
             self.ui.headerWidget.show()
             self.ui.centralwidget.show()
-            self.ui.leftWidget.show()
+            # self.ui.leftWidget.show()
 
             self.slot_goto_homepage()
-            self.loadingDiv.stop_loading()
-            self.trayicon.show()
+            self.launchLoadingDiv.stop_loading()
+            self.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+
+            windowWidth = QApplication.desktop().width()
+            windowHeight = QApplication.desktop().height()
+            self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+            # self.trayicon.show()
+
+            # user clicked local deb file, show info
+            if(Globals.LOCAL_DEB_FILE != None):
+                self.slot_show_deb_detail(Globals.LOCAL_DEB_FILE)
+
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                self.hide()
 
             # base loading finish, start backend work
             self.start_silent_work()
 
+    # silent background works
     def start_silent_work(self):
         # init pointout
         self.init_pointout()
 
-        # start update cache db
-        from backend.service.dbmanager import CacheProcess
-        cp = CacheProcess('get_all_ratings')
-        cp.daemon = True
-        cp.start()
+        # pingback_main
+        self.appmgr.submit_pingback_main()
+
+        # update cache db
+        self.appmgr.get_newer_application_info()
+        self.appmgr.get_all_ratings()
+        self.appmgr.get_all_categories()
+        self.appmgr.get_all_rank_and_recommend()
+        self.appmgr.update_xapiandb()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
             LOG.warning("init models failed:%s",message)
             sys.exit(0)
-            return
         elif step == "ok":
             LOG.debug("init models successfully and ready to setup ui...")
             self.init_last_data()
 
     def init_category_view(self):
         cat_list_orgin = self.appmgr.get_category_list()
+        self.categoryBar.init_categories(cat_list_orgin)
+        self.categoryBar.hide()
 
-        cmp_rating = lambda x, y: \
-            cmp(x[1].index,y[1].index)
-        cat_list = sorted(cat_list_orgin.iteritems(),
-                        cmp_rating,
-                        reverse=False)
+    # add by kobe
+    def init_win_solution_widget(self):
+        self.winnum = 0
+        self.win_model.init_data_model()
+        category_list = self.win_model.get_win_category_list()#win替换分类在xp数据表中的所有分类列表，无重复
 
-        for item in cat_list:
-            catname = item[0]
-            cat = item[1]
-            if cat.visible is False:
-                continue
-            zh_name = cat.name
-
-            oneitem = QListWidgetItem(zh_name)
-            icon = QIcon()
-            icon.addFile(cat.iconfile,QSize(), QIcon.Normal, QIcon.Off)
-            oneitem.setIcon(icon)
-            oneitem.setWhatsThis(catname)
-            self.ui.categoryView.addItem(oneitem)
+        for category in category_list:
+            app_list = self.appmgr.search_app_display_info(category)
+            for context in app_list:
+                if context[0] == 'wine-qq' or context[0] == 'ppstream':
+                    self.winnum += 1
+                    app = None
+                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    self.winListWidget.add_card(card)
+                    self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                    self.connect(card, Signals.install_app, self.slot_click_install)
+                    self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                    self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                    self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                else:
+                    app = self.appmgr.get_application_by_name(context[0])
+                    if app is not None:
+                        self.winnum += 1
+                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    self.winListWidget.add_card(card)
+                    self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                    self.connect(card, Signals.install_app, self.slot_click_install)
+                    self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                    self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                    self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+        self.win_exists = 1
 
     def show_to_frontend(self):
         self.show()
         self.raise_()
+
+    def slot_show_loading_div(self):
+        self.loadingDiv.start_loading("")
 
     def mousePressEvent(self, event):
         if (event.button() == Qt.LeftButton):
@@ -591,7 +664,7 @@ class SoftwareCenter(QMainWindow):
             event.accept()
 
     def show_more_search_result(self, listWidget):
-        listLen = len(listWidget)
+        listLen = listWidget.count()
 
         count = 0
         for appname in self.searchList:
@@ -602,84 +675,76 @@ class SoftwareCenter(QMainWindow):
             if count < listLen:
                 count = count + 1
                 continue
-            if(count > (Globals.showSoftwareStep + listLen)):
-                break
 
-            oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage, self)
-            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(liw, Signals.remove_app, self.slot_click_remove)
-            listWidget.addItem(oneitem)
-            listWidget.setItemWidget(oneitem, liw)
+            # oneitem = QListWidgetItem()
+            # liw = ListItemWidget(app, self.backend, self.nowPage, self)
+            # self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
+            # self.connect(liw, Signals.install_app, self.slot_click_install)
+            # self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
+            # self.connect(liw, Signals.remove_app, self.slot_click_remove)
+            # listWidget.addItem(oneitem)
+            # listWidget.setItemWidget(oneitem, liw)
+
+            card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+            listWidget.add_card(card)
+            self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+            self.connect(card, Signals.install_app, self.slot_click_install)
+            self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+            self.connect(card, Signals.remove_app, self.slot_click_remove)
+            self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+            self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
             count = count + 1
 
-        return True
+            if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                break
 
     def show_more_software(self, listWidget):
         if self.nowPage == "searchpage":
             self.show_more_search_result(listWidget)
-            return True
-
-        listLen = listWidget.count()
-
-        apps = self.appmgr.get_category_apps(self.category)
-
-        count = 0
-        for pkgname, app in apps.iteritems():
-
-            if self.nowPage ==  "uppage":
-                if app.is_installed is False:
-                    continue
-                if app.is_installed is True and app.is_upgradable is False:
-                    continue
-            if self.nowPage == "unpage" and app.is_installed is False:
-                continue
-
-            if count < listLen:
-                count = count + 1
-                continue
-            if(count > (Globals.showSoftwareStep + listLen)):
-                break
-
-            oneitem = QListWidgetItem()
-            liw = ListItemWidget(app, self.backend, self.nowPage, self)
-            self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(liw, Signals.install_app, self.slot_click_install)
-            self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(liw, Signals.remove_app, self.slot_click_remove)
-            listWidget.addItem(oneitem)
-            listWidget.setItemWidget(oneitem, liw)
-            count = count + 1
-
-        return True
-
-    def switch_category(self):
-        listWidget = self.get_current_listWidget()
-        nowCategory = listWidget.whatsThis()
-
-        if(self.nowPage == 'homepage'):
-            self.ui.categoryView.clearSelection()
         else:
-            if(nowCategory == ''):
-                self.ui.categoryView.clearSelection()
-            else:
-                for i in range(self.ui.categoryView.count()):
-                    item = self.ui.categoryView.item(i)
-                    if(item.whatsThis() == nowCategory):
-                        item.setSelected(True)
+            listLen = listWidget.count()
+            apps = self.appmgr.get_category_apps(self.category)
+
+            count = 0
+            for pkgname, app in apps.iteritems():
+
+                if self.nowPage ==  "uppage":
+                    if app.is_installed is False:
+                        continue
+                    if app.is_installed is True and app.is_upgradable is False:
+                        continue
+                if self.nowPage == "unpage" and app.is_installed is False:
+                    continue
+
+                if count < listLen:
+                    count = count + 1
+                    continue
+
+                card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+                listWidget.add_card(card)
+                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(card, Signals.install_app, self.slot_click_install)
+                self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                self.connect(card, Signals.remove_app, self.slot_click_remove)
+                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
+                count = count + 1
+
+                if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                    break
 
     def get_current_listWidget(self):
         listWidget = ''
-        if(self.nowPage == "homepage"):
-            listWidget = self.ui.allsListWidget
+        if(self.nowPage == "allpage"):
+            listWidget = self.allListWidget
         elif(self.nowPage == "uppage"):
-            listWidget = self.ui.upListWidget
+            listWidget = self.upListWidget
         elif(self.nowPage == "unpage"):
-            listWidget = self.ui.unListWidget
+            listWidget = self.unListWidget
         elif(self.nowPage == "searchpage"):
-            listWidget = self.ui.searchListWidget
+            listWidget = self.searchListWidget
         return listWidget
 
     def switch_to_category(self, category, forcechange):
@@ -687,27 +752,37 @@ class SoftwareCenter(QMainWindow):
         if self.category == category and forcechange == False:
             return
 
-        if( category is not None):
+        if(category is not None):
             self.category = category
 
         listWidget = self.get_current_listWidget()
 
         listWidget.scrollToTop()            # if not, the func will trigger slot_softwidget_scroll_end()
         listWidget.setWhatsThis(category)   # use whatsThis() to save each selected category
-        listWidget.clear()
+        listWidget.clear()                  # empty it
 
         self.show_more_software(listWidget)
 
         self.emit(Signals.count_application_update)
 
-    def add_task_item(self, app):
-        oneitem = QListWidgetItem()
-        tliw = TaskListItemWidget(app,self)
-        self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-        self.connect(tliw, Signals.task_remove, self.slot_remove_task)
-        self.ui.taskListWidget.addItem(oneitem)
-        self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-        self.stmap[app.name] = tliw
+    def add_task_item(self, app, isdeb=False):
+        # add a deb file task
+        if(isdeb == True):
+            oneitem = QListWidgetItem()
+            tliw = TaskListItemWidget(app, self, isdeb=True)
+            # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            self.ui.taskListWidget.addItem(oneitem)
+            self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+            self.stmap[app.name] = tliw
+        else:
+            oneitem = QListWidgetItem()
+            tliw = TaskListItemWidget(app,self)
+            self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            self.ui.taskListWidget.addItem(oneitem)
+            self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+            self.stmap[app.name] = tliw
 
     def del_task_item(self, pkgname):
         count = self.ui.taskListWidget.count()
@@ -724,13 +799,17 @@ class SoftwareCenter(QMainWindow):
 
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
@@ -755,113 +834,93 @@ class SoftwareCenter(QMainWindow):
 
     def get_pointout(self):
         # find not installed pointout apps
-        pl = self.appmgr.get_pointout_apps_from_db()
+        pl = self.appmgr.get_pointout_apps()
 
         if(len(pl) > 0):
-            self.pointout.ui.contentliw.clear()
             for p in pl:
-                oneitem = QListWidgetItem()
-                pliw = PointListItemWidget(p, self.backend, self)
-                self.connect(pliw, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(pliw, Signals.install_app, self.slot_click_install)
-                self.pointout.ui.contentliw.addItem(oneitem)
-                self.pointout.ui.contentliw.setItemWidget(oneitem, pliw)
-
+                card = PointCard(p, self.nowPage, self.pointListWidget.cardPanel)
+                self.pointListWidget.add_card(card)
+                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                self.connect(card, Signals.install_app, self.slot_click_install)
+                self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
+                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
             self.pointout.show_animation()
+        else:
+            # in quiet mode, no pointout app.  quit uksc
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                self.slot_close()
 
 
-    #--------------------------------------slots--------------------------------------
+    #-------------------------------------------------slots-------------------------------------------------
 
-    def slot_change_category(self, citem):
-        category = str(citem.whatsThis())
-
+    def slot_change_category(self, category):
         if(self.nowPage == "searchpage"):
             self.ui.searchWidget.setVisible(False)
             self.nowPage = self.hisPage
 
-        self.switch_to_category(category,False)
+        self.switch_to_category(category, False)
 
         if(self.nowPage == "homepage"):
             self.reset_nav_bar()
-        if(self.nowPage == "homepage" and self.ui.allsWidget.isVisible() == False):
-            self.ui.allsWidget.setVisible(True)
+        if(self.nowPage == "allpage" and self.ui.allWidget.isVisible() == False):
+            self.ui.allWidget.setVisible(True)
         if(self.nowPage == "uppage" and self.ui.upWidget.isVisible() == False):
             self.ui.upWidget.setVisible(True)
         if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
             self.ui.unWidget.setVisible(True)
+        if(self.nowPage == "winpage" and self.ui.winpageWidget.isVisible() == False):
+            self.ui.winpageWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
         max = listWidget.verticalScrollBar().maximum()
-        if(now == max):
+        if(now > (max - (max / 10))):
             self.show_more_software(listWidget)
 
     def slot_advertisement_ready(self,adlist):
         LOG.debug("receive ads ready, count is %d", len(adlist))
         if adlist is not None:
-            adw = ADWidget(adlist, self)
+            self.adw = ADWidget(adlist, self)
+            self.adw.move(0, 44)
             (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
             self.softCount.setText(str(sum_all))
 
         self.ads_ready = True
         self.check_init_ready()
 
-    def slot_recommend_apps_ready(self,applist_orig):
-        LOG.debug("receive recommend apps ready, count is %d", len(applist_orig))
-        count_per_line = 3
-        index = int(0)
-        x = y = int(0)
-
-        cmp_rating = lambda a, b: \
-            cmp(a.rank,b.rank)
-        applist = sorted(applist_orig,
-                        cmp_rating,
-                        reverse=False)
+    def slot_recommend_apps_ready(self,applist):
+        LOG.debug("receive recommend apps ready, count is %d", len(applist))
 
         for app in applist:
-            recommend = RecommendItem(app,self,self.ui.recommendWidget)
+            recommend = RcmdCard(app, self.recommendWidget.cardPanel)
+            self.recommendWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
-            self.connect(recommend, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(recommend, Signals.remove_app, self.slot_click_remove)
-
-            if index%count_per_line == 0:
-                x = 0
-            x = int(index%count_per_line)*176
-            y = int(index/count_per_line)*88
-            index = index + 1
-            recommend.move(x, y)
+            self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
+            self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
 
         self.rec_ready = True
         self.check_init_ready()
 
-    def slot_rating_reviews_ready(self,rnrlist):
-        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print "receive ratings and reviews ready, count is:",len(rnrlist)
-        self.rnr_ready = True
-
-    def slot_toprated_ready(self,rnrlist):
-        LOG.debug("receive toprated apps ready, count is %d", len(rnrlist))
+    def slot_ratingrank_apps_ready(self, applist):
+        LOG.debug("receive rating rank apps ready, count is %d", len(applist))
         self.ui.rankView.clear()
-        for i in range(len(rnrlist)):
-            if (self.ui.rankView.count() > 9):
-                break
-
-            pkgname = str(rnrlist[i].pkgname)
-            app = self.appmgr.get_application_by_name(pkgname)
-
+        for app in applist:
             if app is not None:
                 oneitem = QListWidgetItem()
-                oneitem.setWhatsThis(pkgname)
+                oneitem.setWhatsThis(app.name)
                 rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
 
-        self.toprated_ready = True
-        # self.check_init_data_ready()
-
         self.topratedload.stop_loading()
+
+    def slot_rating_reviews_ready(self,rnrlist):
+        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
+        print "receive ratings and reviews ready, count is:",len(rnrlist)
+        self.rnr_ready = True
 
     def slot_app_reviews_ready(self,reviewlist):
         LOG.debug("receive reviews for an app, count is %d", len(reviewlist))
@@ -878,149 +937,208 @@ class SoftwareCenter(QMainWindow):
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
 
         LOG.debug("receive installed app count: %d", inst)
-        if len(self.category)>0:
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_all) +"</font> 款")
-            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_inst) +"</font> 款")
-            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,当前分类有 <font color='#009900'>" + str(cat_up) +"</font> 款")
+        if len(self.category) > 0:
+            self.ui.allcount.setText(str(all))
+            self.ui.uncount.setText(str(inst))
+            self.ui.upcount.setText(str(up))
         else:
-            self.ui.allsMSGBar.setText("所有软件 <font color='#009900'>" + str(all) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-            self.ui.unMSGBar.setText("可卸载软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-            self.ui.upMSGBar.setText("可升级软件 <font color='#009900'>" + str(up) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
-        self.ui.taskMSGBar.setText("已安装软件 <font color='#009900'>" + str(inst) + "</font> 款,系统盘可用空间 <font color='#009900'>" + vfs.get_available_size() + "</font>")
+            self.ui.allcount.setText(str(all))
+            self.ui.uncount.setText(str(inst))
+            self.ui.upcount.setText(str(up))
+
+        self.ui.wincountlabel.setText(str(self.winnum))
 
     def slot_goto_homepage(self, ishistory=False):
-        if(ishistory == False):
-            self.history.history_add(self.slot_goto_homepage)
-
-        if self.nowPage != 'homepage':
-            forceChange = True
-        else:
-            forceChange = False
+        # if self.nowPage != 'homepage':
+        #     forceChange = True
+        # else:
+        #     forceChange = False
         self.nowPage = 'homepage'
-        self.ui.categoryView.setEnabled(True)
-        self.switch_to_category(self.category,forceChange)
+        self.categoryBar.hide()
+        # self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(True)
+        # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
         self.ui.rankWidget.setVisible(True)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
+        # self.ui.xpWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(False)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+
+    def slot_goto_allpage(self):
+        if self.nowPage != 'allpage':
+            forceChange = True
+        else:
+            forceChange = False
+        self.nowPage = 'allpage'
+        # self.ui.categoryView.setEnabled(True)
+        self.categoryBar.show()
+        self.switch_to_category(self.category,forceChange)
+        self.detailScrollWidget.hide()
+        # self.ui.searchBG.setVisible(True)
+        self.ui.homepageWidget.setVisible(False)
+        self.ui.allWidget.setVisible(True)
+        self.ui.upWidget.setVisible(False)
+        self.ui.unWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
+        self.ui.searchWidget.setVisible(False)
+        self.ui.taskWidget.setVisible(False)
+        self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(False)
+        self.ui.btnUp.setEnabled(True)
+        self.ui.btnUn.setEnabled(True)
+        self.ui.btnTask.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
+        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
+        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
+        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_uppage(self, ishistory=False):
-        if(ishistory == False):
-            self.history.history_add(self.slot_goto_uppage)
-
         if self.nowPage != 'uppage':
             forceChange = True
         else:
             forceChange = False
 
         self.nowPage = 'uppage'
-        self.ui.categoryView.setEnabled(True)
+        # self.ui.categoryView.setEnabled(True)
+        self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(True)
+        # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(True)
         self.ui.unWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_unpage(self, ishistory=False):
-        if(ishistory == False):
-            self.history.history_add(self.slot_goto_unpage)
-
         if self.nowPage != 'unpage':
             forceChange = True
         else:
             forceChange = False
 
         self.nowPage = 'unpage'
-        self.ui.categoryView.setEnabled(True)
-        self.switch_to_category(self.category,forceChange)
+        # self.ui.categoryView.setEnabled(True)
+        self.categoryBar.show()
+        self.switch_to_category(self.category, forceChange)
         self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(True)
+        # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(True)
+        self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-
-    def slot_goto_taskpage(self, ishistory=False):
-        if(ishistory == False):
-            self.history.history_add(self.slot_goto_taskpage)
-
-        self.nowPage = 'taskpage'
-        self.emit(Signals.count_application_update)
-        self.ui.categoryView.setEnabled(False)
-        self.ui.categoryView.clearSelection()
-        self.detailScrollWidget.hide()
-        self.ui.searchBG.setVisible(False)
-        self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
-        self.ui.upWidget.setVisible(False)
-        self.ui.unWidget.setVisible(False)
-        self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(True)
-        self.ui.btnHomepage.setEnabled(True)
-        self.ui.btnUp.setEnabled(True)
-        self.ui.btnUn.setEnabled(True)
-        self.ui.btnTask.setEnabled(False)
-        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
-        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
-        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def goto_search_page(self, ishistory=False):
-        if(ishistory == False):
-            self.history.history_add(self.goto_search_page)
-
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
         self.reset_nav_bar()
-        self.ui.categoryView.setEnabled(True)
+        self.categoryBar.hide()
+        # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
         self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(False)
-        self.ui.allsWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
         self.ui.taskWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
+
+    def slot_goto_taskpage(self, ishistory=False):
+        if(self.ui.taskWidget.isHidden() == True):
+            self.ui.taskWidget.setVisible(True)
+            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
+        else:
+            self.ui.taskWidget.setVisible(False)
+            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
+        self.nowPage = 'taskpage'
+
+    def slot_goto_winpage(self, ishistory=False):
+        self.nowPage = 'winpage'
+        # self.emit(Signals.count_application_update)
+        self.categoryBar.hide()
+        # self.ui.categoryView.setEnabled(False)
+        # self.ui.categoryView.clearSelection()
+        self.detailScrollWidget.hide()
+        # self.ui.searchBG.setVisible(False)
+        self.ui.homepageWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
+        self.ui.upWidget.setVisible(False)
+        self.ui.unWidget.setVisible(False)
+        self.ui.searchWidget.setVisible(False)
+        self.ui.taskWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(True)
+        self.ui.btnHomepage.setEnabled(True)
+        self.ui.btnAll.setEnabled(True)
+        self.ui.btnUp.setEnabled(True)
+        self.ui.btnUn.setEnabled(True)
+        self.ui.btnTask.setEnabled(True)
+        self.ui.btnWin.setEnabled(False)
+        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
+        self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
+        self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
+        if not self.win_exists:
+            self.init_win_solution_widget()
+            self.emit(Signals.count_application_update)
 
     def slot_close(self):
         self.dbusControler.stop()
         sys.exit(0)
+
+    def slot_max_normal(self):
+        self.unListWidget.clear()
 
     def slot_min(self):
         self.showMinimized()
@@ -1045,17 +1163,17 @@ class SoftwareCenter(QMainWindow):
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
 
-    def slot_click_item(self, item):
-        liw = ''
-        if(self.nowPage == 'homepage'):
-            liw = self.ui.allsListWidget.itemWidget(item)
-        if(self.nowPage == 'uppage'):
-            liw = self.ui.upListWidget.itemWidget(item)
-        if(self.nowPage == 'unpage'):
-            liw = self.ui.unListWidget.itemWidget(item)
-        if(self.nowPage == 'searchpage'):
-            liw = self.ui.searchListWidget.itemWidget(item)
-        self.emit(SIGNAL("clickitem"), liw.app)
+    # def slot_click_item(self, item):
+    #     liw = ''
+    #     if(self.nowPage == 'homepage'):
+    #         liw = self.allListWidget.itemWidget(item)
+    #     if(self.nowPage == 'uppage'):
+    #         liw = self.upListWidget.itemWidget(item)
+    #     if(self.nowPage == 'unpage'):
+    #         liw = self.unListWidget.itemWidget(item)
+    #     if(self.nowPage == 'searchpage'):
+    #         liw = self.searchListWidget.itemWidget(item)
+    #     self.emit(SIGNAL("clickitem"), liw.app)
 
     def slot_click_rank_item(self, item):
         pkgname = item.whatsThis()
@@ -1066,15 +1184,14 @@ class SoftwareCenter(QMainWindow):
             LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app, ishistory=False):
-        if(ishistory == False):
-            self.history.history_add(self.slot_show_app_detail, app)
-
-        if(app is None):
-            print "has no such application...."
-            return
-
         self.reset_nav_bar()
-        self.detailScrollWidget.showSimple(app)
+        # print '*****************'#homepage   allpage  uppage    unpage   winpage
+        # print self.nowPage
+        self.detailScrollWidget.showSimple(app, self.nowPage)
+
+    def slot_show_deb_detail(self, path):
+        self.reset_nav_bar()
+        self.detailScrollWidget.show_by_local_debfile(path)
 
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")
@@ -1083,11 +1200,30 @@ class SoftwareCenter(QMainWindow):
     def slot_click_update_source(self):
         self.emit(Signals.update_source)
 
+    def slot_click_install_debfile(self, debfile):
+        LOG.info("add an install debfile task:%s", debfile.path)
+        # install deb deps
+        res = self.backend.install_deps(debfile.path)
+        if res:
+            # install deb
+            res = self.backend.install_debfile(debfile.path)
+        if res:
+            self.add_task_item(debfile, isdeb=True)
+
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
+        self.appmgr.submit_pingback_app(app.name)
         res = self.backend.install_package(app.name)
         if res:
             self.add_task_item(app)
+
+    def slot_click_install_rcm(self, app):
+        LOG.info("add an install task:%s",app.name)
+        self.appmgr.submit_pingback_app(app.name, isrcm=True)
+        res = self.backend.install_package(app.name)
+        if res:
+            self.add_task_item(app)
+
 
     def slot_click_upgrade(self, app):
         LOG.info("add an upgrade task:%s",app.name)
@@ -1130,7 +1266,7 @@ class SoftwareCenter(QMainWindow):
                     continue
                 count = count + 1
             self.goto_search_page()
-            self.ui.searchMSGBar.setText("共搜索到软件 <font color='#009900'>" + str(count) + "</font> 款")
+            self.ui.searchcount.setText(str(count))
 
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()
@@ -1167,7 +1303,9 @@ class SoftwareCenter(QMainWindow):
                     #self.emit(Signals.apt_process_cancel,name,action)
                 else:
                     if processtype=='apt' and int(percent)>=200:
-                        self.emit(Signals.apt_process_finish,name,action)
+                        # (install debfile deps finish) is not the (install debfile task) finish
+                        if(action != AppActions.INSTALLDEPS):
+                            self.emit(Signals.apt_process_finish,name,action)
                     else:
                         taskItem.status_change(processtype, percent, msg)
 
@@ -1202,6 +1340,10 @@ class SoftwareCenter(QMainWindow):
                     self.messageBox.alert_msg(msg)
 
 
+def check_local_deb_file(url):
+    return os.path.isfile(url)
+
+
 def main():
     app = QApplication(sys.argv)
 
@@ -1209,11 +1351,27 @@ def main():
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
-    globalfont.setFamily("文泉驿微米黑")  # 文泉驿微米黑 文泉驿等宽微米黑 华文细黑
+    # globalfont.setFamily("")
+    # 文泉驿微米黑
+    # 文泉驿等宽微米黑
+    # 方正书宋_GBK
+    # 方正仿宋_GBK
+    # 方正姚体_GBK
+    # 方正宋体S-超大字符集
+    # 方正宋体S-超大字符集(SIP)
+    # 方正小标宋_GBK
+    # 方正楷体_GBK
+    # 方正细黑一_GBK
+    # 方正行楷_GBK
+    # 方正超粗黑_GBK
+    # 方正隶书_GBK
+    # 方正魏碑_GBK
+    # 方正黑体_GBK
+    globalfont.setPixelSize(14)
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
 
-    # check show quiet (only trayicon)
+    # check show quiet
     argn = len(sys.argv)
     if(argn == 1):
         Globals.LAUNCH_MODE = 'normal'
@@ -1221,6 +1379,12 @@ def main():
         arg = sys.argv[1]
         if(arg == '-quiet'):
             Globals.LAUNCH_MODE = 'quiet'
+        else:
+            Globals.LAUNCH_MODE = 'normal'
+            if(check_local_deb_file(arg)):
+                Globals.LOCAL_DEB_FILE = arg
+            else:
+                sys.exit(0)
 
     mw = SoftwareCenter()
 

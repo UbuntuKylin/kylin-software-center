@@ -39,6 +39,7 @@ from models.application import Application
 from models.advertisement import Advertisement
 from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRatingStat
 from backend.service.dbmanager import Database
+from utils.silentprocess import *
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import Signals,UnicodeToAscii
 
@@ -115,10 +116,6 @@ class ThreadWorkerDaemon(threading.Thread):
 #This class is the abstraction of application management
 class AppManager(QObject):
 
-    # piston remoter
-    premoter = ''
-
-    #
     def __init__(self):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
@@ -130,15 +127,17 @@ class AppManager(QObject):
         self.distroseries = 'any'  #'any' for all
         self.db = Database()
 
-        # piston remoter to ukscs
-        # self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
-        # self.connect(self, Signals.get_all_ratings_ready, self.slot_update_ratings)
-
         self.worklist = []
         self.mutex = threading.RLock()
         self.worker_thread = ThreadWorkerDaemon(self)
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
+
+        # silent process work queue
+        self.squeue = multiprocessing.Queue()
+        self.silent_process = SilentProcess(self.squeue)
+        self.silent_process.daemon = True
+        self.silent_process.start()
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
@@ -161,22 +160,9 @@ class AppManager(QObject):
 
     def _init_models(self):
         self.open_cache()
-
-        #self.cat_list = self.download_category_list()
         self.cat_list = self.get_category_list_from_db()
-#        print "&&&&&&&&&&&:\n",self.cat_list
-
-#        self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
-
-    def _init_toprated(self,reslist):
-        #init db rank
-        self.db.init_toprated_table(reslist)
 
     def init_models(self):
-
-#        self._init_models()
-#        return #????
-
         item  = WorkerItem("init_models",None)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -204,12 +190,11 @@ class AppManager(QObject):
         list = self.db.query_categories()
         cat_list = {}
         for item in list:
-#            print "categories:",item,item[0],item[1]
             c = UnicodeToAscii(item[2])
+            # c = item[2]
             zhcnc = item[3]
             index = item[4]
             visible = (item[0]==1)
-#            print "trans:",c, zhcnc
 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
@@ -217,68 +202,11 @@ class AppManager(QObject):
 
         return cat_list
 
-    def download_category_list(self,catdir=""):
-        #first load the categories from directory
-        if not catdir:
-            catdir = UBUNTUKYLIN_DATA_CAT_PATH
-
-        cat_list = {}
-        index = 0
-        for c in os.listdir(catdir):
-            visible = True
-            zhcnc = ''
-            if(c == 'ubuntukylin'):
-                zhcnc = 'Ubuntu Kylin'
-                index = 0
-            if(c == 'necessary'):
-                zhcnc = '装机必备'
-                index = 1
-            if(c == 'office'):
-                zhcnc = '办公软件'
-                index = 2
-            if(c == 'devel'):
-                zhcnc = '编程开发'
-                index = 3
-            if(c == 'graphic'):
-                zhcnc = '图形图像'
-                index = 4
-            if(c == 'multimedia'):
-                zhcnc = '影音播放'
-                index = 5
-            if(c == 'internet'):
-                zhcnc = '网络工具'
-                index = 6
-            if(c == 'game'):
-                zhcnc = '游戏娱乐'
-                index = 7
-            if(c == 'profession'):
-                zhcnc = '专业软件'
-                index = 8
-            if(c == 'other'):
-                zhcnc = '其他软件'
-                index = 9
-            if(c == 'recommend'):
-                zhcnc = '热门推荐'
-                index = 10
-                visible = False
-            if(c == 'toprated'):
-                zhcnc = '排行榜'
-                index = 11
-                visible = False
-
-            icon = UBUNTUKYLIN_RES_PATH + c + ".png"
-            cat = Category(c, zhcnc, index, visible, icon, self.download_category_apps(c,catdir))
-            cat_list[c] = cat
-
-        #self.cat_list = cat_list
-        return cat_list
-
-    #get category list
+    # get category list
     def get_category_list(self, reload=False, catdir=""):
         if reload is False:
             return self.cat_list
 
-        #cat_list = self.download_category_list(catdir)
         cat_list = self.get_category_list_from_db()
 
         return cat_list
@@ -289,7 +217,7 @@ class AppManager(QObject):
         for item in list:
             pkgname = UnicodeToAscii(item[0])
             displayname = item[1]
-#            print "get_category_apps_from_db:",pkgname
+            #            print "get_category_apps_from_db:",pkgname
             app = Application(pkgname,displayname, cat, self.apt_cache)
             if app.package:
                 apps[pkgname] = app
@@ -303,12 +231,12 @@ class AppManager(QObject):
                 rating_average = appinfo[3]
                 rating_total = appinfo[4]
                 review_total = appinfo[5]
-                rank = appinfo[6]
+                # rank = appinfo[6]
 
-#                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+                #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
                 if summary is not None and summary != 'None':
                     app.summary = summary
-#                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+                #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
                 if description is not None and summary != 'None':
                     app.description = description
                 if rating_average is not None:
@@ -317,8 +245,8 @@ class AppManager(QObject):
                     app.ratings_total = int(rating_total)
                 if review_total is not None:
                     app.review_total = int(review_total)
-                if rank is not None:
-                    app.rank = int(rank)
+                    # if rank is not None:
+                    #     app.rank = int(rank)
         return apps
 
     def download_category_apps(self,cat,catdir=""):
@@ -416,11 +344,11 @@ class AppManager(QObject):
                 if package.is_upgradable:
                     sum_up = sum_up + 1
 
-#            for (catname, cat) in self.cat_list.iteritems():
-#                (inst,up, all) = cat.get_application_count()
-#                sum_inst = sum_inst + inst
-#                sum_up = sum_up + up
-#                sum_all = sum_all + all
+                #            for (catname, cat) in self.cat_list.iteritems():
+                #                (inst,up, all) = cat.get_application_count()
+                #                sum_inst = sum_inst + inst
+                #                sum_up = sum_up + up
+                #                sum_all = sum_all + all
 
         return (sum_inst,sum_up, sum_all)
 
@@ -434,21 +362,11 @@ class AppManager(QObject):
             rnrStat = None
         return rnrStat
 
-    #get recommend apps, this is now implemented with local config file
-    def get_recommend_apps(self):
-        print "we need to get the applications by condition recommend"
-        applist = []
-        apps = self.get_category_apps("recommend")
-        if(apps is not None):
-            for appname,app in apps.iteritems():
-                applist.append(app)
-
-        self.emit(Signals.recommend_ready,applist)
-
     #get advertisements, this is now implemented locally
     def get_advertisements(self):
         print "we need to get the advertisements"
         tmpads = []
+        tmpads.append(Advertisement("pchomewallpaper", "url", "ad0.png", "http://download.pchome.net/wallpaper/"))
         tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1"))
         tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps-office"))
         tmpads.append(Advertisement("dota2", "url", "ad3.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7687&extra=page%3D1"))
@@ -460,45 +378,6 @@ class AppManager(QObject):
     def get_ubuntukylin_apps(self):
         print "we need to get the applications by condition recommend"
         return self.get_category_apps("ubuntukylin")
-
-    #get toprated apps
-    def get_toprated_stats_from_db(self, topcount=10, callback=None):
-        print "We need to get the top 10 applications"
-        list = self.db.query_app_toprated()
-        rnrStatList = []
-        for item in list:
-            pkgname = UnicodeToAscii(item[0])
-
-            rnrStat = ReviewRatingStat(pkgname)
-            rnrStat.ratings_average = item[1]
-            rnrStat.ratings_total = item[2]
-            rnrStat.reviews_total = 0
-            rnrStat.useful = 0
-
-            rnrStatList.append(rnrStat)
-
-        return rnrStatList
-
-
-    #get toprated apps
-    def get_toprated_stats(self, topcount=100, callback=None):
-        print "We need to get the top 10 applications"
-
-        rnrStatList = self.get_toprated_stats_from_db(topcount,callback)
-        if(rnrStatList) >= 10:
-            self.emit(Signals.toprated_ready,rnrStatList)
-            return
-
-        kwargs = {"topcount": topcount,
-                  "sortingMethod": RatingSortMethods.INTEGRATE,
-                  }
-
-        item  = WorkerItem("get_toprated_stats",kwargs)
-        self.mutex.acquire()
-        self.worklist.append(item)
-        self.mutex.release()
-
-        return []
 
     #get rating and review status
     def get_rating_review_stats(self,callback=None):
@@ -518,7 +397,7 @@ class AppManager(QObject):
                   "page": int(page),
                   }
 
-        item  = WorkerItem("get_reviews",kwargs)
+        item = WorkerItem("get_reviews",kwargs)
 
         app = self.get_application_by_name(pkgname)
         reviews = app.get_reviews(page)
@@ -545,9 +424,9 @@ class AppManager(QObject):
                   "screenshotfile":app.screenshotfile,
                   "version": app.version,
                   "cachedir": cachedir, #result directory
-                  }
+        }
 
-        item  = WorkerItem("get_screenshots",kwargs)
+        item = WorkerItem("get_screenshots",kwargs)
 
         if app.screenshots:
             self.dispatchWorkerResult(item,app.screenshots)
@@ -558,35 +437,6 @@ class AppManager(QObject):
         self.mutex.release()
 
         return []
-
-    def get_pointout_apps_from_db(self):
-        # get apps from db when 0.3.3
-        wps = self.get_application_by_name("wps-office")
-        kuaipan = self.get_application_by_name("kuaipan4uk")
-        sogou = self.get_application_by_name("sogoupinyin")
-        apps = []
-        apps.append(wps)
-        apps.append(kuaipan)
-        apps.append(sogou)
-        # ===========================
-
-        pl = []
-        for app in apps:
-            if(app.is_installed == False):
-                pl.append(app)
-
-        return pl
-
-    def get_pointout_is_show_from_db(self):
-        value = self.db.get_pointout_is_show()
-        if(value == 'True'):
-            return True
-        else:
-            return False
-
-    def set_pointout_is_show(self, flag):
-        self.db.set_pointout_is_show(flag)
-
 
     def dispatchWorkerResult(self,item,reslist):
         if item.funcname == "get_reviews":
@@ -645,28 +495,110 @@ class AppManager(QObject):
         for rnrStat in rnrStats:
             self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
 
-    def update_toprated(self,rnrStats):
-        print "update_toprated:",len(rnrStats)
-        if len(rnrStats) == 0:
-            return
+    #--------------------------------0.3----------------------------------
 
-        self.db.init_toprated_table(rnrStats)
+    def get_all_ratings(self):
+        kwargs = {}
 
+        item = SilentWorkerItem("get_all_ratings", kwargs)
+        self.squeue.put_nowait(item)
 
-    #------------------------0.3--------------------------
+    def get_newer_application_info(self):
+        kwargs = {}
 
-    # get all app's rating & rating times
-    # def update_ratings(self):
-    #     kwargs = None
-    #
-    #     item  = WorkerItem("get_all_ratings",kwargs)
-    #
-    #     self.mutex.acquire()
-    #     self.worklist.append(item)
-    #     self.mutex.release()
-    #
-    # def slot_update_ratings(self, ratinglist):
-    #     self.db.update_ratings(ratinglist)
+        item = SilentWorkerItem("get_newer_application_info", kwargs)
+        self.squeue.put_nowait(item)
+
+    def get_all_categories(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_all_categories", kwargs)
+        self.squeue.put_nowait(item)
+
+    def get_all_rank_and_recommend(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_all_rank_and_recommend", kwargs)
+        self.squeue.put_nowait(item)
+
+    def submit_pingback_main(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("submit_pingback_main", kwargs)
+        self.squeue.put_nowait(item)
+
+    def submit_pingback_app(self, app_name, isrcm=False):
+        kwargs = {"app_name": app_name,
+                  "isrcm": isrcm,
+                  }
+
+        item = SilentWorkerItem("submit_pingback_app", kwargs)
+        self.squeue.put_nowait(item)
+        
+    # update xapiandb add by zhangxin
+    def update_xapiandb(self):
+        kwargs = {}
+        
+        item = SilentWorkerItem("update_xapiandb", kwargs)
+        self.squeue.put_nowait(item)
+        
+    # get recommend apps
+    def get_recommend_apps(self):
+        recommends = self.db.get_recommend_apps()
+        applist = []
+        for rec in recommends:
+            app = self.get_application_by_name(rec[0])
+            if(app is not None):
+                app.recommendrank = rec[1]
+                applist.append(app)
+
+        self.emit(Signals.recommend_ready,applist)
+
+    # get pointout apps
+    def get_pointout_apps(self):
+        pointouts = self.db.get_pointout_apps()
+        applist = []
+        for po in pointouts:
+            app = self.get_application_by_name(po[0])
+            if(app is not None):
+                if(app.is_installed == False):
+                    app.pointoutrank = po[1]
+                    applist.append(app)
+
+        return applist
+
+    def get_pointout_is_show_from_db(self):
+        value = self.db.get_pointout_is_show()
+        if(value == 'True'):
+            return True
+        else:
+            return False
+
+    def set_pointout_is_show(self, flag):
+        self.db.set_pointout_is_show(flag)
+
+    # get rating rank apps
+    def get_ratingrank_apps(self):
+        ratingranks = self.db.get_ratingrank_apps()
+        applist = []
+        for rr in ratingranks:
+            app = self.get_application_by_name(rr[0])
+            if(app is not None):
+                app.ratingrank = rr[1]
+                applist.append(app)
+
+        self.emit(Signals.ratingrank_ready,applist)
+
+    #--------------------------------add by kobe for windows replace----------------------------------
+    def search_name_and_categories_record(self):
+        return self.db.search_name_and_categories_record()
+
+    def search_app_display_info(self, categories):
+        return self.db.search_app_display_info(categories)
+
+    def update_exists_data(self, exists, id):
+        self.db.update_exists_data(exists, id)
+
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):

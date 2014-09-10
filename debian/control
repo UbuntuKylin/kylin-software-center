@@ -2,7 +2,10 @@ Source: ubuntu-kylin-software-center
 Section: misc
 Priority: optional
 Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
-Build-Depends: debhelper (>= 9), dh-python, python-dev (>= 2.6.6-3~), python-distutils-extra
+Build-Depends: debhelper (>= 9),
+               dh-python,
+               python (>= 2.6.6-3~),
+               python-distutils-extra
 Standards-Version: 3.9.5
 Homepage: https://launchpad.net/ubuntu-kylin-software-center
 X-Python-Version: >= 2.7
@@ -11,7 +14,8 @@ Vcs-Bzr: lp:ubuntu-kylin-software-center
 
 Package: ubuntu-kylin-software-center
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-qt4, ubuntukylin-keyring, language-pack-zh-hans
+Depends: python-qt4, ubuntukylin-keyring, ${misc:Depends}, ${python:Depends}
+Recommends: language-pack-zh-hans
 Breaks: ubuntu-kylin-software-center-common
 Replaces: ubuntu-kylin-software-center-common
 Description: Software maintenance management tools
