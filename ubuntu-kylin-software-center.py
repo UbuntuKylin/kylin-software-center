@@ -844,12 +844,15 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-            self.pointout.show_animation()
+            self.pointout.show_animation(True)
         else:
             # in quiet mode, no pointout app.  quit uksc
             if(Globals.LAUNCH_MODE == 'quiet'):
                 self.slot_close()
 
+    def get_pointout_apps_num(self):
+        pl = self.appmgr.get_pointout_apps()
+        return len(pl)
 
     #-------------------------------------------------slots-------------------------------------------------
 

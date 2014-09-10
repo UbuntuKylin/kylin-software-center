@@ -117,16 +117,33 @@ class WinCard(QWidget):
                 self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
+        self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.wintext.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.winbake.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
         self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
+        # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
 
         # letter spacing
         font = QFont()
         font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
         self.ui.name.setFont(font)
         self.ui.description.setFont(font)
+        self.ui.winname.setFont(font)
+
+        if(len(self.winstat.windows_app_name) > 20):
+            font2 = QFont()
+            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+            self.ui.winname.setFont(font2)
+            self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+        elif(len(self.winstat.windows_app_name) > 24):
+            font2 = QFont()
+            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+            self.ui.winname.setFont(font2)
+            self.ui.winname.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 if(len(self.winstat.app_name) > 20):
@@ -252,7 +269,8 @@ class WinCard(QWidget):
                 self.emit(Signals.install_app, self.app)
 
     def slot_emit_detail(self):
-        self.emit(Signals.show_app_detail, self.app)
+        if(self.app != None):
+            self.emit(Signals.show_app_detail, self.app)
 
     def slot_work_finished(self, pkgname, action):
         if self.app is not None:

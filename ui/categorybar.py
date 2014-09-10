@@ -62,7 +62,6 @@ class CategoryBar(QWidget):
         cat_list = sorted(cdata.iteritems(),
                         cmp_rating,
                         reverse=False)
-
         for item in cat_list:
             category = item[1]
             if(category.visible == True):

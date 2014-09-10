@@ -202,7 +202,10 @@ class ConfigWidget(QWidget):
 
     def slot_item_clicked(self, item):
         if(item.whatsThis() == 'pointout'):
-            self.mainw.pointout.show_animation()
+            if (self.mainw.get_pointout_apps_num()) == 0:
+                self.mainw.pointout.show_animation(False)
+            else:
+                self.mainw.pointout.show_animation(True)
 
 
 class SourceItemWidget(QWidget):

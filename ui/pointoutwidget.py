@@ -113,7 +113,11 @@ class PointOutWidget(QWidget):
         flag = self.ui.cbisshow.isChecked()
         self.mainw.appmgr.set_pointout_is_show(flag)
 
-    def show_animation(self):
+    def show_animation(self, flag):
+        if flag:
+            self.ui.title.setText("安装以下常用软件  提高系统使用体验")
+        else:
+            self.ui.title.setText("推荐软件已经全部更新")
         flag = self.mainw.appmgr.get_pointout_is_show_from_db()
         self.ui.cbisshow.setChecked(flag)
 
