@@ -597,6 +597,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
+        self.appmgr.update_xapiandb()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":

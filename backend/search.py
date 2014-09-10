@@ -27,8 +27,9 @@ import xapian
 import apt
 import time
 import sys
-from backend.ubuntu_sw import XapianValues
 
+from backend.ubuntu_sw import XapianValues
+from models.enums import UKSC_CACHE_DIR
 
 from gi.repository import GObject, Gio, GLib
 from gettext import gettext as _
@@ -36,12 +37,11 @@ from xdg import BaseDirectory as xdg
 LOG = logging.getLogger(__name__)
 
 # xapian paths
-XAPIAN_BASE_PATH = "/usr/share/ubuntu-kylin-software-center/data/"
+XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
 XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT = os.path.join(
     xdg.xdg_cache_home,
     "software-center",
     "software-center-agent.db")
-XAPIAN_PATH = os.path.join(XAPIAN_BASE_PATH, "ukscsource_db")
 
 # AXI
 APT_XAPIAN_INDEX_BASE_PATH = "/var/lib/apt-xapian-index"
@@ -126,7 +126,7 @@ class StoreDatabase(GObject.GObject):
         self._use_utsc = False
 
         if pathname is None:
-            pathname = XAPIAN_PATH
+            pathname = XAPIAN_DB_PATH
         self._db_pathname = pathname
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
 
@@ -404,12 +404,12 @@ def log_traceback(info):
 class Search:
     db = ''
     def __init__(self):
-        self.db = StoreDatabase(XAPIAN_PATH, apt.Cache())
+        self.db = StoreDatabase(XAPIAN_DB_PATH, apt.Cache())
         try:
             self.db.xapiandb
         except:
-            print "failed to add db"
-            LOG.exception("failed to add db")
+            print "Failed to add db"
+            #LOG.exception("failed to add db")
         self.db.open()
         
     def search_software(self, keyword):

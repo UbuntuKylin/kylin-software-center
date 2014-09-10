@@ -534,7 +534,14 @@ class AppManager(QObject):
 
         item = SilentWorkerItem("submit_pingback_app", kwargs)
         self.squeue.put_nowait(item)
-
+        
+    # update xapiandb add by zhangxin
+    def update_xapiandb(self):
+        kwargs = {}
+        
+        item = SilentWorkerItem("update_xapiandb", kwargs)
+        self.squeue.put_nowait(item)
+        
     # get recommend apps
     def get_recommend_apps(self):
         recommends = self.db.get_recommend_apps()
