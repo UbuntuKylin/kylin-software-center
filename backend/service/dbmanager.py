@@ -29,7 +29,9 @@ from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
 from backend.remote.piston_remoter import PistonRemoter
 
+from shutil import copytree, ignore_patterns
 DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+XAPIAN_DB_SOURCE_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"xapiandb")
 #DB_PATH = "../data/uksc.db"
 
 QUERY_CATEGORY = "select * from category where name='%s'"
@@ -69,6 +71,20 @@ class Database:
 
         # piston remoter to ukscs
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+        
+#___________________________add by zhangxin for xapiandb update___________________________#
+
+        xapian_srcFile = XAPIAN_DB_SOURCE_PATH
+        xapian_destFile = os.path.join(UKSC_CACHE_DIR,"xapiandb")
+
+        # no cache file, copy
+        if not os.path.exists(xapian_destFile):
+            if not os.path.exists(xapian_srcFile):
+                print "No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/"
+                return
+            copytree(xapian_srcFile,xapian_destFile)
+
+            print " Xapiandb has been copy from /usr/share/ubuntu-kylin-software-center/data/xapiandb"
 
     def query_categories(self):
         self.cursor.execute("select * from category")

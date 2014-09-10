@@ -22,6 +22,13 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#**************************Add by zhangxin***************************#
+import xapian
+import time
+from datetime import datetime
+import pytz
+tz = pytz.timezone('Asia/Shanghai')
+#********************************************************************#
 import sqlite3
 import os
 import time
@@ -33,7 +40,7 @@ from utils.machine import *
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
 
-DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
 
 
 class SilentProcess(multiprocessing.Process):
@@ -75,6 +82,9 @@ class SilentProcess(multiprocessing.Process):
                 self.get_all_rank_and_recommend()
             elif item.funcname == "get_newer_application_info":
                 self.get_newer_application_info()
+            #**************************************************#
+            elif item.funcname == "update_xapiandb":
+                self.update_xapiandb()            
 
     # update rating_avg and rating_total in cache db from server
     def get_all_ratings(self):
@@ -207,7 +217,118 @@ class SilentProcess(multiprocessing.Process):
         self.connect.commit()
 
         print "all newer application info update over : ",len(reslist)
+        
+#*************************update for xapiandb***********************************#
+    def update_xapiandb(self):
+    
+        modified_num = 0
+        add_num = 0
+        xapiandb_update = "No"
+                  
+        database = xapian.WritableDatabase(XAPIAN_DB_PATH,xapian.DB_OPEN)
+        DB = xapian.Database(database)
+        enquire = xapian.Enquire(database)
+            
+        indexer = xapian.TermGenerator()
 
+        query__for_update_time = xapian.Query("the_latest_update_time")
+        enquire.set_query(query__for_update_time)
+        matches = enquire.get_mset(0,1)
+        for re in matches:
+            
+            try:
+                docid_for_update = re.document.get_docid()
+                doc_for_update = re.document
+                the_latest_update_time = doc_for_update.get_data()
+                the_latest_update_time = the_latest_update_time.replace(' ','*')
+            except:
+                print "Failed to get the latest update time from client xapiandb" 
+                  
+        reslist = self.premoter.get_newer_app_info(the_latest_update_time)
+            
+        for app in reslist:
+            app_name = str(app["app_name"])
+            display_name_cn = str(app["display_name_cn"])
+            keywords_for_search = str(app["keywords_for_search"])
+            
+            query = xapian.Query(app_name)
+            enquire.set_query(query)
+            doccount = DB.get_doccount()
+            matches = enquire.get_mset(0,doccount)
+            if matches.size() != 0:
+                for re in matches:
+                    if re.document.get_data() == app_name:
+                        docid = re.docid
+                        doc = re.document
+                        doc.clear_terms()
+                        indexer.set_document(doc)
+                        doc.add_term(app_name,10)
+                        keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+                        indexer.index_text(keywords,10)
+                        
+                        try:
+                            from mmseg.search import seg_txt_search,seg_txt_2_dict
+                            for word,value in seg_txt_2_dict(keywords).iteritems():
+                                if word != "none":
+                                    doc.add_term(word,10)
+                                else:
+                                    pass 
+                                                         
+                        except:
+                            print "No MMSEG for keywords segment"
+                            
+                        database.replace_document(docid,doc)
+                        xapiandb_update = "Yes"
+                        modified_num = modified_num + 1
+                        
+                    else:
+                        continue
+                
+            else:
+                doc = xapian.Document()
+                doc.set_data(app_name)
+                doc.add_term(app_name,10)
+ 
+                indexer.set_document(doc)
+                if keywords_for_search != "None":
+                    keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+                else:
+                    keywords = display_name_cn+";"+app_name
+                indexer.index_text(keywords,10)
+                
+                try:
+                    
+                    for word,value in seg_txt_2_dict(keywords).iteritems():
+                        if word != "none":
+                            doc.add_term(word,10)
+                        else:
+                            print "No MMSEG for keywords segment"                           
+                except:
+                    pass
+                database.add_document(doc)
+                add_num = add_num + 1
+                print "App:",doc.get_data(),"  ","terms:",
+                for itr in doc.termlist():
+                    print itr.term,
+                xapiandb_update = "Yes"
+                print "  "                
+                    
+        try:
+            if xapiandb_update == "Yes":
+                now = datetime.now()
+                doc_for_update.set_data(str(now))
+                doc_for_update.add_term("the_latest_update_time",100)
+                database.replace_document(docid_for_update,doc_for_update)
+                all_update_is_done = "Yes"
+                if "Yes" == all_update_is_done:
+                    database.commit()
+                    print "Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist))
+                
+                else:
+                    print "Failed to update xapian database (/home/ice_bird/.cache/uksc/xapiandb)"
+        except:
+            print "The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!"
+            
 class SilentWorkerItem:
 
      def __init__(self, funcname, kwargs):
