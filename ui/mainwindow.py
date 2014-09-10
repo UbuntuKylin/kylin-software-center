@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Tue Sep  9 15:22:04 2014
+# Created: Wed Sep 10 19:23:35 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -186,7 +186,7 @@ class Ui_MainWindow(object):
         self.searchtext2.setText(_fromUtf8(""))
         self.searchtext2.setObjectName(_fromUtf8("searchtext2"))
         self.taskWidget = QtGui.QWidget(self.rightWidget)
-        self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 600))
+        self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
         self.taskListWidget = QtGui.QListWidget(self.taskWidget)
         self.taskListWidget.setGeometry(QtCore.QRect(10, 10, 300, 680))

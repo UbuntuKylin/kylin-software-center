@@ -32,7 +32,6 @@ import webbrowser
 
 from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
 from models.enums import Signals
-# from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH,
 
 class WinCard(QWidget):
 
@@ -44,6 +43,11 @@ class WinCard(QWidget):
 
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
+
+        # add by kobe: delay show animation
+        self.showDelay = False
+        self.delayTimer = QTimer(self)
+        self.delayTimer.timeout.connect(self.slot_show_delay_animation)
 
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
@@ -127,53 +131,53 @@ class WinCard(QWidget):
         # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
 
         # letter spacing
-        font = QFont()
-        font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
-        self.ui.name.setFont(font)
-        self.ui.description.setFont(font)
-        self.ui.winname.setFont(font)
+        # font = QFont()
+        # font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
+        # self.ui.name.setFont(font)
+        # self.ui.description.setFont(font)
+        # self.ui.winname.setFont(font)
 
-        if(len(self.winstat.windows_app_name) > 20):
-            font2 = QFont()
-            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-            self.ui.winname.setFont(font2)
-            self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-        elif(len(self.winstat.windows_app_name) > 24):
-            font2 = QFont()
-            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-            self.ui.winname.setFont(font2)
-            self.ui.winname.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+        # if(len(self.winstat.windows_app_name) > 20):
+        #     font2 = QFont()
+        #     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #     self.ui.winname.setFont(font2)
+        #     self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+        # elif(len(self.winstat.windows_app_name) > 24):
+        #     font2 = QFont()
+        #     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #     self.ui.winname.setFont(font2)
+        #     self.ui.winname.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
 
-        if self.app is None:
-            if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
-                if(len(self.winstat.app_name) > 20):
-                    font2 = QFont()
-                    font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-                    self.ui.name.setFont(font2)
-                    self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-                if(len(self.winstat.app_name) > 24):
-                    font2 = QFont()
-                    font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-                    self.ui.name.setFont(font2)
-                    self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
-        else:
-            if(len(self.app.displayname) > 20):
-                font2 = QFont()
-                font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-                self.ui.name.setFont(font2)
-                self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-            if(len(self.app.displayname) > 24):
-                font2 = QFont()
-                font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-                self.ui.name.setFont(font2)
-                self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+        # if self.app is None:
+        #     if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
+        #         if(len(self.winstat.app_name) > 20):
+        #             font2 = QFont()
+        #             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #             self.ui.name.setFont(font2)
+        #             self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+        #         if(len(self.winstat.app_name) > 24):
+        #             font2 = QFont()
+        #             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #             self.ui.name.setFont(font2)
+        #             self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+        # else:
+        #     if(len(self.app.displayname) > 20):
+        #         font2 = QFont()
+        #         font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #         self.ui.name.setFont(font2)
+        #         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+        #     if(len(self.app.displayname) > 24):
+        #         font2 = QFont()
+        #         font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #         self.ui.name.setFont(font2)
+        #         self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 self.ui.size.setText("")
                 self.ui.name.setText(self.winstat.app_name)
                 self.ui.named.setText(self.winstat.app_name)
-                self.ui.description.setText(self.winstat.app_name)
+                self.ui.description.setText(self.winstat.description)
         else:
             # convert size
             installedsize = self.app.installedSize
@@ -184,7 +188,7 @@ class WinCard(QWidget):
                 self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
             self.ui.name.setText(self.app.displayname)
             self.ui.named.setText(self.app.displayname)
-            self.ui.description.setText(self.app.description)
+            self.ui.description.setText(self.app.summary)
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
@@ -218,12 +222,23 @@ class WinCard(QWidget):
         self.show()
 
     def enterEvent(self, event):
-        self.switchDirection = 'down'
-        self.switch_animation()
+        self.delayTimer.start(300)
+        # self.switchDirection = 'down'
+        # self.switch_animation()
 
     def leaveEvent(self, event):
-        self.switchDirection = 'up'
+        if self.delayTimer.isActive():
+            self.delayTimer.stop()
+        if self.showDelay:
+            self.showDelay = False
+            self.switchDirection = 'up'
+            self.switch_animation()
+
+    def slot_show_delay_animation(self):
+        self.delayTimer.stop()
+        self.switchDirection = 'down'
         self.switch_animation()
+        self.showDelay = True
 
     def switch_animation(self):
         if(self.switchDirection == 'down'):
