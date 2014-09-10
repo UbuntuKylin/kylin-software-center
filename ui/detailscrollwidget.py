@@ -101,22 +101,10 @@ class DetailScrollWidget(QScrollArea):
                                                              QScrollBar::down-arrow:vertical{background-color:yellow;}\
                                                              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
-        # self.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
-        #      QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
-        #      QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
-        #      QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
-        #      QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
-        #      QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
-        #      QScrollBar::down-arrow:vertical{background-color:yellow;}\
-        #      QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
-
-        # self.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-        #                                        "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-        #                                        "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
         self.ui.name.setStyleSheet("QLabel{font-size:16px;font-weight:bold;}")
-        self.ui.splitText1.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
-        self.ui.splitText2.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
-        self.ui.splitText3.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
+        self.ui.splitText1.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.splitText2.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.splitText3.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         # self.ui.splitLine1.setStyleSheet("QLabel{background-color:#E0E0E0;}")
         # self.ui.splitLine2.setStyleSheet("QLabel{background-color:#E0E0E0;}")
         # self.ui.splitLine3.setStyleSheet("QLabel{background-color:#E0E0E0;}")
@@ -129,8 +117,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.grade.setStyleSheet("QLabel{font-size:42px;color:#FA7053;}")
         self.ui.gradeText2.setStyleSheet("QLabel{font-size:13px;}")
         # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
-        self.ui.summary.setStyleSheet("QTextEdit{border:0px;}")
-        self.ui.description.setStyleSheet("QTextEdit{border:0px;}")
+        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;}")
+        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;}")
         self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
                                                              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
                                                              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\

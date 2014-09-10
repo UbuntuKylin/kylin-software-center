@@ -1,8 +1,9 @@
 ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
 
   * Modify widget.
+  * Modify Pointout widget.
 
- -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Tue, 09 Sep 2014 18:12:53 +0800
+ -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Wed, 10 Sep 2014 17:35:40 +0800
 
 ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
 
