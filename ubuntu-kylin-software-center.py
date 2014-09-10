@@ -418,7 +418,8 @@ class SoftwareCenter(QMainWindow):
         # self.ui.leftWidget.hide()
 
         # loading
-        self.launchLoadingDiv.start_loading("系统正在初始化...")
+        if(Globals.LAUNCH_MODE != 'quiet'):
+            self.launchLoadingDiv.start_loading("系统正在初始化...")
 
     def init_main_service(self):
         self.appmgr = AppManager()
@@ -566,7 +567,8 @@ class SoftwareCenter(QMainWindow):
             # self.ui.leftWidget.show()
 
             self.slot_goto_homepage()
-            self.launchLoadingDiv.stop_loading()
+            if(Globals.LAUNCH_MODE != 'quiet'):
+                self.launchLoadingDiv.stop_loading()
             self.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
             windowWidth = QApplication.desktop().width()
