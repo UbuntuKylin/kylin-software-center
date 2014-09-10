@@ -240,11 +240,11 @@ class SilentProcess(multiprocessing.Process):
                 docid_for_update = re.document.get_docid()
                 doc_for_update = re.document
                 the_latest_update_time = doc_for_update.get_data()
-                the_latest_update_time = the_latest_update_time.replace(' ','*')
+                
             except:
                 print "Failed to get the latest update time from client xapiandb" 
                   
-        reslist = self.premoter.get_newer_app_info(the_latest_update_time)
+        reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
             
         for app in reslist:
             app_name = str(app["app_name"])
@@ -315,8 +315,8 @@ class SilentProcess(multiprocessing.Process):
                     
         try:
             if xapiandb_update == "Yes":
-                now = datetime.now()
-                doc_for_update.set_data(str(now))
+                now = datetime.strftime(datetime.now(),'%Y%m%d%H%M%S')
+                doc_for_update.set_data(now)
                 doc_for_update.add_term("the_latest_update_time",100)
                 database.replace_document(docid_for_update,doc_for_update)
                 all_update_is_done = "Yes"
