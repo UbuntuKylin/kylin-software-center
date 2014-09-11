@@ -98,6 +98,7 @@ class RcmdCard(QWidget):
         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.isInstalled.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
         self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
 
         # letter spacing
@@ -129,10 +130,17 @@ class RcmdCard(QWidget):
         self.ui.description.setText(self.app.summary)
 
         # rating star
-        star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
-        star.move(75, 56)
+        self.star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
+        self.star.move(75, 56)
+
+        # add by kobe
+        self.ui.isInstalled.setText("已安装")
 
         if(self.app.is_installed):
+            # add by kobe
+            self.star.hide()
+            self.ui.isInstalled.setVisible(True)
+
             if(run.get_run_command(self.app.name) == ""):
                 self.ui.btn.setText("已安装")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
@@ -143,6 +151,11 @@ class RcmdCard(QWidget):
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
         else:
+            # star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
+            # star.move(75, 56)
+            self.star.show()
+            self.ui.isInstalled.setVisible(False)
+
             self.ui.btn.setText("安装")
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -220,6 +233,8 @@ class RcmdCard(QWidget):
     def slot_work_finished(self, pkgname,action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
@@ -227,8 +242,12 @@ class RcmdCard(QWidget):
                     self.ui.btn.setText("启动")
                     self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
@@ -238,13 +257,19 @@ class RcmdCard(QWidget):
     def slot_work_cancel(self, pkgname,action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
                 self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
                 else:
                     self.ui.btn.setText("启动")
             elif action == AppActions.UPGRADE:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("升级")

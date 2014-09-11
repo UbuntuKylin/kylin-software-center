@@ -114,6 +114,7 @@ class PointOutWidget(QWidget):
         self.mainw.appmgr.set_pointout_is_show(flag)
 
     def show_animation(self, flag):
+        # add by kobe
         if flag:
             self.ui.title.setText("安装以下常用软件  提高系统使用体验")
         else:

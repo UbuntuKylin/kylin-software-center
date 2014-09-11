@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Wed Sep 10 19:23:35 2014
+# Created: Thu Sep 11 15:22:39 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -231,14 +231,14 @@ class Ui_MainWindow(object):
         self.leSearch = QtGui.QLineEdit(self.headerWidget)
         self.leSearch.setGeometry(QtCore.QRect(600, 12, 260, 24))
         self.leSearch.setObjectName(_fromUtf8("leSearch"))
-        self.lebg = QtGui.QLabel(self.headerWidget)
-        self.lebg.setGeometry(QtCore.QRect(838, 16, 16, 16))
-        self.lebg.setText(_fromUtf8(""))
-        self.lebg.setObjectName(_fromUtf8("lebg"))
         self.btnMaxNormal = QtGui.QPushButton(self.headerWidget)
         self.btnMaxNormal.setGeometry(QtCore.QRect(56, 0, 28, 36))
         self.btnMaxNormal.setText(_fromUtf8(""))
         self.btnMaxNormal.setObjectName(_fromUtf8("btnMaxNormal"))
+        self.lebg = QtGui.QPushButton(self.headerWidget)
+        self.lebg.setGeometry(QtCore.QRect(838, 16, 16, 16))
+        self.lebg.setText(_fromUtf8(""))
+        self.lebg.setObjectName(_fromUtf8("lebg"))
         self.winpageWidget = QtGui.QWidget(self.rightWidget)
         self.winpageWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.winpageWidget.setObjectName(_fromUtf8("winpageWidget"))

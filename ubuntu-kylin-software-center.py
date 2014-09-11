@@ -78,6 +78,8 @@ class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
     recommendNumber = 0
+    # pre page
+    prePage = ''
     # now page
     nowPage = ''
     # his page
@@ -209,6 +211,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMaxNormal.setFocusPolicy(Qt.NoFocus)
         self.ui.btnConf.setFocusPolicy(Qt.NoFocus)
+        self.ui.lebg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
@@ -336,7 +339,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-        self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
+        # self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
+
+        # add by kobe
+        self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
+
         self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
         # self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EAF0F3;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{border:1px solid #0396DC;}QLineEdit:focus{border:1px solid #0396DC;color:#666666;}")
 
@@ -389,6 +396,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
+
+        # add by kobe
+        self.ui.lebg.clicked.connect(self.slot_searchDTimer_timeout)
+        self.ui.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
+        # self.ui.lebg.installEventFilter(self)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
@@ -533,6 +545,7 @@ class SoftwareCenter(QMainWindow):
 
         # init others
         self.category = ""
+        self.prePage = "homepage"
         self.nowPage = "homepage"
 
         # init data flags
@@ -711,7 +724,7 @@ class SoftwareCenter(QMainWindow):
             count = 0
             for pkgname, app in apps.iteritems():
 
-                if self.nowPage ==  "uppage":
+                if self.nowPage == "uppage":
                     if app.is_installed is False:
                         continue
                     if app.is_installed is True and app.is_upgradable is False:
@@ -958,6 +971,7 @@ class SoftwareCenter(QMainWindow):
         #     forceChange = True
         # else:
         #     forceChange = False
+        self.prePage = "homepage"
         self.nowPage = 'homepage'
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
@@ -990,6 +1004,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = True
         else:
             forceChange = False
+        self.prePage = "allpage"
         self.nowPage = 'allpage'
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
@@ -1024,7 +1039,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = True
         else:
             forceChange = False
-
+        self.prePage = "uppage"
         self.nowPage = 'uppage'
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
@@ -1059,7 +1074,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = True
         else:
             forceChange = False
-
+        self.prePage = "unpage"
         self.nowPage = 'unpage'
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
@@ -1112,10 +1127,11 @@ class SoftwareCenter(QMainWindow):
         else:
             self.ui.taskWidget.setVisible(False)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-
+        self.prePage = "taskpage"
         self.nowPage = 'taskpage'
 
     def slot_goto_winpage(self, ishistory=False):
+        self.prePage = "winpage"
         self.nowPage = 'winpage'
         # self.emit(Signals.count_application_update)
         self.categoryBar.hide()
@@ -1198,9 +1214,10 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_app_detail(self, app, ishistory=False):
         self.reset_nav_bar()
-        # print '*****************'#homepage   allpage  uppage    unpage   winpage
+        # print '********************'
+        # print self.prePage
         # print self.nowPage
-        self.detailScrollWidget.showSimple(app, self.nowPage)
+        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage)
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
@@ -1284,6 +1301,17 @@ class SoftwareCenter(QMainWindow):
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()
         self.searchDTimer.start(500)
+
+    # add by kobe: enter key event for searchbar
+    def slot_enter_key_pressed(self):
+        self.slot_searchDTimer_timeout()
+
+    # def eventFilter(self, obj, event):
+    #     if obj == self.ui.lebg:
+    #         print '123456'
+    #         if event.type() == QEvent.Enter:
+    #             print '2345678'
+
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):

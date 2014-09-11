@@ -673,19 +673,6 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="lebg">
-      <property name="geometry">
-       <rect>
-        <x>838</x>
-        <y>16</y>
-        <width>16</width>
-        <height>16</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btnMaxNormal">
       <property name="geometry">
        <rect>
@@ -693,6 +680,19 @@
         <y>0</y>
         <width>28</width>
         <height>36</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="lebg">
+      <property name="geometry">
+       <rect>
+        <x>838</x>
+        <y>16</y>
+        <width>16</width>
+        <height>16</height>
        </rect>
       </property>
       <property name="text">

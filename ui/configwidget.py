@@ -91,22 +91,22 @@ class ConfigWidget(QWidget):
 
         self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
         self.ui.text1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
-        self.ui.line1.setStyleSheet("QLabel{background-color:#a5a5a5;}")
+        self.ui.splitline.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         self.ui.label.setStyleSheet("QLabel{background-color:#077ab1;}")
-        self.ui.label_2.setStyleSheet("QLabel{background-color:#a5a5a5;}")
-        self.ui.label_3.setStyleSheet("QLabel{background-color:#a5a5a5;}")
-        self.ui.label_4.setStyleSheet("QLabel{background-color:#a5a5a5;}")
-        self.ui.pageListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:25px;padding-left:5px;margin-top:0px;border:0px;background-image:url('res/pageList.png');color:#ffffff;}QListWidget::item:selected{background-image:url('res/pageListselected.png');color:#47ccf3;}")
+        # self.ui.label_2.setStyleSheet("QLabel{background-color:#a5a5a5;}")
+        # self.ui.label_3.setStyleSheet("QLabel{background-color:#a5a5a5;}")
+        # self.ui.label_4.setStyleSheet("QLabel{background-color:#a5a5a5;}")
+        self.ui.pageListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:32px;padding-left:5px;margin-top:0px;border:0px;background-image:url('res/pageList.png');color:#ffffff;}QListWidget::item:selected{background-image:url('res/pageListselected.png');color:#47ccf3;}")
         self.ui.sourceWidget.setStyleSheet("QListWidget{border:0px;}")
         self.ui.sourceListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:25px;margin-top:0px;margin-left:1px;border:0px;}QListWidget::item:selected{background-color:#E4F1F8;;}")
         self.ui.lesource.setStyleSheet("QLineEdit{border:1px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnupdate.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
-        self.ui.btnClose.setStyleSheet("QPushButton{border:0px;background:url('res/config-close-1.png');}QPushButton:hover{background:url('res/config-close-2.png');}QPushButton:pressed{background:url('res/config-close-3.png');}")
+        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.cbhideubuntu.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/cbhideubuntuon.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}QPushButton:Checked{background:url('res/cbhideubuntuoff.png') no-repeat center left;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel.png');border:0px;}")
-        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progress1.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-image:url('res/progress2.png');}")
         self.ui.sourceListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
@@ -119,6 +119,10 @@ class ConfigWidget(QWidget):
         self.set_process_visiable(False)
 
         self.ui.sourceListWidget.clear()
+
+        # add by kobe
+        self.ui.sourceListWidget.setSpacing(4)
+
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
 
         for one in slist:
@@ -154,18 +158,18 @@ class ConfigWidget(QWidget):
             self.ui.btnUpdate.setVisible(False)
             self.ui.btnReset.setVisible(False)
             self.ui.cbhideubuntu.setVisible(False)
-            self.ui.label_2.setVisible(False)
-            self.ui.label_3.setVisible(False)
-            self.ui.label_4.setVisible(False)
+            # self.ui.label_2.setVisible(False)
+            # self.ui.label_3.setVisible(False)
+            # self.ui.label_4.setVisible(False)
 
         else:
             self.ui.processwidget.setVisible(False)
             self.ui.btnUpdate.setVisible(True)
             self.ui.btnReset.setVisible(True)
             self.ui.cbhideubuntu.setVisible(True)
-            self.ui.label_2.setVisible(True)
-            self.ui.label_3.setVisible(True)
-            self.ui.label_4.setVisible(True)
+            # self.ui.label_2.setVisible(True)
+            # self.ui.label_3.setVisible(True)
+            # self.ui.label_4.setVisible(True)
 
     def slot_click_cancel(self):
         self.iscanceled = True
@@ -202,8 +206,10 @@ class ConfigWidget(QWidget):
 
     def slot_item_clicked(self, item):
         if(item.whatsThis() == 'pointout'):
+            # add by kobe
             if (self.mainw.get_pointout_apps_num()) == 0:
-                self.mainw.pointout.show_animation(False)
+                pass
+                # self.mainw.pointout.show_animation(False)
             else:
                 self.mainw.pointout.show_animation(True)
 
@@ -216,7 +222,12 @@ class SourceItemWidget(QWidget):
         QWidget.__init__(self,parent)
 
         self.confw = parent
-        self.resize(414, 25)
+        self.resize(408, 25)
+
+        self.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(245, 248, 250))
+        self.setPalette(palette)
 
         self.sourcetype = QLabel(self)
         self.sourcetype.setGeometry(10, 4, 8, 17)
