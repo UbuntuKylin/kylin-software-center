@@ -266,7 +266,7 @@ class DetailScrollWidget(QScrollArea):
         self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star2.move(710, 653)
 
-        if nowpage == "homepage" or nowpage == "winpage":
+        if nowpage == "homepage" or nowpage == "winpage" or nowpage == "allpage":
             if(app.is_installed):
                 self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
                 self.ui.status.show()
@@ -307,17 +307,6 @@ class DetailScrollWidget(QScrollArea):
                 self.ui.btnInstall.setVisible(True)
                 self.ui.btnUpdate.setVisible(False)
                 self.ui.btnUninstall.setVisible(False)
-        elif nowpage == "allpage":
-            self.ui.status.hide()
-            self.ui.btnInstall.setText("安装")
-            self.ui.btnUpdate.setText("升级")
-            self.ui.btnUninstall.setText("卸载")
-            self.ui.btnInstall.setEnabled(True)
-            self.ui.btnUpdate.setEnabled(False)
-            self.ui.btnUninstall.setEnabled(False)
-            self.ui.btnInstall.setVisible(True)
-            self.ui.btnUpdate.setVisible(False)
-            self.ui.btnUninstall.setVisible(False)
         elif nowpage == "uppage":
             self.ui.status.hide()
             self.ui.btnInstall.setText("安装")
