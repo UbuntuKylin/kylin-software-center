@@ -992,6 +992,9 @@ class SoftwareCenter(QMainWindow):
             forceChange = False
         self.nowPage = 'allpage'
         # self.ui.categoryView.setEnabled(True)
+        # add by kobe
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
@@ -1024,6 +1027,9 @@ class SoftwareCenter(QMainWindow):
 
         self.nowPage = 'uppage'
         # self.ui.categoryView.setEnabled(True)
+        # add by kobe
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
@@ -1056,6 +1062,9 @@ class SoftwareCenter(QMainWindow):
 
         self.nowPage = 'unpage'
         # self.ui.categoryView.setEnabled(True)
+        # add by kobe
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category, forceChange)
         self.detailScrollWidget.hide()
@@ -1084,7 +1093,6 @@ class SoftwareCenter(QMainWindow):
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
-        self.reset_nav_bar()
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
