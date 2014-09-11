@@ -49,11 +49,16 @@ def get_run_command(pkgname):
     # 有些软件Exec后面会有%U %f等，进行过滤
     if re.findall(' ',command[0]):
         command = re.findall('(.*) ',command[0])
-    return command[0]
+    #split the command to prevent the error: "OSError: [Errno 2] 没有那个文件或目录"
+    fullcmd = command[0]
+    if fullcmd:
+        fullcmd = command[0].split()
+    return fullcmd
 
 def run_app(pkgname):
     cmd = get_run_command(pkgname)
-    p = subprocess.Popen(cmd, stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+    print("\n#####run_app:",cmd)
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
 
 def run_appa():
     p = subprocess.Popen(["eog", "/home/shine/Downloads/009-01.png"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
