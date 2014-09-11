@@ -266,7 +266,7 @@ class DetailScrollWidget(QScrollArea):
         self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star2.move(710, 653)
 
-        if nowpage == "homepage" or nowpage == "winpage" or nowpage == "allpage":
+        if nowpage == "homepage" or nowpage == "winpage" or nowpage == "allpage" or nowpage == "searchpage":
             if(app.is_installed):
                 self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
                 self.ui.status.show()
@@ -278,9 +278,13 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUpdate.setVisible(False)
                     self.ui.btnUninstall.setVisible(False)
                     self.ui.btnInstall.setText("已安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                 else:
                     if self.app.is_upgradable:
+                        self.ui.btnInstall.setText("安装")
                         self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(False)
                         self.ui.btnUpdate.setEnabled(True)
                         self.ui.btnUninstall.setEnabled(False)
@@ -290,6 +294,7 @@ class DetailScrollWidget(QScrollArea):
                     else:
                         self.ui.btnInstall.setText("启动")
                         self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(True)
                         self.ui.btnUpdate.setEnabled(False)
                         self.ui.btnUninstall.setEnabled(False)
@@ -430,9 +435,13 @@ class DetailScrollWidget(QScrollArea):
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnInstall.setText("已安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                 else:
                     self.ui.btnInstall.setEnabled(True)
                     self.ui.btnInstall.setText("启动")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                 self.ui.btnUpdate.setEnabled(False)
                 self.ui.btnUninstall.setEnabled(False)
                 self.ui.btnInstall.setVisible(True)
@@ -442,6 +451,8 @@ class DetailScrollWidget(QScrollArea):
             elif action == AppActions.INSTALL:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btnInstall.setText("已安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(False)
                     self.ui.btnUninstall.setEnabled(False)
@@ -451,7 +462,9 @@ class DetailScrollWidget(QScrollArea):
                 else:
                     self.ui.btnInstall.setVisible(True)
                     if self.app.is_upgradable:
-                        self.ui.btnUpdate.setText("升级")#可
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(False)
                         self.ui.btnUpdate.setEnabled(True)
                         self.ui.btnUninstall.setEnabled(False)
@@ -461,6 +474,7 @@ class DetailScrollWidget(QScrollArea):
                     else:
                         self.ui.btnInstall.setText("启动")
                         self.ui.btnUpdate.setText("不可升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(True)
                         self.ui.btnUpdate.setEnabled(False)
                         self.ui.btnUninstall.setEnabled(False)
@@ -482,6 +496,8 @@ class DetailScrollWidget(QScrollArea):
             elif action == AppActions.UPGRADE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btnInstall.setText("已安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(False)
                     self.ui.btnUninstall.setEnabled(False)
@@ -490,7 +506,9 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUninstall.setVisible(False)
                 else:
                     if self.app.is_upgradable:
-                        self.ui.btnUpdate.setText("升级")#可
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(False)
                         self.ui.btnUpdate.setEnabled(True)
                         self.ui.btnUninstall.setEnabled(False)
@@ -500,6 +518,7 @@ class DetailScrollWidget(QScrollArea):
                     else:
                         self.ui.btnInstall.setText("启动")
                         self.ui.btnUpdate.setText("不可升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(True)
                         self.ui.btnUpdate.setEnabled(False)
                         self.ui.btnUninstall.setEnabled(False)
@@ -517,7 +536,9 @@ class DetailScrollWidget(QScrollArea):
 
             if action == AppActions.INSTALL:
                 if self.app.is_upgradable:
-                    self.ui.btnUpdate.setText("升级")#可
+                    self.ui.btnInstall.setText("安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(True)
                     self.ui.btnUninstall.setEnabled(False)
@@ -525,8 +546,9 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUpdate.setVisible(True)
                     self.ui.btnUninstall.setVisible(False)
                 else:
-                    self.ui.btnUpdate.setText("不可升级")
                     self.ui.btnInstall.setText("安装")
+                    self.ui.btnUpdate.setText("不可升级")
+                    self.ui.btnUninstall.setText("卸载")
                     self.ui.btnInstall.setEnabled(True)
                     self.ui.btnUpdate.setEnabled(False)
                     self.ui.btnUninstall.setEnabled(False)
@@ -535,7 +557,9 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.REMOVE:
-                self.ui.btnUninstall.setText("卸载")#可
+                self.ui.btnInstall.setText("安装")
+                self.ui.btnUpdate.setText("升级")
+                self.ui.btnUninstall.setText("卸载")
                 self.ui.btnInstall.setEnabled(False)
                 self.ui.btnUpdate.setEnabled(False)
                 self.ui.btnUninstall.setEnabled(True)
@@ -546,6 +570,8 @@ class DetailScrollWidget(QScrollArea):
             elif action == AppActions.UPGRADE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btnInstall.setText("已安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(False)
                     self.ui.btnUninstall.setEnabled(False)
@@ -554,7 +580,9 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUninstall.setVisible(False)
                 else:
                     if self.app.is_upgradable:
-                        self.ui.btnUpdate.setText("升级")#可
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(False)
                         self.ui.btnUpdate.setEnabled(True)
                         self.ui.btnUninstall.setEnabled(False)
@@ -564,6 +592,7 @@ class DetailScrollWidget(QScrollArea):
                     else:
                         self.ui.btnInstall.setText("启动")
                         self.ui.btnUpdate.setText("不可升级")
+                        self.ui.btnUninstall.setText("卸载")
                         self.ui.btnInstall.setEnabled(True)
                         self.ui.btnUpdate.setEnabled(False)
                         self.ui.btnUninstall.setEnabled(False)
