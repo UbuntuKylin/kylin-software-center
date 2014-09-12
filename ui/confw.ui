@@ -130,9 +130,9 @@
      <property name="geometry">
       <rect>
        <x>250</x>
-       <y>3</y>
-       <width>18</width>
-       <height>18</height>
+       <y>6</y>
+       <width>13</width>
+       <height>13</height>
       </rect>
      </property>
      <property name="text">
@@ -143,7 +143,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>2</y>
+       <y>3</y>
        <width>194</width>
        <height>17</height>
       </rect>
@@ -177,7 +177,6 @@
    <zorder>lesource</zorder>
    <zorder>cbhideubuntu</zorder>
    <zorder>sourceListWidget</zorder>
-   <zorder>progressBar</zorder>
    <zorder>splitline</zorder>
   </widget>
   <widget class="QLabel" name="bg">

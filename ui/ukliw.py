@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/ukliw.ui'
+# Form implementation generated from reading ui file 'ukliw.ui'
 #
-# Created: Fri May 30 15:33:38 2014
+# Created: Fri Sep 12 09:44:41 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!

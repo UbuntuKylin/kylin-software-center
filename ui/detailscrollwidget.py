@@ -64,7 +64,7 @@ class DetailScrollWidget(QScrollArea):
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
 
-        self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUninstall.setFocusPolicy(Qt.NoFocus)
@@ -77,7 +77,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.description.setReadOnly(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
+        # self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
         self.ui.btnInstall.clicked.connect(self.slot_click_install)
         self.ui.btnUpdate.clicked.connect(self.slot_click_upgrade)
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
@@ -101,24 +101,44 @@ class DetailScrollWidget(QScrollArea):
                                                              QScrollBar::down-arrow:vertical{background-color:yellow;}\
                                                              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
-        self.ui.name.setStyleSheet("QLabel{font-size:16px;font-weight:bold;}")
-        self.ui.splitText1.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.splitText2.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.splitText3.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.gradeBG.setStyleSheet("QWidget{border:1px solid #cccccc;}")
+        self.ui.iconBG.setStyleSheet("QLabel{background-image:url('res/icon-bg.png')}")
+        self.ui.name.setStyleSheet("QLabel{font-size:28px;font-weight:bold;color:#666666;}")
+        self.ui.splitText1.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
+        self.ui.splitText2.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
+        self.ui.splitText3.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
         # self.ui.splitLine1.setStyleSheet("QLabel{background-color:#E0E0E0;}")
         # self.ui.splitLine2.setStyleSheet("QLabel{background-color:#E0E0E0;}")
         # self.ui.splitLine3.setStyleSheet("QLabel{background-color:#E0E0E0;}")
-        self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
+        # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
         # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
         # self.ui.detailHeader.setStyleSheet("QLabel{background-image:url('res/detailheadbg.png');color:black;font-size:16px;color:#1E66A4;}")
         # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
-        self.ui.candidateVersion.setStyleSheet("QLabel{color:#FF7D15;}")
+        self.ui.installedVersion.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.candidateVersion.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.size_install.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.scoretitle.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.scorelabel.setStyleSheet("QLabel{font-size:14x;font-weight:bold;color:#f97150;}")
+        self.ui.fen.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.scoretitle.setText("软件评分:")
+        self.ui.fen.setText("分")
+        self.ui.gradetitle.setText("分")
+        self.ui.grade.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
+        self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+        self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+        self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+
         # self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
-        self.ui.grade.setStyleSheet("QLabel{font-size:42px;color:#FA7053;}")
-        self.ui.gradeText2.setStyleSheet("QLabel{font-size:13px;}")
+        # self.ui.gradeBG.setStyleSheet("QLabel{border-width: 1px;border-style: solid;border-color:#cccccc;}")
+
+        self.ui.split1.setStyleSheet("QLabel{background-color:#a6a5a7;}")
+        self.ui.split2.setStyleSheet("QLabel{background-color:#a6a5a7;}")
+        self.ui.vline.setStyleSheet("QLabel{background-color:#E0E0E0;}")
+
         # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
-        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;}")
-        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;}")
+        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
+        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
         self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
                                                              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
                                                              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
@@ -260,11 +280,16 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.commentNumber.setText("共 " + str(app.ratings_total) + " 条评论")
         # self.ui.gradeText3.setText("满分5分")
         # self.ui.grade.setStyleSheet("QLabel{text-align:center;}")
+        self.ui.scorelabel.setText(str(app.ratings_average))
         self.ui.grade.setText(str(app.ratings_average))
+
+        self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
+        self.smallstar.move(180, 98)
+
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
-        self.star.move(65, 665)
+        self.star.move(70, 584)
         self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
-        self.star2.move(710, 653)
+        self.star2.move(710, 575)
 
         if nowpage == "homepage" or nowpage == "allpage" or nowpage == "winpage" or nowpage == "taskpage":
             if(app.is_installed):
@@ -445,7 +470,8 @@ class DetailScrollWidget(QScrollArea):
             img = QPixmap(self.app.thumbnailfile)
             self.ui.thumbnail.resize(img.width(), img.height())
             self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-            self.ui.thumbnail.move(400 - img.width() / 2, 521 - img.height() / 2)
+            # self.ui.thumbnail.move(400 - img.width() / 2, 521 - img.height() / 2)
+            self.ui.thumbnail.move(430 - img.width() / 2, 380 - img.height() / 2)
             self.ui.thumbnail.show()
         if(self.sshotcount > 1):
             img = QPixmap(self.app.screenshotfile)
@@ -460,8 +486,8 @@ class DetailScrollWidget(QScrollArea):
             self.bigsshot.move_to_center()
             self.bigsshot.show()
 
-    def slot_close_detail(self):
-        self.hide()
+    # def slot_close_detail(self):
+    #     self.hide()
 
     def slot_click_install(self):
         if(self.ui.btnInstall.text() == "启动"):

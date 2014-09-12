@@ -225,6 +225,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
+        # add by kobe
+        self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
+        self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
+        self.ui.virtuallabel.setStyleSheet("QLabel{background-image:url('res/virtual-bg.png')}")
+
         # self.ui.lebg.stackUnder(self.ui.leSearch)
         self.ui.leSearch.stackUnder(self.ui.lebg)
         self.ui.taskWidget.raise_()
@@ -950,6 +957,11 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget.add_sshot(sclist)
 
+    # add by kobe
+    def slot_close_detail(self):
+        self.detailScrollWidget.hide()
+        self.ui.btnCloseDetail.setVisible(False)
+
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
@@ -972,6 +984,7 @@ class SoftwareCenter(QMainWindow):
         # else:
         #     forceChange = False
         self.prePage = "homepage"
+        self.ui.btnCloseDetail.setVisible(False)
         self.nowPage = 'homepage'
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
@@ -1006,6 +1019,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = False
         self.prePage = "allpage"
         self.nowPage = 'allpage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
         self.categoryBar.reset_categorybar()
@@ -1041,6 +1055,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = False
         self.prePage = "uppage"
         self.nowPage = 'uppage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
         self.categoryBar.reset_categorybar()
@@ -1076,6 +1091,7 @@ class SoftwareCenter(QMainWindow):
             forceChange = False
         self.prePage = "unpage"
         self.nowPage = 'unpage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
         self.categoryBar.reset_categorybar()
@@ -1108,6 +1124,7 @@ class SoftwareCenter(QMainWindow):
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
+        self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
@@ -1129,10 +1146,12 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.prePage = "taskpage"
         self.nowPage = 'taskpage'
+        self.ui.btnCloseDetail.setVisible(False)
 
     def slot_goto_winpage(self, ishistory=False):
         self.prePage = "winpage"
         self.nowPage = 'winpage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.emit(Signals.count_application_update)
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(False)
@@ -1214,9 +1233,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_app_detail(self, app, ishistory=False):
         self.reset_nav_bar()
-        # print '********************'
-        # print self.prePage
-        # print self.nowPage
+        self.ui.btnCloseDetail.setVisible(True)
         self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage)
 
     def slot_show_deb_detail(self, path):

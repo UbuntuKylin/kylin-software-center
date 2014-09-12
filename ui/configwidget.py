@@ -105,7 +105,7 @@ class ConfigWidget(QWidget):
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.cbhideubuntu.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/cbhideubuntuon.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}QPushButton:Checked{background:url('res/cbhideubuntuoff.png') no-repeat center left;}")
-        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel.png');border:0px;}")
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progress1.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-image:url('res/progress2.png');}")
         self.ui.sourceListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
@@ -234,7 +234,7 @@ class SourceItemWidget(QWidget):
         self.sourcetext = QLabel(self)
         self.sourcetext.setGeometry(25, 4, 345, 17)
         self.btnremove = QPushButton(self)
-        self.btnremove.setGeometry(377, 4, 18, 18)
+        self.btnremove.setGeometry(377, 6, 13, 13)
 
         self.btnremove.clicked.connect(self.slot_remove_source)
 
@@ -242,7 +242,7 @@ class SourceItemWidget(QWidget):
 
         self.sourcetype.setStyleSheet("QLabel{font-size:13px;color:#1E66A4;}")
         self.sourcetext.setStyleSheet("QLabel{font-size:13px;color:#5E5B67;}")
-        self.btnremove.setStyleSheet("QPushButton{border:0px;background-image:url('res/cancel.png');}")
+        self.btnremove.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
 
         slist = source.split()
         self.type = slist[0]

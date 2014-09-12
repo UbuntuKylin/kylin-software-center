@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>860</width>
-    <height>850</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,26 +16,13 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <widget class="QPushButton" name="btnCloseDetail">
-   <property name="geometry">
-    <rect>
-     <x>16</x>
-     <y>15</y>
-     <width>15</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="icon">
+  <widget class="QLabel" name="iconBG">
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>71</y>
-     <width>48</width>
-     <height>48</height>
+     <y>0</y>
+     <width>80</width>
+     <height>80</height>
     </rect>
    </property>
    <property name="text">
@@ -45,62 +32,10 @@
   <widget class="QLabel" name="status">
    <property name="geometry">
     <rect>
-     <x>55</x>
-     <y>100</y>
+     <x>88</x>
+     <y>48</y>
      <width>16</width>
      <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="name">
-   <property name="geometry">
-    <rect>
-     <x>95</x>
-     <y>67</y>
-     <width>371</width>
-     <height>19</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="candidateVersion">
-   <property name="geometry">
-    <rect>
-     <x>95</x>
-     <y>111</y>
-     <width>200</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="installedVersion">
-   <property name="geometry">
-    <rect>
-     <x>95</x>
-     <y>90</y>
-     <width>200</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="size">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>90</y>
-     <width>140</width>
-     <height>18</height>
     </rect>
    </property>
    <property name="text">
@@ -111,7 +46,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>170</y>
+     <y>124</y>
      <width>66</width>
      <height>17</height>
     </rect>
@@ -124,7 +59,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>200</y>
+     <y>150</y>
      <width>810</width>
      <height>40</height>
     </rect>
@@ -134,9 +69,9 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>240</y>
+     <y>190</y>
      <width>810</width>
-     <height>131</height>
+     <height>81</height>
     </rect>
    </property>
   </widget>
@@ -144,9 +79,9 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>388</y>
+     <y>290</y>
      <width>810</width>
-     <height>207</height>
+     <height>200</height>
     </rect>
    </property>
    <property name="text">
@@ -157,7 +92,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>470</y>
+     <y>370</y>
      <width>40</width>
      <height>40</height>
     </rect>
@@ -170,7 +105,7 @@
    <property name="geometry">
     <rect>
      <x>790</x>
-     <y>470</y>
+     <y>370</y>
      <width>40</width>
      <height>40</height>
     </rect>
@@ -183,7 +118,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>730</y>
+     <y>660</y>
      <width>66</width>
      <height>17</height>
     </rect>
@@ -196,7 +131,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>760</y>
+     <y>690</y>
      <width>810</width>
      <height>85</height>
     </rect>
@@ -209,7 +144,7 @@
    <property name="geometry">
     <rect>
      <x>350</x>
-     <y>500</y>
+     <y>380</y>
      <width>1</width>
      <height>1</height>
     </rect>
@@ -222,35 +157,9 @@
    <property name="geometry">
     <rect>
      <x>350</x>
-     <y>530</y>
+     <y>410</y>
      <width>1</width>
      <height>1</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="size_install">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>111</y>
-     <width>140</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="gradeBG">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>630</y>
-     <width>761</width>
-     <height>71</height>
     </rect>
    </property>
    <property name="text">
@@ -261,7 +170,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>600</y>
+     <y>490</y>
      <width>66</width>
      <height>17</height>
     </rect>
@@ -274,7 +183,7 @@
    <property name="geometry">
     <rect>
      <x>685</x>
-     <y>70</y>
+     <y>24</y>
      <width>148</width>
      <height>40</height>
     </rect>
@@ -287,7 +196,7 @@
    <property name="geometry">
     <rect>
      <x>684</x>
-     <y>70</y>
+     <y>24</y>
      <width>148</width>
      <height>40</height>
     </rect>
@@ -300,7 +209,7 @@
    <property name="geometry">
     <rect>
      <x>684</x>
-     <y>70</y>
+     <y>24</y>
      <width>148</width>
      <height>40</height>
     </rect>
@@ -309,59 +218,246 @@
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="grade">
+  <widget class="QWidget" name="gradeBG" native="true">
    <property name="geometry">
     <rect>
-     <x>85</x>
-     <y>628</y>
-     <width>60</width>
-     <height>41</height>
+     <x>25</x>
+     <y>516</y>
+     <width>810</width>
+     <height>132</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="gradeText2">
+    <property name="geometry">
+     <rect>
+      <x>15</x>
+      <y>100</y>
+      <width>151</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gradeText1">
+    <property name="geometry">
+     <rect>
+      <x>625</x>
+      <y>60</y>
+      <width>66</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="grade">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>13</y>
+      <width>60</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="vline">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>6</y>
+      <width>1</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gradetitle">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>35</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="icon">
+   <property name="geometry">
+    <rect>
+     <x>41</x>
+     <y>16</y>
+     <width>48</width>
+     <height>48</height>
     </rect>
    </property>
    <property name="text">
     <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="gradeText1">
+  <widget class="QWidget" name="widget" native="true">
    <property name="geometry">
     <rect>
-     <x>650</x>
-     <y>655</y>
-     <width>66</width>
-     <height>17</height>
+     <x>120</x>
+     <y>0</y>
+     <width>381</width>
+     <height>121</height>
     </rect>
    </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="gradeText2">
-   <property name="geometry">
-    <rect>
-     <x>40</x>
-     <y>690</y>
-     <width>151</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
+   <widget class="QLabel" name="scoretitle">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>96</y>
+      <width>66</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="size">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>40</y>
+      <width>140</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="candidateVersion">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>68</y>
+      <width>200</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="installedVersion">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>38</y>
+      <width>200</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="name">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>311</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="size_install">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>68</y>
+      <width>140</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="split1">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>38</y>
+      <width>1</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="split2">
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>68</y>
+      <width>1</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="fen">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>96</y>
+      <width>21</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="scorelabel">
+    <property name="geometry">
+     <rect>
+      <x>136</x>
+      <y>96</y>
+      <width>21</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <zorder>splitText2</zorder>
-  <zorder>btnCloseDetail</zorder>
-  <zorder>icon</zorder>
+  <zorder>iconBG</zorder>
   <zorder>status</zorder>
-  <zorder>name</zorder>
-  <zorder>candidateVersion</zorder>
-  <zorder>installedVersion</zorder>
-  <zorder>size</zorder>
   <zorder>splitText1</zorder>
   <zorder>summary</zorder>
   <zorder>description</zorder>
@@ -372,14 +468,12 @@
   <zorder>reviewListWidget</zorder>
   <zorder>thumbnail</zorder>
   <zorder>sshot</zorder>
-  <zorder>size_install</zorder>
-  <zorder>gradeBG</zorder>
   <zorder>btnUpdate</zorder>
   <zorder>btnInstall</zorder>
   <zorder>btnUninstall</zorder>
-  <zorder>grade</zorder>
-  <zorder>gradeText1</zorder>
-  <zorder>gradeText2</zorder>
+  <zorder>gradeBG</zorder>
+  <zorder>icon</zorder>
+  <zorder>widget</zorder>
  </widget>
  <resources/>
  <connections/>

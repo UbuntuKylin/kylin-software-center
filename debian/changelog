@@ -3,8 +3,9 @@ ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
   * Modify widget.
   * Modify Pointout widget.
   * Show installed message on card if the software installed.
+  * Show half start icon.
 
- -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Thu, 11 Sep 2014 21:37:43 +0800
+ -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Fri, 12 Sep 2014 17:27:58 +0800
 
 ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
 

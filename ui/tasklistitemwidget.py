@@ -53,7 +53,7 @@ class TaskListItemWidget(QWidget):
         self.ui.progresslabel.setText("")
 
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
-        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel2.png');border:0px;}")
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
 

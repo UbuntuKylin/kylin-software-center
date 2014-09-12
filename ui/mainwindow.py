@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Thu Sep 11 15:22:39 2014
+# Created: Fri Sep 12 17:22:54 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -239,6 +239,10 @@ class Ui_MainWindow(object):
         self.lebg.setGeometry(QtCore.QRect(838, 16, 16, 16))
         self.lebg.setText(_fromUtf8(""))
         self.lebg.setObjectName(_fromUtf8("lebg"))
+        self.btnCloseDetail = QtGui.QPushButton(self.headerWidget)
+        self.btnCloseDetail.setGeometry(QtCore.QRect(573, 13, 15, 19))
+        self.btnCloseDetail.setText(_fromUtf8(""))
+        self.btnCloseDetail.setObjectName(_fromUtf8("btnCloseDetail"))
         self.winpageWidget = QtGui.QWidget(self.rightWidget)
         self.winpageWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.winpageWidget.setObjectName(_fromUtf8("winpageWidget"))
@@ -262,6 +266,10 @@ class Ui_MainWindow(object):
         self.winline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         self.winline.setText(_fromUtf8(""))
         self.winline.setObjectName(_fromUtf8("winline"))
+        self.virtuallabel = QtGui.QLabel(self.rightWidget)
+        self.virtuallabel.setGeometry(QtCore.QRect(20, 590, 830, 18))
+        self.virtuallabel.setText(_fromUtf8(""))
+        self.virtuallabel.setObjectName(_fromUtf8("virtuallabel"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

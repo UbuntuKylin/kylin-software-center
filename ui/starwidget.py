@@ -66,23 +66,54 @@ class StarWidget(QWidget):
     def changeGrade(self, grade):
         if(self.size == 'small'):
             if(grade > 0):
-                self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
+                # add by kobe
+                if(grade < 1):
+                    self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-3.png')}")
+                else:
+                    self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
             if(grade > 1):
-                self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
+                if(grade < 2):
+                    self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-3.png')}")
+                else:
+                    self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
             if(grade > 2):
-                self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
+                if(grade < 3):
+                    self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-3.png')}")
+                else:
+                    self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
             if(grade > 3):
-                self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
+                if(grade < 4):
+                    self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-3.png')}")
+                else:
+                    self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
             if(grade > 4):
-                self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
+                if(grade < 5):
+                    self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-3.png')}")
+                else:
+                    self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
         if(self.size == 'big'):
             if(grade > 0):
-                self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
+                if(grade < 1):
+                    self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-3.png')}")
+                else:
+                    self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
             if(grade > 1):
-                self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
+                if(grade < 2):
+                    self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-3.png')}")
+                else:
+                    self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
             if(grade > 2):
-                self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
+                if(grade < 3):
+                    self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-3.png')}")
+                else:
+                    self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
             if(grade > 3):
-                self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
+                if(grade < 4):
+                    self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-3.png')}")
+                else:
+                    self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
             if(grade > 4):
-                self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
+                if(grade < 5):
+                    self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-3.png')}")
+                else:
+                    self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-1.png')}")
