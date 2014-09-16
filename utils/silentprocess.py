@@ -239,7 +239,7 @@ class SilentProcess(multiprocessing.Process):
             try:
                 docid_for_update = re.document.get_docid()
                 doc_for_update = re.document
-                the_latest_update_time = doc_for_update.get_data()
+                the_latest_update_time = doc_for_update.get_data().replace(' ','T')
                 
             except:
                 print "Failed to get the latest update time from client xapiandb" 
@@ -315,7 +315,7 @@ class SilentProcess(multiprocessing.Process):
                     
         try:
             if xapiandb_update == "Yes":
-                now = datetime.strftime(datetime.now(),'%Y%m%d%H%M%S')
+                now = str(datetime.now())
                 doc_for_update.set_data(now)
                 doc_for_update.add_term("the_latest_update_time",100)
                 database.replace_document(docid_for_update,doc_for_update)

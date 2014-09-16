@@ -34,12 +34,13 @@ from models.enums import Signals
 
 class NormalCard(QWidget):
 
-    def __init__(self, app, nowpage, parent=None):
+    def __init__(self, app, nowpage, prepage, parent=None):
         QWidget.__init__(self, parent)
         self.ui_init()
 
         self.app = app
         self.workType = nowpage
+        self.preType = prepage
 
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
@@ -179,11 +180,46 @@ class NormalCard(QWidget):
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
         elif(nowpage == 'searchpage'):
-            self.star.show()
-            self.ui.isInstalled.setVisible(False)
-            self.ui.btn.setText("查看详情")
-            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
-            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+            # self.star.show()
+            # self.ui.isInstalled.setVisible(False)
+            # self.ui.btn.setText("查看详情")
+            # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+            # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+            # print self.preType
+            # add by kobe
+            if self.preType == "homepage" or self.preType == "allpage" or self.preType == "winpage" or self.preType == "taskpage":
+                if(app.is_installed):
+                    self.star.hide()
+                    self.ui.isInstalled.setVisible(True)
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+                    else:
+                        self.ui.btn.setText("启动")
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
+                else:
+                    self.star.show()
+                    self.ui.isInstalled.setVisible(False)
+                    self.ui.btn.setText("安装")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+            elif self.preType == "uppage":
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
+                self.ui.btn.setText("升级")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+            elif self.preType == "unpage":
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
+                self.ui.btn.setText("卸载")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+
+
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
@@ -245,11 +281,12 @@ class NormalCard(QWidget):
     def slot_btn_click(self):
         if(self.ui.btn.text() == "启动"):
             run.run_app(self.app.name)
-        elif(self.workType == "searchpage"):
-            self.emit(Signals.show_app_detail, self.app)
+        # elif(self.workType == "searchpage"):
+            # self.emit(Signals.show_app_detail, self.app)
         else:
             self.ui.btn.setEnabled(False)
             self.ui.btn.setText("正在处理")
+            print self.workType
             if(self.workType == 'allpage'):
                 self.emit(Signals.install_app, self.app)
             elif(self.workType == 'uppage'):

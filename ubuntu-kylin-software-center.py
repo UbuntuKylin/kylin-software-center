@@ -719,7 +719,7 @@ class SoftwareCenter(QMainWindow):
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
 
-            card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+            card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
             listWidget.add_card(card)
             self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(card, Signals.install_app, self.slot_click_install)
@@ -755,7 +755,7 @@ class SoftwareCenter(QMainWindow):
                     count = count + 1
                     continue
 
-                card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+                card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
                 listWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)

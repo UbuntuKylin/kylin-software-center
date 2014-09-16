@@ -65,6 +65,11 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.btnCloseDetail.setText("返回")
 
         # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
+        self.ui.bntSubmit.setFocusPolicy(Qt.NoFocus)
+
         self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUninstall.setFocusPolicy(Qt.NoFocus)
@@ -85,6 +90,21 @@ class DetailScrollWidget(QScrollArea):
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
+
+        self.ui.btnLogin.setText("请登录")
+        self.ui.btnReg.setText("免费注册")
+        self.ui.welcometext.setText("欢迎您")
+        self.ui.btnLogout.setText("退出")
+        self.ui.bntSubmit.setText("提交")
+        self.ui.afterLoginWidget.hide()
+        self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
+        self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+        self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
+        self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
+        self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+
 
 
         self.setAutoFillBackground(True)
@@ -139,7 +159,16 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
         self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
         self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
+        self.ui.reviewText.setStyleSheet("QTextEdit{background-color:#f7f5fa; border:1px solid #cccccc;font-size:12px;color:#666666;}")
         self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+                                                             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+                                                             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+                                                             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+                                                             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+                                                             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+        self.ui.reviewText.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
                                                              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
                                                              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
                                                              QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
@@ -173,6 +202,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnInstall.setStyleSheet("QPushButton{background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
         self.ui.btnUninstall.setStyleSheet("QPushButton{background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
+        self.ui.bntSubmit.setStyleSheet("QPushButton{background:#0fa2e8;border:1px solid #0f84bc;color:white;}QPushButton:hover{background-color:#14acf5;border:1px solid #0f84bc;color:white;}QPushButton:pressed{background-color:#0b95d7;border:1px solid #0479b1;color:white;}")
 
     def show_by_local_debfile(self, path):
         # clear reviews
