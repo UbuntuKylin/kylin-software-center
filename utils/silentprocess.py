@@ -328,6 +328,7 @@ class SilentProcess(multiprocessing.Process):
                     print "Failed to update xapian database (/home/ice_bird/.cache/uksc/xapiandb)"
         except:
             print "The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!"
+        print "Silent process: update_xapiandb end !!!"
             
 class SilentWorkerItem:
 
