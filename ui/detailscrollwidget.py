@@ -28,6 +28,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.detailw import Ui_DetailWidget
 from ui.starwidget import StarWidget
+from ui.dynamicstarwidget import DynamicStarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
 from ui.loadingdiv import *
@@ -58,11 +59,14 @@ class DetailScrollWidget(QScrollArea):
         self.ui_init()
 
         self.mainwindow = parent
-        self.setGeometry(QRect(5, 87, 860, 565))
+        self.setGeometry(QRect(5, 87, 873, 565))
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
+
+        self.hl = QLineEdit(self.detailWidget)
+        self.hl.setGeometry(-10,-10,1,1)
 
         # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
@@ -88,6 +92,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
         self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
+        self.ui.bntSubmit.clicked.connect(self.slot_click_submit)
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
@@ -97,6 +102,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnLogout.setText("退出")
         self.ui.bntSubmit.setText("提交")
         self.ui.afterLoginWidget.hide()
+        # self.ui.reviewText.setEnabled(True)
         self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
@@ -134,20 +140,20 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
         # self.ui.detailHeader.setStyleSheet("QLabel{background-image:url('res/detailheadbg.png');color:black;font-size:16px;color:#1E66A4;}")
         # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
-        self.ui.installedVersion.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
-        self.ui.candidateVersion.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
-        self.ui.size.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
-        self.ui.size_install.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
-        self.ui.scoretitle.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.installedVersion.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
+        self.ui.candidateVersion.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
+        self.ui.size_install.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
+        self.ui.scoretitle.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
         self.ui.scorelabel.setStyleSheet("QLabel{font-size:14x;font-weight:bold;color:#f97150;}")
         self.ui.fen.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
         self.ui.scoretitle.setText("软件评分:")
         self.ui.fen.setText("分")
         self.ui.gradetitle.setText("分")
         self.ui.grade.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
-        self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
-        self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
-        self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+        self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
+        self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
+        self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
 
         # self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
         # self.ui.gradeBG.setStyleSheet("QLabel{border-width: 1px;border-style: solid;border-color:#cccccc;}")
@@ -157,9 +163,9 @@ class DetailScrollWidget(QScrollArea):
         self.ui.vline.setStyleSheet("QLabel{background-color:#E0E0E0;}")
 
         # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
-        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
-        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
-        self.ui.reviewText.setStyleSheet("QTextEdit{background-color:#f7f5fa; border:1px solid #cccccc;font-size:12px;color:#666666;}")
+        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+        self.ui.reviewText.setStyleSheet("QTextEdit{background-color:#f7f5fa; border:1px solid #cccccc;font-size:13px;color:#666666;}")
         self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
                                                              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
                                                              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
@@ -211,8 +217,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.clear()
         # self.detailWidget.resize(805, 790)
         # self.ui.reviewListWidget.resize(805, 0)
-        self.detailWidget.resize(860, 790)
-        self.ui.reviewListWidget.resize(860, 0)
+        self.detailWidget.resize(873, 790)
+        self.ui.reviewListWidget.resize(873, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
@@ -265,8 +271,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.clear()
         # self.detailWidget.resize(805, 790)
         # self.ui.reviewListWidget.resize(805, 0)
-        self.detailWidget.resize(860, 790)
-        self.ui.reviewListWidget.resize(860, 0)
+        self.detailWidget.resize(873, 790)
+        self.ui.reviewListWidget.resize(873, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
@@ -310,15 +316,24 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.commentNumber.setText("共 " + str(app.ratings_total) + " 条评论")
         # self.ui.gradeText3.setText("满分5分")
         # self.ui.grade.setStyleSheet("QLabel{text-align:center;}")
-        self.ui.scorelabel.setText(str(app.ratings_average))
-        self.ui.grade.setText(str(app.ratings_average))
+
+        # add by kobe
+        averate_rate = str('%.1f' % app.ratings_average)
+        # self.ui.scorelabel.setText(str(app.ratings_average))
+        # self.ui.grade.setText(str(app.ratings_average))
+        self.ui.scorelabel.setText(averate_rate)
+        self.ui.grade.setText(averate_rate)
 
         self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
         self.smallstar.move(180, 98)
 
+        #总评分
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star.move(70, 584)
-        self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
+        #我的评分
+        # self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
+        # self.star2.move(710, 575)
+        self.star2 = DynamicStarWidget(self.detailWidget)
         self.star2.move(710, 575)
 
         if nowpage == "homepage" or nowpage == "allpage" or nowpage == "winpage" or nowpage == "taskpage":
@@ -486,8 +501,8 @@ class DetailScrollWidget(QScrollArea):
         reviewHeight = (count + 1) * 85
         # self.detailWidget.resize(805, 790 + reviewHeight)
         # self.ui.reviewListWidget.resize(805, reviewHeight)
-        self.detailWidget.resize(860, 790 + reviewHeight)
-        self.ui.reviewListWidget.resize(860, reviewHeight)
+        self.detailWidget.resize(873, 790 + reviewHeight)
+        self.ui.reviewListWidget.resize(873, reviewHeight)
 
         oneitem = QListWidgetItem()
         rliw = ReviewWidget(self.app.ratings_average, review)
@@ -546,6 +561,10 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnInstall.setEnabled(False)
         self.ui.btnUpdate.setEnabled(False)
         self.ui.btnUninstall.setEnabled(False)
+
+    def slot_click_submit(self):
+        print self.star2.getUserGrade()
+        print self.ui.reviewText.toPlainText()
 
     def slot_work_finished(self, pkgname, action):
         #add this to prevent slot received from other signal before show_detail is not called
