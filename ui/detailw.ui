@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>860</width>
-    <height>800</height>
+    <height>920</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -131,7 +131,7 @@
    <property name="geometry">
     <rect>
      <x>25</x>
-     <y>690</y>
+     <y>810</y>
      <width>810</width>
      <height>85</height>
     </rect>
@@ -455,6 +455,150 @@
     </property>
    </widget>
   </widget>
+  <widget class="QWidget" name="homeMsgWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>760</y>
+     <width>500</width>
+     <height>44</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="afterLoginWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>260</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="userLogoafter">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>14</y>
+       <width>16</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="welcometext">
+     <property name="geometry">
+      <rect>
+       <x>18</x>
+       <y>14</y>
+       <width>50</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="username">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>14</y>
+       <width>80</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnLogout">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>14</y>
+       <width>45</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="beforeLoginWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>260</width>
+      <height>44</height>
+     </rect>
+    </property>
+    <widget class="QLabel" name="userLogo">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>14</y>
+       <width>16</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnLogin">
+     <property name="geometry">
+      <rect>
+       <x>18</x>
+       <y>14</y>
+       <width>50</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnReg">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>14</y>
+       <width>65</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QTextEdit" name="reviewText">
+   <property name="geometry">
+    <rect>
+     <x>25</x>
+     <y>685</y>
+     <width>810</width>
+     <height>76</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="bntSubmit">
+   <property name="geometry">
+    <rect>
+     <x>734</x>
+     <y>762</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>splitText2</zorder>
   <zorder>iconBG</zorder>
   <zorder>status</zorder>
@@ -474,6 +618,9 @@
   <zorder>gradeBG</zorder>
   <zorder>icon</zorder>
   <zorder>widget</zorder>
+  <zorder>homeMsgWidget</zorder>
+  <zorder>reviewText</zorder>
+  <zorder>bntSubmit</zorder>
  </widget>
  <resources/>
  <connections/>
