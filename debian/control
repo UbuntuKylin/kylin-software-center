@@ -15,7 +15,7 @@ Vcs-Bzr: lp:ubuntu-kylin-software-center
 Package: ubuntu-kylin-software-center
 Architecture: all
 Depends: python-qt4, ubuntukylin-keyring, ${misc:Depends}, ${python:Depends}
-Recommends: language-pack-zh-hans
+Recommends: language-pack-zh-hans, ubuntu-kylin-sso-client, python-ubuntu-kylin-sso-client, ubuntu-kylin-sso-client-qt
 Breaks: ubuntu-kylin-software-center-common
 Replaces: ubuntu-kylin-software-center-common
 Description: Software maintenance management tools
