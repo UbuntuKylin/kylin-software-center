@@ -111,7 +111,14 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def get_newer_application_info(self, last_update_date):
         return self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
-
+        
+    @returns_json
+    def allapp_forxapianupdate(self):
+        return self._get('allappforxapianupdate/?', scheme="http")
+    
+    @returns_json
+    def newerapp_for_xapianupdate(self, the_latest_update_time):
+        return self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
 
 if __name__ == '__main__':
     s = PistonRemoter(service_root="http://192.168.30.12/uksc/")

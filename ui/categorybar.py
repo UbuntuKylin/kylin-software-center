@@ -62,7 +62,6 @@ class CategoryBar(QWidget):
         cat_list = sorted(cdata.iteritems(),
                         cmp_rating,
                         reverse=False)
-
         for item in cat_list:
             category = item[1]
             if(category.visible == True):
@@ -102,6 +101,14 @@ class CategoryBar(QWidget):
         self.categorytab.move(btn.x(), self.categorytab.y())
         self.categorytab.show()
         self.emit(Signals.click_categoy, category)
+
+    # add by kobe
+    def reset_categorybar(self):
+        self.categorytab.hide()
+        self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
+        btns = self.btnGroup.buttons()
+        for b in btns:
+            b.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
 
 class CategoryButton(QPushButton):

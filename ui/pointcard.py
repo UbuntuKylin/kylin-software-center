@@ -44,6 +44,11 @@ class PointCard(QWidget):
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
+        # add by kobe: delay show animation
+        self.showDelay = False
+        self.delayTimer = QTimer(self)
+        self.delayTimer.timeout.connect(self.slot_show_delay_animation)
+
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
 
@@ -141,42 +146,91 @@ class PointCard(QWidget):
         self.ui.setupUi(self)
         self.show()
 
+    # def enterEvent(self, event):
+    #     self.switchDirection = 'right'
+    #     self.switch_animation()
+    #
+    # def leaveEvent(self, event):
+    #     self.switchDirection = 'left'
+    #     self.switch_animation()
+    #
+    # def switch_animation(self):
+    #     if(self.switchDirection == 'right'):
+    #         self.px = -212
+    #         self.switchTimer.stop()
+    #         self.switchTimer.start(12)
+    #     else:
+    #         self.px = 0
+    #         self.switchTimer.stop()
+    #         self.switchTimer.start(12)
+    #
+    # def slot_switch_animation_step(self):
+    #     if(self.switchDirection == 'right'):
+    #         if(self.px < 0):
+    #             self.px += 4
+    #             self.ui.detailWidget.move(self.px, 0)
+    #             self.ui.baseWidget.move(self.px + 212, 0)
+    #         else:
+    #             self.switchTimer.stop()
+    #             self.ui.detailWidget.move(0, 0)
+    #             self.ui.baseWidget.move(0 + 212, 0)
+    #     else:
+    #         if(self.px > -212):
+    #             self.px -= 4
+    #             self.ui.detailWidget.move(self.px, 0)
+    #             self.ui.baseWidget.move(self.px + 212, 0)
+    #         else:
+    #             self.switchTimer.stop()
+    #             self.ui.detailWidget.move(-212, 0)
+    #             self.ui.baseWidget.move(0, 0)
+
     def enterEvent(self, event):
-        self.switchDirection = 'right'
-        self.switch_animation()
+        self.delayTimer.start(300)
+        # self.switchDirection = 'down'
+        # self.switch_animation()
 
     def leaveEvent(self, event):
-        self.switchDirection = 'left'
+        if self.delayTimer.isActive():
+            self.delayTimer.stop()
+        if self.showDelay:
+            self.showDelay = False
+            self.switchDirection = 'up'
+            self.switch_animation()
+
+    def slot_show_delay_animation(self):
+        self.delayTimer.stop()
+        self.switchDirection = 'down'
         self.switch_animation()
+        self.showDelay = True
 
     def switch_animation(self):
-        if(self.switchDirection == 'right'):
-            self.px = -212
+        if(self.switchDirection == 'down'):
+            self.py = -88
             self.switchTimer.stop()
             self.switchTimer.start(12)
         else:
-            self.px = 0
+            self.py = 0
             self.switchTimer.stop()
             self.switchTimer.start(12)
 
     def slot_switch_animation_step(self):
-        if(self.switchDirection == 'right'):
-            if(self.px < 0):
-                self.px += 4
-                self.ui.detailWidget.move(self.px, 0)
-                self.ui.baseWidget.move(self.px + 212, 0)
+        if(self.switchDirection == 'down'):
+            if(self.py < 0):
+                self.py += 4
+                self.ui.detailWidget.move(0, self.py)
+                self.ui.baseWidget.move(0, self.py + 88)
             else:
                 self.switchTimer.stop()
                 self.ui.detailWidget.move(0, 0)
-                self.ui.baseWidget.move(0 + 212, 0)
+                self.ui.baseWidget.move(0, 0 + 88)
         else:
-            if(self.px > -212):
-                self.px -= 4
-                self.ui.detailWidget.move(self.px, 0)
-                self.ui.baseWidget.move(self.px + 212, 0)
+            if(self.py > -88):
+                self.py -= 4
+                self.ui.detailWidget.move(0, self.py)
+                self.ui.baseWidget.move(0, self.py + 88)
             else:
                 self.switchTimer.stop()
-                self.ui.detailWidget.move(-212, 0)
+                self.ui.detailWidget.move(0, -88)
                 self.ui.baseWidget.move(0, 0)
 
     def slot_btn_click(self):

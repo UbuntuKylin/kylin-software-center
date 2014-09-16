@@ -75,7 +75,7 @@
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="btnXp">
+    <widget class="QPushButton" name="btnWin">
      <property name="geometry">
       <rect>
        <x>0</x>
@@ -529,7 +529,7 @@
        <x>0</x>
        <y>0</y>
        <width>320</width>
-       <height>600</height>
+       <height>608</height>
       </rect>
      </property>
      <widget class="QListWidget" name="taskListWidget">
@@ -673,7 +673,20 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLabel" name="lebg">
+     <widget class="QPushButton" name="btnMaxNormal">
+      <property name="geometry">
+       <rect>
+        <x>56</x>
+        <y>0</y>
+        <width>28</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="lebg">
       <property name="geometry">
        <rect>
         <x>838</x>
@@ -686,13 +699,13 @@
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnMaxNormal">
+     <widget class="QPushButton" name="btnCloseDetail">
       <property name="geometry">
        <rect>
-        <x>56</x>
-        <y>0</y>
-        <width>28</width>
-        <height>36</height>
+        <x>573</x>
+        <y>13</y>
+        <width>15</width>
+        <height>19</height>
        </rect>
       </property>
       <property name="text">
@@ -774,6 +787,19 @@
        <string/>
       </property>
      </widget>
+    </widget>
+    <widget class="QLabel" name="virtuallabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>590</y>
+       <width>830</width>
+       <height>18</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
     </widget>
    </widget>
    <zorder>rightWidget</zorder>

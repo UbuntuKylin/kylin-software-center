@@ -49,6 +49,7 @@ class PointListItemWidget(QWidget):
         self.ui.candidateVersion.setAlignment(Qt.AlignRight)
         self.ui.installedsize.setAlignment(Qt.AlignRight)
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
+        self.ui.progresslabel.setFocusPolicy(Qt.NoFocus)
         # self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         # self.ui.btnDetail.setText("详情")
         self.ui.btnDetail.hide()

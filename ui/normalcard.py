@@ -44,6 +44,11 @@ class NormalCard(QWidget):
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
+        # add by kobe: delay show animation
+        self.showDelay = False
+        self.delayTimer = QTimer(self)
+        self.delayTimer.timeout.connect(self.slot_show_delay_animation)
+
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
 
@@ -99,6 +104,7 @@ class NormalCard(QWidget):
         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.isInstalled.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
         self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
 
         # letter spacing
@@ -130,12 +136,19 @@ class NormalCard(QWidget):
         self.ui.description.setText(self.app.summary)
 
         # rating star
-        star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
-        star.move(75, 56)
+        self.star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
+        self.star.move(75, 56)
+
+        # add by kobe
+        self.ui.isInstalled.setText("已安装")
 
         # btn & border
         if(nowpage == 'allpage'):
             if(app.is_installed):
+                # add by kobe
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
+
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
@@ -146,18 +159,28 @@ class NormalCard(QWidget):
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
             else:
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
         elif(nowpage == 'uppage'):
+            # add by kobe
+            self.star.show()
+            self.ui.isInstalled.setVisible(False)
             self.ui.btn.setText("升级")
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
         elif(nowpage == 'unpage'):
+            # add by kobe
+            self.star.show()
+            self.ui.isInstalled.setVisible(False)
             self.ui.btn.setText("卸载")
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
         elif(nowpage == 'searchpage'):
+            self.star.show()
+            self.ui.isInstalled.setVisible(False)
             self.ui.btn.setText("查看详情")
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -171,12 +194,23 @@ class NormalCard(QWidget):
         self.show()
 
     def enterEvent(self, event):
-        self.switchDirection = 'down'
-        self.switch_animation()
+        self.delayTimer.start(300)
+        # self.switchDirection = 'down'
+        # self.switch_animation()
 
     def leaveEvent(self, event):
-        self.switchDirection = 'up'
+        if self.delayTimer.isActive():
+            self.delayTimer.stop()
+        if self.showDelay:
+            self.showDelay = False
+            self.switchDirection = 'up'
+            self.switch_animation()
+
+    def slot_show_delay_animation(self):
+        self.delayTimer.stop()
+        self.switchDirection = 'down'
         self.switch_animation()
+        self.showDelay = True
 
     def switch_animation(self):
         if(self.switchDirection == 'down'):
@@ -229,6 +263,8 @@ class NormalCard(QWidget):
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
@@ -236,8 +272,12 @@ class NormalCard(QWidget):
                     self.ui.btn.setText("启动")
                     self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
             elif action == AppActions.UPGRADE:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
@@ -247,13 +287,19 @@ class NormalCard(QWidget):
     def slot_work_cancel(self, pkgname,action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
                 self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
                 else:
                     self.ui.btn.setText("启动")
             elif action == AppActions.UPGRADE:
+                self.star.hide()
+                self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("升级")

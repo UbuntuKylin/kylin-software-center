@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/uktliw.ui'
+# Form implementation generated from reading ui file 'uktliw.ui'
 #
-# Created: Fri Sep  5 16:49:34 2014
+# Created: Fri Sep 12 17:02:26 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,17 +39,22 @@ class Ui_TaskLIWidget(object):
         self.size.setGeometry(QtCore.QRect(60, 34, 66, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
-        self.progressBar = QtGui.QProgressBar(TaskLIWidget)
-        self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.status = QtGui.QLabel(TaskLIWidget)
         self.status.setGeometry(QtCore.QRect(-100, -100, 1, 1))
         self.status.setObjectName(_fromUtf8("status"))
         self.btnCancel = QtGui.QPushButton(TaskLIWidget)
-        self.btnCancel.setGeometry(QtCore.QRect(260, 27, 14, 11))
+        self.btnCancel.setGeometry(QtCore.QRect(278, 27, 13, 13))
         self.btnCancel.setText(_fromUtf8(""))
         self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
+        self.progresslabel = QtGui.QLabel(TaskLIWidget)
+        self.progresslabel.setGeometry(QtCore.QRect(240, 23, 35, 18))
+        self.progresslabel.setText(_fromUtf8(""))
+        self.progresslabel.setObjectName(_fromUtf8("progresslabel"))
+        self.progressBar = QtGui.QProgressBar(TaskLIWidget)
+        self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setTextVisible(False)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
 
         self.retranslateUi(TaskLIWidget)
         QtCore.QMetaObject.connectSlotsByName(TaskLIWidget)

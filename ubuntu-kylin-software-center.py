@@ -78,6 +78,8 @@ class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
     recommendNumber = 0
+    # pre page
+    prePage = ''
     # now page
     nowPage = ''
     # his page
@@ -157,6 +159,8 @@ class SoftwareCenter(QMainWindow):
         self.winListWidget.calculate_data()
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
+        # self.detailScrollWidget.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 565))
+        self.detailScrollWidget.move(20, 40)
         self.detailScrollWidget.raise_()
         # loading div
         self.launchLoadingDiv = LoadingDiv(None)
@@ -207,11 +211,12 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMaxNormal.setFocusPolicy(Qt.NoFocus)
         self.ui.btnConf.setFocusPolicy(Qt.NoFocus)
+        self.ui.lebg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnXp.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
         # self.ui.allListWidget.setFocusPolicy(Qt.NoFocus)
         # self.ui.upListWidget.setFocusPolicy(Qt.NoFocus)
@@ -219,6 +224,13 @@ class SoftwareCenter(QMainWindow):
         # self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
+
+        # add by kobe
+        self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
+        self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
+        self.ui.virtuallabel.setStyleSheet("QLabel{background-image:url('res/virtual-bg.png')}")
 
         # self.ui.lebg.stackUnder(self.ui.leSearch)
         self.ui.leSearch.stackUnder(self.ui.lebg)
@@ -331,10 +343,14 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-        self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
+        # self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
+
+        # add by kobe
+        self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
+
         self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
         # self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EAF0F3;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{border:1px solid #0396DC;}QLineEdit:focus{border:1px solid #0396DC;color:#666666;}")
 
@@ -380,13 +396,18 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
-        self.ui.btnXp.pressed.connect(self.slot_goto_xppage)
+        self.ui.btnWin.pressed.connect(self.slot_goto_winpage)
         # self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.btnMaxNormal.clicked.connect(self.slot_max_normal)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
+
+        # add by kobe
+        self.ui.lebg.clicked.connect(self.slot_searchDTimer_timeout)
+        self.ui.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
+        # self.ui.lebg.installEventFilter(self)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
@@ -402,7 +423,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(False)
-        self.ui.btnXp.setEnabled(False)
+        self.ui.btnWin.setEnabled(False)
 
         self.ui.allWidget.hide()
         self.ui.upWidget.hide()
@@ -416,7 +437,8 @@ class SoftwareCenter(QMainWindow):
         # self.ui.leftWidget.hide()
 
         # loading
-        self.launchLoadingDiv.start_loading("系统正在初始化...")
+        if(Globals.LAUNCH_MODE != 'quiet'):
+            self.launchLoadingDiv.start_loading("系统正在初始化...")
 
     def init_main_service(self):
         self.appmgr = AppManager()
@@ -530,6 +552,7 @@ class SoftwareCenter(QMainWindow):
 
         # init others
         self.category = ""
+        self.prePage = "homepage"
         self.nowPage = "homepage"
 
         # init data flags
@@ -556,7 +579,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
             self.ui.btnTask.setEnabled(True)
-            self.ui.btnXp.setEnabled(True)
+            self.ui.btnWin.setEnabled(True)
 
             # self.ui.categoryView.show()
             self.ui.headerWidget.show()
@@ -564,7 +587,8 @@ class SoftwareCenter(QMainWindow):
             # self.ui.leftWidget.show()
 
             self.slot_goto_homepage()
-            self.launchLoadingDiv.stop_loading()
+            if(Globals.LAUNCH_MODE != 'quiet'):
+                self.launchLoadingDiv.stop_loading()
             self.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
             windowWidth = QApplication.desktop().width()
@@ -595,6 +619,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
+        self.appmgr.update_xapiandb()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
@@ -651,14 +676,22 @@ class SoftwareCenter(QMainWindow):
         self.loadingDiv.start_loading("")
 
     def mousePressEvent(self, event):
-        if (event.button() == Qt.LeftButton):
+        if(event.button() == Qt.LeftButton):
+            self.clickx = event.globalPos().x()
+            self.clicky = event.globalPos().y()
             self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
             event.accept()
 
     def mouseMoveEvent(self, event):
-        if (event.buttons() == Qt.LeftButton and self.dragPosition != -1):
+        if(event.buttons() == Qt.LeftButton and self.dragPosition != -1):
             self.move(event.globalPos() - self.dragPosition)
             event.accept()
+
+    def mouseReleaseEvent(self, event):
+        # close task page while click anywhere except task page self
+        if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
+            self.ui.taskWidget.setVisible(False)
+            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
@@ -706,7 +739,7 @@ class SoftwareCenter(QMainWindow):
             count = 0
             for pkgname, app in apps.iteritems():
 
-                if self.nowPage ==  "uppage":
+                if self.nowPage == "uppage":
                     if app.is_installed is False:
                         continue
                     if app.is_installed is True and app.is_upgradable is False:
@@ -800,13 +833,26 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
-        self.ui.btnXp.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+
+    def reset_nav_bar_focus_one(self):
+        self.reset_nav_bar()
+        if(self.nowPage == 'homepage'):
+            self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
+        elif(self.nowPage == 'allpage'):
+            self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
+        elif(self.nowPage == 'uppage'):
+            self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
+        elif(self.nowPage == 'unpage'):
+            self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
+        elif(self.nowPage == 'winpage'):
+            self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
 
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
@@ -827,7 +873,12 @@ class SoftwareCenter(QMainWindow):
         # check user config is show
         flag = self.appmgr.get_pointout_is_show_from_db()
         if(flag == True):
+            self.appmgr.set_pointout_is_show(False) # only show pointout once
             self.get_pointout()
+        else:
+            # in quiet mode, dont show pointout ui means dont launch uksc
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                self.slot_close()
 
     def get_pointout(self):
         # find not installed pointout apps
@@ -842,12 +893,15 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-            self.pointout.show_animation()
+            self.pointout.show_animation(True)
         else:
             # in quiet mode, no pointout app.  quit uksc
             if(Globals.LAUNCH_MODE == 'quiet'):
                 self.slot_close()
 
+    def get_pointout_apps_num(self):
+        pl = self.appmgr.get_pointout_apps()
+        return len(pl)
 
     #-------------------------------------------------slots-------------------------------------------------
 
@@ -866,7 +920,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.upWidget.setVisible(True)
         if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
             self.ui.unWidget.setVisible(True)
-        if(self.nowPage == "xppage" and self.ui.winpageWidget.isVisible() == False):
+        if(self.nowPage == "winpage" and self.ui.winpageWidget.isVisible() == False):
             self.ui.winpageWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
@@ -929,6 +983,11 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget.add_sshot(sclist)
 
+    # add by kobe
+    def slot_close_detail(self):
+        self.detailScrollWidget.hide()
+        self.ui.btnCloseDetail.setVisible(False)
+
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
         (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
@@ -950,6 +1009,8 @@ class SoftwareCenter(QMainWindow):
         #     forceChange = True
         # else:
         #     forceChange = False
+        self.prePage = "homepage"
+        self.ui.btnCloseDetail.setVisible(False)
         self.nowPage = 'homepage'
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
@@ -969,21 +1030,26 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
-        self.ui.btnXp.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_allpage(self):
         if self.nowPage != 'allpage':
             forceChange = True
         else:
             forceChange = False
+        self.prePage = "allpage"
         self.nowPage = 'allpage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
+        # add by kobe
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
@@ -1000,22 +1066,26 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
-        self.ui.btnXp.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_uppage(self, ishistory=False):
         if self.nowPage != 'uppage':
             forceChange = True
         else:
             forceChange = False
-
+        self.prePage = "uppage"
         self.nowPage = 'uppage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
+        # add by kobe
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         self.detailScrollWidget.hide()
@@ -1032,22 +1102,26 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
-        self.ui.btnXp.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def slot_goto_unpage(self, ishistory=False):
         if self.nowPage != 'unpage':
             forceChange = True
         else:
             forceChange = False
-
+        self.prePage = "unpage"
         self.nowPage = 'unpage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
+        # add by kobe
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category, forceChange)
         self.detailScrollWidget.hide()
@@ -1064,19 +1138,19 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(True)
-        self.ui.btnXp.setEnabled(True)
+        self.ui.btnWin.setEnabled(True)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
     def goto_search_page(self, ishistory=False):
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
-        self.reset_nav_bar()
+        self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
@@ -1090,17 +1164,21 @@ class SoftwareCenter(QMainWindow):
         self.ui.winpageWidget.setVisible(False)
 
     def slot_goto_taskpage(self, ishistory=False):
+        self.reset_nav_bar_focus_one()
         if(self.ui.taskWidget.isHidden() == True):
             self.ui.taskWidget.setVisible(True)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
         else:
             self.ui.taskWidget.setVisible(False)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        # self.prePage = "taskpage"
+        # self.nowPage = 'taskpage'
+        # self.ui.btnCloseDetail.setVisible(False)
 
-        self.nowPage = 'taskpage'
-
-    def slot_goto_xppage(self, ishistory=False):
-        self.nowPage = 'xppage'
+    def slot_goto_winpage(self, ishistory=False):
+        self.prePage = "winpage"
+        self.nowPage = 'winpage'
+        self.ui.btnCloseDetail.setVisible(False)
         # self.emit(Signals.count_application_update)
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(False)
@@ -1119,13 +1197,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
         self.ui.btnTask.setEnabled(True)
-        self.ui.btnXp.setEnabled(False)
+        self.ui.btnWin.setEnabled(False)
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnXp.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
+        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
         if not self.win_exists:
             self.init_win_solution_widget()
             self.emit(Signals.count_application_update)
@@ -1181,8 +1259,10 @@ class SoftwareCenter(QMainWindow):
             LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app, ishistory=False):
-        self.reset_nav_bar()
-        self.detailScrollWidget.showSimple(app)
+        # self.reset_nav_bar()
+        self.reset_nav_bar_focus_one()
+        self.ui.btnCloseDetail.setVisible(True)
+        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage)
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
@@ -1266,6 +1346,17 @@ class SoftwareCenter(QMainWindow):
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()
         self.searchDTimer.start(500)
+
+    # add by kobe: enter key event for searchbar
+    def slot_enter_key_pressed(self):
+        self.slot_searchDTimer_timeout()
+
+    # def eventFilter(self, obj, event):
+    #     if obj == self.ui.lebg:
+    #         print '123456'
+    #         if event.type() == QEvent.Enter:
+    #             print '2345678'
+
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):

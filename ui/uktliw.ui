@@ -52,19 +52,6 @@
     <string/>
    </property>
   </widget>
-  <widget class="QProgressBar" name="progressBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>300</width>
-     <height>64</height>
-    </rect>
-   </property>
-   <property name="value">
-    <number>24</number>
-   </property>
-  </widget>
   <widget class="QLabel" name="status">
    <property name="geometry">
     <rect>
@@ -78,22 +65,45 @@
   <widget class="QPushButton" name="btnCancel">
    <property name="geometry">
     <rect>
-     <x>260</x>
+     <x>278</x>
      <y>27</y>
-     <width>14</width>
-     <height>11</height>
+     <width>13</width>
+     <height>13</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
-  <zorder>progressBar</zorder>
-  <zorder>icon</zorder>
-  <zorder>name</zorder>
-  <zorder>size</zorder>
-  <zorder>status</zorder>
-  <zorder>btnCancel</zorder>
+  <widget class="QLabel" name="progresslabel">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>23</y>
+     <width>35</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>300</width>
+     <height>64</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+   <property name="textVisible">
+    <bool>false</bool>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

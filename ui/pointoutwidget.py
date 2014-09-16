@@ -57,9 +57,10 @@ class PointOutWidget(QWidget):
         desktopw = QDesktopWidget()
         self.dwidth = desktopw.screenGeometry().width()
         self.dheight = desktopw.screenGeometry().height()
-        self.px = self.dwidth - self.width()
-        self.py = self.dheight
-        self.ty = self.dheight - self.height()
+
+        self.px = self.dwidth
+        self.py = self.dheight - self.height()
+        self.tx = self.dwidth - self.width()
 
         # self.mainw.setAutoFillBackground(True)
         # palette = QPalette()
@@ -95,6 +96,8 @@ class PointOutWidget(QWidget):
         self.ui.cbisshow.setStyleSheet("QCheckBox{border:0px;font-size:13px;}")
         # self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
 
+        self.ui.cbisshow.hide() # pointout only show once
+
     def ui_init(self):
         self.ui = Ui_PointWidget()
         self.ui.setupUi(self)
@@ -112,27 +115,32 @@ class PointOutWidget(QWidget):
         flag = self.ui.cbisshow.isChecked()
         self.mainw.appmgr.set_pointout_is_show(flag)
 
-    def show_animation(self):
+    def show_animation(self, flag):
+        # add by kobe
+        if flag:
+            self.ui.title.setText("安装以下常用软件  提高系统使用体验")
+        else:
+            self.ui.title.setText("推荐软件已经全部更新")
         flag = self.mainw.appmgr.get_pointout_is_show_from_db()
         self.ui.cbisshow.setChecked(flag)
 
-        self.py = self.dheight
+        self.px = self.dwidth
         self.move(self.px, self.py)
         self.po = 0.0
         self.pointoutGOE.setOpacity(self.po)
         self.show()
-        self.pointoutTimer.start(12)
+        self.pointoutTimer.start(2)
 
     def slot_show_animation_step(self):
         if(self.po < 1):
             self.po += 0.011
             self.pointoutGOE.setOpacity(self.po)
-        if(self.py > self.ty):
-            self.py -= 4
-            self.move(self.x(), self.py)
+        if(self.px > self.tx):
+            self.px -= 1
+            self.move(self.px, self.y())
         else:
             self.pointoutTimer.stop()
-            self.move(self.x(), self.ty)
+            self.move(self.tx, self.y())
             self.pointoutGOE.setOpacity(self.po)
 
 

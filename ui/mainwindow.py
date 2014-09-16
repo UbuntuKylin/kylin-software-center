@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/mainwindow.ui'
+# Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Sep  5 15:02:15 2014
+# Created: Fri Sep 12 17:22:54 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -48,10 +48,10 @@ class Ui_MainWindow(object):
         self.btnUn.setGeometry(QtCore.QRect(0, 344, 80, 88))
         self.btnUn.setText(_fromUtf8(""))
         self.btnUn.setObjectName(_fromUtf8("btnUn"))
-        self.btnXp = QtGui.QPushButton(self.navWidget)
-        self.btnXp.setGeometry(QtCore.QRect(0, 432, 80, 88))
-        self.btnXp.setText(_fromUtf8(""))
-        self.btnXp.setObjectName(_fromUtf8("btnXp"))
+        self.btnWin = QtGui.QPushButton(self.navWidget)
+        self.btnWin.setGeometry(QtCore.QRect(0, 432, 80, 88))
+        self.btnWin.setText(_fromUtf8(""))
+        self.btnWin.setObjectName(_fromUtf8("btnWin"))
         self.btnTask = QtGui.QPushButton(self.navWidget)
         self.btnTask.setGeometry(QtCore.QRect(0, 520, 80, 88))
         self.btnTask.setText(_fromUtf8(""))
@@ -186,7 +186,7 @@ class Ui_MainWindow(object):
         self.searchtext2.setText(_fromUtf8(""))
         self.searchtext2.setObjectName(_fromUtf8("searchtext2"))
         self.taskWidget = QtGui.QWidget(self.rightWidget)
-        self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 600))
+        self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
         self.taskListWidget = QtGui.QListWidget(self.taskWidget)
         self.taskListWidget.setGeometry(QtCore.QRect(10, 10, 300, 680))
@@ -231,14 +231,18 @@ class Ui_MainWindow(object):
         self.leSearch = QtGui.QLineEdit(self.headerWidget)
         self.leSearch.setGeometry(QtCore.QRect(600, 12, 260, 24))
         self.leSearch.setObjectName(_fromUtf8("leSearch"))
-        self.lebg = QtGui.QLabel(self.headerWidget)
-        self.lebg.setGeometry(QtCore.QRect(838, 16, 16, 16))
-        self.lebg.setText(_fromUtf8(""))
-        self.lebg.setObjectName(_fromUtf8("lebg"))
         self.btnMaxNormal = QtGui.QPushButton(self.headerWidget)
         self.btnMaxNormal.setGeometry(QtCore.QRect(56, 0, 28, 36))
         self.btnMaxNormal.setText(_fromUtf8(""))
         self.btnMaxNormal.setObjectName(_fromUtf8("btnMaxNormal"))
+        self.lebg = QtGui.QPushButton(self.headerWidget)
+        self.lebg.setGeometry(QtCore.QRect(838, 16, 16, 16))
+        self.lebg.setText(_fromUtf8(""))
+        self.lebg.setObjectName(_fromUtf8("lebg"))
+        self.btnCloseDetail = QtGui.QPushButton(self.headerWidget)
+        self.btnCloseDetail.setGeometry(QtCore.QRect(573, 13, 15, 19))
+        self.btnCloseDetail.setText(_fromUtf8(""))
+        self.btnCloseDetail.setObjectName(_fromUtf8("btnCloseDetail"))
         self.winpageWidget = QtGui.QWidget(self.rightWidget)
         self.winpageWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.winpageWidget.setObjectName(_fromUtf8("winpageWidget"))
@@ -262,6 +266,10 @@ class Ui_MainWindow(object):
         self.winline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         self.winline.setText(_fromUtf8(""))
         self.winline.setObjectName(_fromUtf8("winline"))
+        self.virtuallabel = QtGui.QLabel(self.rightWidget)
+        self.virtuallabel.setGeometry(QtCore.QRect(20, 590, 830, 18))
+        self.virtuallabel.setText(_fromUtf8(""))
+        self.virtuallabel.setObjectName(_fromUtf8("virtuallabel"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

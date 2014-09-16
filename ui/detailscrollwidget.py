@@ -53,20 +53,18 @@ class DetailScrollWidget(QScrollArea):
     def __init__(self, parent=None):
         QScrollArea.__init__(self,parent.ui.rightWidget)
         self.detailWidget = QWidget()
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setStyleSheet("QWidget{border:0px;}")
         self.ui_init()
 
         self.mainwindow = parent
-        self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
+        self.setGeometry(QRect(5, 87, 860, 565))
+        # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
         self.setWidget(self.detailWidget)
-
         self.bigsshot = ScreenShotBig()
+        # self.ui.btnCloseDetail.setText("返回")
 
-        self.ui.detailHeader.setAlignment(Qt.AlignCenter)
-        self.ui.detailHeader.setText("详细信息")
-        self.ui.detailHeader.lower()
-        self.ui.btnCloseDetail.setText("返回")
-
-        self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUninstall.setFocusPolicy(Qt.NoFocus)
@@ -79,7 +77,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.description.setReadOnly(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
+        # self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
         self.ui.btnInstall.clicked.connect(self.slot_click_install)
         self.ui.btnUpdate.clicked.connect(self.slot_click_upgrade)
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
@@ -88,41 +86,74 @@ class DetailScrollWidget(QScrollArea):
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
-        # style
-        self.detailWidget.setAutoFillBackground(True)
-        palette = QPalette()
-        palette.setColor(QPalette.Background, Qt.white)
-        self.detailWidget.setPalette(palette)
 
         self.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
         self.setPalette(palette)
 
-        self.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:12px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                               "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                               "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.name.setStyleSheet("QLabel{font-size:16px;font-weight:bold;}")
-        self.ui.splitText1.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
-        self.ui.splitText2.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
-        self.ui.splitText3.setStyleSheet("QLabel{color:#1E66A4;font-size:16px;}")
-        self.ui.splitLine1.setStyleSheet("QLabel{background-color:#E0E0E0;}")
-        self.ui.splitLine2.setStyleSheet("QLabel{background-color:#E0E0E0;}")
-        self.ui.splitLine3.setStyleSheet("QLabel{background-color:#E0E0E0;}")
-        self.ui.detailHeader.setStyleSheet("QLabel{background-image:url('res/detailheadbg.png');color:black;font-size:16px;color:#1E66A4;}")
-        self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn1-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn1-2.png');}QPushButton:pressed{background:url('res/btn1-3.png');}")
-        self.ui.candidateVersion.setStyleSheet("QLabel{color:#FF7D15;}")
-        self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
-        self.ui.grade.setStyleSheet("QLabel{font-size:30px;color:#1E66A4;}")
-        self.ui.gradeText2.setStyleSheet("QLabel{font-size:13px;}")
-        self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
-        self.ui.summary.setStyleSheet("QTextEdit{border:0px;}")
-        self.ui.description.setStyleSheet("QTextEdit{border:0px;}")
-        self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-                                                                 "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-                                                                 "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        self.ui.sshotBG.setStyleSheet("QLabel{background-image:url('res/sshotbg.png')}")
-        self.ui.btnSshotBack.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-back-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-back-2')}QPushButton:pressed{background-image:url('res/btn-sshot-back-3')}")
-        self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-3')}")
-        self.ui.reviewListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
+        self.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+                                                             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+                                                             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+                                                             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+                                                             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+                                                             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+
+        self.ui.gradeBG.setStyleSheet("QWidget{border:1px solid #cccccc;}")
+        self.ui.iconBG.setStyleSheet("QLabel{background-image:url('res/icon-bg.png')}")
+        self.ui.name.setStyleSheet("QLabel{font-size:28px;font-weight:bold;color:#666666;}")
+        self.ui.splitText1.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
+        self.ui.splitText2.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
+        self.ui.splitText3.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
+        # self.ui.splitLine1.setStyleSheet("QLabel{background-color:#E0E0E0;}")
+        # self.ui.splitLine2.setStyleSheet("QLabel{background-color:#E0E0E0;}")
+        # self.ui.splitLine3.setStyleSheet("QLabel{background-color:#E0E0E0;}")
+        # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
+        # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
+        # self.ui.detailHeader.setStyleSheet("QLabel{background-image:url('res/detailheadbg.png');color:black;font-size:16px;color:#1E66A4;}")
+        # self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
+        self.ui.installedVersion.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.candidateVersion.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.size_install.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.scoretitle.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.scorelabel.setStyleSheet("QLabel{font-size:14x;font-weight:bold;color:#f97150;}")
+        self.ui.fen.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
+        self.ui.scoretitle.setText("软件评分:")
+        self.ui.fen.setText("分")
+        self.ui.gradetitle.setText("分")
+        self.ui.grade.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
+        self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+        self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+        self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:12px;color:#666666;}")
+
+        # self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
+        # self.ui.gradeBG.setStyleSheet("QLabel{border-width: 1px;border-style: solid;border-color:#cccccc;}")
+
+        self.ui.split1.setStyleSheet("QLabel{background-color:#a6a5a7;}")
+        self.ui.split2.setStyleSheet("QLabel{background-color:#a6a5a7;}")
+        self.ui.vline.setStyleSheet("QLabel{background-color:#E0E0E0;}")
+
+        # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
+        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
+        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:12px;color:#666666;}")
+        self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+                                                             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+                                                             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+                                                             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+                                                             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+                                                             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+        # self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
+        #                                                          "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
+        #                                                          "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
+        # self.ui.sshotBG.setStyleSheet("QLabel{background-image:url('res/sshotbg.png')}")
+        self.ui.btnSshotBack.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-back-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-back-2')}QPushButton:pressed{background-image:url('res/btn-sshot-back-2')}")
+        self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-2')}")
+        self.ui.reviewListWidget.setStyleSheet("QListWidget{background-color:transparent; border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
 
         self.ui.thumbnail.hide()
 
@@ -138,25 +169,33 @@ class DetailScrollWidget(QScrollArea):
     def ui_init(self):
         self.ui = Ui_DetailWidget()
         self.ui.setupUi(self.detailWidget)
+        # self.ui.setStyleSheet("QWidget{border:0px;}")
+        self.ui.btnInstall.setStyleSheet("QPushButton{background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+        self.ui.btnUpdate.setStyleSheet("QPushButton{background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
+        self.ui.btnUninstall.setStyleSheet("QPushButton{background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
 
     def show_by_local_debfile(self, path):
         # clear reviews
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
-        self.detailWidget.resize(805, 790)
-        self.ui.reviewListWidget.resize(805, 0)
+        # self.detailWidget.resize(805, 790)
+        # self.ui.reviewListWidget.resize(805, 0)
+        self.detailWidget.resize(860, 790)
+        self.ui.reviewListWidget.resize(860, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
         self.ui.thumbnail.hide()
 
-        self.ui.btnUpdate.setText("不可用")
-        self.ui.btnUninstall.setText("不可用")
-        self.ui.btnUpdate.setEnabled(False)
-        self.ui.btnUninstall.setEnabled(False)
-        self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-        self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+        # self.ui.btnUpdate.setText("不可用")
+        # self.ui.btnUninstall.setText("不可用")
+        # self.ui.btnUpdate.setEnabled(False)
+        # self.ui.btnUninstall.setEnabled(False)
+        # self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+        # self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+        self.ui.btnUpdate.setVisible(False)
+        self.ui.btnUninstall.setVisible(False)
 
         self.debfile = DebFile(path)
         self.app = self.debfile
@@ -177,23 +216,27 @@ class DetailScrollWidget(QScrollArea):
 
             self.ui.btnInstall.setText("安装此包")
             self.ui.btnInstall.setEnabled(True)
-            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
         else:
             self.ui.btnInstall.setText("无法安装")
             self.ui.btnInstall.setEnabled(False)
-            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+        #add by kobe
+        self.ui.btnInstall.setVisible(True)
+        self.ui.btnUpdate.setVisible(False)
+        self.ui.btnUninstall.setVisible(False)
 
         self.show()
         self.mainwindow.loadingDiv.stop_loading()
 
     # fill fast property, show ui, request remote property
-    def showSimple(self, app):
+    def showSimple(self, app, nowpage, prepage):
         # clear reviews
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
-        self.detailWidget.resize(805, 790)
-        self.ui.reviewListWidget.resize(805, 0)
+        # self.detailWidget.resize(805, 790)
+        # self.ui.reviewListWidget.resize(805, 0)
+        self.detailWidget.resize(860, 790)
+        self.ui.reviewListWidget.resize(860, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
@@ -232,51 +275,159 @@ class DetailScrollWidget(QScrollArea):
             self.ui.size_install.setText("安装大小: " + str('%.2f'%(installedsizek/1024.0)) + " MB")
 
         self.ui.gradeText1.setText("我的评分: ")
-        self.ui.gradeText2.setText("评分" + (str(app.ratings_total)) + "次")
-        self.ui.commentNumber.setText("共 " + str(app.ratings_total) + " 条评论")
-        self.ui.gradeText3.setText("满分5分")
+        # self.ui.gradeText2.setStyleSheet("QLabel{text-align:center;}")
+        self.ui.gradeText2.setText((str(app.ratings_total)) + "人参加评分")
+        # self.ui.commentNumber.setText("共 " + str(app.ratings_total) + " 条评论")
+        # self.ui.gradeText3.setText("满分5分")
+        # self.ui.grade.setStyleSheet("QLabel{text-align:center;}")
+        self.ui.scorelabel.setText(str(app.ratings_average))
         self.ui.grade.setText(str(app.ratings_average))
+
+        self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
+        self.smallstar.move(180, 98)
+
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
-        self.star.move(500, 94)
+        self.star.move(70, 584)
+        self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
+        self.star2.move(710, 575)
 
-        if(app.is_installed):
-            self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
-            self.ui.status.show()
-
-            if(run.get_run_command(self.app.name) == ""):
-                self.ui.btnInstall.setEnabled(False)
-                self.ui.btnInstall.setText("已安装")
-                self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+        if nowpage == "homepage" or nowpage == "allpage" or nowpage == "winpage" or nowpage == "taskpage":
+            if(app.is_installed):
+                self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
+                self.ui.status.show()
+                if(run.get_run_command(self.app.name) == ""):
+                    self.ui.btnInstall.setEnabled(False)
+                    self.ui.btnUpdate.setEnabled(False)
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(True)
+                    self.ui.btnUpdate.setVisible(False)
+                    self.ui.btnUninstall.setVisible(False)
+                    self.ui.btnInstall.setText("已安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                else:
+                    if self.app.is_upgradable:
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(False)
+                        self.ui.btnUpdate.setEnabled(True)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(False)
+                        self.ui.btnUpdate.setVisible(True)
+                        self.ui.btnUninstall.setVisible(False)
+                    else:
+                        self.ui.btnInstall.setText("启动")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(True)
+                        self.ui.btnUpdate.setEnabled(False)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(True)
+                        self.ui.btnUpdate.setVisible(False)
+                        self.ui.btnUninstall.setVisible(False)
             else:
+                self.ui.status.hide()
+                self.ui.btnInstall.setText("安装")
+                self.ui.btnUpdate.setText("升级")
+                self.ui.btnUninstall.setText("卸载")
                 self.ui.btnInstall.setEnabled(True)
-                self.ui.btnInstall.setText("启动")
-                self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-
-            if self.app.is_upgradable:
-                self.ui.btnUpdate.setEnabled(True)
-                self.ui.btnUpdate.setText("升级")
-                self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn4-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
-            else:
                 self.ui.btnUpdate.setEnabled(False)
+                self.ui.btnUninstall.setEnabled(False)
+                self.ui.btnInstall.setVisible(True)
+                self.ui.btnUpdate.setVisible(False)
+                self.ui.btnUninstall.setVisible(False)
+        elif nowpage == "searchpage":
+            if prepage == "homepage" or prepage == "allpage" or prepage == "winpage" or prepage == "taskpage":
+                if(app.is_installed):
+                    self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
+                    self.ui.status.show()
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btnInstall.setEnabled(False)
+                        self.ui.btnUpdate.setEnabled(False)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(True)
+                        self.ui.btnUpdate.setVisible(False)
+                        self.ui.btnUninstall.setVisible(False)
+                        self.ui.btnInstall.setText("已安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
+                    else:
+                        if self.app.is_upgradable:
+                            self.ui.btnInstall.setText("安装")
+                            self.ui.btnUpdate.setText("升级")
+                            self.ui.btnUninstall.setText("卸载")
+                            self.ui.btnInstall.setEnabled(False)
+                            self.ui.btnUpdate.setEnabled(True)
+                            self.ui.btnUninstall.setEnabled(False)
+                            self.ui.btnInstall.setVisible(False)
+                            self.ui.btnUpdate.setVisible(True)
+                            self.ui.btnUninstall.setVisible(False)
+                        else:
+                            self.ui.btnInstall.setText("启动")
+                            self.ui.btnUpdate.setText("升级")
+                            self.ui.btnUninstall.setText("卸载")
+                            self.ui.btnInstall.setEnabled(True)
+                            self.ui.btnUpdate.setEnabled(False)
+                            self.ui.btnUninstall.setEnabled(False)
+                            self.ui.btnInstall.setVisible(True)
+                            self.ui.btnUpdate.setVisible(False)
+                            self.ui.btnUninstall.setVisible(False)
+                else:
+                    self.ui.status.hide()
+                    self.ui.btnInstall.setText("安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                    self.ui.btnInstall.setEnabled(True)
+                    self.ui.btnUpdate.setEnabled(False)
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(True)
+                    self.ui.btnUpdate.setVisible(False)
+                    self.ui.btnUninstall.setVisible(False)
+            elif prepage == "uppage":
+                self.ui.status.hide()
+                self.ui.btnInstall.setText("安装")
                 self.ui.btnUpdate.setText("升级")
-                self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
-            self.ui.btnUninstall.setText("卸载")
-            self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
-        else:
-           # self.ui.status.setStyleSheet("QLabel{background-image:url('res/notinstall.png')}")
+                self.ui.btnUninstall.setText("卸载")
+                self.ui.btnInstall.setEnabled(False)
+                self.ui.btnUpdate.setEnabled(True)
+                self.ui.btnUninstall.setEnabled(False)
+                self.ui.btnInstall.setVisible(False)
+                self.ui.btnUpdate.setVisible(True)
+                self.ui.btnUninstall.setVisible(False)
+            elif prepage == "unpage":
+                self.ui.status.hide()
+                self.ui.btnInstall.setText("安装")
+                self.ui.btnUpdate.setText("升级")
+                self.ui.btnUninstall.setText("卸载")
+                self.ui.btnInstall.setEnabled(False)
+                self.ui.btnUpdate.setEnabled(False)
+                self.ui.btnUninstall.setEnabled(True)
+                self.ui.btnInstall.setVisible(False)
+                self.ui.btnUpdate.setVisible(False)
+                self.ui.btnUninstall.setVisible(True)
+        elif nowpage == "uppage":
             self.ui.status.hide()
-
             self.ui.btnInstall.setText("安装")
             self.ui.btnUpdate.setText("升级")
             self.ui.btnUninstall.setText("卸载")
-            self.ui.btnInstall.setEnabled(True)
-            self.ui.btnUpdate.setEnabled(False)
+            self.ui.btnInstall.setEnabled(False)
+            self.ui.btnUpdate.setEnabled(True)
             self.ui.btnUninstall.setEnabled(False)
-            self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-            self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-            self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
+            self.ui.btnInstall.setVisible(False)
+            self.ui.btnUpdate.setVisible(True)
+            self.ui.btnUninstall.setVisible(False)
+        elif nowpage == "unpage":
+            self.ui.status.hide()
+            self.ui.btnInstall.setText("安装")
+            self.ui.btnUpdate.setText("升级")
+            self.ui.btnUninstall.setText("卸载")
+            self.ui.btnInstall.setEnabled(False)
+            self.ui.btnUpdate.setEnabled(False)
+            self.ui.btnUninstall.setEnabled(True)
+            self.ui.btnInstall.setVisible(False)
+            self.ui.btnUpdate.setVisible(False)
+            self.ui.btnUninstall.setVisible(True)
         self.show()
 
         # show loading
@@ -303,8 +454,10 @@ class DetailScrollWidget(QScrollArea):
     def add_one_review(self, review):
         count = self.ui.reviewListWidget.count()
         reviewHeight = (count + 1) * 85
-        self.detailWidget.resize(805, 790 + reviewHeight)
-        self.ui.reviewListWidget.resize(805, reviewHeight)
+        # self.detailWidget.resize(805, 790 + reviewHeight)
+        # self.ui.reviewListWidget.resize(805, reviewHeight)
+        self.detailWidget.resize(860, 790 + reviewHeight)
+        self.ui.reviewListWidget.resize(860, reviewHeight)
 
         oneitem = QListWidgetItem()
         rliw = ReviewWidget(self.app.ratings_average, review)
@@ -317,7 +470,8 @@ class DetailScrollWidget(QScrollArea):
             img = QPixmap(self.app.thumbnailfile)
             self.ui.thumbnail.resize(img.width(), img.height())
             self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-            self.ui.thumbnail.move(400 - img.width() / 2, 521 - img.height() / 2)
+            # self.ui.thumbnail.move(400 - img.width() / 2, 521 - img.height() / 2)
+            self.ui.thumbnail.move(430 - img.width() / 2, 380 - img.height() / 2)
             self.ui.thumbnail.show()
         if(self.sshotcount > 1):
             img = QPixmap(self.app.screenshotfile)
@@ -332,8 +486,8 @@ class DetailScrollWidget(QScrollArea):
             self.bigsshot.move_to_center()
             self.bigsshot.show()
 
-    def slot_close_detail(self):
-        self.hide()
+    # def slot_close_detail(self):
+    #     self.hide()
 
     def slot_click_install(self):
         if(self.ui.btnInstall.text() == "启动"):
@@ -376,71 +530,96 @@ class DetailScrollWidget(QScrollArea):
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btnInstall.setEnabled(False)
                     self.ui.btnInstall.setText("已安装")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
                 else:
                     self.ui.btnInstall.setEnabled(True)
                     self.ui.btnInstall.setText("启动")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                self.ui.btnUpdate.setEnabled(False)
+                self.ui.btnUninstall.setEnabled(False)
+                self.ui.btnInstall.setVisible(True)
+                self.ui.btnUpdate.setVisible(False)
+                self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.INSTALL:
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnInstall.setText("已安装")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-                else:
-                    self.ui.btnInstall.setEnabled(True)
-                    self.ui.btnInstall.setText("启动")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-
-                if self.app.is_upgradable:
-                    self.ui.btnUpdate.setEnabled(True)
-                    self.ui.btnUpdate.setText("可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn4-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
-                else:
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUpdate.setText("不可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
-                self.ui.btnUninstall.setText("可卸载")
-                self.ui.btnUninstall.setEnabled(True)
-                self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(True)
+                    self.ui.btnUpdate.setVisible(False)
+                    self.ui.btnUninstall.setVisible(False)
+                else:
+                    self.ui.btnInstall.setVisible(True)
+                    if self.app.is_upgradable:
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(False)
+                        self.ui.btnUpdate.setEnabled(True)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(False)
+                        self.ui.btnUpdate.setVisible(True)
+                        self.ui.btnUninstall.setVisible(False)
+                    else:
+                        self.ui.btnInstall.setText("启动")
+                        self.ui.btnUpdate.setText("不可升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(True)
+                        self.ui.btnUpdate.setEnabled(False)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(True)
+                        self.ui.btnUpdate.setVisible(False)
+                        self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.REMOVE:
-
                 self.ui.btnInstall.setText("安装")
                 self.ui.btnUpdate.setText("不可升级")
-                self.ui.btnUninstall.setText("已卸载")
-                self.ui.btnInstall.setEnabled(True)
+                self.ui.btnUninstall.setText("卸载")#已
+                self.ui.btnInstall.setEnabled(False)
                 self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-                self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-                self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
+                self.ui.btnUninstall.setEnabled(True)
+                self.ui.btnInstall.setVisible(False)
+                self.ui.btnUpdate.setVisible(False)
+                self.ui.btnUninstall.setVisible(True)
 
             elif action == AppActions.UPGRADE:
-
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnInstall.setText("已安装")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-                else:
-                    self.ui.btnInstall.setEnabled(True)
-                    self.ui.btnInstall.setText("启动")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-
-                if self.app.is_upgradable:
-                    self.ui.btnUpdate.setEnabled(True)
-                    self.ui.btnUpdate.setText("可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
-                else:
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUpdate.setText("不可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
-                self.ui.btnUninstall.setText("可卸载")
-                self.ui.btnUninstall.setEnabled(True)
-                self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(True)
+                    self.ui.btnUpdate.setVisible(False)
+                    self.ui.btnUninstall.setVisible(False)
+                else:
+                    if self.app.is_upgradable:
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(False)
+                        self.ui.btnUpdate.setEnabled(True)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(False)
+                        self.ui.btnUpdate.setVisible(True)
+                        self.ui.btnUninstall.setVisible(False)
+                    else:
+                        self.ui.btnInstall.setText("启动")
+                        self.ui.btnUpdate.setText("不可升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(True)
+                        self.ui.btnUpdate.setEnabled(False)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(True)
+                        self.ui.btnUpdate.setVisible(False)
+                        self.ui.btnUninstall.setVisible(False)
 
     def slot_work_cancel(self, pkgname, action):
         if self.app is None:
@@ -451,72 +630,70 @@ class DetailScrollWidget(QScrollArea):
             self.ui.status.show()
 
             if action == AppActions.INSTALL:
-
                 if self.app.is_upgradable:
+                    self.ui.btnInstall.setText("安装")
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(True)
-                    self.ui.btnUpdate.setText("可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(False)
+                    self.ui.btnUpdate.setVisible(True)
+                    self.ui.btnUninstall.setVisible(False)
                 else:
-                    self.ui.btnUpdate.setEnabled(False)
+                    self.ui.btnInstall.setText("安装")
                     self.ui.btnUpdate.setText("不可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
-
-                self.ui.btnInstall.setEnabled(True)
-                self.ui.btnInstall.setText("安装")
-                self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn4-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
-                self.ui.btnUninstall.setText("已卸载")
-
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
+                    self.ui.btnUninstall.setText("卸载")
+                    self.ui.btnInstall.setEnabled(True)
+                    self.ui.btnUpdate.setEnabled(False)
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(True)
+                    self.ui.btnUpdate.setVisible(False)
+                    self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.REMOVE:
-
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setEnabled(False)
-                    self.ui.btnInstall.setText("已安装")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-                else:
-                    self.ui.btnInstall.setEnabled(True)
-                    self.ui.btnInstall.setText("启动")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-
-                if self.app.is_upgradable:
-                    self.ui.btnUpdate.setEnabled(True)
-                    self.ui.btnUpdate.setText("可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn4-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
-                else:
-                    self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUpdate.setText("不可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
-                self.ui.btnUninstall.setText("可卸载")
+                self.ui.btnInstall.setText("安装")
+                self.ui.btnUpdate.setText("升级")
+                self.ui.btnUninstall.setText("卸载")
+                self.ui.btnInstall.setEnabled(False)
+                self.ui.btnUpdate.setEnabled(False)
                 self.ui.btnUninstall.setEnabled(True)
-                self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
+                self.ui.btnInstall.setVisible(False)
+                self.ui.btnUpdate.setVisible(False)
+                self.ui.btnUninstall.setVisible(True)
 
             elif action == AppActions.UPGRADE:
-
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnInstall.setText("已安装")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-                else:
-                    self.ui.btnInstall.setEnabled(True)
-                    self.ui.btnInstall.setText("启动")
-                    self.ui.btnInstall.setStyleSheet("QPushButton{background-image:url('res/btn3-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn3-2.png');}QPushButton:pressed{background:url('res/btn3-3.png');}")
-
-                if self.app.is_upgradable:
-                    self.ui.btnUpdate.setEnabled(True)
-                    self.ui.btnUpdate.setText("可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn4-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn4-2.png');}QPushButton:pressed{background:url('res/btn4-3.png');}")
-                else:
+                    self.ui.btnUpdate.setText("升级")
+                    self.ui.btnUninstall.setText("卸载")
+                    self.ui.btnInstall.setEnabled(False)
                     self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUpdate.setText("不可升级")
-                    self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-
-                self.ui.btnUninstall.setText("可卸载")
-                self.ui.btnUninstall.setEnabled(True)
-                self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn5-1.png');border:0px;color:white;}QPushButton:hover{background:url('res/btn5-2.png');}QPushButton:pressed{background:url('res/btn5-3.png');}")
+                    self.ui.btnUninstall.setEnabled(False)
+                    self.ui.btnInstall.setVisible(True)
+                    self.ui.btnUpdate.setVisible(False)
+                    self.ui.btnUninstall.setVisible(False)
+                else:
+                    if self.app.is_upgradable:
+                        self.ui.btnInstall.setText("安装")
+                        self.ui.btnUpdate.setText("升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(False)
+                        self.ui.btnUpdate.setEnabled(True)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(False)
+                        self.ui.btnUpdate.setVisible(True)
+                        self.ui.btnUninstall.setVisible(False)
+                    else:
+                        self.ui.btnInstall.setText("启动")
+                        self.ui.btnUpdate.setText("不可升级")
+                        self.ui.btnUninstall.setText("卸载")
+                        self.ui.btnInstall.setEnabled(True)
+                        self.ui.btnUpdate.setEnabled(False)
+                        self.ui.btnUninstall.setEnabled(False)
+                        self.ui.btnInstall.setVisible(True)
+                        self.ui.btnUpdate.setVisible(False)
+                        self.ui.btnUninstall.setVisible(False)
 
     def slot_scroll_end(self, now):
         # current page not ready

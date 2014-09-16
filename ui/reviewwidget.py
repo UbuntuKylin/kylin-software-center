@@ -41,7 +41,8 @@ class ReviewWidget(QWidget):
         self.ui.comment.setAlignment(Qt.AlignVCenter)
         self.ui.comment.setWordWrap(True)
 
-        self.ui.userName.setStyleSheet("QLabel{color:#1E66A4;font-size:14px;}")
+        self.ui.userName.setStyleSheet("QLabel{color:#999999;font-size:12px;}")
+        self.ui.comment.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.userHead.setStyleSheet("QLabel{background-image:url('res/userhead.png')}")
         self.ui.createDate.setStyleSheet("QLabel{color:#9AA2AF;font-size:13px;}")
         self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png')}")
