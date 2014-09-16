@@ -64,6 +64,8 @@ from models.enums import Signals
 
 from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
 
+from backend.ubuntusso import get_ubuntu_sso_backend
+
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -404,6 +406,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
 
+        # user account
+        self.sso = get_ubuntu_sso_backend()
+        self.ui.btnLogin.pressed.connect(self.slot_do_login_account)
+        self.ui.btnReg.pressed.connect(self.slot_do_register)
+        self.ui.btnLogout.pressed.connect(self.slot_do_logout)
+        self.sso.connect("whoami", self.slot_whoami_done)
+
         # add by kobe
         self.ui.lebg.clicked.connect(self.slot_searchDTimer_timeout)
         self.ui.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
@@ -537,7 +546,10 @@ class SoftwareCenter(QMainWindow):
 
     def check_user(self):
 
-        # check user status from SSO module
+        # try backend login
+        self.token = self.sso.find_oauth_token_and_verify_sync()
+        if self.token:
+            self.sso.whoami()
 
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
@@ -715,7 +727,7 @@ class SoftwareCenter(QMainWindow):
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
 
-            card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+            card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
             listWidget.add_card(card)
             self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(card, Signals.install_app, self.slot_click_install)
@@ -751,7 +763,7 @@ class SoftwareCenter(QMainWindow):
                     count = count + 1
                     continue
 
-                card = NormalCard(app, self.nowPage, listWidget.cardPanel)
+                card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
                 listWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)
@@ -1425,6 +1437,36 @@ class SoftwareCenter(QMainWindow):
                 else:
                     self.messageBox.alert_msg(msg)
 
+    # user login
+    def slot_do_login_account(self):
+        self.sso.setShowRegister(False)
+        self.token = self.sso.get_oauth_token_and_verify_sync()
+        if self.token:
+            self.sso.whoami()
+
+    # user register
+    def slot_do_register(self):
+        self.sso.setShowRegister(True)
+        self.token = self.sso.get_oauth_token_and_verify_sync()
+        if self.token:
+            self.sso.whoami()
+
+    def slot_do_logout(self):
+        self.sso.clear_token()
+	self.token = ""	
+
+        self.ui.beforeLoginWidget.show()
+        self.ui.afterLoginWidget.hide()
+
+    # update user login status
+    def slot_whoami_done(self, sso, result):
+        display_name = result["displayname"]
+        preferred_email = result["preferred_email"]
+        print 'Login success, username: %s' % display_name
+
+        self.ui.beforeLoginWidget.hide()
+        self.ui.afterLoginWidget.show()
+        self.ui.username.setText(display_name)
 
 def check_local_deb_file(url):
     return os.path.isfile(url)

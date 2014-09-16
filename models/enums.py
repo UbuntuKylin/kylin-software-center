@@ -105,6 +105,14 @@ LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:whit
 
 AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 
+# ported from ubuntu-software-center to support Ubuntu-kylin-SSO
+UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
+SOFTWARE_CENTER_NAME_KEYRING = "Ubuntu Kylin ID"
+SOFTWARE_CENTER_SSO_DESCRIPTION = '注册或登录 Ubuntu Kylin 软件中心。'
+datadir = "./utils/"
+PISTON_GENERIC_HELPER = "piston_generic_helper.py"
+
+
 class Signals:
     init_models_ready = SIGNAL("init-data-ready")
     chksoftwareover = SIGNAL("chksoftwareover")

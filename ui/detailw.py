@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Fri Sep 12 16:56:50 2014
+# Created: Tue Sep 16 14:24:06 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DetailWidget(object):
     def setupUi(self, DetailWidget):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
-        DetailWidget.resize(860, 800)
+        DetailWidget.resize(860, 920)
         DetailWidget.setStyleSheet(_fromUtf8(""))
         self.iconBG = QtGui.QLabel(DetailWidget)
         self.iconBG.setGeometry(QtCore.QRect(25, 0, 80, 80))
@@ -61,7 +61,7 @@ class Ui_DetailWidget(object):
         self.splitText3.setGeometry(QtCore.QRect(25, 660, 66, 17))
         self.splitText3.setObjectName(_fromUtf8("splitText3"))
         self.reviewListWidget = QtGui.QListWidget(DetailWidget)
-        self.reviewListWidget.setGeometry(QtCore.QRect(25, 690, 810, 85))
+        self.reviewListWidget.setGeometry(QtCore.QRect(25, 810, 810, 85))
         self.reviewListWidget.setAutoFillBackground(True)
         self.reviewListWidget.setObjectName(_fromUtf8("reviewListWidget"))
         self.thumbnail = QtGui.QPushButton(DetailWidget)
@@ -160,6 +160,50 @@ class Ui_DetailWidget(object):
         self.scorelabel.setGeometry(QtCore.QRect(136, 96, 21, 18))
         self.scorelabel.setText(_fromUtf8(""))
         self.scorelabel.setObjectName(_fromUtf8("scorelabel"))
+        self.homeMsgWidget = QtGui.QWidget(DetailWidget)
+        self.homeMsgWidget.setGeometry(QtCore.QRect(25, 760, 500, 44))
+        self.homeMsgWidget.setObjectName(_fromUtf8("homeMsgWidget"))
+        self.afterLoginWidget = QtGui.QWidget(self.homeMsgWidget)
+        self.afterLoginWidget.setGeometry(QtCore.QRect(0, 0, 260, 44))
+        self.afterLoginWidget.setObjectName(_fromUtf8("afterLoginWidget"))
+        self.userLogoafter = QtGui.QLabel(self.afterLoginWidget)
+        self.userLogoafter.setGeometry(QtCore.QRect(0, 14, 16, 16))
+        self.userLogoafter.setText(_fromUtf8(""))
+        self.userLogoafter.setObjectName(_fromUtf8("userLogoafter"))
+        self.welcometext = QtGui.QLabel(self.afterLoginWidget)
+        self.welcometext.setGeometry(QtCore.QRect(18, 14, 50, 15))
+        self.welcometext.setText(_fromUtf8(""))
+        self.welcometext.setObjectName(_fromUtf8("welcometext"))
+        self.username = QtGui.QLabel(self.afterLoginWidget)
+        self.username.setGeometry(QtCore.QRect(70, 14, 80, 16))
+        self.username.setText(_fromUtf8(""))
+        self.username.setObjectName(_fromUtf8("username"))
+        self.btnLogout = QtGui.QPushButton(self.afterLoginWidget)
+        self.btnLogout.setGeometry(QtCore.QRect(160, 14, 45, 15))
+        self.btnLogout.setText(_fromUtf8(""))
+        self.btnLogout.setObjectName(_fromUtf8("btnLogout"))
+        self.beforeLoginWidget = QtGui.QWidget(self.homeMsgWidget)
+        self.beforeLoginWidget.setGeometry(QtCore.QRect(0, 0, 260, 44))
+        self.beforeLoginWidget.setObjectName(_fromUtf8("beforeLoginWidget"))
+        self.userLogo = QtGui.QLabel(self.beforeLoginWidget)
+        self.userLogo.setGeometry(QtCore.QRect(0, 14, 16, 16))
+        self.userLogo.setText(_fromUtf8(""))
+        self.userLogo.setObjectName(_fromUtf8("userLogo"))
+        self.btnLogin = QtGui.QPushButton(self.beforeLoginWidget)
+        self.btnLogin.setGeometry(QtCore.QRect(18, 14, 50, 15))
+        self.btnLogin.setText(_fromUtf8(""))
+        self.btnLogin.setObjectName(_fromUtf8("btnLogin"))
+        self.btnReg = QtGui.QPushButton(self.beforeLoginWidget)
+        self.btnReg.setGeometry(QtCore.QRect(70, 14, 65, 15))
+        self.btnReg.setText(_fromUtf8(""))
+        self.btnReg.setObjectName(_fromUtf8("btnReg"))
+        self.reviewText = QtGui.QTextEdit(DetailWidget)
+        self.reviewText.setGeometry(QtCore.QRect(25, 685, 810, 76))
+        self.reviewText.setObjectName(_fromUtf8("reviewText"))
+        self.bntSubmit = QtGui.QPushButton(DetailWidget)
+        self.bntSubmit.setGeometry(QtCore.QRect(734, 762, 100, 32))
+        self.bntSubmit.setText(_fromUtf8(""))
+        self.bntSubmit.setObjectName(_fromUtf8("bntSubmit"))
 
         self.retranslateUi(DetailWidget)
         QtCore.QMetaObject.connectSlotsByName(DetailWidget)
