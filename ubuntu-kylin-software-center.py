@@ -547,8 +547,8 @@ class SoftwareCenter(QMainWindow):
     def check_user(self):
 
         # try backend login
-        token = self.sso.find_oauth_token_and_verify_sync()
-        if token:
+        self.token = self.sso.find_oauth_token_and_verify_sync()
+        if self.token:
             self.sso.whoami()
 
         self.ui.beforeLoginWidget.show()
@@ -1425,6 +1425,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_do_logout(self):
         self.sso.clear_token()
+	self.token = ""	
 
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()

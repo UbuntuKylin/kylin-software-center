@@ -37,8 +37,8 @@ from piston_mini_client.failhandlers import APIError
 try:
     import backend
 except ImportError:
-    if os.path.exists("../backend"):
-        sys.path.insert(0, "../")
+    if os.path.exists("./backend"):
+        sys.path.insert(0, os.path.abspath("./"))
     else:
         sys.path.insert(0, "/usr/share/ubuntu-kylin-software-center")
 
