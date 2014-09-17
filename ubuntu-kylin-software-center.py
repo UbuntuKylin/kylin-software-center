@@ -1453,7 +1453,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_do_logout(self):
         self.sso.clear_token()
-	self.token = ""	
+        self.token = ""
 
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
