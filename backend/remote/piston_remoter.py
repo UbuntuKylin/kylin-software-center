@@ -31,6 +31,7 @@ from piston_mini_client import (
     returns,
     returns_json,
     returns_list_of,
+    auth,
     )
 from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
@@ -53,6 +54,14 @@ class ReviewUK(PistonResponseObject):
     }
     """
     pass
+
+
+class RatinsUKRequest(PistonSerializable):
+    _atts = ('app_name', 'rating', 'user', 'user_display')
+
+
+class ReviewUKRequest(PistonSerializable):
+    _atts = ('app_name', 'content', 'distroseries', 'language', 'user', 'user_display')
 
 
 class PingbackmainRequest(PistonSerializable):
@@ -120,8 +129,46 @@ class PistonRemoter(PistonAPI):
     def newerapp_for_xapianupdate(self, the_latest_update_time):
         return self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
 
+
+class PistonRemoterAuth(PistonAPI):
+
+    default_service_observe = 'observe'
+    default_service_forecast3d = 'forecast3d'
+    default_content_type = 'application/x-www-form-urlencoded'
+    default_service_root = 'http://192.168.30.12/uksc/'
+
+    @returns_json
+    def submit_review(self, app, content, distroseries, language, user, user_display):
+        postdata = ReviewUKRequest()
+        postdata.app_name = app
+        postdata.content = content
+        postdata.distroseries = distroseries
+        postdata.language = language
+        postdata.user = user
+        postdata.user_display = user_display
+        return self._post('submitreview/', data=postdata, scheme='http', content_type='application/json')
+
+    @returns_json
+    def submit_rating(self, app, rating, user, user_display):
+        postdata = RatinsUKRequest()
+        postdata.app_name = app
+        postdata.rating = rating
+        postdata.user = user
+        postdata.user_display = user_display
+        return self._post('submitrating/', data=postdata, scheme='http', content_type='application/json')
+
+
 if __name__ == '__main__':
-    s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
+    from backend.ubuntusso import *
+    from utils.machine import *
+    # from
+    sso = get_ubuntu_sso_backend()
+    token = sso.get_oauth_token_and_verify_sync()
+    authorizer = auth.OAuthAuthorizer(token["token"], token["token_secret"], token["consumer_key"], token["consumer_secret"])
+    ss = PistonRemoterAuth(auth=authorizer)
+    res = ss.submit_review('gedit', 'just a test', get_distro_info()[2], get_language())
+    print res
+    # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
     # res = s.get_all_rank_and_recommend()
     # print res

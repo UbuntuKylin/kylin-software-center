@@ -1460,6 +1460,7 @@ class SoftwareCenter(QMainWindow):
 
     # update user login status
     def slot_whoami_done(self, sso, result):
+        user = result["username"]
         display_name = result["displayname"]
         preferred_email = result["preferred_email"]
         print 'Login success, username: %s' % display_name
@@ -1467,6 +1468,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.beforeLoginWidget.hide()
         self.ui.afterLoginWidget.show()
         self.ui.username.setText(display_name)
+
+        Globals.USER = user
+        Globals.USER_DISPLAY = display_name
+
 
 def check_local_deb_file(url):
     return os.path.isfile(url)

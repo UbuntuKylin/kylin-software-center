@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Tue Sep 16 14:24:06 2014
+# Created: Tue Sep 16 15:57:27 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_DetailWidget(object):
     def setupUi(self, DetailWidget):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
-        DetailWidget.resize(860, 920)
+        DetailWidget.resize(873, 920)
         DetailWidget.setStyleSheet(_fromUtf8(""))
         self.iconBG = QtGui.QLabel(DetailWidget)
         self.iconBG.setGeometry(QtCore.QRect(25, 0, 80, 80))
@@ -40,13 +40,13 @@ class Ui_DetailWidget(object):
         self.splitText1.setGeometry(QtCore.QRect(25, 124, 66, 17))
         self.splitText1.setObjectName(_fromUtf8("splitText1"))
         self.summary = QtGui.QTextEdit(DetailWidget)
-        self.summary.setGeometry(QtCore.QRect(25, 150, 810, 40))
+        self.summary.setGeometry(QtCore.QRect(25, 150, 824, 40))
         self.summary.setObjectName(_fromUtf8("summary"))
         self.description = QtGui.QTextEdit(DetailWidget)
-        self.description.setGeometry(QtCore.QRect(25, 190, 810, 81))
+        self.description.setGeometry(QtCore.QRect(25, 190, 824, 81))
         self.description.setObjectName(_fromUtf8("description"))
         self.sshotBG = QtGui.QLabel(DetailWidget)
-        self.sshotBG.setGeometry(QtCore.QRect(25, 290, 810, 200))
+        self.sshotBG.setGeometry(QtCore.QRect(25, 290, 824, 200))
         self.sshotBG.setText(_fromUtf8(""))
         self.sshotBG.setObjectName(_fromUtf8("sshotBG"))
         self.btnSshotBack = QtGui.QPushButton(DetailWidget)
@@ -54,14 +54,14 @@ class Ui_DetailWidget(object):
         self.btnSshotBack.setText(_fromUtf8(""))
         self.btnSshotBack.setObjectName(_fromUtf8("btnSshotBack"))
         self.btnSshotNext = QtGui.QPushButton(DetailWidget)
-        self.btnSshotNext.setGeometry(QtCore.QRect(790, 370, 40, 40))
+        self.btnSshotNext.setGeometry(QtCore.QRect(807, 370, 40, 40))
         self.btnSshotNext.setText(_fromUtf8(""))
         self.btnSshotNext.setObjectName(_fromUtf8("btnSshotNext"))
         self.splitText3 = QtGui.QLabel(DetailWidget)
         self.splitText3.setGeometry(QtCore.QRect(25, 660, 66, 17))
         self.splitText3.setObjectName(_fromUtf8("splitText3"))
         self.reviewListWidget = QtGui.QListWidget(DetailWidget)
-        self.reviewListWidget.setGeometry(QtCore.QRect(25, 810, 810, 85))
+        self.reviewListWidget.setGeometry(QtCore.QRect(25, 810, 824, 85))
         self.reviewListWidget.setAutoFillBackground(True)
         self.reviewListWidget.setObjectName(_fromUtf8("reviewListWidget"))
         self.thumbnail = QtGui.QPushButton(DetailWidget)
@@ -76,15 +76,15 @@ class Ui_DetailWidget(object):
         self.splitText2.setGeometry(QtCore.QRect(25, 490, 66, 17))
         self.splitText2.setObjectName(_fromUtf8("splitText2"))
         self.btnUpdate = QtGui.QPushButton(DetailWidget)
-        self.btnUpdate.setGeometry(QtCore.QRect(685, 24, 148, 40))
+        self.btnUpdate.setGeometry(QtCore.QRect(700, 24, 148, 40))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         self.btnInstall = QtGui.QPushButton(DetailWidget)
-        self.btnInstall.setGeometry(QtCore.QRect(684, 24, 148, 40))
+        self.btnInstall.setGeometry(QtCore.QRect(700, 24, 148, 40))
         self.btnInstall.setText(_fromUtf8(""))
         self.btnInstall.setObjectName(_fromUtf8("btnInstall"))
         self.btnUninstall = QtGui.QPushButton(DetailWidget)
-        self.btnUninstall.setGeometry(QtCore.QRect(684, 24, 148, 40))
+        self.btnUninstall.setGeometry(QtCore.QRect(700, 24, 148, 40))
         self.btnUninstall.setText(_fromUtf8(""))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
         self.gradeBG = QtGui.QWidget(DetailWidget)
@@ -198,10 +198,10 @@ class Ui_DetailWidget(object):
         self.btnReg.setText(_fromUtf8(""))
         self.btnReg.setObjectName(_fromUtf8("btnReg"))
         self.reviewText = QtGui.QTextEdit(DetailWidget)
-        self.reviewText.setGeometry(QtCore.QRect(25, 685, 810, 76))
+        self.reviewText.setGeometry(QtCore.QRect(25, 685, 824, 76))
         self.reviewText.setObjectName(_fromUtf8("reviewText"))
         self.bntSubmit = QtGui.QPushButton(DetailWidget)
-        self.bntSubmit.setGeometry(QtCore.QRect(734, 762, 100, 32))
+        self.bntSubmit.setGeometry(QtCore.QRect(749, 762, 100, 32))
         self.bntSubmit.setText(_fromUtf8(""))
         self.bntSubmit.setObjectName(_fromUtf8("bntSubmit"))
 

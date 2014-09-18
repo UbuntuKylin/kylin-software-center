@@ -218,7 +218,7 @@ class SilentProcess(multiprocessing.Process):
 
         print "all newer application info update over : ",len(reslist)
         
-#*************************update for xapiandb***********************************#
+    #*************************update for xapiandb***********************************#
     def update_xapiandb(self):
     
         modified_num = 0
@@ -328,6 +328,7 @@ class SilentProcess(multiprocessing.Process):
                     print "Failed to update xapian database (/home/ice_bird/.cache/uksc/xapiandb)"
         except:
             print "The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!"
+        print "update uksc xapiandb over"
             
 class SilentWorkerItem:
 

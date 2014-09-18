@@ -439,7 +439,7 @@ class Search:
             Info = """
 *********************************************************
 There is no Chinese Segmentation method MMSEG in
-your system.For better useing of ubuntu-kylin-software-center,
+your system.For better using of ubuntu-kylin-software-center,
 please install chinese Segmentation method MMSEG .
 *********************************************************
 """
