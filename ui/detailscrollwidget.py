@@ -334,6 +334,7 @@ class DetailScrollWidget(QScrollArea):
         # self.star2.move(710, 575)
         self.star2 = DynamicStarWidget(self.detailWidget)
         self.star2.move(710, 575)
+        self.connect(self.star2, Signals.get_user_rating,self.slot_get_user_rating)
 
         if nowpage == "homepage" or nowpage == "allpage" or nowpage == "winpage" or nowpage == "taskpage":
             if(app.is_installed):
@@ -757,6 +758,9 @@ class DetailScrollWidget(QScrollArea):
                     self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
                     self.reviewload.start_loading()
                     self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
+
+    def slot_get_user_rating(self, rating):
+        print rating
 
 class ScreenShotBig(QWidget):
 

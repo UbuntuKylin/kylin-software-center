@@ -154,6 +154,7 @@ class Signals:
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
 
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
+    get_user_rating = SIGNAL("get-user-rating")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
