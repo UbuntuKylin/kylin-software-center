@@ -31,7 +31,7 @@ from utils import run
 import webbrowser
 
 from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
-from models.enums import Signals
+from models.enums import Signals, setLongTextToElideFormat
 
 class WinCard(QWidget):
 
@@ -85,6 +85,14 @@ class WinCard(QWidget):
         img = QPixmap("res/arrowhead.png")
         self.ui.arronicon.setPixmap(img)
 
+        self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.wintext.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.winbake.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
+
         # win frame
         if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png")):
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png"))
@@ -92,9 +100,17 @@ class WinCard(QWidget):
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".jpg"))
         else:
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + "default.png"))
-        self.ui.winname.setText(self.winstat.windows_app_name)
-        self.ui.wintext.setText(self.winstat.display_name_windows)
-        self.ui.winbake.setText(self.winstat.category)
+        # self.ui.winname.setText(self.winstat.windows_app_name)
+        # self.ui.wintext.setText(self.winstat.display_name_windows)
+        # self.ui.winbake.setText(self.winstat.category)
+        # add by kobe
+        setLongTextToElideFormat(self.ui.winname, self.winstat.windows_app_name)
+        setLongTextToElideFormat(self.ui.wintext, self.winstat.display_name_windows)
+        setLongTextToElideFormat(self.ui.winbake, self.winstat.category)
+        # metrics = QFontMetrics(self.ui.winname.font())
+        # elidedText = metrics.elidedText(self.winstat.windows_app_name, Qt.ElideRight, self.ui.winname.width())
+        # self.ui.winname.setText(elidedText)
+
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
@@ -121,13 +137,6 @@ class WinCard(QWidget):
                 self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
-        self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.wintext.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
-        self.ui.winbake.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
-        self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
-        self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
         # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
 
         # letter spacing
@@ -175,8 +184,10 @@ class WinCard(QWidget):
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 self.ui.size.setText("")
-                self.ui.name.setText(self.winstat.app_name)
-                self.ui.named.setText(self.winstat.app_name)
+                # self.ui.name.setText(self.winstat.app_name)
+                # self.ui.named.setText(self.winstat.app_name)
+                setLongTextToElideFormat(self.ui.name, self.winstat.app_name)
+                setLongTextToElideFormat(self.ui.named, self.winstat.app_name)
                 self.ui.description.setText(self.winstat.description)
         else:
             # convert size
@@ -186,9 +197,17 @@ class WinCard(QWidget):
                 self.ui.size.setText(str(installedsizek) + " KB")
             else:
                 self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
-            self.ui.name.setText(self.app.displayname)
-            self.ui.named.setText(self.app.displayname)
+            # self.ui.name.setText(self.app.displayname)
+            # self.ui.named.setText(self.app.displayname)
+            # add by kobe
+            setLongTextToElideFormat(self.ui.name, self.app.displayname)
+            setLongTextToElideFormat(self.ui.named, self.app.displayname)
             self.ui.description.setText(self.app.summary)
+            # metrics = QFontMetrics(self.ui.name.font())
+            # elidedText = metrics.elidedText(self.app.displayname, Qt.ElideRight, self.ui.name.width())
+            # self.ui.name.setText(elidedText)
+
+
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):

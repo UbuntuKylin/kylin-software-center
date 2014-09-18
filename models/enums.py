@@ -26,6 +26,7 @@
 import os
 from xdg import BaseDirectory as xdg
 from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 from backend.ubuntu_sw import safe_makedirs
 
@@ -37,6 +38,13 @@ UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
 #UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+
+
+# add by kobe to format long text
+def setLongTextToElideFormat(label, text):
+    metrics = QFontMetrics(label.font())
+    elidedText = metrics.elidedText(text, Qt.ElideRight, label.width())
+    label.setText(elidedText)
 
 
 # pkg action state constants

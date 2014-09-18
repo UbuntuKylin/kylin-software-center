@@ -103,6 +103,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.bntSubmit.setText("提交")
         self.ui.afterLoginWidget.hide()
         # self.ui.reviewText.setEnabled(True)
+        self.ui.reviewText.setFocus(Qt.MouseFocusReason)
         self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
@@ -110,8 +111,6 @@ class DetailScrollWidget(QScrollArea):
         self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
         self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
         self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-
-
 
         self.setAutoFillBackground(True)
         palette = QPalette()
