@@ -271,7 +271,7 @@ class SilentProcess(multiprocessing.Process):
                                     pass 
                                                          
                         except:
-                            print "No MMSEG for keywords segment"
+                            pass
                             
                         database.replace_document(docid,doc)
                         xapiandb_update = "Yes"
@@ -298,7 +298,7 @@ class SilentProcess(multiprocessing.Process):
                         if word != "none":
                             doc.add_term(word,10)
                         else:
-                            print "No MMSEG for keywords segment"                           
+                            pass                           
                 except:
                     pass
                 database.add_document(doc)
