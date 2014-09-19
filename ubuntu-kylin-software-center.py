@@ -378,6 +378,25 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
+
+        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
+        self.ui.tasklabel.setText("任务列表")
+        self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
+        # self.ui.taskBottomWidget.setAutoFillBackground(True)
+        # palette = QPalette()
+        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        # self.ui.taskBottomWidget.setPalette(palette)
+        self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
+        self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
+        self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
+        # self.ui.taskBottomWidget.setStyleSheet("QWidget{border:1px solid #cccccc;}")
+
+
         # signal / slot
         # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
@@ -1004,6 +1023,12 @@ class SoftwareCenter(QMainWindow):
     def slot_close_detail(self):
         self.detailScrollWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
+
+    def slot_close_taskpage(self):
+        self.ui.taskWidget.setVisible(False)
+
+    def slot_clear_all_task_list(self):
+        pass
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()

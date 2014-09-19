@@ -36,7 +36,8 @@ from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                         Signals,
-                        AppActions)
+                        AppActions,
+                        setLongTextToElideFormat)
 from utils import run
 from utils.debfile import DebFile
 from models.globals import Globals
@@ -70,9 +71,6 @@ class DetailScrollWidget(QScrollArea):
         self.hl.setGeometry(-10,-10,1,1)
 
         # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
         self.ui.bntSubmit.setFocusPolicy(Qt.NoFocus)
 
         self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
@@ -97,21 +95,9 @@ class DetailScrollWidget(QScrollArea):
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
-        self.ui.btnLogin.setText("请登录")
-        self.ui.btnReg.setText("免费注册")
-        self.ui.welcometext.setText("欢迎您")
-        self.ui.btnLogout.setText("退出")
         self.ui.bntSubmit.setText("提交")
-        self.ui.afterLoginWidget.hide()
         # self.ui.reviewText.setEnabled(True)
         self.ui.reviewText.setFocus(Qt.MouseFocusReason)
-        self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
-        self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
-        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
-        self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-        self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
-        self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
-        self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
 
         self.setAutoFillBackground(True)
         palette = QPalette()
@@ -239,7 +225,8 @@ class DetailScrollWidget(QScrollArea):
         self.app = self.debfile
 
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
-        self.ui.name.setText(self.debfile.name)
+        # self.ui.name.setText(self.debfile.name)
+        setLongTextToElideFormat(self.ui.name, self.debfile.name)
         self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
         sizek = self.debfile.installedsize
         if(sizek <= 1024):
@@ -327,7 +314,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.grade.setText(averate_rate)
 
         self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
-        self.smallstar.move(180, 98)
+        self.smallstar.move(180, 99)
 
         #总评分
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)

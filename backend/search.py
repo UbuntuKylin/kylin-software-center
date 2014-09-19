@@ -414,8 +414,18 @@ class Search:
         
     def search_software(self, keyword):
         """search interface"""
-        
-#*****************************************************************************
+        #------Filter out single word in search keyword (include chinese)------
+        try:
+            tem_keyword = unicode(keyword, "utf-8")
+        except:
+            keyword = keyword
+        else:
+            if len(tem_keyword)>1:
+                keyword = keyword
+            else:
+                return []
+
+        #----check user installed mmseg or not (for keyword segment)-----
         try:
         
             from mmseg.search import seg_txt_search,seg_txt_2_dict
@@ -431,9 +441,7 @@ class Search:
                 query = xapian.Query(xapian.Query.OP_AND, query_list)
             else:
                 query = query_list[0]
-#            print "*** Useing Chinese Segmentation method MMSEG to segment the input keywords ***"
 
-#*********************************************************************************
         except:   
 
             query_string = self.db.get_query_list_from_search_entry(str(keyword))

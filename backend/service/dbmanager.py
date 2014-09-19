@@ -87,10 +87,9 @@ class Database:
 
         # cache xapiandb need update, copy
         if self.is_xapiancachedb_need_update():
-            if os.path.exists(xapian_destFile):
-                rmtree(xapian_destFile)
-                copytree(xapian_srcFile,xapian_destFile)
-                print "cache xapiandb versin updated"
+            rmtree(xapian_destFile)
+            copytree(xapian_srcFile,xapian_destFile)
+            print "cache xapiandb versin updated"
 
 
     def query_categories(self):
@@ -204,29 +203,33 @@ class Database:
         xapian_srcFile = XAPIAN_DB_SOURCE_PATH
         xapian_destFile = os.path.join(UKSC_CACHE_DIR,"xapiandb")
 
-        src_xapiandb = xapian.Database(xapian_srcFile)
-        new_enquire = xapian.Enquire(src_xapiandb)
-        new_query = xapian.Query("the_#ukxapiandb#_version")
-        new_enquire.set_query(new_query)
-        new_matches = new_enquire.get_mset(0,1)
+        try:
+            src_xapiandb = xapian.Database(xapian_srcFile)
+            new_enquire = xapian.Enquire(src_xapiandb)
+            new_query = xapian.Query("the_#ukxapiandb#_version")
+            new_enquire.set_query(new_query)
+            new_matches = new_enquire.get_mset(0,1)
 
-        for new_item in new_matches:
-            new_doc = new_item.document
-            if new_doc.get_data() == "XAPIANDB_VERSION":
-                new_version = new_doc.get_value(1) #valueslot:1 xapiandb version
-                des_xapiandb = xapian.Database(xapian_destFile)
-                old_enquire = xapian.Enquire(des_xapiandb)
-                old_query = xapian.Query("the_#ukxapiandb#_version")
-                old_enquire.set_query(old_query)
-                old_matches = old_enquire.get_mset(0,1)
-                for old_item in old_matches:
-                    old_doc = old_item.document
-                    old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
-        print "old xapiandb  version:",old_version," new xapiandb version:",new_version
-        if (new_version > old_version):
+            for new_item in new_matches:
+                new_doc = new_item.document
+                if new_doc.get_data() == "XAPIANDB_VERSION":
+                    new_version = new_doc.get_value(1) #valueslot:1 xapiandb version
+                    des_xapiandb = xapian.Database(xapian_destFile)
+                    old_enquire = xapian.Enquire(des_xapiandb)
+                    old_query = xapian.Query("the_#ukxapiandb#_version")
+                    old_enquire.set_query(old_query)
+                    old_matches = old_enquire.get_mset(0,1)
+                    for old_item in old_matches:
+                        old_doc = old_item.document
+                        old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
+            print "old xapiandb  version:",old_version," new xapiandb version:",new_version
+        except:
             return True
         else:
-            return False
+            if (new_version > old_version):
+                return True
+            else:
+                return False
 
 
     def get_pagecount_by_pkgname(self, package_name):
