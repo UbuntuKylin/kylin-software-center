@@ -33,6 +33,7 @@ from piston_mini_client import (
     returns_list_of,
     auth,
     )
+from models.enums import UBUNTUKYLIN_SERVER
 from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
 import httplib2
@@ -135,12 +136,12 @@ class PistonRemoterAuth(PistonAPI):
     default_service_observe = 'observe'
     default_service_forecast3d = 'forecast3d'
     default_content_type = 'application/x-www-form-urlencoded'
-    default_service_root = 'http://192.168.30.12/uksc/'
+    default_service_root = UBUNTUKYLIN_SERVER
 
     @returns_json
-    def submit_review(self, app, content, distroseries, language, user, user_display):
+    def submit_review(self, app_name, content, distroseries, language, user, user_display):
         postdata = ReviewUKRequest()
-        postdata.app_name = app
+        postdata.app_name = app_name
         postdata.content = content
         postdata.distroseries = distroseries
         postdata.language = language
@@ -149,9 +150,9 @@ class PistonRemoterAuth(PistonAPI):
         return self._post('submitreview/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
-    def submit_rating(self, app, rating, user, user_display):
+    def submit_rating(self, app_name, rating, user, user_display):
         postdata = RatinsUKRequest()
-        postdata.app_name = app
+        postdata.app_name = app_name
         postdata.rating = rating
         postdata.user = user
         postdata.user_display = user_display
@@ -166,8 +167,9 @@ if __name__ == '__main__':
     token = sso.get_oauth_token_and_verify_sync()
     authorizer = auth.OAuthAuthorizer(token["token"], token["token_secret"], token["consumer_key"], token["consumer_secret"])
     ss = PistonRemoterAuth(auth=authorizer)
-    res = ss.submit_review('gedit', 'just a test', get_distro_info()[2], get_language())
+    res = ss.submit_review('gedit', 'haha', get_distro_info()[2], get_language(),'shine','shine')
     print res
+    print type(res)
     # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
     # res = s.get_all_rank_and_recommend()

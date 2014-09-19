@@ -50,3 +50,4 @@ class Globals:
     # user name
     USER = ''
     USER_DISPLAY = ''
+    TOKEN = ''

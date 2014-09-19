@@ -30,7 +30,7 @@ from ui.starwidget import StarWidget
 from utils import run
 
 from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
-from models.enums import Signals
+from models.enums import Signals, setLongTextToElideFormat
 
 class RcmdCard(QWidget):
 
@@ -125,8 +125,11 @@ class RcmdCard(QWidget):
         else:
             self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
-        self.ui.name.setText(self.app.displayname)
-        self.ui.named.setText(self.app.displayname)
+        # self.ui.name.setText(self.app.displayname)
+        # self.ui.named.setText(self.app.displayname)
+        # add by kobe
+        setLongTextToElideFormat(self.ui.name, self.app.displayname)
+        setLongTextToElideFormat(self.ui.named, self.app.displayname)
         self.ui.description.setText(self.app.summary)
 
         # rating star

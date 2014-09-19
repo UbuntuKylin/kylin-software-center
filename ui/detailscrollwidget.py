@@ -39,6 +39,7 @@ from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         AppActions)
 from utils import run
 from utils.debfile import DebFile
+from models.globals import Globals
 
 
 class DetailScrollWidget(QScrollArea):
@@ -92,7 +93,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
         self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
-        self.ui.bntSubmit.clicked.connect(self.slot_click_submit)
+        self.ui.bntSubmit.clicked.connect(self.slot_click_submit_review)
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
@@ -103,6 +104,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.bntSubmit.setText("提交")
         self.ui.afterLoginWidget.hide()
         # self.ui.reviewText.setEnabled(True)
+        self.ui.reviewText.setFocus(Qt.MouseFocusReason)
         self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
@@ -110,8 +112,6 @@ class DetailScrollWidget(QScrollArea):
         self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
         self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
         self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-
-
 
         self.setAutoFillBackground(True)
         palette = QPalette()
@@ -197,6 +197,7 @@ class DetailScrollWidget(QScrollArea):
         # mini loading div
         self.sshotload = MiniLoadingDiv(self.ui.sshotBG, self.detailWidget)
         self.reviewload = MiniLoadingDiv(self.ui.reviewListWidget, self.detailWidget)
+        self.submitreviewload = MiniLoadingDiv(self.ui.reviewText, self.detailWidget)
 
         self.connect(self.mainwindow,Signals.apt_process_finish,self.slot_work_finished)
         self.connect(self.mainwindow,Signals.apt_process_cancel,self.slot_work_cancel)
@@ -562,9 +563,35 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUpdate.setEnabled(False)
         self.ui.btnUninstall.setEnabled(False)
 
-    def slot_click_submit(self):
-        print self.star2.getUserGrade()
-        print self.ui.reviewText.toPlainText()
+    def slot_click_submit_review(self):
+        print "click submit"
+        if(Globals.USER != ''):
+            self.emit(Signals.submit_review, self.app.name, str(self.ui.reviewText.toPlainText()))
+            self.ui.reviewText.clear()
+            self.submitreviewload.start_loading()
+            self.ui.bntSubmit.setEnabled(False)
+        else:
+            self.emit(Signals.show_login)
+
+    def slot_submit_review_over(self, res):
+        print "all over  slot submit over!!",res
+        self.submitreviewload.stop_loading()
+        self.submitreviewload.hide()
+        self.ui.bntSubmit.setEnabled(True)
+        #
+        # if(res == True):
+        #     self.mainwindow.messageBox.alert_msg("评论已发布")
+        #     self.reviewpage = 1
+        #     self.currentreviewready = False
+        #     self.ui.reviewListWidget.clear()
+        #     # self.detailWidget.resize(873, 790)
+        #     # self.ui.reviewListWidget.resize(873, 0)
+        #     self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
+        #     self.reviewload.start_loading()
+        #     # send request
+        #     self.mainwindow.appmgr.get_application_reviews(self.app.name)
+        # else:
+        #     self.mainwindow.messageBox.alert_msg("评论失败")
 
     def slot_work_finished(self, pkgname, action):
         #add this to prevent slot received from other signal before show_detail is not called

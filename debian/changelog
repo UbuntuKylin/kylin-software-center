@@ -4,8 +4,9 @@ ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
   * Modify Pointout widget.
   * Show installed message on card if the software installed.
   * Show half start icon.
+  * Do long text to ElideRight format.
 
- -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Fri, 12 Sep 2014 17:27:58 +0800
+ -- Kobe Lee (kylinkobe) <xiangli@ubuntukylin.com>  Thu, 18 Sep 2014 09:50:30 +0800
 
 ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
 

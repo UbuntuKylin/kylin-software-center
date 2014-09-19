@@ -24,10 +24,6 @@
 
 #**************************Add by zhangxin***************************#
 import xapian
-import time
-from datetime import datetime
-import pytz
-tz = pytz.timezone('Asia/Shanghai')
 #********************************************************************#
 import sqlite3
 import os
@@ -231,19 +227,19 @@ class SilentProcess(multiprocessing.Process):
             
         indexer = xapian.TermGenerator()
 
-        query__for_update_time = xapian.Query("the_latest_update_time")
-        enquire.set_query(query__for_update_time)
+        query_xapiandb_version = xapian.Query("the_#ukxapiandb#_version")
+        enquire.set_query(query_xapiandb_version)
         matches = enquire.get_mset(0,1)
         for re in matches:
-            
-            try:
-                docid_for_update = re.document.get_docid()
-                doc_for_update = re.document
-                the_latest_update_time = doc_for_update.get_data().replace(' ','T')
-                
-            except:
-                print "Failed to get the latest update time from client xapiandb" 
-                  
+            docid_for_xapiandb_version = re.document.get_docid()
+            doc_for_xapiandb_version = re.document
+            doc_data = doc_for_xapiandb_version.get_data()
+            if ("XAPIANDB_VERSION" == doc_data):
+                the_latest_update_time = doc_for_xapiandb_version.get_value(2) #valueslot:2 xapiandb update time
+            else:
+                the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
+                print "Failed to get the latest update time from client xapiandb,use default time.localtime()"
+
         reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
             
         for app in reslist:
@@ -315,10 +311,9 @@ class SilentProcess(multiprocessing.Process):
                     
         try:
             if xapiandb_update == "Yes":
-                now = str(datetime.now())
-                doc_for_update.set_data(now)
-                doc_for_update.add_term("the_latest_update_time",100)
-                database.replace_document(docid_for_update,doc_for_update)
+                now = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
+                doc_for_xapiandb_version.add_value(2,now)
+                database.replace_document(docid_for_xapiandb_version,doc_for_xapiandb_version)
                 all_update_is_done = "Yes"
                 if "Yes" == all_update_is_done:
                     database.commit()
