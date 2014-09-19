@@ -1019,16 +1019,33 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget.add_sshot(sclist)
 
-    # add by kobe
     def slot_close_detail(self):
         self.detailScrollWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
 
     def slot_close_taskpage(self):
         self.ui.taskWidget.setVisible(False)
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_clear_all_task_list(self):
-        pass
+        count = self.ui.taskListWidget.count()
+        print "del_task_item:",count
+
+        truecount = 0
+        for i in range(count):
+            # list is empty now
+            if(truecount == count):
+                break
+            item = self.ui.taskListWidget.item(0)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            # delete all finished task items
+            if taskitem.finish == True:
+                print "del_task_item: found an item",0,taskitem.app.name
+                delitem = self.ui.taskListWidget.takeItem(0)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                del delitem
+                del self.stmap[taskitem.app.name]
+                truecount = truecount + 1
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
