@@ -31,6 +31,7 @@ import logging
 import threading
 import multiprocessing
 import Queue
+from piston_mini_client import auth
 
 from PyQt4.QtCore import *
 
@@ -40,10 +41,11 @@ from models.advertisement import Advertisement
 from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRatingStat
 from backend.service.dbmanager import Database
 from utils.silentprocess import *
+from utils.machine import *
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import Signals,UnicodeToAscii
 
-from backend.remote.piston_remoter import PistonRemoter
+from backend.remote.piston_remoter import PistonRemoterAuth
 
 
 LOG = logging.getLogger("uksc")
@@ -138,6 +140,11 @@ class AppManager(QObject):
         self.silent_process = SilentProcess(self.squeue)
         self.silent_process.daemon = True
         self.silent_process.start()
+
+    # re new piston remoter auth by current login token
+    def reinit_premoter_auth(self):
+        authorizer = auth.OAuthAuthorizer(Globals.TOKEN["token"], Globals.TOKEN["token_secret"], Globals.TOKEN["consumer_key"], Globals.TOKEN["consumer_secret"])
+        self.premoterauth = PistonRemoterAuth(auth=authorizer)
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
@@ -534,7 +541,7 @@ class AppManager(QObject):
 
         item = SilentWorkerItem("submit_pingback_app", kwargs)
         self.squeue.put_nowait(item)
-        
+
     # update xapiandb add by zhangxin
     def update_xapiandb(self):
         kwargs = {}
@@ -588,6 +595,18 @@ class AppManager(QObject):
                 applist.append(app)
 
         self.emit(Signals.ratingrank_ready,applist)
+
+    def submit_review(self, app_name, content):
+        print "submit"
+        distroseries = get_distro_info()[2]
+        language = get_language()
+
+        res = self.premoterauth.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
+
+
+        print "submit over"
+        self.emit(Signals.submit_review_over, res)
+        print "submit emit over"
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):

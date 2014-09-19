@@ -96,6 +96,8 @@ class PointOutWidget(QWidget):
         self.ui.cbisshow.setStyleSheet("QCheckBox{border:0px;font-size:13px;}")
         # self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
 
+        self.ui.cbisshow.hide() # pointout only show once
+
     def ui_init(self):
         self.ui = Ui_PointWidget()
         self.ui.setupUi(self)

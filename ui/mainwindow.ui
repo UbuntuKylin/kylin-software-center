@@ -536,11 +536,92 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>10</y>
+        <y>65</y>
         <width>300</width>
-        <height>680</height>
+        <height>475</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QPushButton" name="btnCloseTask">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>1</y>
+        <width>28</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="taskhline">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>55</y>
+        <width>300</width>
+        <height>1</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="tasklabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>35</y>
+        <width>151</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="taskvline">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>37</y>
+        <width>1</width>
+        <height>14</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="taskBottomWidget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>544</y>
+        <width>320</width>
+        <height>64</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="btnClearTask">
+       <property name="geometry">
+        <rect>
+         <x>146</x>
+         <y>17</y>
+         <width>28</width>
+         <height>28</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="upWidget" native="true">

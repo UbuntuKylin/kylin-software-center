@@ -55,19 +55,19 @@ class LoadingDiv(QWidget):
             self.setGeometry(0, 0, 980, 608)
 
         self.loadinggif = QLabel(self)
-        self.loadinggif.setGeometry(980 / 2 - 680 / 2, 608 / 2 - 370 / 2, 680, 370)
+        self.loadinggif.setGeometry(980 / 2 - 350 / 2, 608 / 2 - 350 / 2, 350, 350)
 
         self.raise_()
         self.hide()
 
     def load_png(self):
-        for i in range(1, 26):
+        for i in range(1, 41):
             img = QPixmap("res/loading/" + str(i) + ".png")
             self.ngif.append(img)
 
     def slot_switch_animation_step(self):
-        if(self.currentpage == 25):
-            self.currentpage = 1
+        if(self.currentpage == 40):
+            self.currentpage = 24
 
         self.loadinggif.setPixmap(self.ngif[self.currentpage])
 
@@ -80,7 +80,6 @@ class LoadingDiv(QWidget):
         self.show()
 
     def stop_loading(self):
-        # self.gif.stop()
         self.switchTimer.stop()
         self.hide()
 

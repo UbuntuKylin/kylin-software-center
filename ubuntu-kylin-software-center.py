@@ -378,6 +378,25 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
+
+        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
+        self.ui.tasklabel.setText("任务列表")
+        self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
+        # self.ui.taskBottomWidget.setAutoFillBackground(True)
+        # palette = QPalette()
+        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        # self.ui.taskBottomWidget.setPalette(palette)
+        self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
+        self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
+        self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
+        # self.ui.taskBottomWidget.setStyleSheet("QWidget{border:1px solid #cccccc;}")
+
+
         # signal / slot
         # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
@@ -426,6 +445,8 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
+        self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
+        self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
 
         # widget status
         # self.ui.categoryView.setEnabled(False)
@@ -463,6 +484,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
+        self.connect(self.appmgr, Signals.submit_review_over, self.detailScrollWidget.slot_submit_review_over)
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -688,14 +710,22 @@ class SoftwareCenter(QMainWindow):
         self.loadingDiv.start_loading("")
 
     def mousePressEvent(self, event):
-        if (event.button() == Qt.LeftButton):
+        if(event.button() == Qt.LeftButton):
+            self.clickx = event.globalPos().x()
+            self.clicky = event.globalPos().y()
             self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
             event.accept()
 
     def mouseMoveEvent(self, event):
-        if (event.buttons() == Qt.LeftButton and self.dragPosition != -1):
+        if(event.buttons() == Qt.LeftButton and self.dragPosition != -1):
             self.move(event.globalPos() - self.dragPosition)
             event.accept()
+
+    def mouseReleaseEvent(self, event):
+        # close task page while click anywhere except task page self
+        if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
+            self.ui.taskWidget.setVisible(False)
+            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
@@ -845,6 +875,19 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
 
+    def reset_nav_bar_focus_one(self):
+        self.reset_nav_bar()
+        if(self.nowPage == 'homepage'):
+            self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
+        elif(self.nowPage == 'allpage'):
+            self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
+        elif(self.nowPage == 'uppage'):
+            self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
+        elif(self.nowPage == 'unpage'):
+            self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
+        elif(self.nowPage == 'winpage'):
+            self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
+
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
         if(self.uksc != None):
@@ -864,7 +907,12 @@ class SoftwareCenter(QMainWindow):
         # check user config is show
         flag = self.appmgr.get_pointout_is_show_from_db()
         if(flag == True):
+            self.appmgr.set_pointout_is_show(False) # only show pointout once
             self.get_pointout()
+        else:
+            # in quiet mode, dont show pointout ui means dont launch uksc
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                self.slot_close()
 
     def get_pointout(self):
         # find not installed pointout apps
@@ -973,6 +1021,12 @@ class SoftwareCenter(QMainWindow):
     def slot_close_detail(self):
         self.detailScrollWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
+
+    def slot_close_taskpage(self):
+        self.ui.taskWidget.setVisible(False)
+
+    def slot_clear_all_task_list(self):
+        pass
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
@@ -1150,15 +1204,16 @@ class SoftwareCenter(QMainWindow):
         self.ui.winpageWidget.setVisible(False)
 
     def slot_goto_taskpage(self, ishistory=False):
+        self.reset_nav_bar_focus_one()
         if(self.ui.taskWidget.isHidden() == True):
             self.ui.taskWidget.setVisible(True)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
         else:
             self.ui.taskWidget.setVisible(False)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.prePage = "taskpage"
-        self.nowPage = 'taskpage'
-        self.ui.btnCloseDetail.setVisible(False)
+        # self.prePage = "taskpage"
+        # self.nowPage = 'taskpage'
+        # self.ui.btnCloseDetail.setVisible(False)
 
     def slot_goto_winpage(self, ishistory=False):
         self.prePage = "winpage"
@@ -1244,7 +1299,8 @@ class SoftwareCenter(QMainWindow):
             LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app, ishistory=False):
-        self.reset_nav_bar()
+        # self.reset_nav_bar()
+        self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
         self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage)
 
@@ -1297,6 +1353,10 @@ class SoftwareCenter(QMainWindow):
         res = self.backend.remove_package(app.name)
         if res:
             self.add_task_item(app)
+
+    def slot_submit_review(self, app_name, content):
+        LOG.info("submit one review:%s",content)
+        self.appmgr.submit_review(app_name, content)
 
     def slot_click_cancel(self, appname):
         LOG.info("cancel an task:%s",appname)
@@ -1425,13 +1485,17 @@ class SoftwareCenter(QMainWindow):
 
     def slot_do_logout(self):
         self.sso.clear_token()
-	self.token = ""	
+        self.token = ""
 
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
 
+        Globals.USER = ''
+        Globals.USER_DISPLAY = ''
+
     # update user login status
     def slot_whoami_done(self, sso, result):
+        user = result["username"]
         display_name = result["displayname"]
         preferred_email = result["preferred_email"]
         print 'Login success, username: %s' % display_name
@@ -1439,6 +1503,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.beforeLoginWidget.hide()
         self.ui.afterLoginWidget.show()
         self.ui.username.setText(display_name)
+
+        Globals.USER = user
+        Globals.USER_DISPLAY = display_name
+        Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
+
+        self.appmgr.reinit_premoter_auth()
+
 
 def check_local_deb_file(url):
     return os.path.isfile(url)
