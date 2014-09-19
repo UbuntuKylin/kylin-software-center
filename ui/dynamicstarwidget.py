@@ -84,11 +84,11 @@ class DynamicStarWidget(QWidget):
                 else:
                     self.init_start_style_sheet()
                     self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress):
+            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
                 self.emit(Signals.get_user_rating, 1)
-            elif(event.type() == QEvent.MouseButtonRelease):
-                self.grade = 1
+            # elif(event.type() == QEvent.MouseButtonRelease):
+            #     self.grade = 1
         elif(obj == self.ui.star2):
             if(event.type() == QEvent.Enter):
                 if self.mouse_press == False:
@@ -101,11 +101,11 @@ class DynamicStarWidget(QWidget):
                 else:
                     self.init_start_style_sheet()
                     self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress):
+            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
                 self.emit(Signals.get_user_rating, 2)
-            elif(event.type() == QEvent.MouseButtonRelease):
-                self.grade = 2
+            # elif(event.type() == QEvent.MouseButtonRelease):
+            #     self.grade = 2
         elif(obj == self.ui.star3):
             if(event.type() == QEvent.Enter):
                 if self.mouse_press == False:
@@ -118,11 +118,11 @@ class DynamicStarWidget(QWidget):
                 else:
                     self.init_start_style_sheet()
                     self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress):
+            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
                 self.emit(Signals.get_user_rating, 3)
-            elif(event.type() == QEvent.MouseButtonRelease):
-                self.grade = 3
+            # elif(event.type() == QEvent.MouseButtonRelease):
+            #     self.grade = 3
         elif(obj == self.ui.star4):
             if(event.type() == QEvent.Enter):
                 if self.mouse_press == False:
@@ -135,7 +135,7 @@ class DynamicStarWidget(QWidget):
                 else:
                     self.init_start_style_sheet()
                     self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress):
+            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
                 self.emit(Signals.get_user_rating, 4)
             # elif(event.type() == QEvent.MouseButtonRelease):
@@ -152,7 +152,7 @@ class DynamicStarWidget(QWidget):
                 else:
                     self.init_start_style_sheet()
                     self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress):
+            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
                 self.emit(Signals.get_user_rating, 5)
             # elif(event.type() == QEvent.MouseButtonRelease):

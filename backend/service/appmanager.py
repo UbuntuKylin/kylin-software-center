@@ -397,7 +397,7 @@ class AppManager(QObject):
         return []
 
     #get reviews for a package
-    def get_application_reviews(self,pkgname,page=1,callback=None):
+    def get_application_reviews(self,pkgname,page=1,callback=None,force=False):
         kwargs = {"language": self.language,
                   "distroseries": self.distroseries,
                   "packagename": pkgname, #multiarch..
@@ -408,14 +408,16 @@ class AppManager(QObject):
 
         app = self.get_application_by_name(pkgname)
         reviews = app.get_reviews(page)
-        if reviews is not None:
+
+        # force == True means need get review from server immediately
+        if reviews is not None and force == False:
             print "get_application_reviews in memory"
             self.dispatchWorkerResult(item,reviews)
             return reviews
-
-        self.mutex.acquire()
-        self.worklist.append(item)
-        self.mutex.release()
+        else:
+            self.mutex.acquire()
+            self.worklist.append(item)
+            self.mutex.release()
 
     #get screenshots
     def get_application_screenshots(self,pkgname, cachedir=UBUNTUKYLIN_RES_SCREENSHOT_PATH, callback=None):
@@ -597,16 +599,21 @@ class AppManager(QObject):
         self.emit(Signals.ratingrank_ready,applist)
 
     def submit_review(self, app_name, content):
-        print "submit"
         distroseries = get_distro_info()[2]
         language = get_language()
 
         res = self.premoterauth.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
 
-
-        print "submit over"
         self.emit(Signals.submit_review_over, res)
-        print "submit emit over"
+
+    def submit_rating(self, app_name, rating):
+        res = self.premoterauth.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
+
+        self.emit(Signals.submit_rating_over, res)
+
+    # update app ratingavg in cache db after user do rating app
+    def update_app_ratingavg(self, app_name, ratingavg):
+        self.db.update_app_ratingavg(app_name, ratingavg)
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):

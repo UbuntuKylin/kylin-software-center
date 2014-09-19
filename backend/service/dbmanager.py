@@ -402,6 +402,11 @@ class Database:
             ratingranks.append((app_name, rank_rating))
         return ratingranks
 
+    def update_app_ratingavg(self, app_name, ratingavg):
+        self.cursor.execute("update application set rating_avg=? where app_name=?", (ratingavg, app_name))
+        self.cursor.execute("update application set rating_total=rating_total+1 where app_name=?", (app_name,))
+        self.connect.commit()
+
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):
         self.cursor.execute(QUERY_NAME_CATEGORIES)

@@ -246,9 +246,9 @@
    <widget class="QLabel" name="gradeText1">
     <property name="geometry">
      <rect>
-      <x>625</x>
+      <x>520</x>
       <y>60</y>
-      <width>66</width>
+      <width>90</width>
       <height>17</height>
      </rect>
     </property>

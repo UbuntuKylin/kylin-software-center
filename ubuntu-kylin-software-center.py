@@ -446,6 +446,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
         self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
+        self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
         self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
 
         # widget status
@@ -485,6 +486,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
         self.connect(self.appmgr, Signals.submit_review_over, self.detailScrollWidget.slot_submit_review_over)
+        self.connect(self.appmgr, Signals.submit_rating_over, self.detailScrollWidget.slot_submit_rating_over)
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -1355,8 +1357,12 @@ class SoftwareCenter(QMainWindow):
             self.add_task_item(app)
 
     def slot_submit_review(self, app_name, content):
-        LOG.info("submit one review:%s",content)
+        LOG.info("submit one review:%s", content)
         self.appmgr.submit_review(app_name, content)
+
+    def slot_submit_rating(self, app_name, rating):
+        LOG.info("submit one rating:%s", rating)
+        self.appmgr.submit_rating(app_name, rating)
 
     def slot_click_cancel(self, appname):
         LOG.info("cancel an task:%s",appname)
