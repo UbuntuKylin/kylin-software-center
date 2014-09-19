@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'detailw.ui'
+# Form implementation generated from reading ui file 'ui/detailw.ui'
 #
-# Created: Tue Sep 16 15:57:27 2014
+# Created: Fri Sep 19 11:49:26 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,7 +96,7 @@ class Ui_DetailWidget(object):
         self.gradeText2.setAlignment(QtCore.Qt.AlignCenter)
         self.gradeText2.setObjectName(_fromUtf8("gradeText2"))
         self.gradeText1 = QtGui.QLabel(self.gradeBG)
-        self.gradeText1.setGeometry(QtCore.QRect(625, 60, 66, 17))
+        self.gradeText1.setGeometry(QtCore.QRect(520, 60, 90, 17))
         self.gradeText1.setText(_fromUtf8(""))
         self.gradeText1.setObjectName(_fromUtf8("gradeText1"))
         self.grade = QtGui.QLabel(self.gradeBG)

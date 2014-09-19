@@ -167,7 +167,7 @@ if __name__ == '__main__':
     token = sso.get_oauth_token_and_verify_sync()
     authorizer = auth.OAuthAuthorizer(token["token"], token["token_secret"], token["consumer_key"], token["consumer_secret"])
     ss = PistonRemoterAuth(auth=authorizer)
-    res = ss.submit_review('gedit', 'haha', get_distro_info()[2], get_language(),'shine','shine')
+    res = ss.submit_review('gimp', 'main', get_distro_info()[2], get_language(),'shine','shine')
     print res
     print type(res)
     # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")

@@ -35,6 +35,13 @@ class SoftwareCenter(QMainWindow):
         # self.setAttribute(Qt.WA_TranslucentBackground, True)
         self.resize(600,600)
 
+        self.te = QTextEdit(self)
+        self.te.setGeometry(0,0,200,50)
+
+        b1 = QPushButton("te",self)
+        b1.setGeometry(0,55,60,25)
+        b1.clicked.connect(self.tedo)
+
         ba = QPushButton("ha",self)
         ba.move(100,100)
         ba.setCheckable(True)
@@ -61,6 +68,8 @@ class SoftwareCenter(QMainWindow):
         bc = QPushButton("3", self.ww)
         bc.move(0,200)
 
+    def tedo(self):
+        print self.te.toPlainText()
 
     def haha(self,a):
         import sip
