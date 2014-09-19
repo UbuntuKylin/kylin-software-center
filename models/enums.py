@@ -155,8 +155,8 @@ class Signals:
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
     submit_review = SIGNAL("submit-review")
     submit_review_over = SIGNAL("submit-review-over")
-
     show_login = SIGNAL("show-login")
+    get_user_rating = SIGNAL("get-user-rating")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
