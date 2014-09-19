@@ -24,6 +24,7 @@
 
 import os
 import platform
+import locale
 from models.globals import Globals
 
 
@@ -59,6 +60,9 @@ def get_distro_info():
             if (kv[0] == 'DISTRIB_RELEASE'):
                 v = kv[1]
                 rtn.append(v[:-1])
+            if (kv[0] == 'DISTRIB_CODENAME'):
+                v = kv[1]
+                rtn.append(v[:-1])
         uf.close()
         return rtn
     else:
@@ -71,11 +75,16 @@ def get_distro_info():
 def get_uksc_version():
     return Globals.UKSC_VERSION
 
+# get this os language
+def get_language():
+    return locale.getdefaultlocale()[0]
+
 
 def main():
     print get_machine_id()
     print get_distro_info()
     print get_uksc_version()
+    print get_language()
 
 if __name__ == '__main__':
     main()

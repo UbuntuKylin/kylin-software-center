@@ -26,6 +26,7 @@
 import os
 from xdg import BaseDirectory as xdg
 from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 from backend.ubuntu_sw import safe_makedirs
 
@@ -35,8 +36,15 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-#UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+
+
+# add by kobe to format long text
+def setLongTextToElideFormat(label, text):
+    metrics = QFontMetrics(label.font())
+    elidedText = metrics.elidedText(text, Qt.ElideRight, label.width())
+    label.setText(elidedText)
 
 
 # pkg action state constants
@@ -107,8 +115,8 @@ AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 
 # ported from ubuntu-software-center to support Ubuntu-kylin-SSO
 UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
-SOFTWARE_CENTER_NAME_KEYRING = "Ubuntu Kylin ID"
-SOFTWARE_CENTER_SSO_DESCRIPTION = '注册或登录 Ubuntu Kylin 软件中心。'
+SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
+SOFTWARE_CENTER_SSO_DESCRIPTION = '用优客账号登录 Ubuntu Kylin 软件中心。'
 datadir = "./utils/"
 PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
@@ -144,8 +152,11 @@ class Signals:
     apt_process_finish = SIGNAL("apt-process-finish")
     apt_process_cancel = SIGNAL("apt-process-cancel")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
-
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
+    submit_review = SIGNAL("submit-review")
+    submit_review_over = SIGNAL("submit-review-over")
+    show_login = SIGNAL("show-login")
+    get_user_rating = SIGNAL("get-user-rating")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

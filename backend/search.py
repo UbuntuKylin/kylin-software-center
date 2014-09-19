@@ -436,14 +436,6 @@ class Search:
 #*********************************************************************************
         except:   
 
-            Info = """
-*********************************************************
-There is no Chinese Segmentation method MMSEG in
-your system.For better useing of ubuntu-kylin-software-center,
-please install chinese Segmentation method MMSEG .
-*********************************************************
-"""
-            print Info
             query_string = self.db.get_query_list_from_search_entry(str(keyword))
             enquire = xapian.Enquire(self.db.xapiandb)
             query = query_string[1]

@@ -82,12 +82,12 @@ class ConfigWidget(QWidget):
         sourceitem.setIcon(icon)
         self.ui.pageListWidget.addItem(sourceitem)
 
-        pointoutitem = QListWidgetItem("软件推荐页")
-        pointoutitem.setWhatsThis('pointout')
-        icon = QIcon()
-        #icon.addFile("res/pageList.png", QSize(), QIcon.Normal, QIcon.Off)
-        pointoutitem.setIcon(icon)
-        self.ui.pageListWidget.addItem(pointoutitem)
+        # pointoutitem = QListWidgetItem("软件推荐页")
+        # pointoutitem.setWhatsThis('pointout')
+        # icon = QIcon()
+        ## icon.addFile("res/pageList.png", QSize(), QIcon.Normal, QIcon.Off)
+        # pointoutitem.setIcon(icon)
+        # self.ui.pageListWidget.addItem(pointoutitem)
 
         self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
         self.ui.text1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")

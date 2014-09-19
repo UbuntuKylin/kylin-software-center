@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>860</width>
+    <width>873</width>
     <height>920</height>
    </rect>
   </property>
@@ -60,7 +60,7 @@
     <rect>
      <x>25</x>
      <y>150</y>
-     <width>810</width>
+     <width>824</width>
      <height>40</height>
     </rect>
    </property>
@@ -70,7 +70,7 @@
     <rect>
      <x>25</x>
      <y>190</y>
-     <width>810</width>
+     <width>824</width>
      <height>81</height>
     </rect>
    </property>
@@ -80,7 +80,7 @@
     <rect>
      <x>25</x>
      <y>290</y>
-     <width>810</width>
+     <width>824</width>
      <height>200</height>
     </rect>
    </property>
@@ -104,7 +104,7 @@
   <widget class="QPushButton" name="btnSshotNext">
    <property name="geometry">
     <rect>
-     <x>790</x>
+     <x>807</x>
      <y>370</y>
      <width>40</width>
      <height>40</height>
@@ -132,7 +132,7 @@
     <rect>
      <x>25</x>
      <y>810</y>
-     <width>810</width>
+     <width>824</width>
      <height>85</height>
     </rect>
    </property>
@@ -182,7 +182,7 @@
   <widget class="QPushButton" name="btnUpdate">
    <property name="geometry">
     <rect>
-     <x>685</x>
+     <x>700</x>
      <y>24</y>
      <width>148</width>
      <height>40</height>
@@ -195,7 +195,7 @@
   <widget class="QPushButton" name="btnInstall">
    <property name="geometry">
     <rect>
-     <x>684</x>
+     <x>700</x>
      <y>24</y>
      <width>148</width>
      <height>40</height>
@@ -208,7 +208,7 @@
   <widget class="QPushButton" name="btnUninstall">
    <property name="geometry">
     <rect>
-     <x>684</x>
+     <x>700</x>
      <y>24</y>
      <width>148</width>
      <height>40</height>
@@ -581,7 +581,7 @@
     <rect>
      <x>25</x>
      <y>685</y>
-     <width>810</width>
+     <width>824</width>
      <height>76</height>
     </rect>
    </property>
@@ -589,7 +589,7 @@
   <widget class="QPushButton" name="bntSubmit">
    <property name="geometry">
     <rect>
-     <x>734</x>
+     <x>749</x>
      <y>762</y>
      <width>100</width>
      <height>32</height>
