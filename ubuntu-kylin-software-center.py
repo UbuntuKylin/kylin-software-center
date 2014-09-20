@@ -378,6 +378,25 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
+
+        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
+        self.ui.tasklabel.setText("任务列表")
+        self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
+        # self.ui.taskBottomWidget.setAutoFillBackground(True)
+        # palette = QPalette()
+        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        # self.ui.taskBottomWidget.setPalette(palette)
+        self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
+        self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
+        self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
+        # self.ui.taskBottomWidget.setStyleSheet("QWidget{border:1px solid #cccccc;}")
+
+
         # signal / slot
         # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
@@ -427,6 +446,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
         self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
+        self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
         self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
 
         # widget status
@@ -466,6 +486,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
         self.connect(self.appmgr, Signals.submit_review_over, self.detailScrollWidget.slot_submit_review_over)
+        self.connect(self.appmgr, Signals.submit_rating_over, self.detailScrollWidget.slot_submit_rating_over)
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -998,10 +1019,33 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget.add_sshot(sclist)
 
-    # add by kobe
     def slot_close_detail(self):
         self.detailScrollWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
+
+    def slot_close_taskpage(self):
+        self.ui.taskWidget.setVisible(False)
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
+    def slot_clear_all_task_list(self):
+        count = self.ui.taskListWidget.count()
+        print "del_task_item:",count
+
+        truecount = 0
+        for i in range(count):
+            # list is empty now
+            if(truecount == count):
+                break
+            item = self.ui.taskListWidget.item(0)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            # delete all finished task items
+            if taskitem.finish == True:
+                print "del_task_item: found an item",0,taskitem.app.name
+                delitem = self.ui.taskListWidget.takeItem(0)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                del delitem
+                del self.stmap[taskitem.app.name]
+                truecount = truecount + 1
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
@@ -1330,8 +1374,12 @@ class SoftwareCenter(QMainWindow):
             self.add_task_item(app)
 
     def slot_submit_review(self, app_name, content):
-        LOG.info("submit one review:%s",content)
+        LOG.info("submit one review:%s", content)
         self.appmgr.submit_review(app_name, content)
+
+    def slot_submit_rating(self, app_name, rating):
+        LOG.info("submit one rating:%s", rating)
+        self.appmgr.submit_rating(app_name, rating)
 
     def slot_click_cancel(self, appname):
         LOG.info("cancel an task:%s",appname)

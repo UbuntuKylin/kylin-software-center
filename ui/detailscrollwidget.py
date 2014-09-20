@@ -36,7 +36,8 @@ from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                         Signals,
-                        AppActions)
+                        AppActions,
+                        setLongTextToElideFormat)
 from utils import run
 from utils.debfile import DebFile
 from models.globals import Globals
@@ -70,9 +71,6 @@ class DetailScrollWidget(QScrollArea):
         self.hl.setGeometry(-10,-10,1,1)
 
         # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
         self.ui.bntSubmit.setFocusPolicy(Qt.NoFocus)
 
         self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
@@ -93,25 +91,13 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
         self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
-        self.ui.bntSubmit.clicked.connect(self.slot_click_submit_review)
+        self.ui.bntSubmit.clicked.connect(self.slot_submit_review)
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
-        self.ui.btnLogin.setText("请登录")
-        self.ui.btnReg.setText("免费注册")
-        self.ui.welcometext.setText("欢迎您")
-        self.ui.btnLogout.setText("退出")
         self.ui.bntSubmit.setText("提交")
-        self.ui.afterLoginWidget.hide()
         # self.ui.reviewText.setEnabled(True)
         self.ui.reviewText.setFocus(Qt.MouseFocusReason)
-        self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
-        self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
-        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
-        self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-        self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
-        self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
-        self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
 
         self.setAutoFillBackground(True)
         palette = QPalette()
@@ -145,15 +131,15 @@ class DetailScrollWidget(QScrollArea):
         self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
         self.ui.size_install.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
         self.ui.scoretitle.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
-        self.ui.scorelabel.setStyleSheet("QLabel{font-size:14x;font-weight:bold;color:#f97150;}")
+        self.ui.scorelabel.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#f97150;}")
         self.ui.fen.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
         self.ui.scoretitle.setText("软件评分:")
         self.ui.fen.setText("分")
         self.ui.gradetitle.setText("分")
         self.ui.grade.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
-        self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
+        self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
         self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
-        self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
+        self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
 
         # self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
         # self.ui.gradeBG.setStyleSheet("QLabel{border-width: 1px;border-style: solid;border-color:#cccccc;}")
@@ -197,6 +183,7 @@ class DetailScrollWidget(QScrollArea):
         # mini loading div
         self.sshotload = MiniLoadingDiv(self.ui.sshotBG, self.detailWidget)
         self.reviewload = MiniLoadingDiv(self.ui.reviewListWidget, self.detailWidget)
+        self.submitratingload = MiniLoadingDiv(self.ui.gradeBG, self.detailWidget)
         self.submitreviewload = MiniLoadingDiv(self.ui.reviewText, self.detailWidget)
 
         self.connect(self.mainwindow,Signals.apt_process_finish,self.slot_work_finished)
@@ -238,7 +225,8 @@ class DetailScrollWidget(QScrollArea):
         self.app = self.debfile
 
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
-        self.ui.name.setText(self.debfile.name)
+        # self.ui.name.setText(self.debfile.name)
+        setLongTextToElideFormat(self.ui.name, self.debfile.name)
         self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
         sizek = self.debfile.installedsize
         if(sizek <= 1024):
@@ -326,17 +314,17 @@ class DetailScrollWidget(QScrollArea):
         self.ui.grade.setText(averate_rate)
 
         self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
-        self.smallstar.move(180, 98)
+        self.smallstar.move(180, 99)
 
         #总评分
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star.move(70, 584)
         #我的评分
-        # self.star2 = StarWidget('big', app.ratings_average, self.detailWidget)
-        # self.star2.move(710, 575)
-        self.star2 = DynamicStarWidget(self.detailWidget)
-        self.star2.move(710, 575)
-        self.connect(self.star2, Signals.get_user_rating,self.slot_get_user_rating)
+        # self.ratingstar = StarWidget('big', app.ratings_average, self.detailWidget)
+        # self.ratingstar.move(710, 575)
+        self.ratingstar = DynamicStarWidget(self.detailWidget)
+        self.ratingstar.move(620, 575)
+        self.connect(self.ratingstar, Signals.get_user_rating,self.slot_submit_rating)
 
         if nowpage == "homepage" or nowpage == "allpage" or nowpage == "winpage" or nowpage == "taskpage":
             if(app.is_installed):
@@ -488,10 +476,18 @@ class DetailScrollWidget(QScrollArea):
         # get maxpage
         self.maxpage = self.mainwindow.appmgr.db.get_pagecount_by_pkgname(self.app.pkgname)
 
+        # lengthen ui
+        add = len(reviewlist)
+        count = self.ui.reviewListWidget.count()
+        reviewHeight = (count + add) * 85
+        self.detailWidget.resize(873, 790 + reviewHeight)
+        self.ui.reviewListWidget.resize(873, reviewHeight)
+
         for review in reviewlist:
-            # not this app's review  break
+            # not this app's review end it
             if(review.package_name != self.app.name):
-                break
+                return
+
             self.add_one_review(review)
 
         self.reviewpage += 1
@@ -499,13 +495,6 @@ class DetailScrollWidget(QScrollArea):
         self.reviewload.stop_loading()
 
     def add_one_review(self, review):
-        count = self.ui.reviewListWidget.count()
-        reviewHeight = (count + 1) * 85
-        # self.detailWidget.resize(805, 790 + reviewHeight)
-        # self.ui.reviewListWidget.resize(805, reviewHeight)
-        self.detailWidget.resize(873, 790 + reviewHeight)
-        self.ui.reviewListWidget.resize(873, reviewHeight)
-
         oneitem = QListWidgetItem()
         rliw = ReviewWidget(self.app.ratings_average, review)
         self.ui.reviewListWidget.addItem(oneitem)
@@ -532,9 +521,6 @@ class DetailScrollWidget(QScrollArea):
         if(self.sshotcount > 1):
             self.bigsshot.move_to_center()
             self.bigsshot.show()
-
-    # def slot_close_detail(self):
-    #     self.hide()
 
     def slot_click_install(self):
         if(self.ui.btnInstall.text() == "启动"):
@@ -564,35 +550,62 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUpdate.setEnabled(False)
         self.ui.btnUninstall.setEnabled(False)
 
-    def slot_click_submit_review(self):
-        print "click submit"
+    def slot_submit_review(self):
         if(Globals.USER != ''):
-            self.emit(Signals.submit_review, self.app.name, str(self.ui.reviewText.toPlainText()))
-            self.ui.reviewText.clear()
-            self.submitreviewload.start_loading()
-            self.ui.bntSubmit.setEnabled(False)
+            content = str(self.ui.reviewText.toPlainText())
+            if(content.strip() != ''):
+                self.submitreviewload.start_loading()
+                self.ui.bntSubmit.setEnabled(False)
+                self.emit(Signals.submit_review, self.app.name, content)
+            else:
+                self.mainwindow.messageBox.alert_msg("不能发表空评论")
         else:
             self.emit(Signals.show_login)
 
     def slot_submit_review_over(self, res):
-        print "all over  slot submit over!!",res
         self.submitreviewload.stop_loading()
-        self.submitreviewload.hide()
+        self.ui.reviewText.clear()
         self.ui.bntSubmit.setEnabled(True)
-        #
-        # if(res == True):
-        #     self.mainwindow.messageBox.alert_msg("评论已发布")
-        #     self.reviewpage = 1
-        #     self.currentreviewready = False
-        #     self.ui.reviewListWidget.clear()
-        #     # self.detailWidget.resize(873, 790)
-        #     # self.ui.reviewListWidget.resize(873, 0)
-        #     self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
-        #     self.reviewload.start_loading()
-        #     # send request
-        #     self.mainwindow.appmgr.get_application_reviews(self.app.name)
-        # else:
-        #     self.mainwindow.messageBox.alert_msg("评论失败")
+
+        if(res == True):
+            self.mainwindow.messageBox.alert_msg("评论已提交")
+            self.reviewpage = 1
+            self.currentreviewready = False
+            self.ui.reviewListWidget.clear()
+            self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
+            self.reviewload.start_loading()
+            # send request force get review from server
+            self.mainwindow.appmgr.get_application_reviews(self.app.name,force=True)
+        else:
+            self.mainwindow.messageBox.alert_msg("评论失败")
+
+    def slot_submit_rating(self, rating):
+        if(Globals.USER != ''):
+            self.submitratingload.start_loading()
+            self.emit(Signals.submit_rating, self.app.name, rating)
+        else:
+            self.emit(Signals.show_login)
+
+    def slot_submit_rating_over(self, res):
+        if(res != False):
+            self.mainwindow.appmgr.update_app_ratingavg(self.app.name, res)
+            self.reset_rating_text(res)
+            self.mainwindow.messageBox.alert_msg("评分已提交")
+        else:
+            self.mainwindow.messageBox.alert_msg("评分失败")
+
+        self.submitratingload.stop_loading()
+
+    def reset_rating_text(self, ratingavg):
+        self.app.ratings_average = ratingavg
+        self.app.ratings_total = self.app.ratings_total + 1
+
+        ratingavg = str('%.1f' % ratingavg)
+        self.smallstar.changeGrade(ratingavg)
+        self.star.changeGrade(ratingavg)
+        self.ui.scorelabel.setText(str(ratingavg))
+        self.ui.grade.setText(str(ratingavg))
+        self.ui.gradeText2.setText(str(self.app.ratings_total) + "人参加评分")
 
     def slot_work_finished(self, pkgname, action):
         #add this to prevent slot received from other signal before show_detail is not called
@@ -787,8 +800,6 @@ class DetailScrollWidget(QScrollArea):
                     self.reviewload.start_loading()
                     self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
-    def slot_get_user_rating(self, rating):
-        print rating
 
 class ScreenShotBig(QWidget):
 

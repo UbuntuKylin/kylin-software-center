@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Sep 12 17:22:54 2014
+# Created: Fri Sep 19 11:06:01 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -189,8 +189,33 @@ class Ui_MainWindow(object):
         self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
         self.taskListWidget = QtGui.QListWidget(self.taskWidget)
-        self.taskListWidget.setGeometry(QtCore.QRect(10, 10, 300, 680))
+        self.taskListWidget.setGeometry(QtCore.QRect(10, 65, 300, 475))
         self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
+        self.btnCloseTask = QtGui.QPushButton(self.taskWidget)
+        self.btnCloseTask.setGeometry(QtCore.QRect(290, 1, 28, 36))
+        self.btnCloseTask.setText(_fromUtf8(""))
+        self.btnCloseTask.setObjectName(_fromUtf8("btnCloseTask"))
+        self.taskhline = QtGui.QLabel(self.taskWidget)
+        self.taskhline.setGeometry(QtCore.QRect(10, 55, 300, 1))
+        self.taskhline.setText(_fromUtf8(""))
+        self.taskhline.setObjectName(_fromUtf8("taskhline"))
+        self.tasklabel = QtGui.QLabel(self.taskWidget)
+        self.tasklabel.setGeometry(QtCore.QRect(10, 35, 151, 16))
+        self.tasklabel.setText(_fromUtf8(""))
+        self.tasklabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.tasklabel.setObjectName(_fromUtf8("tasklabel"))
+        self.taskvline = QtGui.QLabel(self.taskWidget)
+        self.taskvline.setGeometry(QtCore.QRect(160, 37, 1, 14))
+        self.taskvline.setText(_fromUtf8(""))
+        self.taskvline.setAlignment(QtCore.Qt.AlignCenter)
+        self.taskvline.setObjectName(_fromUtf8("taskvline"))
+        self.taskBottomWidget = QtGui.QWidget(self.taskWidget)
+        self.taskBottomWidget.setGeometry(QtCore.QRect(0, 544, 320, 64))
+        self.taskBottomWidget.setObjectName(_fromUtf8("taskBottomWidget"))
+        self.btnClearTask = QtGui.QPushButton(self.taskBottomWidget)
+        self.btnClearTask.setGeometry(QtCore.QRect(146, 17, 28, 28))
+        self.btnClearTask.setText(_fromUtf8(""))
+        self.btnClearTask.setObjectName(_fromUtf8("btnClearTask"))
         self.upWidget = QtGui.QWidget(self.rightWidget)
         self.upWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.upWidget.setObjectName(_fromUtf8("upWidget"))
