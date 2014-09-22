@@ -258,7 +258,7 @@ class Database:
             # empty cache, download page 1
             if(count == 0):
                 reviews = self.premoter.get_reviews(package_name, 0, 10)
-                review_total = ''
+                review_total = -1
                 for review in reviews:
                     id = str(review.id)
                     review_total = review.aid['review_total']
@@ -273,8 +273,9 @@ class Database:
                 if(review_total != ''):
                     self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
                 self.connect.commit()
+
             # normal init, check and download newest reviews
-            elif(count != 0):
+            else:
                 # get newest review's id from local cache
                 self.cursor.execute("select id from review where aid_id=? order by date DESC limit 0,1", (aid,))
                 res = self.cursor.fetchall()
@@ -287,7 +288,7 @@ class Database:
                 loop = True
                 while loop:
                     reviews = self.premoter.get_reviews(package_name, startpage, 10)
-                    review_total = ''
+                    review_total = -1
                     for review in reviews:
                         rid = review.id
                         review_total = review.aid['review_total']
@@ -302,6 +303,13 @@ class Database:
                             self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (rid,aid,content,user_display,date))
                         # end download
                         else:
+                            # stop 'while'
+                            loop = False
+                            # break 'for'
+                            break
+
+                        # cannot find the local newest review from server, break
+                        if(startpage > (review_total / 10 + 1)):
                             # stop 'while'
                             loop = False
                             # break 'for'

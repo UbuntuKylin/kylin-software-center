@@ -69,7 +69,8 @@ def get_distro_info():
         dist = platform.dist()
         distname = dist[0]
         distversion = dist[1]
-        return [distname, distversion]
+        distroseries = dist[2]
+        return [distname, distversion, distroseries]
 
 # uksc version
 def get_uksc_version():
