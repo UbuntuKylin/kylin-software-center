@@ -1,4 +1,4 @@
-ubuntu-kylin-software-center (1.0.1.0) utopic; urgency=medium
+ubuntu-kylin-software-center (1.1.0.0) utopic; urgency=medium
 
   * UKID landing, ratings, reviews 
   * pointout prompted only once, setting interface corresponding
