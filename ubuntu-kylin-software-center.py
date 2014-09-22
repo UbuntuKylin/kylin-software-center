@@ -570,13 +570,19 @@ class SoftwareCenter(QMainWindow):
 
     def check_user(self):
 
-        # try backend login
-        self.token = self.sso.find_oauth_token_and_verify_sync()
-        if self.token:
-            self.sso.whoami()
-
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
+
+        try:
+            # try backend login
+            self.token = self.sso.find_oauth_token_and_verify_sync()
+            if self.token:
+                self.sso.whoami()
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('Check user failed.')
+
 
     def init_last_data(self):
         # init category bar
@@ -1494,27 +1500,46 @@ class SoftwareCenter(QMainWindow):
 
     # user login
     def slot_do_login_account(self):
-        self.sso.setShowRegister(False)
-        self.token = self.sso.get_oauth_token_and_verify_sync()
-        if self.token:
-            self.sso.whoami()
+        try:
+            self.sso.setShowRegister(False)
+            self.token = self.sso.get_oauth_token_and_verify_sync()
+            if self.token:
+                self.sso.whoami()
+
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('User login failed.')
 
     # user register
     def slot_do_register(self):
-        self.sso.setShowRegister(True)
-        self.token = self.sso.get_oauth_token_and_verify_sync()
-        if self.token:
-            self.sso.whoami()
+        try:
+            self.sso.setShowRegister(True)
+            self.token = self.sso.get_oauth_token_and_verify_sync()
+            if self.token:
+                self.sso.whoami()
+
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('User register failed.')
 
     def slot_do_logout(self):
-        self.sso.clear_token()
-        self.token = ""
 
-        self.ui.beforeLoginWidget.show()
-        self.ui.afterLoginWidget.hide()
+        try:
+            self.sso.clear_token()
+            self.token = ""
 
-        Globals.USER = ''
-        Globals.USER_DISPLAY = ''
+            self.ui.beforeLoginWidget.show()
+            self.ui.afterLoginWidget.hide()
+
+            Globals.USER = ''
+            Globals.USER_DISPLAY = ''
+
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('User logout failed.')
 
     # update user login status
     def slot_whoami_done(self, sso, result):
