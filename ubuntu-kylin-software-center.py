@@ -384,7 +384,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.tasklabel.setText("任务列表")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+
+        self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
+        self.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
         # self.ui.taskBottomWidget.setAutoFillBackground(True)
         # palette = QPalette()
         # palette.setColor(QPalette.Background, QColor(238, 237, 240))
@@ -446,6 +449,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
         self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
+        self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
         self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
 
         # widget status
@@ -485,6 +489,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
         self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
         self.connect(self.appmgr, Signals.submit_review_over, self.detailScrollWidget.slot_submit_review_over)
+        self.connect(self.appmgr, Signals.submit_rating_over, self.detailScrollWidget.slot_submit_rating_over)
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -568,13 +573,19 @@ class SoftwareCenter(QMainWindow):
 
     def check_user(self):
 
-        # try backend login
-        self.token = self.sso.find_oauth_token_and_verify_sync()
-        if self.token:
-            self.sso.whoami()
-
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
+
+        try:
+            # try backend login
+            self.token = self.sso.find_oauth_token_and_verify_sync()
+            if self.token:
+                self.sso.whoami()
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('Check user failed.')
+
 
     def init_last_data(self):
         # init category bar
@@ -724,8 +735,10 @@ class SoftwareCenter(QMainWindow):
     def mouseReleaseEvent(self, event):
         # close task page while click anywhere except task page self
         if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
-            self.ui.taskWidget.setVisible(False)
-            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+            # add by kobe 局部坐标:pos(), 全局坐标:globalPos()
+            if event.pos().x() > 400:
+                self.ui.taskWidget.setVisible(False)
+                self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
@@ -1017,16 +1030,33 @@ class SoftwareCenter(QMainWindow):
 
         self.detailScrollWidget.add_sshot(sclist)
 
-    # add by kobe
     def slot_close_detail(self):
         self.detailScrollWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
 
     def slot_close_taskpage(self):
         self.ui.taskWidget.setVisible(False)
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_clear_all_task_list(self):
-        pass
+        count = self.ui.taskListWidget.count()
+        print "del_task_item:",count
+
+        truecount = 0
+        for i in range(count):
+            # list is empty now
+            if(truecount == count):
+                break
+            item = self.ui.taskListWidget.item(0)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            # delete all finished task items
+            if taskitem.finish == True:
+                print "del_task_item: found an item",0,taskitem.app.name
+                delitem = self.ui.taskListWidget.takeItem(0)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                del delitem
+                del self.stmap[taskitem.app.name]
+                truecount = truecount + 1
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
@@ -1355,8 +1385,12 @@ class SoftwareCenter(QMainWindow):
             self.add_task_item(app)
 
     def slot_submit_review(self, app_name, content):
-        LOG.info("submit one review:%s",content)
+        LOG.info("submit one review:%s", content)
         self.appmgr.submit_review(app_name, content)
+
+    def slot_submit_rating(self, app_name, rating):
+        LOG.info("submit one rating:%s", rating)
+        self.appmgr.submit_rating(app_name, rating)
 
     def slot_click_cancel(self, appname):
         LOG.info("cancel an task:%s",appname)
@@ -1471,27 +1505,46 @@ class SoftwareCenter(QMainWindow):
 
     # user login
     def slot_do_login_account(self):
-        self.sso.setShowRegister(False)
-        self.token = self.sso.get_oauth_token_and_verify_sync()
-        if self.token:
-            self.sso.whoami()
+        try:
+            self.sso.setShowRegister(False)
+            self.token = self.sso.get_oauth_token_and_verify_sync()
+            if self.token:
+                self.sso.whoami()
+
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('User login failed.')
 
     # user register
     def slot_do_register(self):
-        self.sso.setShowRegister(True)
-        self.token = self.sso.get_oauth_token_and_verify_sync()
-        if self.token:
-            self.sso.whoami()
+        try:
+            self.sso.setShowRegister(True)
+            self.token = self.sso.get_oauth_token_and_verify_sync()
+            if self.token:
+                self.sso.whoami()
+
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('User register failed.')
 
     def slot_do_logout(self):
-        self.sso.clear_token()
-        self.token = ""
 
-        self.ui.beforeLoginWidget.show()
-        self.ui.afterLoginWidget.hide()
+        try:
+            self.sso.clear_token()
+            self.token = ""
 
-        Globals.USER = ''
-        Globals.USER_DISPLAY = ''
+            self.ui.beforeLoginWidget.show()
+            self.ui.afterLoginWidget.hide()
+
+            Globals.USER = ''
+            Globals.USER_DISPLAY = ''
+
+        except ImportError:
+            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        except:
+            LOG.exception('User logout failed.')
 
     # update user login status
     def slot_whoami_done(self, sso, result):

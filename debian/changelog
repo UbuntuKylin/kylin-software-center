@@ -1,3 +1,14 @@
+ubuntu-kylin-software-center (1.1.0.0) utopic; urgency=medium
+
+  * UKID landing, ratings, reviews 
+  * pointout prompted only once, setting interface corresponding
+    item also removed
+  * New default software icon
+  * Detailed interface remains left column status
+  * The new schedule interface
+
+ -- Shine <shenghuang@ubuntukylin.com>  Mon, 22 Sep 2014 09:53:05 +0800
+
 ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
 
   * Modify widget.

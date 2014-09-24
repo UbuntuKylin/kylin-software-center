@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Fri Sep 19 09:39:21 2014
+# Created: Wed Sep 24 10:03:53 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,7 +96,7 @@ class Ui_DetailWidget(object):
         self.gradeText2.setAlignment(QtCore.Qt.AlignCenter)
         self.gradeText2.setObjectName(_fromUtf8("gradeText2"))
         self.gradeText1 = QtGui.QLabel(self.gradeBG)
-        self.gradeText1.setGeometry(QtCore.QRect(625, 60, 66, 17))
+        self.gradeText1.setGeometry(QtCore.QRect(520, 60, 90, 17))
         self.gradeText1.setText(_fromUtf8(""))
         self.gradeText1.setObjectName(_fromUtf8("gradeText1"))
         self.grade = QtGui.QLabel(self.gradeBG)
@@ -118,7 +118,7 @@ class Ui_DetailWidget(object):
         self.icon.setText(_fromUtf8(""))
         self.icon.setObjectName(_fromUtf8("icon"))
         self.widget = QtGui.QWidget(DetailWidget)
-        self.widget.setGeometry(QtCore.QRect(120, 0, 381, 121))
+        self.widget.setGeometry(QtCore.QRect(120, 0, 501, 121))
         self.widget.setObjectName(_fromUtf8("widget"))
         self.scoretitle = QtGui.QLabel(self.widget)
         self.scoretitle.setGeometry(QtCore.QRect(0, 96, 66, 18))
@@ -137,7 +137,7 @@ class Ui_DetailWidget(object):
         self.installedVersion.setText(_fromUtf8(""))
         self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
         self.name = QtGui.QLabel(self.widget)
-        self.name.setGeometry(QtCore.QRect(0, 0, 311, 30))
+        self.name.setGeometry(QtCore.QRect(0, 0, 501, 30))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.size_install = QtGui.QLabel(self.widget)

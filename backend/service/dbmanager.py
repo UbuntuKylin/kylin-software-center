@@ -87,10 +87,9 @@ class Database:
 
         # cache xapiandb need update, copy
         if self.is_xapiancachedb_need_update():
-            if os.path.exists(xapian_destFile):
-                rmtree(xapian_destFile)
-                copytree(xapian_srcFile,xapian_destFile)
-                print "cache xapiandb versin updated"
+            rmtree(xapian_destFile)
+            copytree(xapian_srcFile,xapian_destFile)
+            print "cache xapiandb versin updated"
 
 
     def query_categories(self):
@@ -204,29 +203,33 @@ class Database:
         xapian_srcFile = XAPIAN_DB_SOURCE_PATH
         xapian_destFile = os.path.join(UKSC_CACHE_DIR,"xapiandb")
 
-        src_xapiandb = xapian.Database(xapian_srcFile)
-        new_enquire = xapian.Enquire(src_xapiandb)
-        new_query = xapian.Query("the_#ukxapiandb#_version")
-        new_enquire.set_query(new_query)
-        new_matches = new_enquire.get_mset(0,1)
+        try:
+            src_xapiandb = xapian.Database(xapian_srcFile)
+            new_enquire = xapian.Enquire(src_xapiandb)
+            new_query = xapian.Query("the_#ukxapiandb#_version")
+            new_enquire.set_query(new_query)
+            new_matches = new_enquire.get_mset(0,1)
 
-        for new_item in new_matches:
-            new_doc = new_item.document
-            if new_doc.get_data() == "XAPIANDB_VERSION":
-                new_version = new_doc.get_value(1) #valueslot:1 xapiandb version
-                des_xapiandb = xapian.Database(xapian_destFile)
-                old_enquire = xapian.Enquire(des_xapiandb)
-                old_query = xapian.Query("the_#ukxapiandb#_version")
-                old_enquire.set_query(old_query)
-                old_matches = old_enquire.get_mset(0,1)
-                for old_item in old_matches:
-                    old_doc = old_item.document
-                    old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
-        print "old xapiandb  version:",old_version," new xapiandb version:",new_version
-        if (new_version > old_version):
+            for new_item in new_matches:
+                new_doc = new_item.document
+                if new_doc.get_data() == "XAPIANDB_VERSION":
+                    new_version = new_doc.get_value(1) #valueslot:1 xapiandb version
+                    des_xapiandb = xapian.Database(xapian_destFile)
+                    old_enquire = xapian.Enquire(des_xapiandb)
+                    old_query = xapian.Query("the_#ukxapiandb#_version")
+                    old_enquire.set_query(old_query)
+                    old_matches = old_enquire.get_mset(0,1)
+                    for old_item in old_matches:
+                        old_doc = old_item.document
+                        old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
+            print "old xapiandb  version:",old_version," new xapiandb version:",new_version
+        except:
             return True
         else:
-            return False
+            if (new_version > old_version):
+                return True
+            else:
+                return False
 
 
     def get_pagecount_by_pkgname(self, package_name):
@@ -255,7 +258,7 @@ class Database:
             # empty cache, download page 1
             if(count == 0):
                 reviews = self.premoter.get_reviews(package_name, 0, 10)
-                review_total = ''
+                review_total = -1
                 for review in reviews:
                     id = str(review.id)
                     review_total = review.aid['review_total']
@@ -270,8 +273,9 @@ class Database:
                 if(review_total != ''):
                     self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
                 self.connect.commit()
+
             # normal init, check and download newest reviews
-            elif(count != 0):
+            else:
                 # get newest review's id from local cache
                 self.cursor.execute("select id from review where aid_id=? order by date DESC limit 0,1", (aid,))
                 res = self.cursor.fetchall()
@@ -284,7 +288,7 @@ class Database:
                 loop = True
                 while loop:
                     reviews = self.premoter.get_reviews(package_name, startpage, 10)
-                    review_total = ''
+                    review_total = -1
                     for review in reviews:
                         rid = review.id
                         review_total = review.aid['review_total']
@@ -299,6 +303,13 @@ class Database:
                             self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (rid,aid,content,user_display,date))
                         # end download
                         else:
+                            # stop 'while'
+                            loop = False
+                            # break 'for'
+                            break
+
+                        # cannot find the local newest review from server, break
+                        if(startpage > (review_total / 10 + 1)):
                             # stop 'while'
                             loop = False
                             # break 'for'
@@ -398,6 +409,11 @@ class Database:
             rank_rating = item[1]
             ratingranks.append((app_name, rank_rating))
         return ratingranks
+
+    def update_app_ratingavg(self, app_name, ratingavg):
+        self.cursor.execute("update application set rating_avg=? where app_name=?", (ratingavg, app_name))
+        self.cursor.execute("update application set rating_total=rating_total+1 where app_name=?", (app_name,))
+        self.connect.commit()
 
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):

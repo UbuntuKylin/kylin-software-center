@@ -50,15 +50,17 @@ class MessageBox(QObject):
         self.alertGOE = QGraphicsOpacityEffect()
 
         self.alert = QPushButton(parent)
-        self.alert.setGeometry(317, 380, 190, 95)
+        self.alert.setGeometry(980 / 2 - 203 / 2, 608 / 2 - 56 / 2, 203, 56)
         self.alert.setFocusPolicy(Qt.NoFocus)
         self.alert.setGraphicsEffect(self.alertGOE)
-        self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:5px;color:#1E66A4;font-size:16px;}")
+        self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:4px;color:white;font-size:16px;}")
         self.alert.clicked.connect(self.alert.hide)
         self.alert.hide()
 
     def alert_msg(self, alertText):
-        self.ay = 380
+        self.alertTimer.stop()
+        self.alertDelayTimer.stop()
+        self.ay = 410
         self.ao = 0.0
         self.alertGOE.setOpacity(self.ao)
         self.alert.setText(alertText)
@@ -69,7 +71,7 @@ class MessageBox(QObject):
         if(self.ao < 1):
             self.ao += 0.015
             self.alertGOE.setOpacity(self.ao)
-        if(self.ay <= 250):
+        if(self.ay <= 280):
             self.alertTimer.stop()
             # close after * second
             self.alertDelayTimer.start(4000)

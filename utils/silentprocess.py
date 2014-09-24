@@ -224,9 +224,7 @@ class SilentProcess(multiprocessing.Process):
         database = xapian.WritableDatabase(XAPIAN_DB_PATH,xapian.DB_OPEN)
         DB = xapian.Database(database)
         enquire = xapian.Enquire(database)
-            
         indexer = xapian.TermGenerator()
-
         query_xapiandb_version = xapian.Query("the_#ukxapiandb#_version")
         enquire.set_query(query_xapiandb_version)
         matches = enquire.get_mset(0,1)
@@ -259,7 +257,10 @@ class SilentProcess(multiprocessing.Process):
                         doc.clear_terms()
                         indexer.set_document(doc)
                         doc.add_term(app_name,10)
-                        keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+                        if keywords_for_search != "None":
+                            keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+                        else:
+                            keywords = display_name_cn+";"+app_name
                         indexer.index_text(keywords,10)
                         
                         try:
@@ -268,8 +269,7 @@ class SilentProcess(multiprocessing.Process):
                                 if word != "none":
                                     doc.add_term(word,10)
                                 else:
-                                    pass 
-                                                         
+                                    pass
                         except:
                             pass
                             
@@ -279,12 +279,10 @@ class SilentProcess(multiprocessing.Process):
                         
                     else:
                         continue
-                
             else:
                 doc = xapian.Document()
                 doc.set_data(app_name)
                 doc.add_term(app_name,10)
- 
                 indexer.set_document(doc)
                 if keywords_for_search != "None":
                     keywords = display_name_cn+";"+keywords_for_search+";"+app_name
@@ -293,7 +291,6 @@ class SilentProcess(multiprocessing.Process):
                 indexer.index_text(keywords,10)
                 
                 try:
-                    
                     for word,value in seg_txt_2_dict(keywords).iteritems():
                         if word != "none":
                             doc.add_term(word,10)
