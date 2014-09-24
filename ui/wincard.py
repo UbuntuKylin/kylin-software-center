@@ -35,11 +35,12 @@ from models.enums import Signals, setLongTextToElideFormat
 
 class WinCard(QWidget):
 
-    def __init__(self, winstat, app, parent=None):
-        QWidget.__init__(self,parent)
+    def __init__(self, winstat, app, messageBox, parent=None):
+        QWidget.__init__(self, parent)
         self.ui_init()
         self.winstat = winstat
         self.app = app
+        self.messageBox = messageBox
 
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
@@ -296,7 +297,11 @@ class WinCard(QWidget):
             webbrowser.open_new_tab('http://dl.pps.tv/pps_linux_download.html')
         else:
             if(self.ui.btn.text() == "启动"):
-                run.run_app(self.app.name)
+                pro_times = run.judge_app_run_or_not(self.app.name)
+                if pro_times == 0 or pro_times == 1:
+                    run.run_app(self.app.name)
+                else:
+                    self.messageBox.alert_msg(self.app.name + "已经运行")
             else:
                 self.ui.btn.setEnabled(False)
                 self.ui.btn.setText("正在处理")

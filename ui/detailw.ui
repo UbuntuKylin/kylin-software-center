@@ -340,9 +340,9 @@
    <widget class="QLabel" name="size">
     <property name="geometry">
      <rect>
-      <x>210</x>
-      <y>40</y>
-      <width>140</width>
+      <x>280</x>
+      <y>38</y>
+      <width>211</width>
       <height>18</height>
      </rect>
     </property>
@@ -355,7 +355,7 @@
      <rect>
       <x>0</x>
       <y>68</y>
-      <width>200</width>
+      <width>251</width>
       <height>18</height>
      </rect>
     </property>
@@ -368,7 +368,7 @@
      <rect>
       <x>0</x>
       <y>38</y>
-      <width>200</width>
+      <width>251</width>
       <height>18</height>
      </rect>
     </property>
@@ -392,9 +392,9 @@
    <widget class="QLabel" name="size_install">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>280</x>
       <y>68</y>
-      <width>140</width>
+      <width>211</width>
       <height>18</height>
      </rect>
     </property>
@@ -405,7 +405,7 @@
    <widget class="QLabel" name="split1">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>252</x>
       <y>38</y>
       <width>1</width>
       <height>18</height>
@@ -418,7 +418,7 @@
    <widget class="QLabel" name="split2">
     <property name="geometry">
      <rect>
-      <x>200</x>
+      <x>252</x>
       <y>68</y>
       <width>1</width>
       <height>18</height>

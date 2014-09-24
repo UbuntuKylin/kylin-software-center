@@ -37,7 +37,7 @@ from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather, DataModel
 from ui.cardwidget import CardWidget
 from ui.pointcard import PointCard
-from ui.listitemwidget import ListItemWidget
+# from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
 from ui.adwidget import *
@@ -692,7 +692,7 @@ class SoftwareCenter(QMainWindow):
                     self.winnum += 1
                     app = None
                     winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
-                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                     self.winListWidget.add_card(card)
                     self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                     self.connect(card, Signals.install_app, self.slot_click_install)
@@ -704,7 +704,7 @@ class SoftwareCenter(QMainWindow):
                     if app is not None:
                         self.winnum += 1
                     winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
-                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                     self.winListWidget.add_card(card)
                     self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                     self.connect(card, Signals.install_app, self.slot_click_install)
@@ -762,7 +762,7 @@ class SoftwareCenter(QMainWindow):
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
 
-            card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
+            card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
             listWidget.add_card(card)
             self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(card, Signals.install_app, self.slot_click_install)
@@ -798,7 +798,7 @@ class SoftwareCenter(QMainWindow):
                     count = count + 1
                     continue
 
-                card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
+                card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
                 listWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)
@@ -933,7 +933,7 @@ class SoftwareCenter(QMainWindow):
 
         if(len(pl) > 0):
             for p in pl:
-                card = PointCard(p, self.nowPage, self.pointListWidget.cardPanel)
+                card = PointCard(p, self.nowPage, self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)
@@ -991,7 +991,7 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
 
         for app in applist:
-            recommend = RcmdCard(app, self.recommendWidget.cardPanel)
+            recommend = RcmdCard(app, self.messageBox, self.recommendWidget.cardPanel)
             self.recommendWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)

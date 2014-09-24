@@ -524,7 +524,12 @@ class DetailScrollWidget(QScrollArea):
 
     def slot_click_install(self):
         if(self.ui.btnInstall.text() == "启动"):
-            run.run_app(self.app.name)
+            pro_times = run.judge_app_run_or_not(self.app.name)
+            if pro_times == 0 or pro_times == 1:
+                run.run_app(self.app.name)
+            else:
+                self.mainwindow.messageBox.alert_msg(self.app.name + "已经运行")
+
         elif(self.ui.btnInstall.text() == "安装此包"):
             self.emit(Signals.install_debfile, self.debfile)
             self.ui.btnInstall.setText("处理中")
