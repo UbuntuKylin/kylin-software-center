@@ -71,6 +71,11 @@ class Application:
         self.pointoutrank = 32767
         self.recommendrank = 32767
 
+    # add by kobe
+    @property
+    def status(self):
+        return False
+
     @property
     def name(self):
         return self.pkgname

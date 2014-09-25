@@ -27,6 +27,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.ukcmtw import Ui_CommentWidget
 from ui.starwidget import StarWidget
+from models.enums import setLongTextToElideFormat
 
 
 class ReviewWidget(QWidget):
@@ -49,7 +50,10 @@ class ReviewWidget(QWidget):
 
         self.ui.userName.setText(review.user_display)
         self.ui.createDate.setText(review.date)
-        self.ui.comment.setText(review.content)
+        # self.ui.comment.setText(review.content)
+        # add by kobe
+        setLongTextToElideFormat(self.ui.comment, review.content)
+        self.ui.comment.setToolTip(review.content)
 
     def ui_init(self):
         self.ui = Ui_CommentWidget()

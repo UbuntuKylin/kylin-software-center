@@ -377,6 +377,7 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+        self.ui.taskListWidget.setSpacing(1)
 
 
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
@@ -761,7 +762,6 @@ class SoftwareCenter(QMainWindow):
             # self.connect(liw, Signals.remove_app, self.slot_click_remove)
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
-
             card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
             listWidget.add_card(card)
             self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
