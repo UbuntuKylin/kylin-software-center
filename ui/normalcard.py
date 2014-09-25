@@ -249,10 +249,14 @@ class NormalCard(QWidget):
                 elif self.preType == "uppage":
                     self.star.show()
                     self.ui.isInstalled.setVisible(False)
-                    self.ui.btn.setText("升级")
-                    self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+                    if app.is_installed is True and app.is_upgradable is True:
+                        self.ui.btn.setText("升级")
+                        self.ui.btn.setEnabled(True)
+                    else:
+                        self.ui.btn.setText("无法升级")
+                        self.ui.btn.setEnabled(False)
                 elif self.preType == "unpage":
                     # add by kobe, Fixed Bug #1373740
                     self.star.show()
