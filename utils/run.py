@@ -28,6 +28,7 @@
 import os
 import re
 import subprocess
+import commands
 
 def get_run_command(pkgname):
     # 对一些特殊软件单独处理
@@ -62,6 +63,16 @@ def run_app(pkgname):
 
 def run_appa():
     p = subprocess.Popen(["eog", "/home/shine/Downloads/009-01.png"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+
+def judge_app_run_or_not(pkgname):
+    result = 0
+    cmd = get_run_command(pkgname)
+    if cmd[0] is not None:
+        cmd = 'pgrep -f ' + cmd[0] + ' | wc -l'
+        ps = os.popen(cmd)
+        result = int(ps.read().replace('/n', ''))
+        ps.close()
+    return result
 
 def main():
     run_appa()

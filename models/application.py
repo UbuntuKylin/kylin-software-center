@@ -41,6 +41,7 @@ class Application:
     def __init__(self, pkgname, displayname, category_name, apt_cache):
         if not pkgname:
             raise ValueError("Need either appname or pkgname or request")
+        # self.init_status = "nothing"
         self.pkgname = pkgname
         self.displayname = displayname
         self.category_name = category_name
@@ -70,6 +71,12 @@ class Application:
         self.ratingrank = 32767
         self.pointoutrank = 32767
         self.recommendrank = 32767
+
+    # add by kobe
+    @property
+    def status(self):
+        return "nothing"
+        # return self.init_status
 
     @property
     def name(self):
@@ -178,6 +185,9 @@ class Application:
             except:
                 self.package = None
         self.cache = apt_cache
+
+    # def set_status(self, context):
+    #     self.init_status = context
 
 if __name__ == "__main__":
 

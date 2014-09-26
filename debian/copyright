@@ -11,7 +11,7 @@ Files: backend/aptdaemon/dbus_service/*
 Copyright: Copyright (C) 2013-2014 National University of Defense Technology(NUDT) & Kylin Ltd.
 License: GPL-3
 
-Files: backend/ubuntu_sw.py backend/piston/rnrclient_pristine
+Files: backend/ubuntu_sw.py backend/piston/rnrclient_pristine.py
 Copyright: Copyright (C) 2009 Michael Vogt <michael.vogt@ubuntu.com>
            Copyright (C) 2013-2014 National University of Defense Technology(NUDT) & Kylin Ltd.
 License: GPL-3

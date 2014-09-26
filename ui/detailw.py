@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/detailw.ui'
+# Form implementation generated from reading ui file 'detailw.ui'
 #
-# Created: Fri Sep 19 15:15:30 2014
+# Created: Wed Sep 24 11:10:03 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -118,38 +118,38 @@ class Ui_DetailWidget(object):
         self.icon.setText(_fromUtf8(""))
         self.icon.setObjectName(_fromUtf8("icon"))
         self.widget = QtGui.QWidget(DetailWidget)
-        self.widget.setGeometry(QtCore.QRect(120, 0, 381, 121))
+        self.widget.setGeometry(QtCore.QRect(120, 0, 501, 121))
         self.widget.setObjectName(_fromUtf8("widget"))
         self.scoretitle = QtGui.QLabel(self.widget)
         self.scoretitle.setGeometry(QtCore.QRect(0, 96, 66, 18))
         self.scoretitle.setText(_fromUtf8(""))
         self.scoretitle.setObjectName(_fromUtf8("scoretitle"))
         self.size = QtGui.QLabel(self.widget)
-        self.size.setGeometry(QtCore.QRect(210, 40, 140, 18))
+        self.size.setGeometry(QtCore.QRect(280, 38, 211, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.candidateVersion = QtGui.QLabel(self.widget)
-        self.candidateVersion.setGeometry(QtCore.QRect(0, 68, 200, 18))
+        self.candidateVersion.setGeometry(QtCore.QRect(0, 68, 251, 18))
         self.candidateVersion.setText(_fromUtf8(""))
         self.candidateVersion.setObjectName(_fromUtf8("candidateVersion"))
         self.installedVersion = QtGui.QLabel(self.widget)
-        self.installedVersion.setGeometry(QtCore.QRect(0, 38, 200, 18))
+        self.installedVersion.setGeometry(QtCore.QRect(0, 38, 251, 18))
         self.installedVersion.setText(_fromUtf8(""))
         self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
         self.name = QtGui.QLabel(self.widget)
-        self.name.setGeometry(QtCore.QRect(0, 0, 311, 30))
+        self.name.setGeometry(QtCore.QRect(0, 0, 501, 30))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.size_install = QtGui.QLabel(self.widget)
-        self.size_install.setGeometry(QtCore.QRect(210, 68, 140, 18))
+        self.size_install.setGeometry(QtCore.QRect(280, 68, 211, 18))
         self.size_install.setText(_fromUtf8(""))
         self.size_install.setObjectName(_fromUtf8("size_install"))
         self.split1 = QtGui.QLabel(self.widget)
-        self.split1.setGeometry(QtCore.QRect(200, 38, 1, 18))
+        self.split1.setGeometry(QtCore.QRect(252, 38, 1, 18))
         self.split1.setText(_fromUtf8(""))
         self.split1.setObjectName(_fromUtf8("split1"))
         self.split2 = QtGui.QLabel(self.widget)
-        self.split2.setGeometry(QtCore.QRect(200, 68, 1, 18))
+        self.split2.setGeometry(QtCore.QRect(252, 68, 1, 18))
         self.split2.setText(_fromUtf8(""))
         self.split2.setObjectName(_fromUtf8("split2"))
         self.fen = QtGui.QLabel(self.widget)

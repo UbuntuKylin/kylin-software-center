@@ -35,11 +35,12 @@ from models.enums import Signals, setLongTextToElideFormat
 
 class WinCard(QWidget):
 
-    def __init__(self, winstat, app, parent=None):
-        QWidget.__init__(self,parent)
+    def __init__(self, winstat, app, messageBox, parent=None):
+        QWidget.__init__(self, parent)
         self.ui_init()
         self.winstat = winstat
         self.app = app
+        self.messageBox = messageBox
 
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
@@ -100,9 +101,7 @@ class WinCard(QWidget):
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".jpg"))
         else:
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + "default.png"))
-        # self.ui.winname.setText(self.winstat.windows_app_name)
-        # self.ui.wintext.setText(self.winstat.display_name_windows)
-        # self.ui.winbake.setText(self.winstat.category)
+
         # add by kobe
         setLongTextToElideFormat(self.ui.winname, self.winstat.windows_app_name)
         setLongTextToElideFormat(self.ui.wintext, self.winstat.display_name_windows)
@@ -139,48 +138,6 @@ class WinCard(QWidget):
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
 
-        # letter spacing
-        # font = QFont()
-        # font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
-        # self.ui.name.setFont(font)
-        # self.ui.description.setFont(font)
-        # self.ui.winname.setFont(font)
-
-        # if(len(self.winstat.windows_app_name) > 20):
-        #     font2 = QFont()
-        #     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-        #     self.ui.winname.setFont(font2)
-        #     self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-        # elif(len(self.winstat.windows_app_name) > 24):
-        #     font2 = QFont()
-        #     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-        #     self.ui.winname.setFont(font2)
-        #     self.ui.winname.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
-
-        # if self.app is None:
-        #     if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
-        #         if(len(self.winstat.app_name) > 20):
-        #             font2 = QFont()
-        #             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-        #             self.ui.name.setFont(font2)
-        #             self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-        #         if(len(self.winstat.app_name) > 24):
-        #             font2 = QFont()
-        #             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-        #             self.ui.name.setFont(font2)
-        #             self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
-        # else:
-        #     if(len(self.app.displayname) > 20):
-        #         font2 = QFont()
-        #         font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-        #         self.ui.name.setFont(font2)
-        #         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
-        #     if(len(self.app.displayname) > 24):
-        #         font2 = QFont()
-        #         font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-        #         self.ui.name.setFont(font2)
-        #         self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
-
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 self.ui.size.setText("")
@@ -197,40 +154,62 @@ class WinCard(QWidget):
                 self.ui.size.setText(str(installedsizek) + " KB")
             else:
                 self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
-            # self.ui.name.setText(self.app.displayname)
-            # self.ui.named.setText(self.app.displayname)
+
             # add by kobe
             setLongTextToElideFormat(self.ui.name, self.app.displayname)
             setLongTextToElideFormat(self.ui.named, self.app.displayname)
             self.ui.description.setText(self.app.summary)
-            # metrics = QFontMetrics(self.ui.name.font())
-            # elidedText = metrics.elidedText(self.app.displayname, Qt.ElideRight, self.ui.name.width())
-            # self.ui.name.setText(elidedText)
-
-
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 self.ui.btn.setText("安装")
+                self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-install-border.png');}")
             else:
                 self.ui.btn.setText("无效")
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
         else:
-            if(self.app.is_installed):
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-un-btn-3.png');}")
-                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-un-border.png');}")
-                    self.ui.btn.setEnabled(False)
-                else:
-                    self.ui.btn.setText("启动")
-                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-run-btn-3.png');}")
-                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
+            # if app.status:
+            #     self.ui.btn.setEnabled(False)
+            #     self.ui.btn.setText("正在处理")
+            if app.status == "installing":
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setText("正在安装")
+                self.ui.isInstalled.setVisible(False)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+            elif app.status == "uninstalling":
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setText("正在卸载")
+                self.ui.isInstalled.setVisible(False)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+            elif app.status == "upgrading":
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setText("正在升级")
+                self.ui.isInstalled.setVisible(False)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
             else:
-                self.ui.btn.setText("安装")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-install-border.png');}")
+                if(self.app.is_installed):
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-un-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-un-border.png');}")
+                    else:
+                        self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-run-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
+                else:
+                    self.ui.btn.setText("安装")
+                    self.ui.btn.setEnabled(True)
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-install-border.png');}")
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
@@ -296,11 +275,30 @@ class WinCard(QWidget):
             webbrowser.open_new_tab('http://dl.pps.tv/pps_linux_download.html')
         else:
             if(self.ui.btn.text() == "启动"):
-                run.run_app(self.app.name)
+                pro_times = run.judge_app_run_or_not(self.app.name)
+                if pro_times == 0 or pro_times == 1:
+                    run.run_app(self.app.name)
+                else:
+                    self.messageBox.alert_msg(self.app.name + "已经运行")
             else:
                 self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("正在处理")
-                self.emit(Signals.install_app, self.app)
+                if(self.ui.btn.text() == '安装'):
+                    self.app.status = "installing"
+                    self.ui.btn.setText("正在安装")
+                    self.emit(Signals.install_app, self.app)
+                elif(self.ui.btn.text() == '升级'):
+                    self.app.status = "upgrading"
+                    self.ui.btn.setText("正在升级")
+                    self.emit(Signals.upgrade_app, self.app)
+                elif(self.ui.btn.text() == '卸载'):
+                    self.app.status = "uninstalling"
+                    self.ui.btn.setText("正在卸载")
+                    self.emit(Signals.remove_app, self.app)
+                # else:
+                #     self.app.status = True
+                #     self.ui.btn.setEnabled(False)
+                #     self.ui.btn.setText("正在处理")
+                #     self.emit(Signals.install_app, self.app)
 
     def slot_emit_detail(self):
         if(self.app != None):
@@ -309,6 +307,8 @@ class WinCard(QWidget):
     def slot_work_finished(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
+                # self.app.status = False
+                self.app.status = "nothing"
                 if action == AppActions.INSTALL:
                     if(run.get_run_command(self.app.name) == ""):
                         self.ui.btn.setText("已安装")
@@ -318,16 +318,20 @@ class WinCard(QWidget):
                         self.ui.btn.setEnabled(True)
                 elif action == AppActions.REMOVE:
                     self.ui.btn.setText("安装")
+                    self.ui.btn.setEnabled(True)
                 elif action == AppActions.UPGRADE:
                     if(run.get_run_command(self.app.name) == ""):
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
                     else:
                         self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
 
     def slot_work_cancel(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
+                # self.app.status = False
+                self.app.status = "nothing"
                 if action == AppActions.INSTALL:
                     self.ui.btn.setText("安装")
                     self.ui.btn.setEnabled(True)
@@ -337,8 +341,10 @@ class WinCard(QWidget):
                         self.ui.btn.setEnabled(False)
                     else:
                         self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
                 elif action == AppActions.UPGRADE:
                     self.ui.btn.setText("升级")
+                    self.ui.btn.setEnabled(True)
 
 
 class WinGather(object):

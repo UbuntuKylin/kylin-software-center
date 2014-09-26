@@ -117,7 +117,11 @@ class RecommendItem(QWidget):
 
     def slot_btn_click(self):
         if(self.ui.btn.text() == "启动"):
-            run.run_app(self.app.name)
+            pro_times = run.judge_app_run_or_not(self.app.name)
+            if pro_times == 0 or pro_times == 1:
+                run.run_app(self.app.name)
+            else:
+                print self.app.name + "已经运行"
         else:
             self.ui.btn.setEnabled(False)
             self.ui.btn.setText("正在处理")

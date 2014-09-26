@@ -37,7 +37,7 @@ from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather, DataModel
 from ui.cardwidget import CardWidget
 from ui.pointcard import PointCard
-from ui.listitemwidget import ListItemWidget
+# from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
 from ui.adwidget import *
@@ -353,13 +353,21 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+        self.ui.taskListWidget.setSpacing(1)
 
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         self.ui.tasklabel.setText("任务列表")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+
+        self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
+        self.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
+        # self.ui.taskBottomWidget.setAutoFillBackground(True)
+        # palette = QPalette()
+        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        # self.ui.taskBottomWidget.setPalette(palette)
         self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
         self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
@@ -644,7 +652,7 @@ class SoftwareCenter(QMainWindow):
                     self.winnum += 1
                     app = None
                     winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
-                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                     self.winListWidget.add_card(card)
                     self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                     self.connect(card, Signals.install_app, self.slot_click_install)
@@ -656,7 +664,7 @@ class SoftwareCenter(QMainWindow):
                     if app is not None:
                         self.winnum += 1
                     winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
-                    card = WinCard(winstat, app, self.winListWidget.cardPanel)
+                    card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                     self.winListWidget.add_card(card)
                     self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                     self.connect(card, Signals.install_app, self.slot_click_install)
@@ -687,8 +695,10 @@ class SoftwareCenter(QMainWindow):
     def mouseReleaseEvent(self, event):
         # close task page while click anywhere except task page self
         if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
-            self.ui.taskWidget.setVisible(False)
-            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+            # add by kobe 局部坐标:pos(), 全局坐标:globalPos()
+            if event.pos().x() > 400:
+                self.ui.taskWidget.setVisible(False)
+                self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     # max size & normal size job
     def resizeEvent(self, re):
@@ -812,8 +822,7 @@ class SoftwareCenter(QMainWindow):
             # self.connect(liw, Signals.remove_app, self.slot_click_remove)
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
-
-            card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
+            card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
             listWidget.add_card(card)
             self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(card, Signals.install_app, self.slot_click_install)
@@ -849,7 +858,7 @@ class SoftwareCenter(QMainWindow):
                     count = count + 1
                     continue
 
-                card = NormalCard(app, self.nowPage, self.prePage, listWidget.cardPanel)
+                card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
                 listWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)
@@ -985,7 +994,7 @@ class SoftwareCenter(QMainWindow):
 
         if(len(pl) > 0):
             for p in pl:
-                card = PointCard(p, self.nowPage, self.pointListWidget.cardPanel)
+                card = PointCard(p, self.nowPage, self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)
@@ -1049,8 +1058,8 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
 
         for app in applist:
-            recommend = RcmdCard(app, self.recommendListWidget.cardPanel)
-            self.recommendListWidget.add_card(recommend)
+            recommend = RcmdCard(app, self.messageBox, self.recommendWidget.cardPanel)
+            self.recommendWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
@@ -1396,11 +1405,11 @@ class SoftwareCenter(QMainWindow):
         else:
             LOG.debug("rank item does not have according app...")
 
-    def slot_show_app_detail(self, app, ishistory=False):
+    def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
-        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage)
+        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage, btntext)
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
