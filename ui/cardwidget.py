@@ -27,6 +27,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import sip
 
+from models.globals import Globals
+
 
 class CardWidget(QWidget):
 
@@ -57,13 +59,31 @@ class CardWidget(QWidget):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
+    # calculate card number in one page in current screen resolution
+    def calculate_software_step_num(self):
+        number_per_row = (self.width() + self.cardspacing) / (self.itemwidth + self.cardspacing)
+        number_per_column = (self.height() + self.cardspacing) / (self.itemheight + self.cardspacing)
+        Globals.SOFTWARE_STEP_NUM = number_per_row * number_per_column + number_per_row
+        print "re calculate SOFTWARE_STEP_NUM == ", Globals.SOFTWARE_STEP_NUM
+
     # calculate data
     def calculate_data(self):
-        # the 'QScrollArea' inside radius is 1px smaller than 'QWidget', fix it.
+        # the 'QScrollArea' inside area is 1px smaller than 'QWidget', fix it.
         self.scrollArea.setGeometry(-1, -1, self.width() + 2, self.height() + 2)
         self.cardPanel.setGeometry(0, 0, self.width(), self.height())
 
         self.number_per_row = (self.width() + self.cardspacing) / (self.itemwidth + self.cardspacing)
+
+    def reload_cards(self):
+        self.calculate_data()
+
+        cards = self.cardPanel.children()
+        self.cardcount = 0
+
+        for i in range(self.count()):
+            self.add_card(cards[i])
+
+        self.cardcount = self.count()
 
     def add_card(self, card):
         x = int(self.cardcount % self.number_per_row) * (self.itemwidth + self.cardspacing)

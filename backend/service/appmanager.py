@@ -612,8 +612,8 @@ class AppManager(QObject):
         self.emit(Signals.submit_rating_over, res)
 
     # update app ratingavg in cache db after user do rating app
-    def update_app_ratingavg(self, app_name, ratingavg):
-        self.db.update_app_ratingavg(app_name, ratingavg)
+    def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
+        self.db.update_app_ratingavg(app_name, ratingavg, ratingtotal)
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):
