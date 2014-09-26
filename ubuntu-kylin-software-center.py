@@ -1328,11 +1328,11 @@ class SoftwareCenter(QMainWindow):
         else:
             LOG.debug("rank item does not have according app...")
 
-    def slot_show_app_detail(self, app, ishistory=False):
+    def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
-        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage)
+        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage, btntext)
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
