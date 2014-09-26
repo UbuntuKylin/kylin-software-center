@@ -28,6 +28,8 @@ import os
 
 class Globals:
     # mainwindow size
+    MAIN_WIDTH_NORMAL = 980
+    MAIN_HEIGHT_NORMAL = 608
     MAIN_WIDTH = 980
     MAIN_HEIGHT = 608
 

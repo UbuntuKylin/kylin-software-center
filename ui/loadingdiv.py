@@ -26,6 +26,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from models.enums import UBUNTUKYLIN_RES_PATH
+from models.globals import Globals
 
 class LoadingDiv(QWidget):
 
@@ -43,19 +44,20 @@ class LoadingDiv(QWidget):
 
         self.load_png()
 
+        # launch loading
         if(parent == None):
             desktopw = QDesktopWidget()
             self.dwidth = desktopw.screenGeometry().width()
             self.dheight = desktopw.screenGeometry().height()
-            self.px = self.dwidth / 2 - 980 / 2
-            self.py = self.dheight / 2 - 608 / 2
-            self.setGeometry(self.px, self.py, 980, 608)
+            self.px = self.dwidth / 2 - Globals.MAIN_WIDTH / 2
+            self.py = self.dheight / 2 - Globals.MAIN_HEIGHT / 2
+            self.setGeometry(self.px, self.py, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
         # normal loading
         else:
-            self.setGeometry(0, 0, 980, 608)
+            self.setGeometry(0, 0, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
         self.loadinggif = QLabel(self)
-        self.loadinggif.setGeometry(980 / 2 - 350 / 2, 608 / 2 - 350 / 2, 350, 350)
+        self.loadinggif.setGeometry(Globals.MAIN_WIDTH / 2 - 350 / 2, Globals.MAIN_HEIGHT / 2 - 350 / 2, 350, 350)
 
         self.raise_()
         self.hide()
