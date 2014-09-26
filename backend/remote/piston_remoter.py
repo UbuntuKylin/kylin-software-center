@@ -156,7 +156,7 @@ class PistonRemoterAuth(PistonAPI):
         postdata.rating = rating
         postdata.user = user
         postdata.user_display = user_display
-        return self._post('submitrating/', data=postdata, scheme='http', content_type='application/json')
+        return self._post('submitrating0923/', data=postdata, scheme='http', content_type='application/json')
 
 
 if __name__ == '__main__':

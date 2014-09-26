@@ -54,15 +54,17 @@ class DetailScrollWidget(QScrollArea):
     currentreviewready = ''
 
     def __init__(self, parent=None):
-        QScrollArea.__init__(self,parent.ui.rightWidget)
+        QScrollArea.__init__(self,parent.ui.detailShellWidget)
         self.detailWidget = QWidget()
         # self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet("QWidget{border:0px;}")
         self.ui_init()
 
         self.mainwindow = parent
-        self.setGeometry(QRect(5, 87, 873, 565))
+        # self.setGeometry(QRect(5, 87, 873, 565))
+        # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
+
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
@@ -168,17 +170,11 @@ class DetailScrollWidget(QScrollArea):
                                                              QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
                                                              QScrollBar::down-arrow:vertical{background-color:yellow;}\
                                                              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
-        # self.ui.description.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
-        #                                                          "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
-        #                                                          "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
-        # self.ui.sshotBG.setStyleSheet("QLabel{background-image:url('res/sshotbg.png')}")
         self.ui.btnSshotBack.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-back-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-back-2')}QPushButton:pressed{background-image:url('res/btn-sshot-back-2')}")
         self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-2')}")
         self.ui.reviewListWidget.setStyleSheet("QListWidget{background-color:transparent; border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
 
         self.ui.thumbnail.hide()
-
-        self.hide()
 
         # mini loading div
         self.sshotload = MiniLoadingDiv(self.ui.sshotBG, self.detailWidget)
@@ -192,11 +188,14 @@ class DetailScrollWidget(QScrollArea):
     def ui_init(self):
         self.ui = Ui_DetailWidget()
         self.ui.setupUi(self.detailWidget)
-        # self.ui.setStyleSheet("QWidget{border:0px;}")
         self.ui.btnInstall.setStyleSheet("QPushButton{background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
         self.ui.btnUninstall.setStyleSheet("QPushButton{background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
         self.ui.bntSubmit.setStyleSheet("QPushButton{background:#0fa2e8;border:1px solid #0f84bc;color:white;}QPushButton:hover{background-color:#14acf5;border:1px solid #0f84bc;color:white;}QPushButton:pressed{background-color:#0b95d7;border:1px solid #0479b1;color:white;}")
+
+    def resize_(self, width, height):
+        self.resize(width, height)
+        self.detailWidget.move(self.width() / 2 - self.detailWidget.width() / 2 - 10, self.detailWidget.y())
 
     def show_by_local_debfile(self, path):
         # clear reviews
@@ -249,7 +248,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.btnUpdate.setVisible(False)
         self.ui.btnUninstall.setVisible(False)
 
-        self.show()
+        # self.show()
+        self.mainwindow.ui.detailShellWidget.show()
         self.mainwindow.loadingDiv.stop_loading()
 
     # fill fast property, show ui, request remote property
@@ -463,7 +463,9 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnInstall.setVisible(False)
             self.ui.btnUpdate.setVisible(False)
             self.ui.btnUninstall.setVisible(True)
-        self.show()
+
+        # self.show()
+        self.mainwindow.ui.detailShellWidget.show()
 
         # show loading
         self.reviewload.start_loading()
@@ -588,17 +590,19 @@ class DetailScrollWidget(QScrollArea):
 
     def slot_submit_rating_over(self, res):
         if(res != False):
-            self.mainwindow.appmgr.update_app_ratingavg(self.app.name, res)
-            self.reset_rating_text(res)
+            ratingavg = res['rating_avg']
+            ratingtotal = res['rating_total']
+            self.mainwindow.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
+            self.reset_rating_text(ratingavg, ratingtotal)
             self.mainwindow.messageBox.alert_msg("评分已提交")
         else:
             self.mainwindow.messageBox.alert_msg("评分失败")
 
         self.submitratingload.stop_loading()
 
-    def reset_rating_text(self, ratingavg):
+    def reset_rating_text(self, ratingavg, ratingtotal):
         self.app.ratings_average = ratingavg
-        self.app.ratings_total = self.app.ratings_total + 1
+        self.app.ratings_total = ratingtotal
 
         ratingavg = str('%.1f' % ratingavg)
         self.smallstar.changeGrade(ratingavg)

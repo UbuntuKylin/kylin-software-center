@@ -146,44 +146,54 @@
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="allcount">
+     <widget class="QWidget" name="allcw1" native="true">
       <property name="geometry">
        <rect>
-        <x>772</x>
+        <x>750</x>
         <y>20</y>
-        <width>50</width>
+        <width>130</width>
         <height>15</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="alltext1">
-      <property name="geometry">
-       <rect>
-        <x>749</x>
-        <y>20</y>
-        <width>50</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="alltext2">
-      <property name="geometry">
-       <rect>
-        <x>818</x>
-        <y>20</y>
-        <width>44</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QLabel" name="alltext1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="alltext2">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="allcount">
+       <property name="geometry">
+        <rect>
+         <x>23</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="unWidget" native="true">
@@ -208,44 +218,54 @@
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="uncount">
-      <property name="geometry">
-       <rect>
-        <x>777</x>
-        <y>20</y>
-        <width>50</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="untext1">
+     <widget class="QWidget" name="uncw1" native="true">
       <property name="geometry">
        <rect>
         <x>750</x>
         <y>20</y>
-        <width>50</width>
+        <width>130</width>
         <height>15</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="untext2">
-      <property name="geometry">
-       <rect>
-        <x>818</x>
-        <y>20</y>
-        <width>44</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QLabel" name="untext1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="untext2">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="uncount">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="homepageWidget" native="true">
@@ -261,29 +281,81 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>298</y>
+        <y>275</y>
         <width>640</width>
-        <height>268</height>
+        <height>291</height>
        </rect>
       </property>
+      <widget class="QLabel" name="hometext1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>60</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="homeline1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>17</y>
+         <width>640</width>
+         <height>1</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
      <widget class="QWidget" name="rankWidget" native="true">
       <property name="geometry">
        <rect>
         <x>660</x>
-        <y>298</y>
+        <y>275</y>
         <width>200</width>
-        <height>268</height>
+        <height>291</height>
        </rect>
       </property>
       <widget class="QListWidget" name="rankView">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>23</y>
          <width>200</width>
          <height>268</height>
         </rect>
+       </property>
+      </widget>
+      <widget class="QLabel" name="hometext2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>60</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="homeline2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>17</y>
+         <width>200</width>
+         <height>1</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </widget>
@@ -408,57 +480,54 @@
        </widget>
       </widget>
      </widget>
-     <widget class="QLabel" name="hometext1">
+     <widget class="QWidget" name="homecw1" native="true">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>275</y>
-        <width>60</width>
+        <x>750</x>
+        <y>20</y>
+        <width>130</width>
         <height>15</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="hometext2">
-      <property name="geometry">
-       <rect>
-        <x>660</x>
-        <y>275</y>
-        <width>60</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="homeline1">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>292</y>
-        <width>640</width>
-        <height>1</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="homeline2">
-      <property name="geometry">
-       <rect>
-        <x>660</x>
-        <y>292</y>
-        <width>200</width>
-        <height>1</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QLabel" name="hometext3">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="hometext4">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="homecount">
+       <property name="geometry">
+        <rect>
+         <x>23</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="searchWidget" native="true">
@@ -483,44 +552,54 @@
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="searchcount">
-      <property name="geometry">
-       <rect>
-        <x>777</x>
-        <y>20</y>
-        <width>50</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="searchtext1">
+     <widget class="QWidget" name="searchcw1" native="true">
       <property name="geometry">
        <rect>
         <x>750</x>
         <y>20</y>
-        <width>50</width>
+        <width>130</width>
         <height>15</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="searchtext2">
-      <property name="geometry">
-       <rect>
-        <x>818</x>
-        <y>20</y>
-        <width>44</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QLabel" name="searchtext1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="searchtext2">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="searchcount">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="taskWidget" native="true">
@@ -646,44 +725,54 @@
        <string/>
       </property>
      </widget>
-     <widget class="QLabel" name="upcount">
-      <property name="geometry">
-       <rect>
-        <x>777</x>
-        <y>20</y>
-        <width>50</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uptext1">
+     <widget class="QWidget" name="upcw1" native="true">
       <property name="geometry">
        <rect>
         <x>750</x>
         <y>20</y>
-        <width>50</width>
+        <width>130</width>
         <height>15</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="uptext2">
-      <property name="geometry">
-       <rect>
-        <x>818</x>
-        <y>20</y>
-        <width>44</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QLabel" name="uptext1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="uptext2">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="upcount">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="headerWidget" native="true">
@@ -744,17 +833,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLineEdit" name="leSearch">
-      <property name="geometry">
-       <rect>
-        <x>600</x>
-        <y>12</y>
-        <width>260</width>
-        <height>24</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnMaxNormal">
+     <widget class="QPushButton" name="btnMax">
       <property name="geometry">
        <rect>
         <x>56</x>
@@ -767,31 +846,64 @@
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="lebg">
+     <widget class="QPushButton" name="btnNormal">
       <property name="geometry">
        <rect>
-        <x>838</x>
-        <y>16</y>
-        <width>16</width>
-        <height>16</height>
+        <x>56</x>
+        <y>0</y>
+        <width>28</width>
+        <height>36</height>
        </rect>
       </property>
       <property name="text">
        <string/>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnCloseDetail">
+     <widget class="QWidget" name="headercw1" native="true">
       <property name="geometry">
        <rect>
-        <x>573</x>
-        <y>13</y>
-        <width>15</width>
-        <height>19</height>
+        <x>575</x>
+        <y>0</y>
+        <width>285</width>
+        <height>36</height>
        </rect>
       </property>
-      <property name="text">
-       <string/>
-      </property>
+      <widget class="QPushButton" name="btnCloseDetail">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>14</y>
+         <width>15</width>
+         <height>19</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="leSearch">
+       <property name="geometry">
+        <rect>
+         <x>25</x>
+         <y>12</y>
+         <width>260</width>
+         <height>24</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="lebg">
+       <property name="geometry">
+        <rect>
+         <x>264</x>
+         <y>16</y>
+         <width>16</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
      </widget>
     </widget>
     <widget class="QWidget" name="winpageWidget" native="true">
@@ -803,51 +915,12 @@
        <height>572</height>
       </rect>
      </property>
-     <widget class="QLabel" name="wincountlabel">
-      <property name="geometry">
-       <rect>
-        <x>777</x>
-        <y>20</y>
-        <width>50</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="winlabel1">
-      <property name="geometry">
-       <rect>
-        <x>750</x>
-        <y>20</y>
-        <width>50</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QLabel" name="wintitle">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>26</y>
         <width>301</width>
-        <height>15</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QLabel" name="winlabel2">
-      <property name="geometry">
-       <rect>
-        <x>818</x>
-        <y>20</y>
-        <width>44</width>
         <height>15</height>
        </rect>
       </property>
@@ -868,18 +941,77 @@
        <string/>
       </property>
      </widget>
+     <widget class="QWidget" name="wincw1" native="true">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>20</y>
+        <width>130</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <widget class="QLabel" name="winlabel1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="winlabel2">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="wincountlabel">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </widget>
     </widget>
     <widget class="QLabel" name="virtuallabel">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>590</y>
-       <width>830</width>
+       <width>880</width>
        <height>18</height>
       </rect>
      </property>
      <property name="text">
       <string/>
+     </property>
+    </widget>
+    <widget class="QWidget" name="detailShellWidget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>873</width>
+       <height>558</height>
+      </rect>
      </property>
     </widget>
    </widget>

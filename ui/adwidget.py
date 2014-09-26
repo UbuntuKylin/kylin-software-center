@@ -53,23 +53,23 @@ class ADWidget(QWidget):
 
     def __init__(self, addata, parent=None):
         QWidget.__init__(self,parent.ui.homepageWidget)
-        self.ui_init()
 
         self.parent = parent
 
-        # self.setAutoFillBackground(True)
-        # palette = QPalette()
-        # img = QPixmap("res/adback.png")
-        # palette.setBrush(QPalette.Window, QBrush(img))
-        # self.setPalette(palette)
+        self.resize(self.adwidth, self.adheight)
+        self.adContentWidget = QWidget(self)
+        self.adContentWidget.setGeometry(QRect(0, 0, self.adwidth, self.adheight))
+        self.adContentWidget.setObjectName("adContentWidget")
+
+        self.adBtnWidget = QWidget(self)
+        self.adBtnWidget.setGeometry(760, 180, 100, 40)
 
         self.adsshadow = QLabel(self)
-        self.adsshadow.setGeometry(0, 202, 860, 18)
+        self.adsshadow.setGeometry(0, 202, self.adheight, 18)
         self.adsshadow.setStyleSheet("QLabel{background-image:url('res/ads-shadow.png')}")
 
-        self.btnground = QLabel(self)
-        self.btnground.setGeometry(787, 181, 150, 30)
-        self.btnground.raise_()
+        self.btnground = QLabel(self.adBtnWidget)
+        self.btnground.setGeometry(0, 0, 90, 40)
 
         self.adl = len(addata)
         self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
@@ -89,6 +89,16 @@ class ADWidget(QWidget):
         self.adsshadow.raise_()
         self.show()
 
+    def resize_(self, width, height):
+        self.resize(width, height)
+        self.adsshadow.resize(width, self.adsshadow.height())
+
+        # move btns to left
+        if(width > self.adwidth):
+            self.adBtnWidget.move(0, self.adBtnWidget.y())
+        else:
+            self.adBtnWidget.move(760, self.adBtnWidget.y())
+
     def add_advertisements(self, addata):
         self.adl = len(addata)
         self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
@@ -101,34 +111,10 @@ class ADWidget(QWidget):
         self.adsshadow.raise_()
         self.show()
 
-    def ui_init(self):
-        self.resize(860, 220)
-        self.adContentWidget = QWidget(self)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adwidth, self.adheight))
-        self.adContentWidget.setObjectName("adContentWidget")
-        # self.softCountText1 = QLabel(self)
-        # self.softCountText1.setGeometry(QRect(10, 9, 32, 17))
-        # self.softCountText1.setObjectName("softCountText1")
-        # self.softCountText1.setText("共有")
-        # self.softCount = QLabel(self)
-        # self.softCount.setGeometry(QRect(42, 9, 51, 17))
-        # self.softCount.setText("")
-        # self.softCount.setObjectName("softCount")
-        # self.softCountText2 = QLabel(self)
-        # self.softCountText2.setGeometry(QRect(97, 9, 51, 17))
-        # self.softCountText2.setObjectName("softCountText2")
-        # self.softCountText2.setText("款软件")
-        #
-        # self.softCount.setAlignment(Qt.AlignCenter)
-        #
-        # self.softCountText1.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        # self.softCountText2.setStyleSheet("QLabel{color:white;font-size:14px;}")
-        # self.softCount.setStyleSheet("QLabel{color:white;font-size:15px;font-weight:bold;}")
-
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
-        adbx = 770#800
+        adbx = 10
         for one in addata:
             ad = ADButton(one, self.adContentWidget)
             ad.resize(self.adwidth, self.adheight)
@@ -140,9 +126,9 @@ class ADWidget(QWidget):
             ad.connect(ad, SIGNAL("adsignal"), parent.slot_click_ad)
             self.ads.append(ad)
 
-            adbtn = ADButton(i, self)
+            adbtn = ADButton(i, self.adBtnWidget)
             adbtn.resize(10, 10)
-            adbtn.move(adbx, 189)
+            adbtn.move(adbx, 10)
             adbx += 16
             adbtn.setFocusPolicy(Qt.NoFocus)
             adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")

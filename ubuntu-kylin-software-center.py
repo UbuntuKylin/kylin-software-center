@@ -136,9 +136,9 @@ class SoftwareCenter(QMainWindow):
         self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
         self.pointListWidget.calculate_data()
         # recommend card widget
-        self.recommendWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.homepageWidget)
-        self.recommendWidget.setGeometry(0, 298, 640, 268)
-        self.recommendWidget.calculate_data()
+        self.recommendListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.recommendWidget)
+        self.recommendListWidget.setGeometry(0, 23, 640, 268)
+        self.recommendListWidget.calculate_data()
         # all card widget
         self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.allWidget)
         self.allListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
@@ -161,9 +161,7 @@ class SoftwareCenter(QMainWindow):
         self.winListWidget.calculate_data()
         # detail page
         self.detailScrollWidget = DetailScrollWidget(self)
-        # self.detailScrollWidget.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 565))
-        self.detailScrollWidget.move(20, 40)
-        self.detailScrollWidget.raise_()
+        self.detailScrollWidget.setGeometry(0, 0, self.ui.detailShellWidget.width(), self.ui.detailShellWidget.height())
         # loading div
         self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
@@ -199,6 +197,11 @@ class SoftwareCenter(QMainWindow):
         palette.setColor(QPalette.Background, QColor(234, 240, 243))
         self.ui.taskWidget.setPalette(palette)
 
+        self.ui.detailShellWidget.setAutoFillBackground(True)
+        palette = QPalette()
+        palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        self.ui.detailShellWidget.setPalette(palette)
+
         shadowe = QGraphicsDropShadowEffect(self)
         shadowe.setOffset(5, 5)    # direction
         shadowe.setColor(Qt.gray)
@@ -211,7 +214,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMin.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnMaxNormal.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnMax.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnNormal.setFocusPolicy(Qt.NoFocus)
         self.ui.btnConf.setFocusPolicy(Qt.NoFocus)
         self.ui.lebg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
@@ -220,10 +224,6 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
-        # self.ui.allListWidget.setFocusPolicy(Qt.NoFocus)
-        # self.ui.upListWidget.setFocusPolicy(Qt.NoFocus)
-        # self.unListWidget.setFocusPolicy(Qt.NoFocus)
-        # self.ui.searchListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
 
@@ -236,24 +236,11 @@ class SoftwareCenter(QMainWindow):
 
         # self.ui.lebg.stackUnder(self.ui.leSearch)
         self.ui.leSearch.stackUnder(self.ui.lebg)
+        self.ui.detailShellWidget.raise_()
         self.ui.taskWidget.raise_()
         self.ui.rankView.setCursor(Qt.PointingHandCursor)
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        self.softCountText1 = QLabel(self.ui.homeMsgWidget)
-        self.softCountText1.setGeometry(QRect(749, 14, 50, 15))
-        self.softCountText1.setObjectName("softCountText1")
-        self.softCountText1.setText("共有")
-        self.softCount = QLabel(self.ui.homeMsgWidget)
-        self.softCount.setGeometry(QRect(772, 14, 50, 15))
-        self.softCount.setText("")
-        self.softCount.setObjectName("softCount")
-        self.softCountText2 = QLabel(self.ui.homeMsgWidget)
-        self.softCountText2.setGeometry(QRect(818, 14, 44, 15))
-        self.softCountText2.setObjectName("softCountText2")
-        self.softCountText2.setText("款软件")
-        self.softCount.setAlignment(Qt.AlignCenter)
 
         self.ui.btnLogin.setText("请登录")
         self.ui.btnReg.setText("免费注册")
@@ -265,8 +252,16 @@ class SoftwareCenter(QMainWindow):
 
         self.ui.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
-
         # style by qss
+        self.ui.hometext3.setText("共有")
+        self.ui.hometext3.setAlignment(Qt.AlignLeft)
+        self.ui.hometext4.setAlignment(Qt.AlignLeft)
+        self.ui.homecount.setAlignment(Qt.AlignCenter)
+        self.ui.hometext4.setText("款软件")
+        self.ui.hometext3.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.hometext4.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        self.ui.homecount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+
         self.ui.alltext1.setText("共有")
         self.ui.alltext1.setAlignment(Qt.AlignLeft)
         self.ui.alltext2.setAlignment(Qt.AlignLeft)
@@ -326,21 +321,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
         self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
         self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-        self.softCountText1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
-        self.softCountText2.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
-        self.softCount.setStyleSheet("QLabel{color:#FA7053;font-size:15px;}")
         self.ui.hometext1.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
         self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
         self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.navWidget.setStyleSheet("QWidget{background-image:url('res/nav-bg.png');}")
-        # self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;}")
-        # self.ui.shadowleft.setStyleSheet("QLabel{background-image:url('res/sleft.png')}")
-        # self.ui.shadowright.setStyleSheet("QLabel{background-image:url('res/sright.png')}")
-        # self.ui.shadowup.setStyleSheet("QLabel{background-image:url('res/sup.png')}")
-        # self.ui.shadowbottom.setStyleSheet("QLabel{background-image:url('res/sbottom.png')}")
-        # self.ui.btnBack.setStyleSheet(HEADER_BUTTON_STYLE % (UBUNTUKYLIN_RES_PATH + "nav-back-1.png", UBUNTUKYLIN_RES_PATH + "nav-back-2.png", UBUNTUKYLIN_RES_PATH + "nav-back-3.png"))
-        # self.ui.btnNext.setStyleSheet("QPushButton{background-image:url('res/nav-next-1.png');border:0px;}QPushButton:hover{background:url('res/nav-next-2.png');}QPushButton:pressed{background:url('res/nav-next-3.png');}")
+        self.ui.navWidget.setStyleSheet("QWidget{background-color:#0F84BC;}")
         self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
@@ -348,25 +333,16 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-        # self.ui.lebg.setStyleSheet("QLabel{background-image:url('res/search-1.png')}")
 
         # add by kobe
         self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
 
         self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
-        # self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EAF0F3;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{border:1px solid #0396DC;}QLineEdit:focus{border:1px solid #0396DC;color:#666666;}")
-
-        # self.ui.userLabel.setStyleSheet("QLabel{background-image:url('res/user.png')}")
-        # self.ui.userName.setStyleSheet("QLabel{color:white;}")
-        # self.ui.userLv.setStyleSheet("QLabel{color:white;}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
-        self.ui.btnMaxNormal.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
+        self.ui.btnMax.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
+        self.ui.btnNormal.setStyleSheet("QPushButton{background-image:url('res/normal-1.png');border:0px;}QPushButton:hover{background:url('res/normal-2.png');}QPushButton:pressed{background:url('res/normal-3.png');}")
         self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background:url('res/conf-2.png');}QPushButton:pressed{background:url('res/conf-3.png');}")
-        # self.ui.categoryView.setStyleSheet("QListWidget{border:0px;background-color:#30323F;font-size:13px;}QListWidget::item{height:36px;padding-left:24px;margin-top:0px;border:0px;color:#A8A9AE;}QListWidget::item:hover{background-color:#282937;}QListWidget::item:selected{background-color:#232230;color:white;}")
-        # self.ui.vline1.setStyleSheet("QLabel{background-color:#BBD1E4;}")
-        # self.ui.rankLogo.setStyleSheet("QLabel{background-image:url('res/rankLogo.png')}")
-        # self.ui.rankText.setStyleSheet("QLabel{color:#7E8B97;font-size:13px;font-weight:bold;}")
         self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
         self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
         self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
@@ -378,17 +354,12 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
-
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         self.ui.tasklabel.setText("任务列表")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
-        # self.ui.taskBottomWidget.setAutoFillBackground(True)
-        # palette = QPalette()
-        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
-        # self.ui.taskBottomWidget.setPalette(palette)
         self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
         self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
@@ -400,14 +371,6 @@ class SoftwareCenter(QMainWindow):
         # signal / slot
         # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
-        # self.ui.allListWidget.itemClicked.connect(self.slot_click_item)
-        # self.ui.upListWidget.itemClicked.connect(self.slot_click_item)
-        # self.unListWidget.itemClicked.connect(self.slot_click_item)
-        # self.ui.searchListWidget.itemClicked.connect(self.slot_click_item)
-        # self.ui.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        # self.ui.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        # self.ui.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
-        # self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
@@ -418,9 +381,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
         self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
         self.ui.btnWin.pressed.connect(self.slot_goto_winpage)
-        # self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnClose.clicked.connect(self.slot_close)
-        self.ui.btnMaxNormal.clicked.connect(self.slot_max_normal)
+        self.ui.btnMax.clicked.connect(self.slot_max)
+        self.ui.btnNormal.clicked.connect(self.slot_normal)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
         self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
@@ -435,7 +398,6 @@ class SoftwareCenter(QMainWindow):
         # add by kobe
         self.ui.lebg.clicked.connect(self.slot_searchDTimer_timeout)
         self.ui.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
-        # self.ui.lebg.installEventFilter(self)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
@@ -450,22 +412,20 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
 
         # widget status
-        # self.ui.categoryView.setEnabled(False)
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(False)
         self.ui.btnTask.setEnabled(False)
         self.ui.btnWin.setEnabled(False)
 
+        self.ui.btnNormal.hide()
         self.ui.allWidget.hide()
         self.ui.upWidget.hide()
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.taskWidget.hide()
         self.ui.winpageWidget.hide()
-        # self.ui.categoryView.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
-        # self.ui.leftWidget.hide()
 
         # loading
         if(Globals.LAUNCH_MODE != 'quiet'):
@@ -523,7 +483,6 @@ class SoftwareCenter(QMainWindow):
                     self.updateSinglePB.show()
                     self.backend.update_source_first_os()
                 elif button == 1:
-                    LOG.warning("dbus service init failed, you choose to exit.\n\n")
                     sys.exit(0)
             else:
                 button = QMessageBox.question(self,"软件源更新提示",
@@ -629,13 +588,9 @@ class SoftwareCenter(QMainWindow):
             # self.ui.leftWidget.show()
 
             self.slot_goto_homepage()
-            if(Globals.LAUNCH_MODE != 'quiet'):
-                self.launchLoadingDiv.stop_loading()
-            self.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+            self.launchLoadingDiv.stop_loading()
+            self.show_mainwindow()
 
-            windowWidth = QApplication.desktop().width()
-            windowHeight = QApplication.desktop().height()
-            self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
             # self.trayicon.show()
 
             # user clicked local deb file, show info
@@ -734,6 +689,107 @@ class SoftwareCenter(QMainWindow):
         if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
             self.ui.taskWidget.setVisible(False)
             self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
+    # max size & normal size job
+    def resizeEvent(self, re):
+        Globals.MAIN_WIDTH = re.size().width()
+        Globals.MAIN_HEIGHT = re.size().height()
+
+        if(re.size().width() != 0):
+            # universal job
+            self.ui.navWidget.resize(self.ui.navWidget.width(), Globals.MAIN_HEIGHT)
+            self.ui.btnTask.move(self.ui.btnTask.x(), self.ui.navWidget.height() - self.ui.btnTask.height())
+            self.ui.rightWidget.resize(Globals.MAIN_WIDTH - 80, Globals.MAIN_HEIGHT)
+
+            self.ui.headerWidget.resize(Globals.MAIN_WIDTH - 80 - 20 * 2, self.ui.headerWidget.height())
+            self.ui.headercw1.move(self.ui.headerWidget.width() - self.ui.headercw1.width(), 0)
+
+            self.ui.homepageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+            self.ui.allWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+            self.ui.upWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+            self.ui.unWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+            self.ui.winpageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+            self.ui.searchWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+
+            self.ui.rankWidget.move(self.ui.homepageWidget.width() - self.ui.rankWidget.width() - 20, self.ui.rankWidget.y())
+            self.ui.recommendWidget.resize(self.ui.rankWidget.x() - 20, self.ui.recommendWidget.height())
+
+            self.ui.homecw1.move(self.ui.homepageWidget.width() - self.ui.homecw1.width(), self.ui.homecw1.y())
+            self.ui.allcw1.move(self.ui.allWidget.width() - self.ui.allcw1.width(), self.ui.allcw1.y())
+            self.ui.upcw1.move(self.ui.upWidget.width() - self.ui.upcw1.width(), self.ui.upcw1.y())
+            self.ui.uncw1.move(self.ui.unWidget.width() - self.ui.uncw1.width(), self.ui.uncw1.y())
+            self.ui.wincw1.move(self.ui.winpageWidget.width() - self.ui.wincw1.width(), self.ui.wincw1.y())
+            self.ui.searchcw1.move(self.ui.searchWidget.width() - self.ui.searchcw1.width(), self.ui.searchcw1.y())
+
+            self.ui.allline.resize(self.ui.allWidget.width() - 20, self.ui.allline.height())
+            self.ui.upline.resize(self.ui.upWidget.width() - 20, self.ui.upline.height())
+            self.ui.unline.resize(self.ui.unWidget.width() - 20, self.ui.unline.height())
+            self.ui.winline.resize(self.ui.winpageWidget.width() - 20, self.ui.winline.height())
+            self.ui.searchline.resize(self.ui.searchWidget.width() - 20, self.ui.searchline.height())
+            self.ui.homeline1.resize(self.ui.recommendWidget.width(), self.ui.homeline1.height())
+
+            self.ui.virtuallabel.resize(self.ui.homepageWidget.width(), self.ui.virtuallabel.height())
+            self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
+
+            # ads widget
+            self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
+
+            # detail widget
+            self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
+            self.detailScrollWidget.resize(self.detailScrollWidget.width(), self.ui.detailShellWidget.height())
+            self.detailScrollWidget.move((self.ui.detailShellWidget.width() / 2 - self.detailScrollWidget.detailWidget.width() / 2), self.detailScrollWidget.y())
+
+            # task widget
+            self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.height())
+            self.ui.taskListWidget.resize(self.ui.taskListWidget.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
+            self.ui.taskBottomWidget.move(self.ui.taskBottomWidget.x(), self.ui.taskWidget.height() - self.ui.taskBottomWidget.height())
+
+            # resize, recalculate, refill the card widgets
+            self.allListWidget.setGeometry(0, 50, self.ui.allWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.allWidget.height() - 50 - 6)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+            self.allListWidget.calculate_software_step_num()
+            if(self.allListWidget.count() != 0 and self.allListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                self.allListWidget.clear()
+                self.show_more_software(self.allListWidget)
+            self.allListWidget.reload_cards()
+
+            self.upListWidget.setGeometry(0, 50, self.ui.upWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.upWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+            if(self.upListWidget.count() != 0 and self.upListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                self.upListWidget.clear()
+                self.show_more_software(self.upListWidget)
+            self.upListWidget.reload_cards()
+
+            self.unListWidget.setGeometry(0, 50, self.ui.unWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.unWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+            if(self.unListWidget.count() != 0 and self.unListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                self.unListWidget.clear()
+                self.show_more_software(self.unListWidget)
+            self.unListWidget.reload_cards()
+
+            self.searchListWidget.setGeometry(0, 50, self.ui.searchWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.searchWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+            if(self.searchListWidget.count() != 0 and self.searchListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                self.searchListWidget.clear()
+                self.show_more_search_result(self.searchListWidget)
+            self.searchListWidget.reload_cards()
+
+            self.winListWidget.setGeometry(0, 50, self.ui.winpageWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.winpageWidget.height() - 50)
+            self.winListWidget.reload_cards()
+
+            self.recommendListWidget.setGeometry(0, 23, self.ui.recommendWidget.width(), self.ui.recommendWidget.height() - 23)
+            self.recommendListWidget.reload_cards()
+
+            # msg box
+            self.messageBox.re_move()
+
+            # loading div
+            self.loadingDiv.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+
+            # max
+            if(self.isMaximized() == True):
+                self.ui.btnMax.hide()
+                self.ui.btnNormal.show()
+            # normal
+            else:
+                self.ui.btnMax.show()
+                self.ui.btnNormal.hide()
 
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
@@ -900,6 +956,7 @@ class SoftwareCenter(QMainWindow):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
         if(self.uksc != None):
             if(self.uksc.is_upgradable == True):
+                self.show_mainwindow()
                 cd = ConfirmDialog("软件中心有新版本，是否升级？", self)
                 self.connect(cd, SIGNAL("confirmdialogok"), self.update_uksc)
                 cd.exec_()
@@ -945,6 +1002,12 @@ class SoftwareCenter(QMainWindow):
         pl = self.appmgr.get_pointout_apps()
         return len(pl)
 
+    def show_mainwindow(self):
+        self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
+        windowWidth = QApplication.desktop().width()
+        windowHeight = QApplication.desktop().height()
+        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+
     #-------------------------------------------------slots-------------------------------------------------
 
     def slot_change_category(self, category):
@@ -977,7 +1040,7 @@ class SoftwareCenter(QMainWindow):
             self.adw = ADWidget(adlist, self)
             self.adw.move(0, 44)
             (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
-            self.softCount.setText(str(sum_all))
+            self.ui.homecount.setText(str(sum_all))
 
         self.ads_ready = True
         self.check_init_ready()
@@ -986,8 +1049,8 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
 
         for app in applist:
-            recommend = RcmdCard(app, self.recommendWidget.cardPanel)
-            self.recommendWidget.add_card(recommend)
+            recommend = RcmdCard(app, self.recommendListWidget.cardPanel)
+            self.recommendListWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
@@ -1026,7 +1089,8 @@ class SoftwareCenter(QMainWindow):
         self.detailScrollWidget.add_sshot(sclist)
 
     def slot_close_detail(self):
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
 
     def slot_close_taskpage(self):
@@ -1079,7 +1143,8 @@ class SoftwareCenter(QMainWindow):
         self.nowPage = 'homepage'
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
         self.ui.rankWidget.setVisible(True)
@@ -1117,7 +1182,8 @@ class SoftwareCenter(QMainWindow):
         self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(True)
@@ -1153,7 +1219,8 @@ class SoftwareCenter(QMainWindow):
         self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1189,7 +1256,8 @@ class SoftwareCenter(QMainWindow):
         self.category = ''
         self.categoryBar.show()
         self.switch_to_category(self.category, forceChange)
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1219,7 +1287,8 @@ class SoftwareCenter(QMainWindow):
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1248,7 +1317,8 @@ class SoftwareCenter(QMainWindow):
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
-        self.detailScrollWidget.hide()
+        # self.detailScrollWidget.hide()
+        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(False)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1277,8 +1347,11 @@ class SoftwareCenter(QMainWindow):
         self.dbusControler.stop()
         sys.exit(0)
 
-    def slot_max_normal(self):
-        self.unListWidget.clear()
+    def slot_max(self):
+        self.showMaximized()
+
+    def slot_normal(self):
+        self.showNormal()
 
     def slot_min(self):
         self.showMinimized()
