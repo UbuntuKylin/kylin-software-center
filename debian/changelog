@@ -1,3 +1,11 @@
+ubuntu-kylin-software-center (1.1.1.0) utopic; urgency=medium
+
+  * fix many bugs (LP: #1372309,#1372716,#1372427,#1372297,#1368107
+    #1373931,#1368207,#1372302 ,#1373912 ,#1372453,#1372342,#1368210,
+    #1373740,#1372456)
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 26 Sep 2014 14:24:54 +0800
+
 ubuntu-kylin-software-center (1.1.0.0) utopic; urgency=medium
 
   * UKID landing, ratings, reviews 
