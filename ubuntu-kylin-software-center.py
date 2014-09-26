@@ -1058,8 +1058,8 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
 
         for app in applist:
-            recommend = RcmdCard(app, self.messageBox, self.recommendWidget.cardPanel)
-            self.recommendWidget.add_card(recommend)
+            recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
+            self.recommendListWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
