@@ -114,7 +114,8 @@ LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:whit
 AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 
 # ported from ubuntu-software-center to support Ubuntu-kylin-SSO
-UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
+# UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
+UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
 SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
 SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录 Ubuntu Kylin 软件中心。'
 datadir = "./utils/"
