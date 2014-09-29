@@ -417,13 +417,13 @@ class DetailScrollWidget(QScrollArea):
                         self.ui.btnUninstall.setVisible(False)
                 else:
                     self.ui.status.hide()
-                    self.ui.btnInstall.setText("启动")
+                    self.ui.btnInstall.setText("安装")
                     self.ui.btnUpdate.setText("升级")
                     self.ui.btnUninstall.setText("卸载")
-                    self.ui.btnInstall.setEnabled(False)
+                    self.ui.btnInstall.setEnabled(True)
                     self.ui.btnUpdate.setEnabled(False)
                     self.ui.btnUninstall.setEnabled(False)
-                    self.ui.btnInstall.setVisible(False)
+                    self.ui.btnInstall.setVisible(True)
                     self.ui.btnUpdate.setVisible(False)
                     self.ui.btnUninstall.setVisible(False)
 
