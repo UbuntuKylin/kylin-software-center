@@ -403,6 +403,68 @@ class SoftwarecenterDbusService(dbus.service.Object):
     def check_pkg_status(self, pkgName):
         return self.daemonApt.check_pkg_status(pkgName)
 
+    #------------------get info about apt depend----------add 20140926----
+    def _common_get_marked_cache(self, pkgName = None, cache = None):
+        """"Return the cache that pkg had been marked."""
+        if cache is None:
+            cache = apt.cache.Cache()
+        else:
+            cache.clear()
+
+        if pkgName is None:
+            return False
+        pkg = cache[pkgName]
+
+        if pkg.is_installed:
+            pkg.mark_delete()
+        else:
+            pkg.mark_install()
+
+        return cache
+
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='i')
+    def require_totally_pkg_size(self, pkgName = None):
+        """Return the size of the additional reuquired space on the fs."""
+        markedCache = self._common_get_marked_cache(pkgName, )
+        if not markedCache:
+            return False
+
+        #markedCache.clear()
+        return markedCache.required_space
+
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='i')
+    def download_totally_pkg_size(self, pkgName = None):
+        """Return the size of the package that are required to download."""
+        markedCache = self._common_get_marked_cache(pkgName, )
+        if not markedCache:
+            return False
+
+        return markedCache.required_download
+
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='')
+    def require_totally_pkg_list(self, pkgName = None):
+        """Return a dictionary about dep-pkg should been install or delete """
+        dic = {"install":[], "update":[], "delete":[], "broken":[]}
+        markedCache = self._common_get_marked_cache(pkgName, )
+        if not markedCache:
+            return False
+
+        temp = markedCache.get_changes()
+        for i in temp:
+            if (i.marked_install):
+                dic["install"].append(i.name)
+            elif (i.marked_delete):
+                dic["delete"].append(i.name)
+            elif (i.marked_upgrade):
+                if (i.is_installed):
+                    dic["update"].append(i.name)
+            elif (i.is_inst_broken):
+                dic["broken"].append(i.name)
+
+        print(dic)
+        #return dic
+
+
 
 
     # package download status signal
