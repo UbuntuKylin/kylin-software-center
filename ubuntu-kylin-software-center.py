@@ -37,7 +37,6 @@ from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather, DataModel
 from ui.cardwidget import CardWidget
 from ui.pointcard import PointCard
-# from ui.listitemwidget import ListItemWidget
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
 from ui.adwidget import *
@@ -49,22 +48,15 @@ from ui.configwidget import ConfigWidget
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
 
-from utils import vfs
-from utils import log
 from backend.search import *
-
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
+from backend.ubuntusso import get_ubuntu_sso_backend
 
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
-from models.globals import Globals
-
 from models.enums import Signals
-
-from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_RES_WIN_PATH
-
-from backend.ubuntusso import get_ubuntu_sso_backend
+from models.globals import Globals
 
 import sys
 reload(sys)
@@ -92,6 +84,9 @@ class SoftwareCenter(QMainWindow):
     stmap = {}
     # drag window x,y
     dragPosition = -1
+    # pressed resize corner
+    resizeFlag = False
+    # kobe
     win_exists = 0
 
     def __init__(self, parent=None):
@@ -166,7 +161,6 @@ class SoftwareCenter(QMainWindow):
         self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
         self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
-
         # alert message box
         self.messageBox = MessageBox(self)
         # first update process bar
@@ -175,6 +169,11 @@ class SoftwareCenter(QMainWindow):
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+        # resize corner
+        self.resizeCorner = QPushButton(self.ui.centralwidget)
+        self.resizeCorner.resize(15, 15)
+        self.resizeCorner.raise_()
+        self.resizeCorner.installEventFilter(self)
         # search trigger
         self.searchDTimer = QTimer(self)
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
@@ -208,7 +207,6 @@ class SoftwareCenter(QMainWindow):
         shadowe.setBlurRadius(5)
         self.ui.taskWidget.setGraphicsEffect(shadowe)
 
-
         self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
@@ -226,6 +224,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
+        self.resizeCorner.setFocusPolicy(Qt.NoFocus)
 
         # add by kobe
         self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
@@ -336,7 +335,6 @@ class SoftwareCenter(QMainWindow):
 
         # add by kobe
         self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
-
         self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
@@ -354,7 +352,7 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
         self.ui.taskListWidget.setSpacing(1)
-
+        self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         self.ui.tasklabel.setText("任务列表")
@@ -364,20 +362,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
         self.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
-        # self.ui.taskBottomWidget.setAutoFillBackground(True)
-        # palette = QPalette()
-        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
-        # self.ui.taskBottomWidget.setPalette(palette)
         self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
         self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
         self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
-        # self.ui.taskBottomWidget.setStyleSheet("QWidget{border:1px solid #cccccc;}")
-
 
         # signal / slot
-        # self.ui.categoryView.itemClicked.connect(self.slot_change_category)
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
         self.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
@@ -680,6 +671,16 @@ class SoftwareCenter(QMainWindow):
     def slot_show_loading_div(self):
         self.loadingDiv.start_loading("")
 
+    def eventFilter(self, obj, event):
+        if obj == self.resizeCorner:
+            if event.type() == QEvent.MouseButtonPress:
+                self.resizeFlag = True
+            elif event.type() == QEvent.MouseButtonRelease:
+                self.resizeFlag = False
+            return False
+        else:
+            return False
+
     def mousePressEvent(self, event):
         if(event.button() == Qt.LeftButton):
             self.clickx = event.globalPos().x()
@@ -688,17 +689,40 @@ class SoftwareCenter(QMainWindow):
             event.accept()
 
     def mouseMoveEvent(self, event):
-        if(event.buttons() == Qt.LeftButton and self.dragPosition != -1):
-            self.move(event.globalPos() - self.dragPosition)
-            event.accept()
+        if(event.buttons() == Qt.LeftButton):
+            # resize
+            if(self.resizeFlag == True):
+                targetWidth = event.globalX() - self.frameGeometry().topLeft().x()
+                targetHeight = event.globalY() - self.frameGeometry().topLeft().y()
+
+                if(targetWidth < Globals.MAIN_WIDTH_NORMAL):
+                    if(targetHeight < Globals.MAIN_HEIGHT_NORMAL):
+                        self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
+                    else:
+                        self.resize(Globals.MAIN_WIDTH_NORMAL, targetHeight)
+                else:
+                    if(targetHeight < Globals.MAIN_HEIGHT_NORMAL):
+                        self.resize(targetWidth, Globals.MAIN_HEIGHT_NORMAL)
+                    else:
+                        self.resize(targetWidth, targetHeight)
+
+                event.accept()
+            # drag move
+            else:
+                if(self.dragPosition != -1):
+                    self.move(event.globalPos() - self.dragPosition)
+                    event.accept()
 
     def mouseReleaseEvent(self, event):
-        # close task page while click anywhere except task page self
-        if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
-            # add by kobe 局部坐标:pos(), 全局坐标:globalPos()
-            if event.pos().x() > 400:
-                self.ui.taskWidget.setVisible(False)
-                self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        if(self.dragPosition != -1):
+            # close task page while click anywhere except task page self
+            if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
+                # add by kobe 局部坐标:pos(), 全局坐标:globalPos()
+                if event.pos().x() > 400:
+                    self.ui.taskWidget.setVisible(False)
+                    self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
+        self.dragPosition = -1
 
     # max size & normal size job
     def resizeEvent(self, re):
@@ -791,6 +815,9 @@ class SoftwareCenter(QMainWindow):
 
             # loading div
             self.loadingDiv.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+
+            # corner
+            self.resizeCorner.move(self.ui.centralwidget.width() - 16, self.ui.centralwidget.height() - 16)
 
             # max
             if(self.isMaximized() == True):
@@ -1505,13 +1532,6 @@ class SoftwareCenter(QMainWindow):
     # add by kobe: enter key event for searchbar
     def slot_enter_key_pressed(self):
         self.slot_searchDTimer_timeout()
-
-    # def eventFilter(self, obj, event):
-    #     if obj == self.ui.lebg:
-    #         print '123456'
-    #         if event.type() == QEvent.Enter:
-    #             print '2345678'
-
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):

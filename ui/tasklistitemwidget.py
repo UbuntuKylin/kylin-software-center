@@ -106,35 +106,36 @@ class TaskListItemWidget(QWidget):
         self.show()
 
     def status_change(self, processtype, percent, msg):
-        text = ''
-        if(processtype == 'fetch'):
-            text = "正在下载: "
-            if percent >= 100:
-                #text = "下载完成，开始安装..."
-                self.ui.progressBar.reset()
-                self.ui.progresslabel.setText("")
-                self.ui.status.setText("下载完成，开始安装...")
-                return
-            else:
-                self.ui.progressBar.setValue(percent)
-                # self.ui.progresslabel.setText(self.ui.progressBar.value())
-                self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
-        elif(processtype == 'apt'):
-            text = "正在执行: "
-            if percent >= 100:
-                text = "安装完成"
-                self.ui.progressBar.setValue(percent)
-                # self.ui.progresslabel.setText(self.ui.progressBar.value())
-                self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
-            else:
-                self.ui.progressBar.setValue(percent)
-                # self.ui.progresslabel.setText(self.ui.progressBar.value())
-                self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+        if(self.finish == False):
+            text = ''
+            if(processtype == 'fetch'):
+                text = "正在下载: "
+                if percent >= 100:
+                    #text = "下载完成，开始安装..."
+                    self.ui.progressBar.reset()
+                    self.ui.progresslabel.setText("")
+                    self.ui.status.setText("下载完成，开始安装...")
+                    return
+                else:
+                    self.ui.progressBar.setValue(percent)
+                    # self.ui.progresslabel.setText(self.ui.progressBar.value())
+                    self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+            elif(processtype == 'apt'):
+                text = "正在执行: "
+                if percent >= 100:
+                    text = "安装完成"
+                    self.ui.progressBar.setValue(percent)
+                    # self.ui.progresslabel.setText(self.ui.progressBar.value())
+                    self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+                else:
+                    self.ui.progressBar.setValue(percent)
+                    # self.ui.progresslabel.setText(self.ui.progressBar.value())
+                    self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
-        self.ui.status.setText(msg)
+            self.ui.status.setText(msg)
 
     def slot_work_finished(self, pkgname, action):
-        if self.app.name == pkgname:
+        if self.app.name == pkgname and self.finish == False:
             self.ui.progressBar.setValue(100)
             self.ui.progresslabel.setText("")
             self.ui.status.setText(AptActionMsg[action]+"已经完成")
