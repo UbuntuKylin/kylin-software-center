@@ -438,10 +438,10 @@ class SoftwareCenter(QMainWindow):
         self.win_model = DataModel(self.appmgr)
 
         # add by kobe
-        self.httpmodel = HttpDownLoad()
-        requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
-        url = QUrl(requestData)
-        self.httpmodel.sendDownLoadRequest(url)
+        # self.httpmodel = HttpDownLoad()
+        # requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
+        # url = QUrl(requestData)
+        # self.httpmodel.sendDownLoadRequest(url)
 
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
