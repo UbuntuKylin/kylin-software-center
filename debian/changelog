@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (1.1.2.0) utopic; urgency=medium
+
+  * fix many bugs (LP: #1374788,#1374900,#1290663,#1309905)
+
+ -- Shine <shenghuang@ubuntukylin.com>  Tue, 30 Sep 2014 11:25:31 +0800
+
 ubuntu-kylin-software-center (1.1.1.0) utopic; urgency=medium
 
   * fix many bugs (LP: #1372309,#1372716,#1372427,#1372297,#1368107
