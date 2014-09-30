@@ -64,7 +64,7 @@ class CardWidget(QWidget):
         number_per_row = (self.width() + self.cardspacing) / (self.itemwidth + self.cardspacing)
         number_per_column = (self.height() + self.cardspacing) / (self.itemheight + self.cardspacing)
         Globals.SOFTWARE_STEP_NUM = number_per_row * number_per_column + number_per_row
-        print "re calculate SOFTWARE_STEP_NUM == ", Globals.SOFTWARE_STEP_NUM
+        # print "re calculate SOFTWARE_STEP_NUM == ", Globals.SOFTWARE_STEP_NUM
 
     # calculate data
     def calculate_data(self):

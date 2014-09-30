@@ -30,7 +30,7 @@ from ui.starwidget import StarWidget
 from utils import run
 import webbrowser
 
-from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
+from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_HTTP_WIN_RES_PATH,AppActions)
 from models.enums import Signals, setLongTextToElideFormat
 
 class WinCard(QWidget):
@@ -95,7 +95,11 @@ class WinCard(QWidget):
         self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
 
         # win frame
-        if(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png")):
+        if(os.path.isfile(UBUNTUKYLIN_HTTP_WIN_RES_PATH + str(self.winstat.windows_app_name) + ".png")):
+            self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_HTTP_WIN_RES_PATH + str(self.winstat.windows_app_name) + ".png"))
+        elif(os.path.isfile(UBUNTUKYLIN_HTTP_WIN_RES_PATH + str(self.winstat.windows_app_name) + ".jpg")):
+            self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_HTTP_WIN_RES_PATH + str(self.winstat.windows_app_name) + ".jpg"))
+        elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png")):
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".png"))
         elif(os.path.isfile(UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".jpg")):
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + str(self.winstat.windows_app_name) + ".jpg"))
