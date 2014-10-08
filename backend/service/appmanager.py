@@ -85,6 +85,8 @@ class ThreadWorkerDaemon(threading.Thread):
                 self.appmgr._init_models()
             elif item.funcname == "get_reviews":
                 reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
+            # elif item.funcname == "get_images":
+            #     pass
             else:
                 event = multiprocessing.Event()
                 queue = multiprocessing.Queue()
@@ -549,6 +551,12 @@ class AppManager(QObject):
         kwargs = {}
         
         item = SilentWorkerItem("update_xapiandb", kwargs)
+        self.squeue.put_nowait(item)
+
+    def download_other_images(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("download_images", kwargs)
         self.squeue.put_nowait(item)
         
     # get recommend apps

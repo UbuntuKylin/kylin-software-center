@@ -57,7 +57,6 @@ from backend.ubuntusso import get_ubuntu_sso_backend
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
 from models.enums import Signals
 from models.globals import Globals
-from models.http import HttpDownLoad
 
 import sys
 reload(sys)
@@ -437,12 +436,6 @@ class SoftwareCenter(QMainWindow):
         self.winnum = 0
         self.win_model = DataModel(self.appmgr)
 
-        # add by kobe
-        # self.httpmodel = HttpDownLoad()
-        # requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
-        # url = QUrl(requestData)
-        # self.httpmodel.sendDownLoadRequest(url)
-
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
         self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
@@ -623,6 +616,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
         self.appmgr.update_xapiandb()
+        self.appmgr.download_other_images()
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
