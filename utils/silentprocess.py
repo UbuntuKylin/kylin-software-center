@@ -35,7 +35,7 @@ from backend.remote.piston_remoter import PistonRemoter
 from utils.machine import *
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
-from models.http import HttpDownLoad
+# from models.http import HttpDownLoad
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
 
@@ -55,7 +55,7 @@ class SilentProcess(multiprocessing.Process):
 
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
-        self.httpmodel = HttpDownLoad()
+        # self.httpmodel = HttpDownLoad()
 
     def run(self):
         while True:
@@ -84,8 +84,8 @@ class SilentProcess(multiprocessing.Process):
             #**************************************************#
             elif item.funcname == "update_xapiandb":
                 self.update_xapiandb()
-            elif item.funcname == "download_images":
-                self.download_images()
+            # elif item.funcname == "download_images":
+            #     self.download_images()
 
     # update rating_avg and rating_total in cache db from server
     def get_all_ratings(self):
@@ -219,10 +219,10 @@ class SilentProcess(multiprocessing.Process):
 
         print "all newer application info update over : ",len(reslist)
 
-    def download_images(self):
-        requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
-        url = QUrl(requestData)
-        self.httpmodel.sendDownLoadRequest(url)
+    # def download_images(self):
+    #     requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
+    #     url = QUrl(requestData)
+    #     self.httpmodel.sendDownLoadRequest(url)
         
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self):

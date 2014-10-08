@@ -163,6 +163,7 @@ class Signals:
     submit_rating_over = SIGNAL("submit-rating-over")
     show_login = SIGNAL("show-login")
     get_user_rating = SIGNAL("get-user-rating")
+    unzip_img = SIGNAL("unzip-img")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

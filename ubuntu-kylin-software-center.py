@@ -58,6 +58,8 @@ from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
 from models.enums import Signals
 from models.globals import Globals
 
+from models.http import HttpDownLoad, unzip_resource
+
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -616,7 +618,16 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
         self.appmgr.update_xapiandb()
-        self.appmgr.download_other_images()
+        # self.appmgr.download_other_images()
+
+        self.httpmodel = HttpDownLoad()
+        requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
+        url = QUrl(requestData)
+        self.httpmodel.sendDownLoadRequest(url)
+        self.connect(self.httpmodel, Signals.unzip_img, self.slot_unzip_img_zip)
+
+    def slot_unzip_img_zip(self):
+        unzip_resource("/tmp/uk-win.zip")
 
     def slot_init_models_ready(self, step, message):
         if step == "fail":
