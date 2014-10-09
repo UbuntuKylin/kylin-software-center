@@ -1,3 +1,11 @@
+ubuntu-kylin-software-center (1.1.3.0) utopic; urgency=medium
+
+  * fix many bugs (LP: #1375576,#1318460)
+  * First run download icon from Ubuntu Kylin server
+
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 09 Oct 2014 08:46:13 +0800
+
+
 ubuntu-kylin-software-center (1.1.2.0) utopic; urgency=medium
 
   * fix many bugs (LP: #1374788,#1374900,#1290663,#1309905)
