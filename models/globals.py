@@ -44,7 +44,7 @@ class Globals:
     LAUNCH_MODE = 'quiet'
 
     # uksc version number
-    UKSC_VERSION = '1.1.1'
+    UKSC_VERSION = '1.1.3'
 
     # open with local deb file
     LOCAL_DEB_FILE = None

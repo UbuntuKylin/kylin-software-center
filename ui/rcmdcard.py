@@ -112,12 +112,12 @@ class RcmdCard(QWidget):
             font2 = QFont()
             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
             self.ui.name.setFont(font2)
-            self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+            self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         if(len(self.app.displayname) > 24):
             font2 = QFont()
             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
             self.ui.name.setFont(font2)
-            self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+            self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:#666666;}")
 
         # convert size
         installedsize = self.app.installedSize
@@ -230,7 +230,11 @@ class RcmdCard(QWidget):
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
             else:
-                self.messageBox.alert_msg(self.app.name + "已经运行")
+                word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
+                if(word_len > 31):
+                    self.messageBox.alert_msg(self.app.name + "\n已经运行")
+                else:
+                    self.messageBox.alert_msg(self.app.name + "已经运行")
         else:
             self.ui.btn.setEnabled(False)
             self.ui.btn.setText("正在处理")

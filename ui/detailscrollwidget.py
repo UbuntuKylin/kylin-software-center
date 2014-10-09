@@ -492,7 +492,11 @@ class DetailScrollWidget(QScrollArea):
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
             else:
-                self.mainwindow.messageBox.alert_msg(self.app.name + "已经运行")
+                word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
+                if(word_len > 31):
+                    self.mainwindow.messageBox.alert_msg(self.app.name + "\n已经运行")
+                else:
+                    self.mainwindow.messageBox.alert_msg(self.app.name + "已经运行")
 
         elif(self.ui.btnInstall.text() == "安装此包"):
             self.app.status = "installing"

@@ -39,6 +39,10 @@ def get_run_command(pkgname):
     elif pkgname == 'eclipse-platform':
         pkgname = 'eclipse'
 
+    # add by kobe
+    if pkgname == 'software-center':
+        pkgname = 'ubuntu-software-center'
+
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     exc = fd.read()
     fd.close()
