@@ -56,6 +56,7 @@ class PointCard(QWidget):
         self.ui.btnDetail.setCursor(Qt.PointingHandCursor)
 
         self.ui.description.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ui.description.setReadOnly(True)
 
         self.ui.baseWidget.setAutoFillBackground(True)
         palette = QPalette()

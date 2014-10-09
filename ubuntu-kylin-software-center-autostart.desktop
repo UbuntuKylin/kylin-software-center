@@ -7,5 +7,5 @@ Icon=ubuntu-kylin-software-center
 StartupNotify=true
 Terminal=false
 Type=Application
-Categories=PackageManager;GTK;Graphics;System;Settings;Viewer;
+Categories=PackageManager;GTK;System;Settings;Viewer;
 Keywords=Sources;PPA;Install;Uninstall;Remove;Purchase;Catalogue;Store;Apps;
