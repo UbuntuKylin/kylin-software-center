@@ -283,7 +283,11 @@ class WinCard(QWidget):
                 if pro_times == 0 or pro_times == 1:
                     run.run_app(self.app.name)
                 else:
-                    self.messageBox.alert_msg(self.app.name + "已经运行")
+                    word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
+                    if(word_len > 31):
+                        self.messageBox.alert_msg(self.app.name + "\n已经运行")
+                    else:
+                        self.messageBox.alert_msg(self.app.name + "已经运行")
             else:
                 self.ui.btn.setEnabled(False)
                 if(self.ui.btn.text() == '安装'):

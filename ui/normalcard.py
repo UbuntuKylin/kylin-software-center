@@ -118,12 +118,12 @@ class NormalCard(QWidget):
             font2 = QFont()
             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
             self.ui.name.setFont(font2)
-            self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;}")
+            self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         if(len(self.app.displayname) > 24):
             font2 = QFont()
             font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
             self.ui.name.setFont(font2)
-            self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
+            self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:#666666;}")
 
         # convert size
         installedsize = self.app.installedSize
@@ -299,6 +299,14 @@ class NormalCard(QWidget):
                     if(app.is_installed):
                         self.star.hide()
                         self.ui.isInstalled.setVisible(True)
+                        if self.app.name == "software-center":
+                            print '1111111'
+                            aa = run.get_run_command('software-center')
+                            if aa == '':
+                                print '222222222'
+                            else:
+                                print '3333333333'
+                                print aa
                         if(run.get_run_command(self.app.name) == ""):
                             self.ui.btn.setText("已安装")
                             self.ui.btn.setEnabled(False)
@@ -403,7 +411,11 @@ class NormalCard(QWidget):
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
             else:
-                self.messageBox.alert_msg(self.app.name + "已经运行")
+                word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
+                if(word_len > 31):
+                    self.messageBox.alert_msg(self.app.name + "\n已经运行")
+                else:
+                    self.messageBox.alert_msg(self.app.name + "已经运行")
         # elif(self.workType == "searchpage"):
             # self.emit(Signals.show_app_detail, self.app)
         else:
