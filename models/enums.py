@@ -89,6 +89,9 @@ class TransactionTypes:
 UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
 safe_makedirs(UKSC_CACHE_DIR)
 
+HOME_PATH = os.path.expandvars('$HOME')
+UBUNTUKYLIN_HTTP_WIN_RES_PATH = HOME_PATH + "/.cache/uksc/uk-win/"
+
 #UBUNTUKYLIN_ROOT_PATH,filename = (os.path.split(os.path.realpath(__file__)))
 UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
 UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
@@ -160,6 +163,7 @@ class Signals:
     submit_rating_over = SIGNAL("submit-rating-over")
     show_login = SIGNAL("show-login")
     get_user_rating = SIGNAL("get-user-rating")
+    unzip_img = SIGNAL("unzip-img")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
