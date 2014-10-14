@@ -373,7 +373,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>260</width>
+         <width>290</width>
          <height>44</height>
         </rect>
        </property>
@@ -419,9 +419,22 @@
        <widget class="QPushButton" name="btnLogout">
         <property name="geometry">
          <rect>
-          <x>160</x>
+          <x>220</x>
           <y>14</y>
           <width>45</width>
+          <height>15</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="btnAppList">
+        <property name="geometry">
+         <rect>
+          <x>150</x>
+          <y>14</y>
+          <width>60</width>
           <height>15</height>
          </rect>
         </property>
@@ -435,7 +448,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>260</width>
+         <width>290</width>
          <height>44</height>
         </rect>
        </property>

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainwindow.ui'
 #
-# Created: Thu Sep 25 14:25:10 2014
+# Created: Tue Oct 14 09:33:11 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -139,7 +139,7 @@ class Ui_MainWindow(object):
         self.homeMsgWidget.setGeometry(QtCore.QRect(0, 0, 860, 44))
         self.homeMsgWidget.setObjectName(_fromUtf8("homeMsgWidget"))
         self.afterLoginWidget = QtGui.QWidget(self.homeMsgWidget)
-        self.afterLoginWidget.setGeometry(QtCore.QRect(0, 0, 260, 44))
+        self.afterLoginWidget.setGeometry(QtCore.QRect(0, 0, 290, 44))
         self.afterLoginWidget.setObjectName(_fromUtf8("afterLoginWidget"))
         self.userLogoafter = QtGui.QLabel(self.afterLoginWidget)
         self.userLogoafter.setGeometry(QtCore.QRect(0, 14, 16, 16))
@@ -154,11 +154,15 @@ class Ui_MainWindow(object):
         self.username.setText(_fromUtf8(""))
         self.username.setObjectName(_fromUtf8("username"))
         self.btnLogout = QtGui.QPushButton(self.afterLoginWidget)
-        self.btnLogout.setGeometry(QtCore.QRect(160, 14, 45, 15))
+        self.btnLogout.setGeometry(QtCore.QRect(220, 14, 45, 15))
         self.btnLogout.setText(_fromUtf8(""))
         self.btnLogout.setObjectName(_fromUtf8("btnLogout"))
+        self.btnAppList = QtGui.QPushButton(self.afterLoginWidget)
+        self.btnAppList.setGeometry(QtCore.QRect(150, 14, 60, 15))
+        self.btnAppList.setText(_fromUtf8(""))
+        self.btnAppList.setObjectName(_fromUtf8("btnAppList"))
         self.beforeLoginWidget = QtGui.QWidget(self.homeMsgWidget)
-        self.beforeLoginWidget.setGeometry(QtCore.QRect(0, 0, 260, 44))
+        self.beforeLoginWidget.setGeometry(QtCore.QRect(0, 0, 290, 44))
         self.beforeLoginWidget.setObjectName(_fromUtf8("beforeLoginWidget"))
         self.userLogo = QtGui.QLabel(self.beforeLoginWidget)
         self.userLogo.setGeometry(QtCore.QRect(0, 14, 16, 16))

@@ -244,8 +244,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.ui.btnLogin.setText("请登录")
-        self.ui.btnReg.setText("免费注册")
+        self.ui.btnReg.setText("去注册")
         self.ui.welcometext.setText("欢迎您")
+        self.ui.btnAppList.setText("我的软件")
         self.ui.btnLogout.setText("退出")
 
         self.ui.hometext1.setText("推荐软件")
@@ -318,6 +319,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
+        self.ui.btnAppList.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
         self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
         self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
         self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#0396DC;}")
@@ -685,10 +687,12 @@ class SoftwareCenter(QMainWindow):
 
     def eventFilter(self, obj, event):
         if obj == self.resizeCorner:
-            if event.type() == QEvent.MouseButtonPress:
-                self.resizeFlag = True
-            elif event.type() == QEvent.MouseButtonRelease:
-                self.resizeFlag = False
+            # do not respond when window maximized
+            if self.isMaximized() == False:
+                if event.type() == QEvent.MouseButtonPress:
+                    self.resizeFlag = True
+                elif event.type() == QEvent.MouseButtonRelease:
+                    self.resizeFlag = False
             return False
         else:
             return False
