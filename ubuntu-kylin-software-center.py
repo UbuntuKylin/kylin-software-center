@@ -1456,6 +1456,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
+        self.ui.btnCloseDetail.setVisible(True)
         self.detailScrollWidget.show_by_local_debfile(path)
 
     def slot_update_source(self,quiet=False):
