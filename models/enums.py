@@ -36,8 +36,8 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-# UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
 
 # add by kobe to format long text
@@ -157,6 +157,7 @@ class Signals:
     apt_process_cancel = SIGNAL("apt-process-cancel")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
+    get_user_applist_over = SIGNAL("get-user-applist-over")
     submit_review = SIGNAL("submit-review")
     submit_review_over = SIGNAL("submit-review-over")
     submit_rating = SIGNAL("submit-rating")

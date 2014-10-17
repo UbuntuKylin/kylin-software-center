@@ -1027,6 +1027,78 @@
       </rect>
      </property>
     </widget>
+    <widget class="QWidget" name="userAppListWidget" native="true">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>36</y>
+       <width>880</width>
+       <height>572</height>
+      </rect>
+     </property>
+     <widget class="QLabel" name="ualine">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>44</y>
+        <width>860</width>
+        <height>1</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QWidget" name="uacw1" native="true">
+      <property name="geometry">
+       <rect>
+        <x>750</x>
+        <y>20</y>
+        <width>130</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <widget class="QLabel" name="uatext1">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="uatext2">
+       <property name="geometry">
+        <rect>
+         <x>69</x>
+         <y>0</y>
+         <width>44</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QLabel" name="uacount">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>0</y>
+         <width>50</width>
+         <height>15</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </widget>
+    </widget>
    </widget>
    <zorder>rightWidget</zorder>
    <zorder>navWidget</zorder>

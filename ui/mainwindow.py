@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/mainwindow.ui'
 #
-# Created: Tue Oct 14 09:33:11 2014
+# Created: Tue Oct 14 10:10:11 2014
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -339,6 +339,28 @@ class Ui_MainWindow(object):
         self.detailShellWidget = QtGui.QWidget(self.rightWidget)
         self.detailShellWidget.setGeometry(QtCore.QRect(20, 50, 873, 558))
         self.detailShellWidget.setObjectName(_fromUtf8("detailShellWidget"))
+        self.userAppListWidget = QtGui.QWidget(self.rightWidget)
+        self.userAppListWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
+        self.userAppListWidget.setObjectName(_fromUtf8("userAppListWidget"))
+        self.ualine = QtGui.QLabel(self.userAppListWidget)
+        self.ualine.setGeometry(QtCore.QRect(0, 44, 860, 1))
+        self.ualine.setText(_fromUtf8(""))
+        self.ualine.setObjectName(_fromUtf8("ualine"))
+        self.uacw1 = QtGui.QWidget(self.userAppListWidget)
+        self.uacw1.setGeometry(QtCore.QRect(750, 20, 130, 15))
+        self.uacw1.setObjectName(_fromUtf8("uacw1"))
+        self.uatext1 = QtGui.QLabel(self.uacw1)
+        self.uatext1.setGeometry(QtCore.QRect(0, 0, 50, 15))
+        self.uatext1.setText(_fromUtf8(""))
+        self.uatext1.setObjectName(_fromUtf8("uatext1"))
+        self.uatext2 = QtGui.QLabel(self.uacw1)
+        self.uatext2.setGeometry(QtCore.QRect(69, 0, 44, 15))
+        self.uatext2.setText(_fromUtf8(""))
+        self.uatext2.setObjectName(_fromUtf8("uatext2"))
+        self.uacount = QtGui.QLabel(self.uacw1)
+        self.uacount.setGeometry(QtCore.QRect(30, 0, 50, 15))
+        self.uacount.setText(_fromUtf8(""))
+        self.uacount.setObjectName(_fromUtf8("uacount"))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

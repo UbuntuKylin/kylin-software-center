@@ -117,8 +117,9 @@ class SilentProcess(multiprocessing.Process):
     def submit_pingback_app(self, kwargs):
         app_name = kwargs["app_name"]
         isrcm = kwargs["isrcm"]
+        user = kwargs["user"]
         machine = get_machine_id()
-        res = self.premoter.submit_pingback_app(app_name, machine, isrcm)
+        res = self.premoter.submit_pingback_app(app_name, machine, isrcm, user)
         return res
 
     # get all categories data from server
