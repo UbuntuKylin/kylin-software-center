@@ -1,6 +1,17 @@
 ubuntu-kylin-software-center (1.1.3.0) utopic; urgency=medium
 
-  * fix many bugs (LP: #1375576,#1318460,#1329234,#1379185)
+  * fix many bugs:
+    #1375576:Can change the short description of WPS in the home page.
+    #1318460:If we login the desktop with a gnome fallback mode( by installing
+             the gnome-panel package) and pull down the application menu, we'll see
+             Ubuntu Kylin Software Center in the category "Graphics", which isn't
+             really right since "Graphics" means something related to image processing,
+             viewing, etc. Deleting the "Graphics" word in the corresponding .desktop
+             file's "Category" key should solve this ).
+    #1329234:Many software "Software Details Interface" -> "Software screenshot" no
+             drawings should at least ensure that UK software has features with map
+    #1379185:Click the Launch button when the application is already running, the prompt
+             display incompletely.
   * First run download icon from Ubuntu Kylin server
 
  -- Shine <shenghuang@ubuntukylin.com>  Thu, 09 Oct 2014 08:46:13 +0800
@@ -8,15 +19,36 @@ ubuntu-kylin-software-center (1.1.3.0) utopic; urgency=medium
 
 ubuntu-kylin-software-center (1.1.2.0) utopic; urgency=medium
 
-  * fix many bugs (LP: #1374788,#1374900,#1290663,#1309905)
+  * fix many bugs:
+    #1374788:dreamweave is wrong, dreamweaver is correct.
+    #1374900:Enter the detail information page through Win Replace section, for the applications
+             which don't install in the system, they don't have the status button.
+    #1290663:It is not a good UI design to fix the window size, as screen sizes varies
+             from computer to computer.
+    #1309905:Historical status of each state bar no records,need to increase the appropriate judgment
 
  -- Shine <shenghuang@ubuntukylin.com>  Tue, 30 Sep 2014 11:25:31 +0800
 
 ubuntu-kylin-software-center (1.1.1.0) utopic; urgency=medium
 
-  * fix many bugs (LP: #1372309,#1372716,#1372427,#1372297,#1368107
-    #1373931,#1368207,#1372302 ,#1373912 ,#1372453,#1372342,#1368210,
-    #1373740,#1372456)
+  * fix many bugs
+    #1372309:Besides, in the "Win替换" interface, "Ubuntu Kylin 软件中心" icon is wrong.
+    #1372716:When the software center has upgraded version, cannot display software center home
+             page and update dialog when open it, it trapped at the start up animation interface.
+    #1372427:After re-entering the detail page for a software can repeat score.
+    #1372297:In the detail info page, one person cen mark many times. It is not reasonable.
+    #1368107:The maximum function for UKSC doesn't work.
+    #1373931:Can search out and uninstall the application which doesn't installed in the system.
+    #1368207:Except INSTALL and START state, it is suggested to add STARTED state. when users
+             START some started softwares, no reponse.
+    #1372302:parts of software have much review content, so the comments show incomplete.
+    #1373912:Search any application in "Upgrade" Section, it displays status as Upgrade,
+             even the current version equal latest version.
+    #1372453:The process bar display abnormal, pls refer tha attached pic.
+    #1372342:In the software detail page, the software name show incomplete. detail in attachment.
+    #1368210:Some applications can not display complete names in WIN-SUBSTITUDE interface.
+    #1373740:Proposal is not installed program can not be retrieved.
+    #1372456:Process list will be closed after click the top or bottom location of the process list.
 
  -- Shine <shenghuang@ubuntukylin.com>  Fri, 26 Sep 2014 14:24:54 +0800
 

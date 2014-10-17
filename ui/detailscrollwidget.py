@@ -204,12 +204,20 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.clear()
         # self.detailWidget.resize(805, 790)
         # self.ui.reviewListWidget.resize(805, 0)
-        self.detailWidget.resize(873, 790)
+        # self.detailWidget.resize(873, 790)
+        self.detailWidget.resize(873, 280)
         self.ui.reviewListWidget.resize(873, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
         self.ui.thumbnail.hide()
+
+        self.ui.candidateVersion.hide()
+        self.ui.fen.hide()
+        self.ui.scorelabel.hide()
+        self.ui.scoretitle.hide()
+        self.ui.size_install.hide()
+        self.ui.split2.hide()
 
         # self.ui.btnUpdate.setText("不可用")
         # self.ui.btnUninstall.setText("不可用")
@@ -261,11 +269,19 @@ class DetailScrollWidget(QScrollArea):
         # self.detailWidget.resize(805, 790)
         # self.ui.reviewListWidget.resize(805, 0)
         self.detailWidget.resize(873, 790)
+
         self.ui.reviewListWidget.resize(873, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
         self.ui.thumbnail.hide()
+
+        self.ui.candidateVersion.show()
+        self.ui.fen.show()
+        self.ui.scorelabel.show()
+        self.ui.scoretitle.show()
+        self.ui.size_install.show()
+        self.ui.split2.show()
 
         self.app = app
         self.ui.name.setText(app.name)
