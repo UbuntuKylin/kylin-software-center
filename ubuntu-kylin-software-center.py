@@ -1452,7 +1452,7 @@ class SoftwareCenter(QMainWindow):
         # self.reset_nav_bar()
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
-        self.detailScrollWidget.showSimple(app, self.nowPage, btntext)
+        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage, btntext)
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
