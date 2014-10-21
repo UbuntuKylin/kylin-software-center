@@ -459,29 +459,28 @@ class NormalCard(QWidget):
             # self.app.set_status("nothing")
             if action == AppActions.INSTALL:
                 self.star.hide()
-                self.ui.isInstalled.setVisible(True)
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setEnabled(False)
+                #self.ui.isInstalled.setVisible(True)
+                if (self.workType == "unpage") or (self.workType == "searchpage" and self.preType == "unpage"):#modified by zhangxin for bug 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
+                    self.star.show()
+                    self.ui.isInstalled.setVisible(False)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+                    #if self.app.is_installed:#why app.is_installed is false
+                    self.ui.btn.setText("卸载")
+                    self.ui.btn.setEnabled(True)
+                    #else:
+                    #self.ui.btn.setText("无法卸载")
+                    #self.ui.btn.setEnabled(False)
                 else:
-                    if self.workType == "unpage" or (self.workType == "searchpage" and self.preType == "unpage"):
-                        self.ui.btn.setText("卸载")
-                        self.ui.btn.setEnabled(True)
+                    self.ui.isInstalled.setVisible(True)
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
                         self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                         self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                     else:
-                        if self.workType == "searchpage" and self.preType == "unpage":
-                            self.ui.btn.setText("卸载")
-                            self.ui.btn.setEnabled(True)
-                            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
-                            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
-                        else:
-                            self.ui.btn.setText("启动")
-                            self.ui.btn.setEnabled(True)
-                            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
-                            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
+                        self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 self.star.show()
                 self.ui.isInstalled.setVisible(False)
