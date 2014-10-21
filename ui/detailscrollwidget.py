@@ -53,6 +53,7 @@ class DetailScrollWidget(QScrollArea):
     maxpage = ''
     currentreviewready = ''
     workType = ''
+    preType = ''
 
     def __init__(self, parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
@@ -262,22 +263,29 @@ class DetailScrollWidget(QScrollArea):
         self.mainwindow.loadingDiv.stop_loading()
 
     # fill fast property, show ui, request remote property
-    def showSimple(self, app, nowpage, prepage, btntext):
+    def showSimple(self, app, nowpage, prePage, btntext):
+        self.workType = nowpage
+        self.preType = prePage
         # clear reviews
-        self.nowpage = nowpage #*add by zhangxin 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
-        self.prepage = prepage #*
-        #print nowpage,prepage
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
         # self.detailWidget.resize(805, 790)
         # self.ui.reviewListWidget.resize(805, 0)
         self.detailWidget.resize(873, 790)
+
         self.ui.reviewListWidget.resize(873, 0)
         self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
         # clear sshot
         self.sshotcount = 0
         self.ui.thumbnail.hide()
+
+        self.ui.candidateVersion.show()
+        self.ui.fen.show()
+        self.ui.scorelabel.show()
+        self.ui.scoretitle.show()
+        self.ui.size_install.show()
+        self.ui.split2.show()
 
         self.app = app
         self.ui.name.setText(app.name)
@@ -339,7 +347,6 @@ class DetailScrollWidget(QScrollArea):
         self.connect(self.ratingstar, Signals.get_user_rating,self.slot_submit_rating)
 
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
-
 
         if btntext == "安装":
             self.ui.status.hide()
@@ -626,7 +633,7 @@ class DetailScrollWidget(QScrollArea):
                 self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.INSTALL:
-                if (self.nowpage == "unpage") or (self.nowpage == "searchpage" and self.prepage == "unpage"): ##add by zhangxin for bug 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
+                if (self.workType == "unpage") or (self.workType == "searchpage" and self.preType == "unpage"): ##add by zhangxin for bug 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
                     self.ui.btnInstall.setText("已安装")
                     self.ui.btnUpdate.setText("升级")
                     self.ui.btnUninstall.setText("卸载")
@@ -635,7 +642,7 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUninstall.setEnabled(True)
                     self.ui.btnInstall.setVisible(False)
                     self.ui.btnUpdate.setVisible(False)
-                    self.ui.btnUninstall.setVisible(True) ##
+                    self.ui.btnUninstall.setVisible(True)
                 else:
                     if(run.get_run_command(self.app.name) == ""):
                         self.ui.btnInstall.setText("已安装")
