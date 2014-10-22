@@ -300,14 +300,6 @@ class NormalCard(QWidget):
                     if(app.is_installed):
                         self.star.hide()
                         self.ui.isInstalled.setVisible(True)
-                        if self.app.name == "software-center":
-                            print '1111111'
-                            aa = run.get_run_command('software-center')
-                            if aa == '':
-                                print '222222222'
-                            else:
-                                print '3333333333'
-                                print aa
                         if(run.get_run_command(self.app.name) == ""):
                             self.ui.btn.setText("已安装")
                             self.ui.btn.setEnabled(False)
@@ -422,37 +414,40 @@ class NormalCard(QWidget):
         else:
             self.ui.btn.setEnabled(False)
             # self.app.status = True
-            if(self.workType == 'allpage'):
+            if(self.ui.btn.text() == "安装"):
+            # if(self.workType == 'allpage'):
                 self.app.status = "installing"
                 # self.app.set_status("installing")
                 self.ui.btn.setText("正在安装")
                 self.emit(Signals.install_app, self.app)
-            elif(self.workType == 'uppage'):
+            elif(self.ui.btn.text() == "升级"):
+            # elif(self.workType == 'uppage'):
                 self.app.status = "upgrading"
                 # self.app.set_status("upgrading")
                 self.ui.btn.setText("正在升级")
                 self.emit(Signals.upgrade_app, self.app)
-            elif(self.workType == 'unpage'):
+            elif(self.ui.btn.text() == "卸载"):
+            # elif(self.workType == 'unpage'):
                 self.app.status = "uninstalling"
                 # self.app.set_status("uninstalling")
                 self.ui.btn.setText("正在卸载")
                 self.emit(Signals.remove_app, self.app)
-            elif(self.workType == 'searchpage'):# add by kobe for search to do something
-                if self.ui.btn.text() == "安装":
-                    self.app.status = "installing"
-                    # self.app.set_status("installing")
-                    self.ui.btn.setText("正在安装")
-                    self.emit(Signals.install_app, self.app)
-                elif self.ui.btn.text() == "卸载":
-                    self.app.status = "uninstalling"
-                    # self.app.set_status("uninstalling")
-                    self.ui.btn.setText("正在卸载")
-                    self.emit(Signals.remove_app, self.app)
-                elif self.ui.btn.text() == "升级":
-                    self.app.status = "upgrading"
-                    # self.app.set_status("upgrading")
-                    self.ui.btn.setText("正在升级")
-                    self.emit(Signals.upgrade_app, self.app)
+            # elif(self.workType == 'searchpage'):# add by kobe for search to do something
+            #     if self.ui.btn.text() == "安装":
+            #         self.app.status = "installing"
+            #         # self.app.set_status("installing")
+            #         self.ui.btn.setText("正在安装")
+            #         self.emit(Signals.install_app, self.app)
+            #     elif self.ui.btn.text() == "卸载":
+            #         self.app.status = "uninstalling"
+            #         # self.app.set_status("uninstalling")
+            #         self.ui.btn.setText("正在卸载")
+            #         self.emit(Signals.remove_app, self.app)
+            #     elif self.ui.btn.text() == "升级":
+            #         self.app.status = "upgrading"
+            #         # self.app.set_status("upgrading")
+            #         self.ui.btn.setText("正在升级")
+            #         self.emit(Signals.upgrade_app, self.app)
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app, self.ui.btn.text())
@@ -464,15 +459,28 @@ class NormalCard(QWidget):
             # self.app.set_status("nothing")
             if action == AppActions.INSTALL:
                 self.star.hide()
-                self.ui.isInstalled.setVisible(True)
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setEnabled(False)
+                #self.ui.isInstalled.setVisible(True)
+                if (self.workType == "unpage") or (self.workType == "searchpage" and self.preType == "unpage"):#modified by zhangxin for bug 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
+                    self.star.show()
+                    self.ui.isInstalled.setVisible(False)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
-                else:
-                    self.ui.btn.setText("启动")
+                    #if self.app.is_installed:#why app.is_installed is false
+                    self.ui.btn.setText("卸载")
                     self.ui.btn.setEnabled(True)
+                    #else:
+                    #self.ui.btn.setText("无法卸载")
+                    #self.ui.btn.setEnabled(False)
+                else:
+                    self.ui.isInstalled.setVisible(True)
+                    if(run.get_run_command(self.app.name) == ""):
+                        self.ui.btn.setText("已安装")
+                        self.ui.btn.setEnabled(False)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+                    else:
+                        self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 self.star.show()
                 self.ui.isInstalled.setVisible(False)

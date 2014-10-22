@@ -42,6 +42,10 @@ def get_run_command(pkgname):
     # add by kobe
     if pkgname == 'software-center':
         pkgname = 'ubuntu-software-center'
+    if pkgname == "sogoupinyin":
+        pkgname = "fcitx-ui-sogou-qimpanel"
+    if pkgname == "mathwar":
+        pkgname = "MathWar"
 
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     exc = fd.read()
