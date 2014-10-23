@@ -87,6 +87,9 @@ class ListItemWidget(QWidget):
         else:
             self.ui.installedsize.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
+        installDate = app.install_date[:app.install_date.find('T')]
+        self.ui.installedDate.setText(installDate + " 安装")
+
         if(app.is_installed):
             self.ui.status.show()
             if(app.is_upgradable):

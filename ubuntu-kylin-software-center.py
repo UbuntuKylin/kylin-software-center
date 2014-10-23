@@ -168,7 +168,8 @@ class SoftwareCenter(QMainWindow):
         # loading div
         self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
-        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankWidget)
+        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankView)
+        self.userload = MiniLoadingDiv(self.ui.beforeLoginWidget, self.ui.homeMsgWidget)
         # alert message box
         self.messageBox = MessageBox(self)
         # first update process bar
@@ -1339,6 +1340,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setEnabled(False)
 
     def goto_search_page(self, ishistory=False):
+        self.reset_nav_bar_focus_one()
         if self.nowPage != 'searchpage':
             self.hisPage = self.nowPage
         self.nowPage = 'searchpage'
@@ -1414,33 +1416,8 @@ class SoftwareCenter(QMainWindow):
 
         self.reset_nav_bar()
 
-        # if not self.ua_exists:
-        #     self.loadingDiv.start_loading("")
-        #     self.appmgr.get_user_applist()
-
         self.loadingDiv.start_loading("")
         self.appmgr.get_user_applist()
-        # lll = ['gedit','abe','chinese-calendar','kuaipan4uk']
-        # lll = []
-        # if(len(lll) > 0):
-        #     self.ui.uaNoItemText.hide()
-        #     self.ui.uaNoItemWidget.hide()
-        #     self.userAppListWidget.show()
-        #
-        #     for ll in lll:
-        #         app = self.appmgr.get_application_by_name(ll)
-        #         item = ListItemWidget(app, self.userAppListWidget.cardPanel)
-        #         self.userAppListWidget.add_card(item)
-        #         self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
-        #         self.connect(item, Signals.install_app, self.slot_click_install)
-        #         self.connect(item, Signals.upgrade_app, self.slot_click_upgrade)
-        #         self.connect(item, Signals.remove_app, self.slot_click_remove)
-        #         self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
-        #         self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
-        # else:
-        #     self.ui.uaNoItemText.show()
-        #     self.ui.uaNoItemWidget.show()
-        #     self.userAppListWidget.hide()
 
     def slot_get_user_applist_over(self, reslist):
         if(len(reslist) > 0):
@@ -1451,7 +1428,9 @@ class SoftwareCenter(QMainWindow):
 
             for res in reslist:
                 app_name = res['aid']['app_name']
+                install_date = res['date']
                 app = self.appmgr.get_application_by_name(app_name)
+                app.install_date = install_date
                 item = ListItemWidget(app, self.userAppListWidget.cardPanel)
                 self.userAppListWidget.add_card(item)
                 self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
@@ -1680,15 +1659,27 @@ class SoftwareCenter(QMainWindow):
     # user login
     def slot_do_login_account(self):
         try:
+            self.userload.start_loading()
+            self.ui.beforeLoginWidget.hide()
+            self.ui.afterLoginWidget.hide()
+
             self.sso.setShowRegister(False)
             self.token = self.sso.get_oauth_token_and_verify_sync()
+
             if self.token:
                 self.sso.whoami()
+            else:
+                self.userload.stop_loading()
+                self.ui.beforeLoginWidget.show()
 
         except ImportError:
             LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+            self.userload.stop_loading()
+            self.ui.beforeLoginWidget.show()
         except:
             LOG.exception('User login failed.')
+            self.userload.stop_loading()
+            self.ui.beforeLoginWidget.show()
 
     # user register
     def slot_do_register(self):
@@ -1704,21 +1695,28 @@ class SoftwareCenter(QMainWindow):
             LOG.exception('User register failed.')
 
     def slot_do_logout(self):
-
         try:
+            self.userload.start_loading()
+            self.ui.beforeLoginWidget.hide()
+            self.ui.afterLoginWidget.hide()
+
             self.sso.clear_token()
             self.token = ""
 
+            self.userload.stop_loading()
             self.ui.beforeLoginWidget.show()
-            self.ui.afterLoginWidget.hide()
 
             Globals.USER = ''
             Globals.USER_DISPLAY = ''
 
         except ImportError:
             LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+            self.userload.stop_loading()
+            self.ui.afterLoginWidget.show()
         except:
             LOG.exception('User logout failed.')
+            self.userload.stop_loading()
+            self.ui.afterLoginWidget.show()
 
     # update user login status
     def slot_whoami_done(self, sso, result):
@@ -1727,6 +1725,7 @@ class SoftwareCenter(QMainWindow):
         preferred_email = result["preferred_email"]
         print 'Login success, username: %s' % display_name
 
+        self.userload.stop_loading()
         self.ui.beforeLoginWidget.hide()
         self.ui.afterLoginWidget.show()
         self.ui.username.setText(display_name)
