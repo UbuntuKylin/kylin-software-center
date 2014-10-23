@@ -1708,6 +1708,7 @@ class SoftwareCenter(QMainWindow):
 
             Globals.USER = ''
             Globals.USER_DISPLAY = ''
+            Globals.TOKEN = ''
 
         except ImportError:
             LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
@@ -1732,7 +1733,8 @@ class SoftwareCenter(QMainWindow):
 
         Globals.USER = user
         Globals.USER_DISPLAY = display_name
-        Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
+        # Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
+        Globals.TOKEN = self.token
 
         self.appmgr.reinit_premoter_auth()
 
