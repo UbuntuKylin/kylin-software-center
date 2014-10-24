@@ -514,13 +514,18 @@ class NormalCard(QWidget):
                 self.ui.btn.setText("安装")
                 self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
-                self.star.hide()
-                self.ui.isInstalled.setVisible(True)
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
-                    self.ui.btn.setEnabled(False)
-                else:
-                    self.ui.btn.setText("启动")
+                self.star.show()#* modify by zhangxin
+                self.ui.isInstalled.setVisible(False)
+                self.ui.btn.setText("卸载")
+                self.ui.btn.setEnabled(True)#*
+
+                # self.star.hide()
+                # self.ui.isInstalled.setVisible(True)
+                # if(run.get_run_command(self.app.name) == ""):
+                #     self.ui.btn.setText("已安装")
+                #     self.ui.btn.setEnabled(False)
+                # else:
+                #     self.ui.btn.setText("启动")
             elif action == AppActions.UPGRADE:
                 self.star.hide()
                 self.ui.isInstalled.setVisible(True)
