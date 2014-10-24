@@ -1194,20 +1194,23 @@ class SoftwareCenter(QMainWindow):
         print "del_task_item:",count
 
         truecount = 0
+        top = 0 #Add by zhangxin 
         for i in range(count):
             # list is empty now
             if(truecount == count):
                 break
-            item = self.ui.taskListWidget.item(0)
+            item = self.ui.taskListWidget.item(top)
             taskitem = self.ui.taskListWidget.itemWidget(item)
             # delete all finished task items
             if taskitem.finish == True:
-                print "del_task_item: found an item",0,taskitem.app.name
-                delitem = self.ui.taskListWidget.takeItem(0)
+                print "del_task_item: found an item",top,taskitem.app.name
+                delitem = self.ui.taskListWidget.takeItem(top)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
                 del self.stmap[taskitem.app.name]
                 truecount = truecount + 1
+            else:
+                top = top + 1
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
@@ -1708,6 +1711,7 @@ class SoftwareCenter(QMainWindow):
 
             Globals.USER = ''
             Globals.USER_DISPLAY = ''
+            Globals.TOKEN = ''
 
         except ImportError:
             LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
@@ -1732,7 +1736,8 @@ class SoftwareCenter(QMainWindow):
 
         Globals.USER = user
         Globals.USER_DISPLAY = display_name
-        Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
+        # Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
+        Globals.TOKEN = self.token
 
         self.appmgr.reinit_premoter_auth()
 
