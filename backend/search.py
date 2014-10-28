@@ -344,8 +344,10 @@ class StoreDatabase(GObject.GObject):
         if not ':' in search_term:  # ie, not a mimetype query
             # we need this to work around xapian oddness
             search_term = search_term.replace('-', '_')
-        fuzzy_query = self.xapian_parser.parse_query(search_term,
+
+        fuzzy_query = self.xapian_parser.parse_query(search_term + "*",
                                            xapian.QueryParser.FLAG_PARTIAL |
+                                           xapian.QueryParser.FLAG_WILDCARD |
                                            xapian.QueryParser.FLAG_BOOLEAN)
         # if the query size goes out of hand, omit the FLAG_PARTIAL
         # (LP: #634449)
@@ -354,7 +356,9 @@ class StoreDatabase(GObject.GObject):
                                             xapian.QueryParser.FLAG_BOOLEAN)
         # now add categories
         fuzzy_query = _add_category_to_query(fuzzy_query)
+        print "fuzzy_query",fuzzy_query
         return SearchQuery([pkg_query, fuzzy_query])
+#Xapian::Query((youker:(pos=1) SYNONYM youker-assistant:(pos=1) SYNONYM youker_assistant:(pos=1) SYNONYM youker_assistant:i386:(pos=1) SYNONYM youkezhushou:(pos=1) SYNONYM youku:(pos=1))) 1
 
 
     def __len__(self):
@@ -427,8 +431,8 @@ class Search:
 
         #----check user installed mmseg or not (for keyword segment)-----
         try:
-        
-            from mmseg.search import seg_txt_search,seg_txt_2_dict
+
+            #from mmseg.search import seg_txt_search,seg_txt_2_dict
             query_string = str(keyword)
             enquire = xapian.Enquire(self.db.xapiandb)
             
@@ -438,15 +442,22 @@ class Search:
 #               print word,value
                 query_list.append(query)
             if len(query_list) != 1:
-                query = xapian.Query(xapian.Query.OP_AND, query_list)
+                query = xapian.Query(
+                                     xapian.Query.OP_SYNONYM,
+                                     query_list)
             else:
                 query = query_list[0]
-
+            print "query:",query
         except:   
 
             query_string = self.db.get_query_list_from_search_entry(str(keyword))
             enquire = xapian.Enquire(self.db.xapiandb)
             query = query_string[1]
+            query_list =[]
+            #query_list.append(query1)
+            #query_list.append(query2)
+            #query = xapian.Query(xapian.Query.OP_OR, query_list)
+            #print query
 
 #            enquire = xapian.Enquire(self.db.xapiandb)
 #            qp = xapian.QueryParser()
