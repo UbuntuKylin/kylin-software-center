@@ -349,14 +349,12 @@ class StoreDatabase(GObject.GObject):
                                            xapian.QueryParser.FLAG_PARTIAL |
                                            xapian.QueryParser.FLAG_WILDCARD |
                                            xapian.QueryParser.FLAG_BOOLEAN)
-        # if the query size goes out of hand, omit the FLAG_PARTIAL
+        # if the query size goes out of hand, omit the FLAG_PARTIAL 、FLAG_WILDCARD
         # (LP: #634449)
         if fuzzy_query.get_length() > 1000:
             fuzzy_query = self.xapian_parser.parse_query(search_term,
                                             xapian.QueryParser.FLAG_BOOLEAN)
-        # now add categories
-        fuzzy_query = _add_category_to_query(fuzzy_query)
-        print "fuzzy_query",fuzzy_query
+
         return SearchQuery([pkg_query, fuzzy_query])
 #Xapian::Query((youker:(pos=1) SYNONYM youker-assistant:(pos=1) SYNONYM youker_assistant:(pos=1) SYNONYM youker_assistant:i386:(pos=1) SYNONYM youkezhushou:(pos=1) SYNONYM youku:(pos=1))) 1
 
@@ -429,43 +427,10 @@ class Search:
             else:
                 return []
 
-        #----check user installed mmseg or not (for keyword segment)-----
-        try:
 
-            #from mmseg.search import seg_txt_search,seg_txt_2_dict
-            query_string = str(keyword)
-            enquire = xapian.Enquire(self.db.xapiandb)
-            
-            query_list = []
-            for word, value in seg_txt_2_dict(query_string).iteritems():
-                query = xapian.Query(word, value)
-#               print word,value
-                query_list.append(query)
-            if len(query_list) != 1:
-                query = xapian.Query(
-                                     xapian.Query.OP_SYNONYM,
-                                     query_list)
-            else:
-                query = query_list[0]
-            print "query:",query
-        except:   
-
-            query_string = self.db.get_query_list_from_search_entry(str(keyword))
-            enquire = xapian.Enquire(self.db.xapiandb)
-            query = query_string[1]
-            query_list =[]
-            #query_list.append(query1)
-            #query_list.append(query2)
-            #query = xapian.Query(xapian.Query.OP_OR, query_list)
-            #print query
-
-#            enquire = xapian.Enquire(self.db.xapiandb)
-#            qp = xapian.QueryParser()
-#            qp.set_database(self.db.xapiandb)
-
-#            query = qp.parse_query(str(keyword))
-#            print "Parsed query is: %s"% str(query)
-
+        query_string = self.db.get_query_list_from_search_entry(str(keyword))
+        enquire = xapian.Enquire(self.db.xapiandb)
+        query = query_string[1]
         enquire.set_query(query)
         matches = enquire.get_mset(0, len(self.db))
 #        print "res len=",len(self.db),len(matches)
@@ -480,10 +445,10 @@ class Search:
                 pkgname = doc.get_data()
 
             if pkgname:
-                #check weather exist in the list
+                #check the pkgname exist in the list or not
                 try:
                     index = pkgnamelist.index(pkgname)
-                #not exist will raise ValueError
+                #not exist will raise ValueError and add the pkgname into pkgnamelist
                 except ValueError:
                     pkgnamelist.append(pkgname)
         
