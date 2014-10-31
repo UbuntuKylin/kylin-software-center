@@ -36,8 +36,8 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
-# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+# UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
 
 # add by kobe to format long text
@@ -74,7 +74,13 @@ class PkgStates:
     # this *needs* to be last (for test_appdetails.py) and means
     # something went wrong and we don't have a state for this PKG
     UNKNOWN,
-    ) = range(17)
+
+    RUN,
+    INSTALL,
+    UPDATE,
+    UNINSTALL,
+    NOTHING,
+    ) = range(22)
 
 
 
@@ -168,6 +174,10 @@ class Signals:
     show_login = SIGNAL("show-login")
     get_user_rating = SIGNAL("get-user-rating")
     unzip_img = SIGNAL("unzip-img")
+    mfb_click_run = SIGNAL("multifuncbtn-click-run")
+    mfb_click_install = SIGNAL("multifuncbtn-click-install")
+    mfb_click_update = SIGNAL("multifuncbtn-click-update")
+    mfb_click_uninstall = SIGNAL("multifuncbtn-click-uninstall")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

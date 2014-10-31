@@ -6,10 +6,10 @@
 # Copyright (C) 2013 National University of Defense Technology(NUDT) & Kylin Ltd
 
 # Author:
+#     Shine Huang<shenghuang@ubuntukylin.com>
 #     maclin <majun@ubuntukylin.com>
-#     Shine Huang<shenghuang@ubuntukylin.com>  
 # Maintainer:
-#     maclin <majun@ubuntukylin.com>
+#     Shine Huang<shenghuang@ubuntukylin.com>
 
 # This program is free software: you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 3, as published
@@ -25,19 +25,17 @@
 
 ### END LICENSE
 
-import urllib2
-import json
 import apt
-
+from utils import run
 from backend.ubuntu_sw import (SCREENSHOT_THUMB_URL,SCREENSHOT_LARGE_URL)
-from models.enums import UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH
+from models.enums import PkgStates,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH
 
-#This class is the abstraction of a
+
 class Application:
 
     # work type
     mark = ''
-    #
+
     def __init__(self, pkgname, displayname, category_name, apt_cache):
         if not pkgname:
             raise ValueError("Need either appname or pkgname or request")
@@ -74,11 +72,10 @@ class Application:
 
         self.install_date = ''  # the date first install this app, get from server
 
-    # add by kobe
+    # app work status this moment: installing, updating ...
     @property
     def status(self):
-        return "nothing"
-        # return self.init_status
+        return PkgStates.NOTHING
 
     @property
     def name(self):
@@ -132,6 +129,16 @@ class Application:
             return " "
 
     @property
+    def pkg_status(self):
+        if(self.is_installed == False):
+            return PkgStates.UNINSTALLED
+        else:
+            if(self.is_upgradable == False):
+                return PkgStates.INSTALLED
+            else:
+                return PkgStates.UPGRADABLE
+
+    @property
     def is_installed(self):
         return self.package.is_installed
 
@@ -152,6 +159,20 @@ class Application:
             return self.package.candidate.version
         except:
             return " "
+
+    @property
+    def is_runnable(self):
+        if(run.get_run_command(self.name) != ""):
+            return True
+        else:
+            return False
+
+    def run(self):
+        pro_times = run.judge_app_run_or_not(self.name)
+        if pro_times == 0 or pro_times == 1:
+            run.run_app(self.name)
+        else:
+            print self.name + " 已经在运行了"
 
     # get total download size include dependencies
     def get_total_size(self):

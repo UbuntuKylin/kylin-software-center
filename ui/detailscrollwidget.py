@@ -31,13 +31,15 @@ from ui.starwidget import StarWidget
 from ui.dynamicstarwidget import DynamicStarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
+from ui.multifunctionbtn import MultiFunctionBtn
 from ui.loadingdiv import *
 from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                         Signals,
                         AppActions,
-                        setLongTextToElideFormat)
+                        setLongTextToElideFormat,
+                        PkgStates)
 from utils import run
 from utils.debfile import DebFile
 from models.globals import Globals
@@ -67,6 +69,14 @@ class DetailScrollWidget(QScrollArea):
         # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
 
+        self.btns = MultiFunctionBtn(self.detailWidget)
+        self.btns.move(700, 24)
+
+        self.connect(self.btns,Signals.mfb_click_install,parent.slot_click_install)
+        self.connect(self.btns,Signals.mfb_click_uninstall,parent.slot_click_remove)
+        self.connect(self.btns,Signals.mfb_click_update,parent.slot_click_upgrade)
+
+
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
@@ -77,9 +87,9 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.bntSubmit.setFocusPolicy(Qt.NoFocus)
 
-        self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnUninstall.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnUninstall.setFocusPolicy(Qt.NoFocus)
         self.ui.btnSshotBack.setFocusPolicy(Qt.NoFocus)
         self.ui.btnSshotNext.setFocusPolicy(Qt.NoFocus)
         self.ui.reviewListWidget.setFocusPolicy(Qt.NoFocus)
@@ -90,9 +100,9 @@ class DetailScrollWidget(QScrollArea):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
-        self.ui.btnInstall.clicked.connect(self.slot_click_install)
-        self.ui.btnUpdate.clicked.connect(self.slot_click_upgrade)
-        self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
+        # self.ui.btnInstall.clicked.connect(self.slot_click_install)
+        # self.ui.btnUpdate.clicked.connect(self.slot_click_upgrade)
+        # self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
         self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
         self.ui.bntSubmit.clicked.connect(self.slot_submit_review)
@@ -190,9 +200,9 @@ class DetailScrollWidget(QScrollArea):
     def ui_init(self):
         self.ui = Ui_DetailWidget()
         self.ui.setupUi(self.detailWidget)
-        self.ui.btnInstall.setStyleSheet("QPushButton{font-size:15px;font-weight:bold;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
-        self.ui.btnUpdate.setStyleSheet("QPushButton{font-size:15px;background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
-        self.ui.btnUninstall.setStyleSheet("QPushButton{font-size:15px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
+        # self.ui.btnInstall.setStyleSheet("QPushButton{font-size:15px;font-weight:bold;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+        # self.ui.btnUpdate.setStyleSheet("QPushButton{font-size:15px;background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
+        # self.ui.btnUninstall.setStyleSheet("QPushButton{font-size:15px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
         self.ui.bntSubmit.setStyleSheet("QPushButton{background:#0fa2e8;border:1px solid #0f84bc;color:white;}QPushButton:hover{background-color:#14acf5;border:1px solid #0f84bc;color:white;}QPushButton:pressed{background-color:#0b95d7;border:1px solid #0479b1;color:white;}")
 
     def resize_(self, width, height):
@@ -221,14 +231,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.size_install.hide()
         self.ui.split2.hide()
 
-        # self.ui.btnUpdate.setText("不可用")
-        # self.ui.btnUninstall.setText("不可用")
-        # self.ui.btnUpdate.setEnabled(False)
-        # self.ui.btnUninstall.setEnabled(False)
-        # self.ui.btnUpdate.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-        # self.ui.btnUninstall.setStyleSheet("QPushButton{background-image:url('res/btn-notenable.png');border:0px;color:#9AA2AF;}")
-        self.ui.btnUpdate.setVisible(False)
-        self.ui.btnUninstall.setVisible(False)
+        # self.ui.btnUpdate.setVisible(False)
+        # self.ui.btnUninstall.setVisible(False)
 
         self.debfile = DebFile(path)
         self.app = self.debfile
@@ -254,9 +258,9 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnInstall.setText("无法安装")
             self.ui.btnInstall.setEnabled(False)
         #add by kobe
-        self.ui.btnInstall.setVisible(True)
-        self.ui.btnUpdate.setVisible(False)
-        self.ui.btnUninstall.setVisible(False)
+        # self.ui.btnInstall.setVisible(True)
+        # self.ui.btnUpdate.setVisible(False)
+        # self.ui.btnUninstall.setVisible(False)
 
         # self.show()
         self.mainwindow.ui.detailShellWidget.show()
@@ -288,6 +292,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.split2.show()
 
         self.app = app
+        self.btns.reset_btns(self.app, self.workType)
         self.ui.name.setText(app.name)
         self.ui.installedVersion.setText("当前版本: " + app.installed_version)
         self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
@@ -320,16 +325,9 @@ class DetailScrollWidget(QScrollArea):
             self.ui.size_install.setText("安装大小: " + str('%.2f'%(installedsizek/1024.0)) + " MB")
 
         self.ui.gradeText1.setText("我的评分: ")
-        # self.ui.gradeText2.setStyleSheet("QLabel{text-align:center;}")
         self.ui.gradeText2.setText((str(app.ratings_total)) + "人参加评分")
-        # self.ui.commentNumber.setText("共 " + str(app.ratings_total) + " 条评论")
-        # self.ui.gradeText3.setText("满分5分")
-        # self.ui.grade.setStyleSheet("QLabel{text-align:center;}")
 
-        # add by kobe
         averate_rate = str('%.1f' % app.ratings_average)
-        # self.ui.scorelabel.setText(str(app.ratings_average))
-        # self.ui.grade.setText(str(app.ratings_average))
         self.ui.scorelabel.setText(averate_rate)
         self.ui.grade.setText(averate_rate)
 
@@ -340,112 +338,137 @@ class DetailScrollWidget(QScrollArea):
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
         self.star.move(70, 584)
         #我的评分
-        # self.ratingstar = StarWidget('big', app.ratings_average, self.detailWidget)
-        # self.ratingstar.move(710, 575)
         self.ratingstar = DynamicStarWidget(self.detailWidget)
         self.ratingstar.move(620, 575)
         self.connect(self.ratingstar, Signals.get_user_rating,self.slot_submit_rating)
 
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
-        if btntext == "安装":
+        if app.status == PkgStates.INSTALL:
+            self.btns.reset_btns(app, "install")
             self.ui.status.hide()
-            self.ui.btnInstall.setText("安装")
-            self.ui.btnUpdate.setText("升级")
-            self.ui.btnUninstall.setText("卸载")
-            self.ui.btnInstall.setEnabled(True)
-            self.ui.btnUpdate.setEnabled(False)
-            self.ui.btnUninstall.setEnabled(False)
-            self.ui.btnInstall.setVisible(True)
-            self.ui.btnUpdate.setVisible(False)
-            self.ui.btnUninstall.setVisible(False)
-        elif btntext == "升级":
+        elif app.status == PkgStates.UNINSTALL:
+            self.btns.reset_btns(app, "uninstall")
             self.ui.status.show()
-            self.ui.btnInstall.setText("安装")
-            self.ui.btnUpdate.setText("升级")
-            self.ui.btnUninstall.setText("卸载")
-            self.ui.btnInstall.setEnabled(False)
-            self.ui.btnUpdate.setEnabled(True)
-            self.ui.btnUninstall.setEnabled(False)
-            self.ui.btnInstall.setVisible(False)
-            self.ui.btnUpdate.setVisible(True)
-            self.ui.btnUninstall.setVisible(False)
-        elif btntext == "卸载":
+        elif app.status == PkgStates.UPDATE:
+            self.btns.reset_btns(app, "update")
             self.ui.status.show()
-            self.ui.btnInstall.setText("安装")
-            self.ui.btnUpdate.setText("升级")
-            self.ui.btnUninstall.setText("卸载")
-            self.ui.btnInstall.setEnabled(False)
-            self.ui.btnUpdate.setEnabled(False)
-            self.ui.btnUninstall.setEnabled(True)
-            self.ui.btnInstall.setVisible(False)
-            self.ui.btnUpdate.setVisible(False)
-            self.ui.btnUninstall.setVisible(True)
-        else:
-            if app.status == "uninstalling":
-                self.ui.btnInstall.setEnabled(False)
-                self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnInstall.setVisible(False)
-                self.ui.btnUpdate.setVisible(False)
-                self.ui.btnUninstall.setVisible(True)
-                self.ui.btnInstall.setText("安装")
-                self.ui.btnUpdate.setText("升级")
-                self.ui.btnUninstall.setText("正在卸载")
-            elif app.status == "installing":
-                self.ui.btnInstall.setEnabled(False)
-                self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnInstall.setVisible(True)
-                self.ui.btnUpdate.setVisible(False)
-                self.ui.btnUninstall.setVisible(False)
-                self.ui.btnInstall.setText("正在安装")
-                self.ui.btnUpdate.setText("升级")
-                self.ui.btnUninstall.setText("卸载")
-            elif app.status == "upgrading":
-                self.ui.btnInstall.setEnabled(False)
-                self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnInstall.setVisible(False)
-                self.ui.btnUpdate.setVisible(True)
-                self.ui.btnUninstall.setVisible(False)
-                self.ui.btnInstall.setText("安装")
-                self.ui.btnUpdate.setText("正在升级")
-                self.ui.btnUninstall.setText("卸载")
-            else:
-                if(app.is_installed):
-                    self.ui.status.show()
-                    if(run.get_run_command(self.app.name) == ""):
-                        self.ui.btnInstall.setEnabled(False)
-                        self.ui.btnUpdate.setEnabled(False)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(True)
-                        self.ui.btnUpdate.setVisible(False)
-                        self.ui.btnUninstall.setVisible(False)
-                        self.ui.btnInstall.setText("已安装")
-                        self.ui.btnUpdate.setText("升级")
-                        self.ui.btnUninstall.setText("卸载")
-                    else:
-                        self.ui.btnInstall.setText("启动")
-                        self.ui.btnUpdate.setText("升级")
-                        self.ui.btnUninstall.setText("卸载")
-                        self.ui.btnInstall.setEnabled(True)
-                        self.ui.btnUpdate.setEnabled(False)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(True)
-                        self.ui.btnUpdate.setVisible(False)
-                        self.ui.btnUninstall.setVisible(False)
-                else:
-                    self.ui.status.hide()
-                    self.ui.btnInstall.setText("安装")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                    self.ui.btnInstall.setEnabled(True)
-                    self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUninstall.setEnabled(False)
-                    self.ui.btnInstall.setVisible(True)
-                    self.ui.btnUpdate.setVisible(False)
-                    self.ui.btnUninstall.setVisible(False)
+        elif app.status == PkgStates.INSTALLING:#disabled all buttons
+            self.btns.reset_btns(app, "install")
+            self.ui.status.show()
+        elif app.status == PkgStates.REMOVING:#disabled all buttons
+            self.btns.reset_btns(app, "uninstall")
+            self.ui.status.show()
+        elif app.status == PkgStates.UPGRADING:#disabled all buttons
+            self.btns.reset_btns(app, "update")
+            self.ui.status.show()
+
+        # if btntext == "安装":
+        #     self.btns.reset_btns(app, "install")
+        #     self.ui.status.hide()
+            # self.ui.btnInstall.setText("安装")
+            # self.ui.btnUpdate.setText("升级")
+            # self.ui.btnUninstall.setText("卸载")
+            # self.ui.btnInstall.setEnabled(True)
+            # self.ui.btnUpdate.setEnabled(False)
+            # self.ui.btnUninstall.setEnabled(False)
+            # self.ui.btnInstall.setVisible(True)
+            # self.ui.btnUpdate.setVisible(False)
+            # self.ui.btnUninstall.setVisible(False)
+        # elif btntext == "升级":
+        #     self.btns.reset_btns(app, "update")
+        #     self.ui.status.show()
+            # self.ui.btnInstall.setText("安装")
+            # self.ui.btnUpdate.setText("升级")
+            # self.ui.btnUninstall.setText("卸载")
+            # self.ui.btnInstall.setEnabled(False)
+            # self.ui.btnUpdate.setEnabled(True)
+            # self.ui.btnUninstall.setEnabled(False)
+            # self.ui.btnInstall.setVisible(False)
+            # self.ui.btnUpdate.setVisible(True)
+            # self.ui.btnUninstall.setVisible(False)
+        # elif btntext == "卸载":
+        #     self.btns.reset_btns(app, "uninstall")
+        #     self.ui.status.show()
+            # self.ui.btnInstall.setText("安装")
+            # self.ui.btnUpdate.setText("升级")
+            # self.ui.btnUninstall.setText("卸载")
+            # self.ui.btnInstall.setEnabled(False)
+            # self.ui.btnUpdate.setEnabled(False)
+            # self.ui.btnUninstall.setEnabled(True)
+            # self.ui.btnInstall.setVisible(False)
+            # self.ui.btnUpdate.setVisible(False)
+            # self.ui.btnUninstall.setVisible(True)
+        # else:
+        #     if app.status == "uninstalling":
+        #         pass
+                # self.ui.btnInstall.setEnabled(False)
+                # self.ui.btnUpdate.setEnabled(False)
+                # self.ui.btnUninstall.setEnabled(False)
+                # self.ui.btnInstall.setVisible(False)
+                # self.ui.btnUpdate.setVisible(False)
+                # self.ui.btnUninstall.setVisible(True)
+                # self.ui.btnInstall.setText("安装")
+                # self.ui.btnUpdate.setText("升级")
+                # self.ui.btnUninstall.setText("正在卸载")
+            # elif app.status == "installing":
+            #     pass
+                # self.ui.btnInstall.setEnabled(False)
+                # self.ui.btnUpdate.setEnabled(False)
+                # self.ui.btnUninstall.setEnabled(False)
+                # self.ui.btnInstall.setVisible(True)
+                # self.ui.btnUpdate.setVisible(False)
+                # self.ui.btnUninstall.setVisible(False)
+                # self.ui.btnInstall.setText("正在安装")
+                # self.ui.btnUpdate.setText("升级")
+                # self.ui.btnUninstall.setText("卸载")
+            # elif app.status == "upgrading":
+            #     pass
+                # self.ui.btnInstall.setEnabled(False)
+                # self.ui.btnUpdate.setEnabled(False)
+                # self.ui.btnUninstall.setEnabled(False)
+                # self.ui.btnInstall.setVisible(False)
+                # self.ui.btnUpdate.setVisible(True)
+                # self.ui.btnUninstall.setVisible(False)
+                # self.ui.btnInstall.setText("安装")
+                # self.ui.btnUpdate.setText("正在升级")
+                # self.ui.btnUninstall.setText("卸载")
+            # else:
+            #     if(app.is_installed):
+            #         self.ui.status.show()
+            #         if(run.get_run_command(self.app.name) == ""):
+            #             pass
+                        # self.ui.btnInstall.setEnabled(False)
+                        # self.ui.btnUpdate.setEnabled(False)
+                        # self.ui.btnUninstall.setEnabled(False)
+                        # self.ui.btnInstall.setVisible(True)
+                        # self.ui.btnUpdate.setVisible(False)
+                        # self.ui.btnUninstall.setVisible(False)
+                        # self.ui.btnInstall.setText("已安装")
+                        # self.ui.btnUpdate.setText("升级")
+                        # self.ui.btnUninstall.setText("卸载")
+                    # else:
+                    #     pass
+                        # self.ui.btnInstall.setText("启动")
+                        # self.ui.btnUpdate.setText("升级")
+                        # self.ui.btnUninstall.setText("卸载")
+                        # self.ui.btnInstall.setEnabled(True)
+                        # self.ui.btnUpdate.setEnabled(False)
+                        # self.ui.btnUninstall.setEnabled(False)
+                        # self.ui.btnInstall.setVisible(True)
+                        # self.ui.btnUpdate.setVisible(False)
+                        # self.ui.btnUninstall.setVisible(False)
+                # else:
+                #     self.ui.status.hide()
+                    # self.ui.btnInstall.setText("安装")
+                    # self.ui.btnUpdate.setText("升级")
+                    # self.ui.btnUninstall.setText("卸载")
+                    # self.ui.btnInstall.setEnabled(True)
+                    # self.ui.btnUpdate.setEnabled(False)
+                    # self.ui.btnUninstall.setEnabled(False)
+                    # self.ui.btnInstall.setVisible(True)
+                    # self.ui.btnUpdate.setVisible(False)
+                    # self.ui.btnUninstall.setVisible(False)
 
         self.mainwindow.ui.detailShellWidget.show()
 
@@ -506,46 +529,47 @@ class DetailScrollWidget(QScrollArea):
             self.bigsshot.move_to_center()
             self.bigsshot.show()
 
-    def slot_click_install(self):
-        if(self.ui.btnInstall.text() == "启动"):
-            pro_times = run.judge_app_run_or_not(self.app.name)
-            if pro_times == 0 or pro_times == 1:
-                run.run_app(self.app.name)
-            else:
-                word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
-                if(word_len > 31):
-                    self.mainwindow.messageBox.alert_msg(self.app.name + "\n已经运行")
-                else:
-                    self.mainwindow.messageBox.alert_msg(self.app.name + "已经运行")
+    # def slot_click_install(self):
+    #     pass
+        # if(self.ui.btnInstall.text() == "启动"):
+        #     pro_times = run.judge_app_run_or_not(self.app.name)
+        #     if pro_times == 0 or pro_times == 1:
+        #         run.run_app(self.app.name)
+        #     else:
+        #         word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
+        #         if(word_len > 31):
+        #             self.mainwindow.messageBox.alert_msg(self.app.name + "\n已经运行")
+        #         else:
+        #             self.mainwindow.messageBox.alert_msg(self.app.name + "已经运行")
+        #
+        # elif(self.ui.btnInstall.text() == "安装此包"):
+        #     self.app.status = "installing"
+        #     self.emit(Signals.install_debfile, self.debfile)
+            # self.ui.btnInstall.setText("正在安装")
+            # self.ui.btnInstall.setEnabled(False)
+        # else:
+        #     self.app.status = "installing"
+        #     self.emit(Signals.install_app, self.app)
+            # self.ui.btnInstall.setText("正在安装")
+            # self.ui.btnInstall.setEnabled(False)
+            # self.ui.btnUpdate.setEnabled(False)
+            # self.ui.btnUninstall.setEnabled(False)
 
-        elif(self.ui.btnInstall.text() == "安装此包"):
-            self.app.status = "installing"
-            self.emit(Signals.install_debfile, self.debfile)
-            self.ui.btnInstall.setText("正在安装")
-            self.ui.btnInstall.setEnabled(False)
-        else:
-            self.app.status = "installing"
-            self.emit(Signals.install_app, self.app)
-            self.ui.btnInstall.setText("正在安装")
-            self.ui.btnInstall.setEnabled(False)
-            self.ui.btnUpdate.setEnabled(False)
-            self.ui.btnUninstall.setEnabled(False)
+    # def slot_click_upgrade(self):
+    #     self.app.status = "upgrading"
+    #     self.emit(Signals.upgrade_app, self.app)
+        # self.ui.btnUpdate.setText("正在升级")
+        # self.ui.btnInstall.setEnabled(False)
+        # self.ui.btnUpdate.setEnabled(False)
+        # self.ui.btnUninstall.setEnabled(False)
 
-    def slot_click_upgrade(self):
-        self.app.status = "upgrading"
-        self.emit(Signals.upgrade_app, self.app)
-        self.ui.btnUpdate.setText("正在升级")
-        self.ui.btnInstall.setEnabled(False)
-        self.ui.btnUpdate.setEnabled(False)
-        self.ui.btnUninstall.setEnabled(False)
-
-    def slot_click_uninstall(self):
-        self.app.status = "uninstalling"
-        self.emit(Signals.remove_app, self.app)
-        self.ui.btnUninstall.setText("正在卸载")
-        self.ui.btnInstall.setEnabled(False)
-        self.ui.btnUpdate.setEnabled(False)
-        self.ui.btnUninstall.setEnabled(False)
+    # def slot_click_uninstall(self):
+    #     self.app.status = "uninstalling"
+    #     self.emit(Signals.remove_app, self.app)
+        # self.ui.btnUninstall.setText("正在卸载")
+        # self.ui.btnInstall.setEnabled(False)
+        # self.ui.btnUpdate.setEnabled(False)
+        # self.ui.btnUninstall.setEnabled(False)
 
     def slot_submit_review(self):
         if(Globals.USER != ''):
@@ -611,114 +635,43 @@ class DetailScrollWidget(QScrollArea):
         if self.app is None:
             return
 
+
+
         if self.app.name == pkgname:
-            self.app.status = "nothing"
+            self.app.status = PkgStates.NOTHING
             self.ui.status.show()
 
             if action == AppActions.INSTALLDEBFILE:
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setEnabled(False)
-                    self.ui.btnInstall.setText("已安装")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                else:
-                    self.ui.btnInstall.setEnabled(True)
-                    self.ui.btnInstall.setText("启动")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnInstall.setVisible(True)
-                self.ui.btnUpdate.setVisible(False)
-                self.ui.btnUninstall.setVisible(False)
+                self.btns.reset_btns(self.app, PkgStates.INSTALL)
+                # if(run.get_run_command(self.app.name) == ""):
+                #     pass
+                    # self.ui.btnInstall.setEnabled(False)
+                    # self.ui.btnInstall.setText("已安装")
+                    # self.ui.btnUpdate.setText("升级")
+                    # self.ui.btnUninstall.setText("卸载")
+                # else:
+                #     pass
+                    # self.ui.btnInstall.setEnabled(True)
+                    # self.ui.btnInstall.setText("启动")
+                    # self.ui.btnUpdate.setText("升级")
+                    # self.ui.btnUninstall.setText("卸载")
+                # self.ui.btnUpdate.setEnabled(False)
+                # self.ui.btnUninstall.setEnabled(False)
+                # self.ui.btnInstall.setVisible(True)
+                # self.ui.btnUpdate.setVisible(False)
+                # self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.INSTALL:
                 if (self.workType == "unpage") or (self.workType == "searchpage" and self.preType == "unpage"): ##add by zhangxin for bug 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
-                    self.ui.btnInstall.setText("已安装")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                    self.ui.btnInstall.setEnabled(False)
-                    self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUninstall.setEnabled(True)
-                    self.ui.btnInstall.setVisible(False)
-                    self.ui.btnUpdate.setVisible(False)
-                    self.ui.btnUninstall.setVisible(True)
+                    self.btns.reset_btns(self.app, PkgStates.UNINSTALL)
                 else:
-                    if(run.get_run_command(self.app.name) == ""):
-                        self.ui.btnInstall.setText("已安装")
-                        self.ui.btnUpdate.setText("升级")
-                        self.ui.btnUninstall.setText("卸载")
-                        self.ui.btnInstall.setEnabled(False)
-                        self.ui.btnUpdate.setEnabled(False)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(True)
-                        self.ui.btnUpdate.setVisible(False)
-                        self.ui.btnUninstall.setVisible(False)
-                    else:
-                        if self.app.is_upgradable:
-                            self.ui.btnInstall.setText("安装")
-                            self.ui.btnUpdate.setText("升级")
-                            self.ui.btnUninstall.setText("卸载")
-                            self.ui.btnInstall.setEnabled(False)
-                            self.ui.btnUpdate.setEnabled(True)
-                            self.ui.btnUninstall.setEnabled(False)
-                            self.ui.btnInstall.setVisible(False)
-                            self.ui.btnUpdate.setVisible(True)
-                            self.ui.btnUninstall.setVisible(False)
-                        else:
-                            self.ui.btnInstall.setText("启动")
-                            self.ui.btnUpdate.setText("不可升级")
-                            self.ui.btnUninstall.setText("卸载")
-                            self.ui.btnInstall.setEnabled(True)
-                            self.ui.btnUpdate.setEnabled(False)
-                            self.ui.btnUninstall.setEnabled(False)
-                            self.ui.btnInstall.setVisible(True)
-                            self.ui.btnUpdate.setVisible(False)
-                            self.ui.btnUninstall.setVisible(False)
+                    pass
 
             elif action == AppActions.REMOVE:
-                self.ui.btnInstall.setText("安装")
-                self.ui.btnUpdate.setText("不可升级")
-                self.ui.btnUninstall.setText("卸载")
-                self.ui.btnInstall.setEnabled(True)
-                self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(False)
-                self.ui.btnInstall.setVisible(True)
-                self.ui.btnUpdate.setVisible(False)
-                self.ui.btnUninstall.setVisible(False)
+                self.btns.reset_btns(self.app, PkgStates.INSTALL)
 
             elif action == AppActions.UPGRADE:
-                if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setText("已安装")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                    self.ui.btnInstall.setEnabled(False)
-                    self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUninstall.setEnabled(False)
-                    self.ui.btnInstall.setVisible(True)
-                    self.ui.btnUpdate.setVisible(False)
-                    self.ui.btnUninstall.setVisible(False)
-                else:
-                    if self.app.is_upgradable:
-                        self.ui.btnInstall.setText("安装")
-                        self.ui.btnUpdate.setText("升级")
-                        self.ui.btnUninstall.setText("卸载")
-                        self.ui.btnInstall.setEnabled(False)
-                        self.ui.btnUpdate.setEnabled(True)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(False)
-                        self.ui.btnUpdate.setVisible(True)
-                        self.ui.btnUninstall.setVisible(False)
-                    else:
-                        self.ui.btnInstall.setText("启动")
-                        self.ui.btnUpdate.setText("不可升级")
-                        self.ui.btnUninstall.setText("卸载")
-                        self.ui.btnInstall.setEnabled(True)
-                        self.ui.btnUpdate.setEnabled(False)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(True)
-                        self.ui.btnUpdate.setVisible(False)
-                        self.ui.btnUninstall.setVisible(False)
+                self.btns.reset_btns(self.app, PkgStates.UPDATE)
 
     def slot_work_cancel(self, pkgname, action):
         if self.app is None:
@@ -729,17 +682,11 @@ class DetailScrollWidget(QScrollArea):
             self.ui.status.show()
 
             if action == AppActions.INSTALL:
-                if self.app.is_upgradable:
-                    self.ui.btnInstall.setText("安装")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                    self.ui.btnInstall.setEnabled(False)
-                    self.ui.btnUpdate.setEnabled(True)
-                    self.ui.btnUninstall.setEnabled(False)
-                    self.ui.btnInstall.setVisible(False)
-                    self.ui.btnUpdate.setVisible(True)
-                    self.ui.btnUninstall.setVisible(False)
-                else:
+                # if self.app.is_upgradable:
+                    # self.btns.reset_btns(self.app, "update")
+
+                # else:
+                    # pass
                     self.ui.btnInstall.setText("安装")
                     self.ui.btnUpdate.setText("不可升级")
                     self.ui.btnUninstall.setText("卸载")
@@ -751,48 +698,52 @@ class DetailScrollWidget(QScrollArea):
                     self.ui.btnUninstall.setVisible(False)
 
             elif action == AppActions.REMOVE:
-                self.ui.btnInstall.setText("安装")
-                self.ui.btnUpdate.setText("升级")
-                self.ui.btnUninstall.setText("卸载")
-                self.ui.btnInstall.setEnabled(False)
-                self.ui.btnUpdate.setEnabled(False)
-                self.ui.btnUninstall.setEnabled(True)
-                self.ui.btnInstall.setVisible(False)
-                self.ui.btnUpdate.setVisible(False)
-                self.ui.btnUninstall.setVisible(True)
+                pass
+                # self.ui.btnInstall.setText("安装")
+                # self.ui.btnUpdate.setText("升级")
+                # self.ui.btnUninstall.setText("卸载")
+                # self.ui.btnInstall.setEnabled(False)
+                # self.ui.btnUpdate.setEnabled(False)
+                # self.ui.btnUninstall.setEnabled(True)
+                # self.ui.btnInstall.setVisible(False)
+                # self.ui.btnUpdate.setVisible(False)
+                # self.ui.btnUninstall.setVisible(True)
 
             elif action == AppActions.UPGRADE:
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btnInstall.setText("已安装")
-                    self.ui.btnUpdate.setText("升级")
-                    self.ui.btnUninstall.setText("卸载")
-                    self.ui.btnInstall.setEnabled(False)
-                    self.ui.btnUpdate.setEnabled(False)
-                    self.ui.btnUninstall.setEnabled(False)
-                    self.ui.btnInstall.setVisible(True)
-                    self.ui.btnUpdate.setVisible(False)
-                    self.ui.btnUninstall.setVisible(False)
+                    pass
+                    # self.ui.btnInstall.setText("已安装")
+                    # self.ui.btnUpdate.setText("升级")
+                    # self.ui.btnUninstall.setText("卸载")
+                    # self.ui.btnInstall.setEnabled(False)
+                    # self.ui.btnUpdate.setEnabled(False)
+                    # self.ui.btnUninstall.setEnabled(False)
+                    # self.ui.btnInstall.setVisible(True)
+                    # self.ui.btnUpdate.setVisible(False)
+                    # self.ui.btnUninstall.setVisible(False)
                 else:
                     if self.app.is_upgradable:
-                        self.ui.btnInstall.setText("安装")
-                        self.ui.btnUpdate.setText("升级")
-                        self.ui.btnUninstall.setText("卸载")
-                        self.ui.btnInstall.setEnabled(False)
-                        self.ui.btnUpdate.setEnabled(True)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(False)
-                        self.ui.btnUpdate.setVisible(True)
-                        self.ui.btnUninstall.setVisible(False)
+                        pass
+                        # self.ui.btnInstall.setText("安装")
+                        # self.ui.btnUpdate.setText("升级")
+                        # self.ui.btnUninstall.setText("卸载")
+                        # self.ui.btnInstall.setEnabled(False)
+                        # self.ui.btnUpdate.setEnabled(True)
+                        # self.ui.btnUninstall.setEnabled(False)
+                        # self.ui.btnInstall.setVisible(False)
+                        # self.ui.btnUpdate.setVisible(True)
+                        # self.ui.btnUninstall.setVisible(False)
                     else:
-                        self.ui.btnInstall.setText("启动")
-                        self.ui.btnUpdate.setText("不可升级")
-                        self.ui.btnUninstall.setText("卸载")
-                        self.ui.btnInstall.setEnabled(True)
-                        self.ui.btnUpdate.setEnabled(False)
-                        self.ui.btnUninstall.setEnabled(False)
-                        self.ui.btnInstall.setVisible(True)
-                        self.ui.btnUpdate.setVisible(False)
-                        self.ui.btnUninstall.setVisible(False)
+                        pass
+                        # self.ui.btnInstall.setText("启动")
+                        # self.ui.btnUpdate.setText("不可升级")
+                        # self.ui.btnUninstall.setText("卸载")
+                        # self.ui.btnInstall.setEnabled(True)
+                        # self.ui.btnUpdate.setEnabled(False)
+                        # self.ui.btnUninstall.setEnabled(False)
+                        # self.ui.btnInstall.setVisible(True)
+                        # self.ui.btnUpdate.setVisible(False)
+                        # self.ui.btnUninstall.setVisible(False)
 
     def slot_scroll_end(self, now):
         # current page not ready
