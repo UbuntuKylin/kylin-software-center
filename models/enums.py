@@ -165,6 +165,10 @@ class Signals:
     show_login = SIGNAL("show-login")
     get_user_rating = SIGNAL("get-user-rating")
     unzip_img = SIGNAL("unzip-img")
+    mfb_click_run = SIGNAL("multifuncbtn-click-run")
+    mfb_click_install = SIGNAL("multifuncbtn-click-install")
+    mfb_click_update = SIGNAL("multifuncbtn-click-update")
+    mfb_click_uninstall = SIGNAL("multifuncbtn-click-uninstall")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

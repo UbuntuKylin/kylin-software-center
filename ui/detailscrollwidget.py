@@ -31,6 +31,7 @@ from ui.starwidget import StarWidget
 from ui.dynamicstarwidget import DynamicStarWidget
 from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
+from ui.multifunctionbtn import MultiFunctionBtn
 from ui.loadingdiv import *
 from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         UBUNTUKYLIN_RES_ICON_PATH,
@@ -66,6 +67,9 @@ class DetailScrollWidget(QScrollArea):
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
+
+        self.btns = MultiFunctionBtn(self.detailWidget)
+        self.btns.move(700, 24)
 
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
@@ -288,6 +292,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.split2.show()
 
         self.app = app
+        self.btns.reset_btns(self.app, self.workType)
         self.ui.name.setText(app.name)
         self.ui.installedVersion.setText("当前版本: " + app.installed_version)
         self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
@@ -349,6 +354,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
         if btntext == "安装":
+            self.btns.reset_btns(app, "install")
             self.ui.status.hide()
             self.ui.btnInstall.setText("安装")
             self.ui.btnUpdate.setText("升级")
@@ -360,6 +366,7 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnUpdate.setVisible(False)
             self.ui.btnUninstall.setVisible(False)
         elif btntext == "升级":
+            self.btns.reset_btns(app, "update")
             self.ui.status.show()
             self.ui.btnInstall.setText("安装")
             self.ui.btnUpdate.setText("升级")
@@ -371,6 +378,7 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnUpdate.setVisible(True)
             self.ui.btnUninstall.setVisible(False)
         elif btntext == "卸载":
+            self.btns.reset_btns(app, "uninstall")
             self.ui.status.show()
             self.ui.btnInstall.setText("安装")
             self.ui.btnUpdate.setText("升级")

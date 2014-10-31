@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MultiFuncBtn</class>
+ <widget class="QWidget" name="MultiFuncBtn">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>148</width>
+    <height>40</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="btnRun">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>148</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>启动</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnInstall">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>41</y>
+     <width>148</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>安装</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnUpdate">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>82</y>
+     <width>148</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>升级</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnUninstall">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>123</y>
+     <width>148</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>卸载</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

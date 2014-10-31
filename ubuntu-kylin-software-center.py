@@ -779,110 +779,122 @@ class SoftwareCenter(QMainWindow):
         Globals.MAIN_HEIGHT = re.size().height()
 
         if(re.size().width() != 0):
-            # universal job
-            self.ui.navWidget.resize(self.ui.navWidget.width(), Globals.MAIN_HEIGHT)
-            self.ui.btnTask.move(self.ui.btnTask.x(), self.ui.navWidget.height() - self.ui.btnTask.height())
-            self.ui.rightWidget.resize(Globals.MAIN_WIDTH - 80, Globals.MAIN_HEIGHT)
-
-            self.ui.headerWidget.resize(Globals.MAIN_WIDTH - 80 - 20 * 2, self.ui.headerWidget.height())
-            self.ui.headercw1.move(self.ui.headerWidget.width() - self.ui.headercw1.width(), 0)
-
-            self.ui.homepageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-            self.ui.allWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-            self.ui.upWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-            self.ui.unWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-            self.ui.winpageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-            self.ui.searchWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-            self.ui.userAppListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-
-            self.ui.rankWidget.move(self.ui.homepageWidget.width() - self.ui.rankWidget.width() - 20, self.ui.rankWidget.y())
-            self.ui.recommendWidget.resize(self.ui.rankWidget.x() - 20, self.ui.recommendWidget.height())
-
-            self.ui.homecw1.move(self.ui.homepageWidget.width() - self.ui.homecw1.width(), self.ui.homecw1.y())
-            self.ui.allcw1.move(self.ui.allWidget.width() - self.ui.allcw1.width(), self.ui.allcw1.y())
-            self.ui.upcw1.move(self.ui.upWidget.width() - self.ui.upcw1.width(), self.ui.upcw1.y())
-            self.ui.uncw1.move(self.ui.unWidget.width() - self.ui.uncw1.width(), self.ui.uncw1.y())
-            self.ui.wincw1.move(self.ui.winpageWidget.width() - self.ui.wincw1.width(), self.ui.wincw1.y())
-            self.ui.searchcw1.move(self.ui.searchWidget.width() - self.ui.searchcw1.width(), self.ui.searchcw1.y())
-            self.ui.uacw1.move(self.ui.userAppListWidget.width() - self.ui.uacw1.width(), self.ui.uacw1.y())
-            self.ui.btnInstallAll.move(self.ui.uacw1.x() - self.ui.btnInstallAll.width() - 10, self.ui.btnInstallAll.y())
-
-            self.ui.allline.resize(self.ui.allWidget.width() - 20, self.ui.allline.height())
-            self.ui.upline.resize(self.ui.upWidget.width() - 20, self.ui.upline.height())
-            self.ui.unline.resize(self.ui.unWidget.width() - 20, self.ui.unline.height())
-            self.ui.winline.resize(self.ui.winpageWidget.width() - 20, self.ui.winline.height())
-            self.ui.searchline.resize(self.ui.searchWidget.width() - 20, self.ui.searchline.height())
-            self.ui.ualine.resize(self.ui.userAppListWidget.width() - 20, self.ui.ualine.height())
-            self.ui.homeline1.resize(self.ui.recommendWidget.width(), self.ui.homeline1.height())
-
-            self.ui.virtuallabel.resize(self.ui.homepageWidget.width(), self.ui.virtuallabel.height())
-            self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
-
-            # ads widget
-            self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
-
-            # detail widget
-            self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
-            self.detailScrollWidget.resize(self.detailScrollWidget.width(), self.ui.detailShellWidget.height())
-            self.detailScrollWidget.move((self.ui.detailShellWidget.width() / 2 - self.detailScrollWidget.detailWidget.width() / 2), self.detailScrollWidget.y())
-
-            # task widget
-            self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.height())
-            self.ui.taskListWidget.resize(self.ui.taskListWidget.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
-            self.ui.taskBottomWidget.move(self.ui.taskBottomWidget.x(), self.ui.taskWidget.height() - self.ui.taskBottomWidget.height())
-
-            # resize, recalculate, refill the card widgets
-            self.allListWidget.setGeometry(0, 50, self.ui.allWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.allWidget.height() - 50 - 6)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-            self.allListWidget.calculate_software_step_num()
-            if(self.allListWidget.count() != 0 and self.allListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                self.allListWidget.clear()
-                self.show_more_software(self.allListWidget)
-            self.allListWidget.reload_cards()
-
-            self.upListWidget.setGeometry(0, 50, self.ui.upWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.upWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-            if(self.upListWidget.count() != 0 and self.upListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                self.upListWidget.clear()
-                self.show_more_software(self.upListWidget)
-            self.upListWidget.reload_cards()
-
-            self.unListWidget.setGeometry(0, 50, self.ui.unWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.unWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-            if(self.unListWidget.count() != 0 and self.unListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                self.unListWidget.clear()
-                self.show_more_software(self.unListWidget)
-            self.unListWidget.reload_cards()
-
-            self.searchListWidget.setGeometry(0, 50, self.ui.searchWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.searchWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-            if(self.searchListWidget.count() != 0 and self.searchListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                self.searchListWidget.clear()
-                self.show_more_search_result(self.searchListWidget)
-            self.searchListWidget.reload_cards()
-
-            self.userAppListWidget.setGeometry(0, 50, self.ui.userAppListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userAppListWidget.height() - 50)
-            self.userAppListWidget.reload_cards()
-
-            self.winListWidget.setGeometry(0, 50, self.ui.winpageWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.winpageWidget.height() - 50)
-            self.winListWidget.reload_cards()
-
-            self.recommendListWidget.setGeometry(0, 23, self.ui.recommendWidget.width(), self.ui.recommendWidget.height() - 23)
-            self.recommendListWidget.reload_cards()
-
-            # msg box
-            self.messageBox.re_move()
-
-            # loading div
-            self.loadingDiv.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
-
-            # corner
-            self.resizeCorner.move(self.ui.centralwidget.width() - 16, self.ui.centralwidget.height() - 16)
-
-            # max
-            if(self.isMaximized() == True):
-                self.ui.btnMax.hide()
-                self.ui.btnNormal.show()
-            # normal
+            # cannot resize more smaller, resize back
+            if(re.size().width() < Globals.MAIN_WIDTH_NORMAL):
+                if(re.size().height() < Globals.MAIN_HEIGHT_NORMAL):
+                    self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
+                else:
+                    self.resize(Globals.MAIN_WIDTH_NORMAL, re.size().height())
             else:
-                self.ui.btnMax.show()
-                self.ui.btnNormal.hide()
+                if(re.size().height() < Globals.MAIN_HEIGHT_NORMAL):
+                    self.resize(re.size().width(), Globals.MAIN_HEIGHT_NORMAL)
+                else:
+                    # real work after resize
+
+                    # universal job
+                    self.ui.navWidget.resize(self.ui.navWidget.width(), Globals.MAIN_HEIGHT)
+                    self.ui.btnTask.move(self.ui.btnTask.x(), self.ui.navWidget.height() - self.ui.btnTask.height())
+                    self.ui.rightWidget.resize(Globals.MAIN_WIDTH - 80, Globals.MAIN_HEIGHT)
+
+                    self.ui.headerWidget.resize(Globals.MAIN_WIDTH - 80 - 20 * 2, self.ui.headerWidget.height())
+                    self.ui.headercw1.move(self.ui.headerWidget.width() - self.ui.headercw1.width(), 0)
+
+                    self.ui.homepageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.allWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.upWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.unWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.winpageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.searchWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.userAppListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+
+                    self.ui.rankWidget.move(self.ui.homepageWidget.width() - self.ui.rankWidget.width() - 20, self.ui.rankWidget.y())
+                    self.ui.recommendWidget.resize(self.ui.rankWidget.x() - 20, self.ui.recommendWidget.height())
+
+                    self.ui.homecw1.move(self.ui.homepageWidget.width() - self.ui.homecw1.width(), self.ui.homecw1.y())
+                    self.ui.allcw1.move(self.ui.allWidget.width() - self.ui.allcw1.width(), self.ui.allcw1.y())
+                    self.ui.upcw1.move(self.ui.upWidget.width() - self.ui.upcw1.width(), self.ui.upcw1.y())
+                    self.ui.uncw1.move(self.ui.unWidget.width() - self.ui.uncw1.width(), self.ui.uncw1.y())
+                    self.ui.wincw1.move(self.ui.winpageWidget.width() - self.ui.wincw1.width(), self.ui.wincw1.y())
+                    self.ui.searchcw1.move(self.ui.searchWidget.width() - self.ui.searchcw1.width(), self.ui.searchcw1.y())
+                    self.ui.uacw1.move(self.ui.userAppListWidget.width() - self.ui.uacw1.width(), self.ui.uacw1.y())
+                    self.ui.btnInstallAll.move(self.ui.uacw1.x() - self.ui.btnInstallAll.width() - 10, self.ui.btnInstallAll.y())
+
+                    self.ui.allline.resize(self.ui.allWidget.width() - 20, self.ui.allline.height())
+                    self.ui.upline.resize(self.ui.upWidget.width() - 20, self.ui.upline.height())
+                    self.ui.unline.resize(self.ui.unWidget.width() - 20, self.ui.unline.height())
+                    self.ui.winline.resize(self.ui.winpageWidget.width() - 20, self.ui.winline.height())
+                    self.ui.searchline.resize(self.ui.searchWidget.width() - 20, self.ui.searchline.height())
+                    self.ui.ualine.resize(self.ui.userAppListWidget.width() - 20, self.ui.ualine.height())
+                    self.ui.homeline1.resize(self.ui.recommendWidget.width(), self.ui.homeline1.height())
+
+                    self.ui.virtuallabel.resize(self.ui.homepageWidget.width(), self.ui.virtuallabel.height())
+                    self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
+
+                    # ads widget
+                    self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
+
+                    # detail widget
+                    self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
+                    self.detailScrollWidget.resize(self.detailScrollWidget.width(), self.ui.detailShellWidget.height())
+                    self.detailScrollWidget.move((self.ui.detailShellWidget.width() / 2 - self.detailScrollWidget.detailWidget.width() / 2), self.detailScrollWidget.y())
+
+                    # task widget
+                    self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.height())
+                    self.ui.taskListWidget.resize(self.ui.taskListWidget.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
+                    self.ui.taskBottomWidget.move(self.ui.taskBottomWidget.x(), self.ui.taskWidget.height() - self.ui.taskBottomWidget.height())
+
+                    # resize, recalculate, refill the card widgets
+                    self.allListWidget.setGeometry(0, 50, self.ui.allWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.allWidget.height() - 50 - 6)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+                    self.allListWidget.calculate_software_step_num()
+                    if(self.allListWidget.count() != 0 and self.allListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                        self.allListWidget.clear()
+                        self.show_more_software(self.allListWidget)
+                    self.allListWidget.reload_cards()
+
+                    self.upListWidget.setGeometry(0, 50, self.ui.upWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.upWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+                    if(self.upListWidget.count() != 0 and self.upListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                        self.upListWidget.clear()
+                        self.show_more_software(self.upListWidget)
+                    self.upListWidget.reload_cards()
+
+                    self.unListWidget.setGeometry(0, 50, self.ui.unWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.unWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+                    if(self.unListWidget.count() != 0 and self.unListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                        self.unListWidget.clear()
+                        self.show_more_software(self.unListWidget)
+                    self.unListWidget.reload_cards()
+
+                    self.searchListWidget.setGeometry(0, 50, self.ui.searchWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.searchWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+                    if(self.searchListWidget.count() != 0 and self.searchListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+                        self.searchListWidget.clear()
+                        self.show_more_search_result(self.searchListWidget)
+                    self.searchListWidget.reload_cards()
+
+                    self.userAppListWidget.setGeometry(0, 50, self.ui.userAppListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userAppListWidget.height() - 50)
+                    self.userAppListWidget.reload_cards()
+
+                    self.winListWidget.setGeometry(0, 50, self.ui.winpageWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.winpageWidget.height() - 50)
+                    self.winListWidget.reload_cards()
+
+                    self.recommendListWidget.setGeometry(0, 23, self.ui.recommendWidget.width(), self.ui.recommendWidget.height() - 23)
+                    self.recommendListWidget.reload_cards()
+
+                    # msg box
+                    self.messageBox.re_move()
+
+                    # loading div
+                    self.loadingDiv.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+
+                    # corner
+                    self.resizeCorner.move(self.ui.centralwidget.width() - 16, self.ui.centralwidget.height() - 16)
+
+                    # max
+                    if(self.isMaximized() == True):
+                        self.ui.btnMax.hide()
+                        self.ui.btnNormal.show()
+                    # normal
+                    else:
+                        self.ui.btnMax.show()
+                        self.ui.btnNormal.hide()
 
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
