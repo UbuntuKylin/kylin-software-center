@@ -70,7 +70,7 @@ class PingbackmainRequest(PistonSerializable):
 
 
 class PingbackappRequest(PistonSerializable):
-    _atts = ('app_name', 'machine', 'isrcm')
+    _atts = ('app_name', 'machine', 'isrcm', 'user')
 
 
 class PistonRemoter(PistonAPI):
@@ -103,12 +103,13 @@ class PistonRemoter(PistonAPI):
         return self._post('pingbackmain/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
-    def submit_pingback_app(self, app_name, machine, isrcm):
+    def submit_pingback_app(self, app_name, machine, isrcm, user):
         postdata = PingbackappRequest()
         postdata.app_name = app_name
         postdata.machine = machine
         postdata.isrcm = isrcm
-        return self._post('pingbackapp/', data=postdata, scheme='http', content_type='application/json')
+        postdata.user = user
+        return self._post('pingbackapp20141014/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
     def get_all_categories(self):
@@ -121,6 +122,10 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def get_newer_application_info(self, last_update_date):
         return self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
+
+    @returns_json
+    def get_newer_application_icon(self, last_update_date):
+        return self._get('getnewerapplicationicon/?modify_time=%s' % last_update_date, scheme="http")
         
     @returns_json
     def allapp_forxapianupdate(self):
@@ -129,6 +134,10 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def newerapp_for_xapianupdate(self, the_latest_update_time):
         return self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
+
+    @returns_json
+    def get_user_applist(self, user):
+        return self._get('getapplist/?user=%s' % user, scheme="http")
 
 
 class PistonRemoterAuth(PistonAPI):

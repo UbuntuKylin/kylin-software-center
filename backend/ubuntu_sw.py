@@ -50,6 +50,9 @@ SCREENSHOT_THUMB_URL = ("http://screenshots.ubuntu.com/"
 SCREENSHOT_LARGE_URL = ("http://screenshots.ubuntu.com/"
     "screenshot-with-version/%(pkgname)s/%(version)s")
 
+UK_APP_ICON_URL = ("http://service.ubuntukylin.com:8001/"
+    "static/uksc/icons/%(pkgname)s")
+
 
 # system pathes
 APP_INSTALL_PATH = "/usr/share/app-install"

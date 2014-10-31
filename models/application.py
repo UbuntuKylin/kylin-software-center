@@ -72,6 +72,8 @@ class Application:
         self.pointoutrank = 32767
         self.recommendrank = 32767
 
+        self.install_date = ''  # the date first install this app, get from server
+
     # add by kobe
     @property
     def status(self):

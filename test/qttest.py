@@ -135,6 +135,8 @@ def main():
     # for fm in db.families():
     #     print fm
 
+    print 0/10
+
     sys.exit(app.exec_())
 
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>663</width>
-    <height>66</height>
+    <width>860</width>
+    <height>88</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,8 @@
   <widget class="QLabel" name="icon">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>8</y>
+     <x>40</x>
+     <y>20</y>
      <width>48</width>
      <height>48</height>
     </rect>
@@ -29,9 +29,9 @@
   <widget class="QLabel" name="name">
    <property name="geometry">
     <rect>
-     <x>65</x>
-     <y>14</y>
-     <width>201</width>
+     <x>98</x>
+     <y>25</y>
+     <width>200</width>
      <height>18</height>
     </rect>
    </property>
@@ -39,26 +39,13 @@
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="descr">
+  <widget class="QLabel" name="summary">
    <property name="geometry">
     <rect>
-     <x>65</x>
-     <y>34</y>
-     <width>205</width>
+     <x>98</x>
+     <y>45</y>
+     <width>320</width>
      <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="size">
-   <property name="geometry">
-    <rect>
-     <x>282</x>
-     <y>14</y>
-     <width>71</width>
-     <height>20</height>
     </rect>
    </property>
    <property name="text">
@@ -68,48 +55,22 @@
   <widget class="QPushButton" name="btn">
    <property name="geometry">
     <rect>
-     <x>593</x>
-     <y>23</y>
-     <width>47</width>
-     <height>20</height>
+     <x>688</x>
+     <y>24</y>
+     <width>148</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="installedVersion">
+  <widget class="QLabel" name="installedDate">
    <property name="geometry">
     <rect>
-     <x>368</x>
-     <y>14</y>
-     <width>120</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="candidateVersion">
-   <property name="geometry">
-    <rect>
-     <x>368</x>
-     <y>34</y>
-     <width>120</width>
-     <height>18</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="btnDetail">
-   <property name="geometry">
-    <rect>
-     <x>14</x>
-     <y>23</y>
-     <width>40</width>
+     <x>520</x>
+     <y>35</y>
+     <width>130</width>
      <height>18</height>
     </rect>
    </property>
@@ -120,9 +81,22 @@
   <widget class="QLabel" name="installedsize">
    <property name="geometry">
     <rect>
-     <x>282</x>
+     <x>410</x>
+     <y>35</y>
+     <width>70</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="cbSelect">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
      <y>34</y>
-     <width>71</width>
+     <width>20</width>
      <height>20</height>
     </rect>
    </property>
@@ -130,32 +104,52 @@
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="rating">
+  <widget class="QPushButton" name="btnDetail">
    <property name="geometry">
     <rect>
-     <x>508</x>
-     <y>34</y>
-     <width>23</width>
-     <height>18</height>
+     <x>0</x>
+     <y>0</y>
+     <width>860</width>
+     <height>88</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
-  <widget class="QLabel" name="ratingtext">
+  <widget class="QWidget" name="bg" native="true">
    <property name="geometry">
     <rect>
-     <x>528</x>
-     <y>34</y>
-     <width>20</width>
-     <height>18</height>
+     <x>0</x>
+     <y>0</y>
+     <width>860</width>
+     <height>88</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="status">
+   <property name="geometry">
+    <rect>
+     <x>72</x>
+     <y>52</y>
+     <width>16</width>
+     <height>16</height>
     </rect>
    </property>
    <property name="text">
     <string/>
    </property>
   </widget>
+  <zorder>status</zorder>
+  <zorder>bg</zorder>
+  <zorder>btnDetail</zorder>
+  <zorder>icon</zorder>
+  <zorder>name</zorder>
+  <zorder>summary</zorder>
+  <zorder>btn</zorder>
+  <zorder>installedDate</zorder>
+  <zorder>installedsize</zorder>
+  <zorder>cbSelect</zorder>
  </widget>
  <resources/>
  <connections/>

@@ -289,6 +289,11 @@ class Database:
                 while loop:
                     reviews = self.premoter.get_reviews(package_name, startpage, 10)
                     review_total = -1
+
+                    # 0 review on server. break
+                    if(len(reviews) == 0):
+                        break
+
                     for review in reviews:
                         rid = review.id
                         review_total = review.aid['review_total']

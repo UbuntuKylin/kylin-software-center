@@ -120,6 +120,10 @@ class ThreadWorkerDaemon(threading.Thread):
 #This class is the abstraction of application management
 class AppManager(QObject):
 
+    # piston remoter
+    premoter = ''
+    premoterauth = ''
+
     def __init__(self):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
@@ -142,6 +146,8 @@ class AppManager(QObject):
         self.silent_process = SilentProcess(self.squeue)
         self.silent_process.daemon = True
         self.silent_process.start()
+
+        self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
     # re new piston remoter auth by current login token
     def reinit_premoter_auth(self):
@@ -520,6 +526,12 @@ class AppManager(QObject):
         item = SilentWorkerItem("get_newer_application_info", kwargs)
         self.squeue.put_nowait(item)
 
+    def get_newer_application_icon(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_newer_application_icon", kwargs)
+        self.squeue.put_nowait(item)
+
     def get_all_categories(self):
         kwargs = {}
 
@@ -541,6 +553,7 @@ class AppManager(QObject):
     def submit_pingback_app(self, app_name, isrcm=False):
         kwargs = {"app_name": app_name,
                   "isrcm": isrcm,
+                  "user": Globals.USER,
                   }
 
         item = SilentWorkerItem("submit_pingback_app", kwargs)
@@ -622,6 +635,11 @@ class AppManager(QObject):
     # update app ratingavg in cache db after user do rating app
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
         self.db.update_app_ratingavg(app_name, ratingavg, ratingtotal)
+
+    def get_user_applist(self):
+        res = self.premoter.get_user_applist(Globals.USER)
+
+        self.emit(Signals.get_user_applist_over, res)
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):

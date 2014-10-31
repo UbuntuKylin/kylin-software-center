@@ -38,13 +38,11 @@ def get_run_command(pkgname):
         pkgname = 'uget-gtk'
     elif pkgname == 'eclipse-platform':
         pkgname = 'eclipse'
-
-    # add by kobe
-    if pkgname == 'software-center':
+    elif pkgname == 'software-center':
         pkgname = 'ubuntu-software-center'
-    if pkgname == "sogoupinyin":
+    elif pkgname == "sogoupinyin":
         pkgname = "fcitx-ui-sogou-qimpanel"
-    if pkgname == "mathwar":
+    elif pkgname == "mathwar":
         pkgname = "MathWar"
 
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
