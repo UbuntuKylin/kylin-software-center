@@ -62,7 +62,13 @@ class TaskListItemWidget(QWidget):
 
         # this is deb file task
         if(isdeb == True):
-            self.ui.name.setText(app.name)
+            if app.status == "installing":
+                self.ui.name.setText("安装 "+app.name)
+            if app.status == "uninstalling":
+                self.ui.name.setText("卸载 "+app.name)
+            if app.status == "upgrading":
+                self.ui.name.setText("升级 "+app.name)
+
             sizek = app.installedsize
             if(sizek <= 1024):
                 self.ui.size.setText(str(sizek) + " KB")
@@ -85,8 +91,12 @@ class TaskListItemWidget(QWidget):
                 img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
             # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
-
-            self.ui.name.setText(app.name)
+            if app.status == "installing":
+                self.ui.name.setText("安装 "+app.name)
+            if app.status == "uninstalling":
+                self.ui.name.setText("卸载 "+app.name)
+            if app.status == "upgrading":
+                self.ui.name.setText("升级 "+app.name)
 
             size = app.packageSize
             sizek = size / 1024
