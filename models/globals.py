@@ -53,3 +53,5 @@ class Globals:
     USER = ''
     USER_DISPLAY = ''
     TOKEN = ''
+
+    NOWPAGE = -1

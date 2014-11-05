@@ -36,7 +36,7 @@ from backend.remote.piston_remoter import PistonRemoter
 from backend.ubuntu_sw import UK_APP_ICON_URL
 from utils.machine import *
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_APP_ICON_RES_PATH
+from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_APP_ICON_RES_PATH,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_TMPICON_PATH
 # from models.http import HttpDownLoad
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
@@ -235,7 +235,7 @@ class SilentProcess(multiprocessing.Process):
     def get_newer_application_icon(self):
         # get application icon last update date
         last_update_date = ''
-        self.cursor.execute("select value from appicon where key='appicon_updatetime'")
+        self.cursor.execute("select value from dict where key='appicon_updatetime'")
         res = self.cursor.fetchall()
         for item in res:
             last_update_date = item[0]
@@ -247,19 +247,16 @@ class SilentProcess(multiprocessing.Process):
         if(size > 0):
             # update application icon to cache icons/
             for app in reslist:
-                aid = app['id']
-                app_name = app['app_name']
+                app_name = app['image']
+                update_time = app['modify_time']
 
-                if(os.path.isfile(UBUNTUKYLIN_APP_ICON_RES_PATH + app_name + ".png")) or (os.path.isfile(UBUNTUKYLIN_APP_ICON_RES_PATH + app_name + ".jpg")):
-                    pass
-                else:
+                if not os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app_name) or not os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app_name):
                     # download icon
-                    iconfile = UBUNTUKYLIN_APP_ICON_RES_PATH + app_name + ".png"
+                    iconfile = UBUNTUKYLIN_APP_ICON_RES_PATH + app_name
                     try:
                         icon_rul = UK_APP_ICON_URL % {
                             'pkgname': app_name,
                         }
-
                         urlFile = urllib2.urlopen(icon_rul)
                         rawContent = urlFile.read()
                         if rawContent:
@@ -273,8 +270,8 @@ class SilentProcess(multiprocessing.Process):
                         print str(e)
 
             # set application info last update date
-            nowdate = time.strftime('%Y-%m-%d',time.localtime())
-            self.cursor.execute("update appicon set value=? where key=?", (nowdate,'appicon_updatetime'))
+            # nowdate = time.strftime('%Y-%m-%d',time.localtime())
+            self.cursor.execute("update dict set value=? where key=?", (update_time,'appicon_updatetime'))
 
             self.connect.commit()
 

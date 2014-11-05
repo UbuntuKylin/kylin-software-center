@@ -44,6 +44,10 @@ def get_run_command(pkgname):
         pkgname = "fcitx-ui-sogou-qimpanel"
     elif pkgname == "mathwar":
         pkgname = "MathWar"
+    elif pkgname == "gnome-disk-utility":
+        pkgname = "gnome-disks"
+    elif pkgname == "kino":
+        pkgname = "Kino"
 
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     exc = fd.read()

@@ -31,7 +31,8 @@ from utils import run
 import webbrowser
 
 from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_HTTP_WIN_RES_PATH,AppActions)
-from models.enums import Signals, setLongTextToElideFormat
+from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
+from models.globals import Globals
 
 class WinCard(QWidget):
 
@@ -177,22 +178,19 @@ class WinCard(QWidget):
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
         else:
-            # if app.status:
-            #     self.ui.btn.setEnabled(False)
-            #     self.ui.btn.setText("正在处理")
-            if app.status == "installing":
+            if app.status == PkgStates.INSTALLING:
                 self.ui.btn.setEnabled(False)
                 self.ui.btn.setText("正在安装")
                 self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
-            elif app.status == "uninstalling":
+            elif app.status == PkgStates.REMOVING:
                 self.ui.btn.setEnabled(False)
                 self.ui.btn.setText("正在卸载")
                 self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
-            elif app.status == "upgrading":
+            elif app.status == PkgStates.UPGRADING:
                 self.ui.btn.setEnabled(False)
                 self.ui.btn.setText("正在升级")
                 self.ui.isInstalled.setVisible(False)
@@ -201,16 +199,19 @@ class WinCard(QWidget):
             else:
                 if(self.app.is_installed):
                     if(run.get_run_command(self.app.name) == ""):
+                        self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
                         self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-un-btn-3.png');}")
                         self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-un-border.png');}")
                     else:
+                        self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-run-btn-3.png');}")
                         self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
                 else:
+                    self.app.status = PkgStates.INSTALL
                     self.ui.btn.setText("安装")
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
@@ -292,22 +293,17 @@ class WinCard(QWidget):
             else:
                 self.ui.btn.setEnabled(False)
                 if(self.ui.btn.text() == '安装'):
-                    self.app.status = "installing"
+                    self.app.status = PkgStates.INSTALLING
                     self.ui.btn.setText("正在安装")
                     self.emit(Signals.install_app, self.app)
                 elif(self.ui.btn.text() == '升级'):
-                    self.app.status = "upgrading"
+                    self.app.status = PkgStates.UPGRADING
                     self.ui.btn.setText("正在升级")
                     self.emit(Signals.upgrade_app, self.app)
                 elif(self.ui.btn.text() == '卸载'):
-                    self.app.status = "uninstalling"
+                    self.app.status = PkgStates.REMOVING
                     self.ui.btn.setText("正在卸载")
                     self.emit(Signals.remove_app, self.app)
-                # else:
-                #     self.app.status = True
-                #     self.ui.btn.setEnabled(False)
-                #     self.ui.btn.setText("正在处理")
-                #     self.emit(Signals.install_app, self.app)
 
     def slot_emit_detail(self):
         if(self.app != None):
@@ -316,42 +312,47 @@ class WinCard(QWidget):
     def slot_work_finished(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
-                # self.app.status = False
-                self.app.status = "nothing"
                 if action == AppActions.INSTALL:
                     if(run.get_run_command(self.app.name) == ""):
+                        self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
                     else:
+                        self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
                 elif action == AppActions.REMOVE:
+                    self.app.status = PkgStates.INSTALL
                     self.ui.btn.setText("安装")
                     self.ui.btn.setEnabled(True)
                 elif action == AppActions.UPGRADE:
                     if(run.get_run_command(self.app.name) == ""):
+                        self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
                     else:
+                        self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
 
     def slot_work_cancel(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
-                # self.app.status = False
-                self.app.status = "nothing"
                 if action == AppActions.INSTALL:
+                    self.app.status = PkgStates.INSTALL
                     self.ui.btn.setText("安装")
                     self.ui.btn.setEnabled(True)
-                elif action == AppActions.REMOVE:
+                elif action == AppActions.REMOVE:#can not appear on win page
                     if(run.get_run_command(self.app.name) == ""):
+                        self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
                     else:
+                        self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
                 elif action == AppActions.UPGRADE:
+                    self.app.status = PkgStates.UPDATE
                     self.ui.btn.setText("升级")
                     self.ui.btn.setEnabled(True)
 
