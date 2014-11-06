@@ -77,6 +77,9 @@ class DetailScrollWidget(QScrollArea):
         self.connect(self.btns,Signals.mfb_click_uninstall,parent.slot_click_remove)
         self.connect(self.btns,Signals.mfb_click_update,parent.slot_click_upgrade)
 
+        # kobe 1106
+        self.connect(self.btns,Signals.get_card_status,parent.slot_get_normal_card_status)
+
 
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()

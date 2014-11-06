@@ -195,6 +195,8 @@ class Signals:
     mfb_click_install = SIGNAL("multifuncbtn-click-install")
     mfb_click_update = SIGNAL("multifuncbtn-click-update")
     mfb_click_uninstall = SIGNAL("multifuncbtn-click-uninstall")
+    get_card_status = SIGNAL("get-card-status")
+    trans_card_status = SIGNAL("trans-card-status")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

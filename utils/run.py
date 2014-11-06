@@ -48,6 +48,13 @@ def get_run_command(pkgname):
         pkgname = "gnome-disks"
     elif pkgname == "kino":
         pkgname = "Kino"
+    elif pkgname == "monajat-applet":
+        pkgname = "monajat"
+    elif pkgname == "system-config-printer-applet":
+        pkgname = "system-config-printer"
+    elif pkgname == "xterm":
+        pkgname = "debian-uxterm"
+
 
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     exc = fd.read()
