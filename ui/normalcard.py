@@ -28,8 +28,8 @@ from PyQt4.QtCore import *
 from ui.uknormalcard import Ui_NormalCard
 from ui.starwidget import StarWidget
 from utils import run
-
-from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_TMPICON_PATH,AppActions)
+from utils import commontools
+from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
 from models.globals import Globals
 
@@ -93,16 +93,8 @@ class NormalCard(QWidget):
         # shadowe.setBlurRadius(4)
         # self.setGraphicsEffect(shadowe)
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + app.name+".png"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + app.name+".jpg"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg"))
-        else:
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
+        iconpath = commontools.get_icon_path(self.app.name)
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")

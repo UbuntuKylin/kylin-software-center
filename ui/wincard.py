@@ -28,9 +28,9 @@ from PyQt4.QtCore import *
 from ui.ukwincard import Ui_WinCard
 from ui.starwidget import StarWidget
 from utils import run
+from utils import commontools
 import webbrowser
-
-from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_HTTP_WIN_RES_PATH,AppActions)
+from models.enums import (UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_HTTP_WIN_RES_PATH,AppActions)
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
 from models.globals import Globals
 
@@ -119,27 +119,11 @@ class WinCard(QWidget):
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
-                if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".png")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".png"))
-                elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".jpg")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.winstat.app_name) + ".jpg"))
-                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".png")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".png"))
-                elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".jpg")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.winstat.app_name) + ".jpg"))
-                else:
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
+                iconpath = commontools.get_icon_path(self.winstat.app_name)
+                self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
         else:
-            if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
-                self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png"))
-            elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
-                self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg"))
-            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png")):
-                    self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".png"))
-            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg")):
-                self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + str(self.app.name) + ".jpg"))
-            else:
-                self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + "default.png"))
+            iconpath = commontools.get_icon_path(self.app.name)
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")

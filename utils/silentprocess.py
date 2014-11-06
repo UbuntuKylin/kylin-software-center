@@ -36,7 +36,7 @@ from backend.remote.piston_remoter import PistonRemoter
 from backend.ubuntu_sw import UK_APP_ICON_URL
 from utils.machine import *
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_APP_ICON_RES_PATH,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_TMPICON_PATH
+from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
 # from models.http import HttpDownLoad
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
@@ -220,8 +220,8 @@ class SilentProcess(multiprocessing.Process):
                     self.cursor.execute(sql, (aid,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total))
 
             # set application info last update date
-            nowdate = time.strftime('%Y-%m-%d',time.localtime())
-            self.cursor.execute("update dict set value=? where key=?", (nowdate,'appinfo_updatetime'))
+            updatetime = reslist[0]['modify_time']
+            self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
 
             self.connect.commit()
 

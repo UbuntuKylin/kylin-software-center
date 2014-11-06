@@ -36,9 +36,8 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-#kobe 1103
-# UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+# UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
 
 # add by kobe to format long text
@@ -125,11 +124,10 @@ UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
 safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 
-UBUNTUKYLIN_APP_ICON_RES_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
-safe_makedirs(UBUNTUKYLIN_APP_ICON_RES_PATH)
+UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
+safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
 
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
-UBUNTUKYLIN_RES_TMPICON_PATH = UBUNTUKYLIN_DATA_PATH + "tmpicons/"
 UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
 UBUNTUKYLIN_RES_WIN_PATH = UBUNTUKYLIN_DATA_PATH + "winicons/"
 

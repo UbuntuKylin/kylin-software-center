@@ -28,7 +28,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
 from models.enums import Signals,AptActionMsg
-from models.enums import UBUNTUKYLIN_RES_TMPICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
+from models.enums import UBUNTUKYLIN_RES_ICON_PATH
+from utils import commontools
 from utils.debfile import DebFile
 
 
@@ -74,21 +75,12 @@ class TaskListItemWidget(QWidget):
                 self.ui.size.setText(str(sizek) + " KB")
             else:
                 self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
-            img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
+            img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + "default.png")
             # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
         else:
-            img = ''
-            if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")):
-                img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".png")
-            elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")):
-                img = QPixmap(UBUNTUKYLIN_RES_ICON_PATH + app.name + ".jpg")
-            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-                img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")
-            elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-                img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")
-            else:
-                img = QPixmap(UBUNTUKYLIN_RES_TMPICON_PATH + "default.png")
+            iconpath = commontools.get_icon_path(app.name)
+            img = QPixmap(iconpath)
             # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
             if app.status == "installing":
