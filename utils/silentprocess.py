@@ -216,8 +216,8 @@ class SilentProcess(multiprocessing.Process):
                     self.cursor.execute(sql, (aid,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total))
 
             # set application info last update date
-            nowdate = time.strftime('%Y-%m-%d',time.localtime())
-            self.cursor.execute("update dict set value=? where key=?", (nowdate,'appinfo_updatetime'))
+            updatetime = reslist[0]['modify_time']
+            self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
 
             self.connect.commit()
 

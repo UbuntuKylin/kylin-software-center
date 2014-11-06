@@ -121,9 +121,8 @@ class SoftwareCenter(QMainWindow):
         # do not cover the launch loading div
         self.resize(0,0)
 
-        self.setWindowTitle("Ubuntu Kylin 软件中心")
+        self.setWindowTitle("Ubuntu Kylin 软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
-        # self.setAttribute(Qt.WA_TranslucentBackground, True)
 
         # init components
 
