@@ -74,9 +74,30 @@ class PkgStates:
     # this *needs* to be last (for test_appdetails.py) and means
     # something went wrong and we don't have a state for this PKG
     UNKNOWN,
-    ) = range(17)
 
+    RUN,
+    INSTALL,
+    UPDATE,
+    UNINSTALL,
+    NORUN,
+    NOTHING,
+    ) = range(23)
 
+class PageStates:
+    (
+     HOMEPAGE,
+     ALLPAGE,
+     UPPAGE,
+     UNPAGE,
+     WINPAGE,
+     UAPAGE,
+     SEARCHHOMEPAGE,
+     SEARCHALLPAGE,
+     SEARCHUPPAGE,
+     SEARCHUNPAGE,
+     SEARCHWINPAGE,
+     SEARCHUAPAGE,
+     ) = range(12)
 
 # transaction types
 class TransactionTypes:
@@ -95,12 +116,16 @@ UBUNTUKYLIN_HTTP_WIN_RES_PATH = HOME_PATH + "/.cache/uksc/uk-win/"
 #UBUNTUKYLIN_ROOT_PATH,filename = (os.path.split(os.path.realpath(__file__)))
 UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
 UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
+
 #UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"
 #UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
 UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 
 UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
 safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+
+UBUNTUKYLIN_APP_ICON_RES_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
+safe_makedirs(UBUNTUKYLIN_APP_ICON_RES_PATH)
 
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
 UBUNTUKYLIN_RES_TMPICON_PATH = UBUNTUKYLIN_DATA_PATH + "tmpicons/"

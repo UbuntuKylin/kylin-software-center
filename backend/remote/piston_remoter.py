@@ -122,6 +122,10 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def get_newer_application_info(self, last_update_date):
         return self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
+
+    @returns_json
+    def get_newer_application_icon(self, last_update_date):
+        return self._get('getnewericon/?modify_time=%s' % last_update_date, scheme="http")
         
     @returns_json
     def allapp_forxapianupdate(self):

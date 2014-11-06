@@ -30,7 +30,8 @@ from ui.starwidget import StarWidget
 from utils import run
 
 from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
-from models.enums import Signals, setLongTextToElideFormat
+from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
+from models.globals import Globals
 
 class RcmdCard(QWidget):
 
@@ -147,20 +148,23 @@ class RcmdCard(QWidget):
             self.ui.isInstalled.setVisible(True)
 
             if(run.get_run_command(self.app.name) == ""):
+                self.app.status = PkgStates.NORUN
                 self.ui.btn.setText("已安装")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                 self.ui.btn.setEnabled(False)
             else:
+                self.app.status = PkgStates.RUN
                 self.ui.btn.setText("启动")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
         else:
             # star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)
             # star.move(75, 56)
+            # init app.status
+            self.app.status = PkgStates.INSTALL
             self.star.show()
             self.ui.isInstalled.setVisible(False)
-
             self.ui.btn.setText("安装")
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -237,7 +241,9 @@ class RcmdCard(QWidget):
                     self.messageBox.alert_msg(self.app.name + "已经运行")
         else:
             self.ui.btn.setEnabled(False)
-            self.ui.btn.setText("正在处理")
+            # self.ui.btn.setText("正在处理")
+            self.app.status = PkgStates.INSTALLING
+            self.ui.btn.setText("正在安装")
             self.emit(Signals.install_app, self.app)
 
     def slot_emit_detail(self):
@@ -249,12 +255,15 @@ class RcmdCard(QWidget):
                 self.star.hide()
                 self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
+                    self.app.status = PkgStates.NORUN
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
                 else:
+                    self.app.status = PkgStates.RUN
                     self.ui.btn.setText("启动")
                     self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
+                self.app.status = PkgStates.INSTALL
                 self.star.show()
                 self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
@@ -262,19 +271,23 @@ class RcmdCard(QWidget):
                 self.star.hide()
                 self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
+                    self.app.status = PkgStates.NORUN
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)
                 else:
+                    self.app.status = PkgStates.RUN
                     self.ui.btn.setText("启动")
 
     def slot_work_cancel(self, pkgname,action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
+                self.app.status = PkgStates.INSTALL
                 self.star.show()
                 self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("安装")
                 self.ui.btn.setEnabled(True)
-            elif action == AppActions.REMOVE:
+            elif action == AppActions.REMOVE:#can not appear on home page
+                self.app.status = PkgStates.UNINSTALL
                 self.star.hide()
                 self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
@@ -283,6 +296,7 @@ class RcmdCard(QWidget):
                 else:
                     self.ui.btn.setText("启动")
             elif action == AppActions.UPGRADE:
+                self.app.status = PkgStates.UPDATE
                 self.star.hide()
                 self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("升级")

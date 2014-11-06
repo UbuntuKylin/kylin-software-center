@@ -75,7 +75,7 @@ class Application:
     # app work status this moment: installing, updating ...
     @property
     def status(self):
-        return "nothing"
+        return PkgStates.NOTHING
 
     @property
     def name(self):

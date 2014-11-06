@@ -526,6 +526,12 @@ class AppManager(QObject):
         item = SilentWorkerItem("get_newer_application_info", kwargs)
         self.squeue.put_nowait(item)
 
+    def get_newer_application_icon(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_newer_application_icon", kwargs)
+        self.squeue.put_nowait(item)
+
     def get_all_categories(self):
         kwargs = {}
 

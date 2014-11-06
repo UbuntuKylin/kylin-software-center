@@ -26,15 +26,17 @@
 import xapian
 #********************************************************************#
 import sqlite3
+import urllib2
 import os
 import time
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import multiprocessing
 from backend.remote.piston_remoter import PistonRemoter
+from backend.ubuntu_sw import UK_APP_ICON_URL
 from utils.machine import *
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
+from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_APP_ICON_RES_PATH,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_TMPICON_PATH
 # from models.http import HttpDownLoad
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
@@ -81,6 +83,8 @@ class SilentProcess(multiprocessing.Process):
                 self.get_all_rank_and_recommend()
             elif item.funcname == "get_newer_application_info":
                 self.get_newer_application_info()
+            elif item.funcname == "get_newer_application_icon":
+                self.get_newer_application_icon()
             #**************************************************#
             elif item.funcname == "update_xapiandb":
                 self.update_xapiandb()
@@ -227,6 +231,51 @@ class SilentProcess(multiprocessing.Process):
     #     requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
     #     url = QUrl(requestData)
     #     self.httpmodel.sendDownLoadRequest(url)
+
+    def get_newer_application_icon(self):
+        # get application icon last update date
+        last_update_date = ''
+        self.cursor.execute("select value from dict where key='appicon_updatetime'")
+        res = self.cursor.fetchall()
+        for item in res:
+            last_update_date = item[0]
+
+        reslist = self.premoter.get_newer_application_icon(last_update_date)
+
+        size = len(reslist)
+
+        if(size > 0):
+            # update application icon to cache icons/
+            for app in reslist:
+                app_name = app['image']
+                update_time = app['modify_time']
+
+                if not os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app_name) or not os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app_name):
+                    # download icon
+                    iconfile = UBUNTUKYLIN_APP_ICON_RES_PATH + app_name
+                    try:
+                        icon_rul = UK_APP_ICON_URL % {
+                            'pkgname': app_name,
+                        }
+                        urlFile = urllib2.urlopen(icon_rul)
+                        rawContent = urlFile.read()
+                        if rawContent:
+                            localFile = open(iconfile,"wb")
+                            localFile.write(rawContent)
+                            localFile.close()
+
+                    except urllib2.HTTPError,e:
+                        print e.code
+                    except urllib2.URLError,e:
+                        print str(e)
+
+            # set application info last update date
+            # nowdate = time.strftime('%Y-%m-%d',time.localtime())
+            self.cursor.execute("update dict set value=? where key=?", (update_time,'appicon_updatetime'))
+
+            self.connect.commit()
+
+            print "all newer application icon update over : ",len(reslist)
         
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self):

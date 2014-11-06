@@ -55,7 +55,7 @@ from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
 from backend.ubuntusso import get_ubuntu_sso_backend
 
-from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions,AptActionMsg)
+from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates)
 from models.enums import Signals
 from models.globals import Globals
 
@@ -76,11 +76,11 @@ class SoftwareCenter(QMainWindow):
     # recommend number in function "fill"
     recommendNumber = 0
     # pre page
-    prePage = ''
+    # prePage = ''
     # now page
-    nowPage = ''
+    # nowPage = ''
     # his page
-    hisPage = ''
+    # hisPage = ''
     # search delay timer
     searchDTimer = ''
     # fx(name, taskitem) map
@@ -588,8 +588,11 @@ class SoftwareCenter(QMainWindow):
 
         # init others
         self.category = ""
-        self.prePage = "homepage"
-        self.nowPage = "homepage"
+
+        Globals.NOWPAGE = PageStates.HOMEPAGE
+
+        # self.prePage = "homepage"
+        # self.nowPage = "homepage"
 
         # init data flags
         self.ads_ready = False
@@ -648,6 +651,8 @@ class SoftwareCenter(QMainWindow):
 
         # update cache db
         self.appmgr.get_newer_application_info()
+        # kobe 1103
+        # self.appmgr.get_newer_application_icon()
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
@@ -916,7 +921,7 @@ class SoftwareCenter(QMainWindow):
             # self.connect(liw, Signals.remove_app, self.slot_click_remove)
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
-            card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
+            card = NormalCard(app,self.messageBox, listWidget.cardPanel)#self.nowPage, self.prePage,
             listWidget.add_card(card)
             self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
             self.connect(card, Signals.install_app, self.slot_click_install)
@@ -931,28 +936,32 @@ class SoftwareCenter(QMainWindow):
                 break
 
     def show_more_software(self, listWidget):
-        if self.nowPage == "searchpage":
+        # if self.nowPage == "searchpage":
+        if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE):
             self.show_more_search_result(listWidget)
         else:
+            # print self.nowPage
             listLen = listWidget.count()
             apps = self.appmgr.get_category_apps(self.category)
 
             count = 0
             for pkgname, app in apps.iteritems():
 
-                if self.nowPage == "uppage":
+                # if self.nowPage == "uppage":
+                if Globals.NOWPAGE == PageStates.UPPAGE:
                     if app.is_installed is False:
                         continue
                     if app.is_installed is True and app.is_upgradable is False:
                         continue
-                if self.nowPage == "unpage" and app.is_installed is False:
+                # if self.nowPage == "unpage" and app.is_installed is False:
+                if Globals.NOWPAGE == PageStates.UNPAGE and app.is_installed is False:
                     continue
 
                 if count < listLen:
                     count = count + 1
                     continue
 
-                card = NormalCard(app, self.nowPage, self.prePage, self.messageBox, listWidget.cardPanel)
+                card = NormalCard(app, self.messageBox, listWidget.cardPanel)# self.nowPage, self.prePage,
                 listWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)
@@ -968,14 +977,22 @@ class SoftwareCenter(QMainWindow):
 
     def get_current_listWidget(self):
         listWidget = ''
-        if(self.nowPage == "allpage"):
+        if(Globals.NOWPAGE == PageStates.ALLPAGE):
             listWidget = self.allListWidget
-        elif(self.nowPage == "uppage"):
+        elif(Globals.NOWPAGE == PageStates.UPPAGE):
             listWidget = self.upListWidget
-        elif(self.nowPage == "unpage"):
+        elif(Globals.NOWPAGE == PageStates.UNPAGE):
             listWidget = self.unListWidget
-        elif(self.nowPage == "searchpage"):
+        elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):
             listWidget = self.searchListWidget
+        # if(self.nowPage == "allpage"):
+        #     listWidget = self.allListWidget
+        # elif(self.nowPage == "uppage"):
+        #     listWidget = self.upListWidget
+        # elif(self.nowPage == "unpage"):
+        #     listWidget = self.unListWidget
+        # elif(self.nowPage == "searchpage"):
+        #     listWidget = self.searchListWidget
         return listWidget
 
     def switch_to_category(self, category, forcechange):
@@ -1044,16 +1061,27 @@ class SoftwareCenter(QMainWindow):
 
     def reset_nav_bar_focus_one(self):
         self.reset_nav_bar()
-        if(self.nowPage == 'homepage'):
+        if(Globals.NOWPAGE == PageStates.HOMEPAGE):
             self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
-        elif(self.nowPage == 'allpage'):
+        elif(Globals.NOWPAGE == PageStates.ALLPAGE):
             self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
-        elif(self.nowPage == 'uppage'):
+        elif(Globals.NOWPAGE == PageStates.UPPAGE):
             self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
-        elif(self.nowPage == 'unpage'):
+        elif(Globals.NOWPAGE == PageStates.UNPAGE):
             self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
-        elif(self.nowPage == 'winpage'):
+        elif(Globals.NOWPAGE == PageStates.WINPAGE):
             self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
+
+        # if(self.nowPage == 'homepage'):
+        #     self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
+        # elif(self.nowPage == 'allpage'):
+        #     self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
+        # elif(self.nowPage == 'uppage'):
+        #     self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
+        # elif(self.nowPage == 'unpage'):
+        #     self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
+        # elif(self.nowPage == 'winpage'):
+        #     self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
 
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
@@ -1114,22 +1142,38 @@ class SoftwareCenter(QMainWindow):
     #-------------------------------------------------slots-------------------------------------------------
 
     def slot_change_category(self, category):
-        if(self.nowPage == "searchpage"):
+        if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE):
             self.ui.searchWidget.setVisible(False)
-            self.nowPage = self.hisPage
 
         self.switch_to_category(category, False)
 
-        if(self.nowPage == "homepage"):
+        if(Globals.NOWPAGE == PageStates.HOMEPAGE):
             self.reset_nav_bar()
-        if(self.nowPage == "allpage" and self.ui.allWidget.isVisible() == False):
+        if(Globals.NOWPAGE == PageStates.ALLPAGE and self.ui.allWidget.isVisible() == False):
             self.ui.allWidget.setVisible(True)
-        if(self.nowPage == "uppage" and self.ui.upWidget.isVisible() == False):
+        if(Globals.NOWPAGE == PageStates.UPPAGE and self.ui.upWidget.isVisible() == False):
             self.ui.upWidget.setVisible(True)
-        if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
+        if(Globals.NOWPAGE == PageStates.UNPAGE and self.ui.unWidget.isVisible() == False):
             self.ui.unWidget.setVisible(True)
-        if(self.nowPage == "winpage" and self.ui.winpageWidget.isVisible() == False):
+        if(Globals.NOWPAGE == PageStates.WINPAGE and self.ui.winpageWidget.isVisible() == False):
             self.ui.winpageWidget.setVisible(True)
+
+        # if(self.nowPage == "searchpage"):
+        #     self.ui.searchWidget.setVisible(False)
+        #     self.nowPage = self.hisPage
+        #
+        # self.switch_to_category(category, False)
+        #
+        # if(self.nowPage == "homepage"):
+        #     self.reset_nav_bar()
+        # if(self.nowPage == "allpage" and self.ui.allWidget.isVisible() == False):
+        #     self.ui.allWidget.setVisible(True)
+        # if(self.nowPage == "uppage" and self.ui.upWidget.isVisible() == False):
+        #     self.ui.upWidget.setVisible(True)
+        # if(self.nowPage == "unpage" and self.ui.unWidget.isVisible() == False):
+        #     self.ui.unWidget.setVisible(True)
+        # if(self.nowPage == "winpage" and self.ui.winpageWidget.isVisible() == False):
+        #     self.ui.winpageWidget.setVisible(True)
 
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
@@ -1244,9 +1288,10 @@ class SoftwareCenter(QMainWindow):
         #     forceChange = True
         # else:
         #     forceChange = False
-        self.prePage = "homepage"
+        Globals.NOWPAGE = PageStates.HOMEPAGE
+        # self.prePage = "homepage"
         self.ui.btnCloseDetail.setVisible(False)
-        self.nowPage = 'homepage'
+        # self.nowPage = 'homepage'
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
@@ -1267,12 +1312,17 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnHomepage.setEnabled(False)
 
     def slot_goto_allpage(self):
-        if self.nowPage != 'allpage':
+        if Globals.NOWPAGE != PageStates.ALLPAGE:
             forceChange = True
         else:
             forceChange = False
-        self.prePage = "allpage"
-        self.nowPage = 'allpage'
+        Globals.NOWPAGE = PageStates.ALLPAGE
+        # if self.nowPage != 'allpage':
+        #     forceChange = True
+        # else:
+        #     forceChange = False
+        # self.prePage = "allpage"
+        # self.nowPage = 'allpage'
         self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
@@ -1296,12 +1346,17 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnAll.setEnabled(False)
 
     def slot_goto_uppage(self, ishistory=False):
-        if self.nowPage != 'uppage':
+        if Globals.NOWPAGE != PageStates.UPPAGE:
             forceChange = True
         else:
             forceChange = False
-        self.prePage = "uppage"
-        self.nowPage = 'uppage'
+        Globals.NOWPAGE = PageStates.UPPAGE
+        # if self.nowPage != 'uppage':
+        #     forceChange = True
+        # else:
+        #     forceChange = False
+        # self.prePage = "uppage"
+        # self.nowPage = 'uppage'
         self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
@@ -1325,12 +1380,17 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(False)
 
     def slot_goto_unpage(self, ishistory=False):
-        if self.nowPage != 'unpage':
+        if Globals.NOWPAGE != PageStates.UNPAGE:
             forceChange = True
         else:
             forceChange = False
-        self.prePage = "unpage"
-        self.nowPage = 'unpage'
+        Globals.NOWPAGE = PageStates.UNPAGE
+        # if self.nowPage != 'unpage':
+        #     forceChange = True
+        # else:
+        #     forceChange = False
+        # self.prePage = "unpage"
+        # self.nowPage = 'unpage'
         self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
@@ -1354,10 +1414,24 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUn.setEnabled(False)
 
     def goto_search_page(self, ishistory=False):
+
+        if Globals.NOWPAGE == PageStates.HOMEPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHHOMEPAGE
+        elif Globals.NOWPAGE == PageStates.ALLPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHALLPAGE
+        elif Globals.NOWPAGE == PageStates.UPPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHUPPAGE
+        elif Globals.NOWPAGE == PageStates.UNPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHUNPAGE
+        elif Globals.NOWPAGE == PageStates.WINPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHWINPAGE
+        elif Globals.NOWPAGE == PageStates.UAPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHUAPAGE
+
         self.reset_nav_bar_focus_one()
-        if self.nowPage != 'searchpage':
-            self.hisPage = self.nowPage
-        self.nowPage = 'searchpage'
+        # if self.nowPage != 'searchpage':
+        #     self.hisPage = self.nowPage
+        # self.nowPage = 'searchpage'
         self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
@@ -1386,8 +1460,9 @@ class SoftwareCenter(QMainWindow):
         # self.ui.btnCloseDetail.setVisible(False)
 
     def slot_goto_winpage(self, ishistory=False):
-        self.prePage = "winpage"
-        self.nowPage = 'winpage'
+        Globals.NOWPAGE = PageStates.WINPAGE
+        # self.prePage = "winpage"
+        # self.nowPage = 'winpage'
         self.ui.btnCloseDetail.setVisible(False)
         # self.emit(Signals.count_application_update)
         self.categoryBar.hide()
@@ -1413,7 +1488,8 @@ class SoftwareCenter(QMainWindow):
             self.emit(Signals.count_application_update)
 
     def slot_goto_uapage(self):
-        self.nowPage = 'uapage'
+        Globals.NOWPAGE = PageStates.UAPAGE
+        # self.nowPage = 'uapage'
 
         self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
@@ -1505,7 +1581,7 @@ class SoftwareCenter(QMainWindow):
         # self.reset_nav_bar()
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
-        self.detailScrollWidget.showSimple(app, self.nowPage, self.prePage, btntext)
+        self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
