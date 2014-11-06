@@ -8,7 +8,6 @@ from ui.ukxp import Ui_Ukxp
 from utils import run
 import webbrowser
 from models.enums import (ITEM_LABEL_STYLE,
-                          UBUNTUKYLIN_RES_TMPICON_PATH,
                           UBUNTUKYLIN_RES_ICON_PATH,
                           LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,

@@ -33,8 +33,7 @@ from ui.reviewwidget import ReviewWidget
 from ui.listitemwidget import ListItemWidget
 from ui.multifunctionbtn import MultiFunctionBtn
 from ui.loadingdiv import *
-from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
-                        UBUNTUKYLIN_RES_ICON_PATH,
+from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                         Signals,
                         AppActions,
@@ -42,6 +41,7 @@ from models.enums import (UBUNTUKYLIN_RES_TMPICON_PATH,
                         PkgStates,
                         PageStates)
 from utils import run
+from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
 
@@ -298,16 +298,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.summary.setText(app.summary)
         self.ui.description.setText(app.description)
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".png')}")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + str(app.name) + ".jpg')}")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".png")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + str(app.name) + ".png')}")
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name + ".jpg")):
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_TMPICON_PATH + str(app.name) + ".jpg')}")
-        else:
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
+        iconpath = commontools.get_icon_path(self.app.name)
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
         size = app.packageSize
         sizek = size / 1024

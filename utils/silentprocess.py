@@ -36,7 +36,7 @@ from backend.remote.piston_remoter import PistonRemoter
 from backend.ubuntu_sw import UK_APP_ICON_URL
 from utils.machine import *
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_APP_ICON_RES_PATH,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_TMPICON_PATH
+from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
 # from models.http import HttpDownLoad
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
@@ -250,9 +250,9 @@ class SilentProcess(multiprocessing.Process):
                 app_name = app['image']
                 update_time = app['modify_time']
 
-                if not os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app_name) or not os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app_name):
+                if not os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app_name):
                     # download icon
-                    iconfile = UBUNTUKYLIN_APP_ICON_RES_PATH + app_name
+                    iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
                     try:
                         icon_rul = UK_APP_ICON_URL % {
                             'pkgname': app_name,

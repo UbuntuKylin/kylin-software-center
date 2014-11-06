@@ -28,8 +28,8 @@ from PyQt4.QtCore import *
 from ui.ukliw import Ui_Ukliw
 from ui.starwidget import StarWidget
 from utils import run
+from utils import commontools
 from models.enums import (ITEM_LABEL_STYLE,
-                          UBUNTUKYLIN_RES_TMPICON_PATH,
                           UBUNTUKYLIN_RES_ICON_PATH,
                           LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
@@ -58,16 +58,8 @@ class ListItemWidget(QWidget):
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelect.setFocusPolicy(Qt.NoFocus)
 
-        if(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".png")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + app.name+".png"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + str(self.app.name) + ".jpg")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_ICON_PATH + app.name+".jpg"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".png"))
-        elif(os.path.isfile(UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg")):
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + app.name+".jpg"))
-        else:
-            self.ui.icon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_TMPICON_PATH + "default.png"))
+        iconpath = commontools.get_icon_path(self.app.name)
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
