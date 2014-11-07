@@ -237,6 +237,15 @@ AptProcessMsg = {
     "down_cancel":"下载取消",
 }
 
+class ErrorCode:
+    (
+        ERROR_UNKNOWN,
+        ERROR_NO_PACKAGE,
+        ERROR_PACKAGE_DOWNLOAD_FAILED,
+        ERROR_NO_LOCK,
+
+    ) = range(4)
+
 
 def UnicodeToAscii(src):
     return src.encode('ascii','ignore')

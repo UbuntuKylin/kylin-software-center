@@ -227,9 +227,11 @@ class AptDaemon():
 #        print pkgName
         try:
             return self.cache[pkgName]
-        except Exception, e:
-            print e
-            return "ERROR"
+        except KeyError:
+            raise WorkitemError(1, "Package %s isn't available" % pkgName)
+        # except Exception, e:
+        #     print e
+        #     return "ERROR"
 
     # install deb file
     def install_debfile(self, path, kwargs=None):
@@ -268,9 +270,15 @@ class AptDaemon():
 
         try:
             self.cache.commit(FetchProcess(self.dbus_service,pkgName,AppActions.INSTALL), AptProcess(self.dbus_service,pkgName,AppActions.INSTALL))
-        except Exception, e:
-            print e
-            print "install err"
+        except apt.cache.FetchFailedException as error:
+            raise WorkitemError(2, str(error))
+        except apt.cache.LockFailedException:
+            raise WorkitemError(3, "package manager is running.")
+        except Exception as e:
+            raise WorkitemError(0, "unknown error")
+        # except Exception, e:
+        #     print e
+        #     print "install err"
 
     # uninstall package
     def remove(self, pkgName, kwargs=None):
@@ -447,6 +455,13 @@ class AptDaemon():
             if(item.str().find("deb http://archive.ubuntukylin.com:10006/ubuntukylin") != -1):
                 source.remove(item)
         source.save()
+
+class WorkitemError(Exception):
+
+    def __init__(self, errornum, details = ""):
+        self.errornum = errornum
+        self.details = details
+
 
 if __name__ == "__main__":
     ad = AptDaemon(None)
