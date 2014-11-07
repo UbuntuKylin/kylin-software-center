@@ -55,8 +55,6 @@ class DetailScrollWidget(QScrollArea):
     reviewpage = ''
     maxpage = ''
     currentreviewready = ''
-    # workType = ''
-    # preType = ''
 
     def __init__(self, parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
@@ -79,7 +77,6 @@ class DetailScrollWidget(QScrollArea):
 
         # kobe 1106
         self.connect(self.btns,Signals.get_card_status,parent.slot_get_normal_card_status)
-
 
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
@@ -267,9 +264,7 @@ class DetailScrollWidget(QScrollArea):
         self.mainwindow.loadingDiv.stop_loading()
 
     # fill fast property, show ui, request remote property
-    def showSimple(self, app):#nowpage, prePage, btntext
-        # self.workType = nowpage
-        # self.preType = prePage
+    def showSimple(self, app):
         # clear reviews
         self.reviewpage = 1
         self.currentreviewready = False
@@ -338,10 +333,6 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
-
-
-        # if (self.workType == "unpage"):# or (self.workType == "searchpage" and self.preType == "unpage"):
-
         if app.status == PkgStates.INSTALL:
             self.btns.reset_btns(app, PkgStates.INSTALL)
             self.ui.status.hide()
@@ -367,8 +358,23 @@ class DetailScrollWidget(QScrollArea):
             self.btns.start_work()
             self.ui.status.show()
         else:
-            print 'another status in detail page......'
-            print app.status
+            # click the rank item or ad item on homepage
+            if(Globals.NOWPAGE == PageStates.HOMEPAGE):
+                if app.pkg_status == PkgStates.INSTALLED:
+                    if(run.get_run_command(app.name) == ""):
+                        self.btns.reset_btns(app, PkgStates.NORUN)
+                    else:
+                        self.btns.reset_btns(app, PkgStates.RUN)
+                    self.ui.status.show()
+                elif app.pkg_status == PkgStates.UNINSTALLED:
+                    self.btns.reset_btns(app, PkgStates.INSTALL)
+                    self.ui.status.hide()
+                elif app.pkg_status == PkgStates.UPGRADABLE:
+                    self.btns.reset_btns(app, PkgStates.UPDATE)
+                    self.ui.status.show()
+            else:
+                print 'another status in detail page......'
+                print app.status
 
         self.mainwindow.ui.detailShellWidget.show()
 
@@ -507,8 +513,6 @@ class DetailScrollWidget(QScrollArea):
 
             elif action == AppActions.INSTALL:
                 self.ui.status.show()
-                # print self.app.is_installed
-                # if (self.workType == "unpage") or (self.workType == "searchpage" and self.preType == "unpage"): ##add by zhangxin for bug 1380949 在卸载的summary页面卸载软件，卸载完成后，软件状态按钮显示为安装，点击安装按钮，执行的还是卸载操作
                 if (Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
                     self.app.status = PkgStates.UNINSTALL
                     self.btns.reset_btns(self.app, PkgStates.UNINSTALL)

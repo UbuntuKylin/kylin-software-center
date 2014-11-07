@@ -651,8 +651,7 @@ class SoftwareCenter(QMainWindow):
 
         # update cache db
         self.appmgr.get_newer_application_info()
-        # kobe 1103
-        # self.appmgr.get_newer_application_icon()
+        self.appmgr.get_newer_application_icon()
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()

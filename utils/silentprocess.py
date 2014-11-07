@@ -249,7 +249,7 @@ class SilentProcess(multiprocessing.Process):
             for app in reslist:
                 app_name = app['name']
                 app_path = app['image']
-                iconfile = UBUNTUKYLIN_APP_ICON_RES_PATH + app_name
+                iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
                 try:
                     icon_rul = UK_APP_ICON_URL % {
                         'pkgname': app_path,
