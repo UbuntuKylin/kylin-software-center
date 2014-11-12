@@ -246,10 +246,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
     # -------------------------software-center-------------------------
 
     # install deb file
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    @dbus.service.method(INTERFACE, in_signature='ay', out_signature='b', sender_keyword='sender')
     def install_debfile(self, path, sender=None):
         print "####install deb file: ", path
-
+        path = "".join([chr(character) for character in path])
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
             kwarg = {"appname":path,
