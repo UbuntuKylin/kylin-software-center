@@ -45,6 +45,7 @@ import apt_pkg
 import time
 
 from apt_daemon import AptDaemon,AppActions
+from apt_daemon import WorkitemError
 
 import threading
 
@@ -85,13 +86,17 @@ class WorkThread(threading.Thread):
             item = self.dbus_service.worklist.pop(0) # pop(0) is get first item and remove it from list
             self.dbus_service.mutex.release()
 
-            func = getattr(self.dbus_service.daemonApt,item.action)
-            if func is None:
-                print "Error action: ", item
+            try:
+                func = getattr(self.dbus_service.daemonApt,item.action)
+                if func is None:
+                    print "Error action: ", item
 
-            res = func(item.pkgname,item.kwargs)
-            if res is False:
-                print "Action exec failed..."
+                res = func(item.pkgname,item.kwargs)
+                if res is False:
+                    print "Action exec failed..."
+            except WorkitemError as e:
+                # print(e.errornum)
+                self.dbus_service.software_apt_signal("apt_error", {"errornum": str(e.errornum)})
 
 #            print "finish one acion....."
             time.sleep(0.5)

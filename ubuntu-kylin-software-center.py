@@ -1681,6 +1681,7 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
+        print "########### ", msg
         if action == AppActions.UPDATE:
             if int(percent) == 0:
                 self.configWidget.slot_update_status_change(1)
