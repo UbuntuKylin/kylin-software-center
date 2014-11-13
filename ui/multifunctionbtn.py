@@ -257,7 +257,14 @@ class MultiFunctionBtn(QWidget):
                 self.resize(self.width(), 40)
 
     def slot_click_btn_run(self):
-        self.app.run()
+        if not hasattr(self.app, "run"):#for local deb file:DebFile instance has no attribute 'run' when it's installing progress finished
+            pro_times = run.judge_app_run_or_not(self.app.name)
+            if pro_times == 0 or pro_times == 1:
+                run.run_app(self.app.name)
+            else:
+                print self.name + " 已经在运行了"
+        else:
+            self.app.run()
 
     def slot_click_btn_install(self):
         # kobe 1106

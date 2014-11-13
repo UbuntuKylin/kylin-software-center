@@ -55,6 +55,7 @@ class DetailScrollWidget(QScrollArea):
     reviewpage = ''
     maxpage = ''
     currentreviewready = ''
+    debfile = None
 
     def __init__(self, parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
@@ -64,6 +65,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui_init()
 
         self.mainwindow = parent
+
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
@@ -74,6 +76,7 @@ class DetailScrollWidget(QScrollArea):
         self.connect(self.btns,Signals.mfb_click_install,parent.slot_click_install)
         self.connect(self.btns,Signals.mfb_click_uninstall,parent.slot_click_remove)
         self.connect(self.btns,Signals.mfb_click_update,parent.slot_click_upgrade)
+        self.connect(self.btns, Signals.install_debfile, parent.slot_click_install_debfile)
 
         # kobe 1106
         self.connect(self.btns,Signals.get_card_status,parent.slot_get_normal_card_status)
@@ -514,16 +517,25 @@ class DetailScrollWidget(QScrollArea):
 
             elif action == AppActions.INSTALL:
                 self.ui.status.show()
-                if (Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
-                    self.app.status = PkgStates.UNINSTALL
-                    self.btns.reset_btns(self.app, PkgStates.UNINSTALL)
-                else:
+                if self.debfile:
                     if(run.get_run_command(self.app.name) == ""):
                         self.app.status = PkgStates.NORUN
                         self.btns.reset_btns(self.app, PkgStates.NORUN)
                     else:
                         self.app.status = PkgStates.RUN
                         self.btns.reset_btns(self.app, PkgStates.RUN)
+                    self.debfile = None
+                else:
+                    if (Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
+                        self.app.status = PkgStates.UNINSTALL
+                        self.btns.reset_btns(self.app, PkgStates.UNINSTALL)
+                    else:
+                        if(run.get_run_command(self.app.name) == ""):
+                            self.app.status = PkgStates.NORUN
+                            self.btns.reset_btns(self.app, PkgStates.NORUN)
+                        else:
+                            self.app.status = PkgStates.RUN
+                            self.btns.reset_btns(self.app, PkgStates.RUN)
 
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.INSTALL
@@ -550,6 +562,8 @@ class DetailScrollWidget(QScrollArea):
                 self.app.status = PkgStates.INSTALL
                 # self.btns.reset_btns(self.app, PkgStates.INSTALL)
                 self.ui.status.hide()
+                if self.debfile:
+                    self.debfile = None
 
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.UNINSTALL
