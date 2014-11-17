@@ -54,7 +54,9 @@ def get_run_command(pkgname):
         pkgname = "system-config-printer"
     elif pkgname == "xterm":
         pkgname = "debian-uxterm"
-
+    elif pkgname == "virtualbox-qt":
+        pkgname = "virtualbox"
+d
 
     fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     exc = fd.read()
