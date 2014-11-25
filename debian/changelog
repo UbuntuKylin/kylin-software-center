@@ -1,3 +1,13 @@
+ubuntu-kylin-software-center (1.2.1.0) utopic; urgency=medium
+
+  * Icon from the server and automatically update the software.
+  * Detailed interface multifunction button, the default an 
+    operation, the drop-down to select other actions.
+  * Icon from the server and automatically update the software.
+  * Submit software review rules.
+
+ -- Shine <shenghuang@ubuntukylin.com>  Tue, 25 Nov 2014 09:55:32 +0800
+
 ubuntu-kylin-software-center (1.2.0.0) utopic; urgency=medium
 
   * complete list of user-based installation records login to view,
