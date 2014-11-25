@@ -247,31 +247,28 @@ class SilentProcess(multiprocessing.Process):
         if(size > 0):
             # update application icon to cache icons/
             for app in reslist:
-                app_name = app['image']
-                update_time = app['modify_time']
+                app_name = app['name']
+                app_path = app['image']
+                iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
+                try:
+                    icon_rul = UK_APP_ICON_URL % {
+                        'pkgname': app_path,
+                    }
+                    urlFile = urllib2.urlopen(icon_rul)
+                    rawContent = urlFile.read()
+                    if rawContent:
+                        localFile = open(iconfile,"wb")
+                        localFile.write(rawContent)
+                        localFile.close()
 
-                if not os.path.isfile(UBUNTUKYLIN_RES_ICON_PATH + app_name):
-                    # download icon
-                    iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
-                    try:
-                        icon_rul = UK_APP_ICON_URL % {
-                            'pkgname': app_name,
-                        }
-                        urlFile = urllib2.urlopen(icon_rul)
-                        rawContent = urlFile.read()
-                        if rawContent:
-                            localFile = open(iconfile,"wb")
-                            localFile.write(rawContent)
-                            localFile.close()
-
-                    except urllib2.HTTPError,e:
-                        print e.code
-                    except urllib2.URLError,e:
-                        print str(e)
+                except urllib2.HTTPError,e:
+                    print e.code
+                except urllib2.URLError,e:
+                    print str(e)
 
             # set application info last update date
-            # nowdate = time.strftime('%Y-%m-%d',time.localtime())
-            self.cursor.execute("update dict set value=? where key=?", (update_time,'appicon_updatetime'))
+            new_update_time = reslist[0]['modify_time']
+            self.cursor.execute("update dict set value=? where key=?", (new_update_time,'appicon_updatetime'))
 
             self.connect.commit()
 

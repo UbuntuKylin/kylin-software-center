@@ -651,8 +651,7 @@ class SoftwareCenter(QMainWindow):
 
         # update cache db
         self.appmgr.get_newer_application_info()
-        # kobe 1103
-        # self.appmgr.get_newer_application_icon()
+        self.appmgr.get_newer_application_icon()
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
@@ -701,6 +700,9 @@ class SoftwareCenter(QMainWindow):
                     self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
                     self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                     self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
+                    # kobe 1106
+                    self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
                 else:
                     app = self.appmgr.get_application_by_name(context[0])
                     if app is not None:
@@ -713,6 +715,9 @@ class SoftwareCenter(QMainWindow):
                     self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
                     self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                     self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
+                    # kobe 1106
+                    self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
         self.win_exists = 1
 
     def show_to_frontend(self):
@@ -930,6 +935,9 @@ class SoftwareCenter(QMainWindow):
             self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
 
+            # kobe 1106
+            self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+
             count = count + 1
 
             if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
@@ -969,6 +977,9 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.remove_app, self.slot_click_remove)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+
+                # kobe 1106
+                self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
 
                 count = count + 1
 
@@ -1587,6 +1598,10 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar()
         self.ui.btnCloseDetail.setVisible(True)
         self.detailScrollWidget.show_by_local_debfile(path)
+
+    # kobe 1106
+    def slot_get_normal_card_status(self, pkgname, status):
+        self.emit(Signals.trans_card_status, pkgname, status)
 
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")

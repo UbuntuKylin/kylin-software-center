@@ -28,6 +28,7 @@ from ui.loadingdiv import MiniLoadingDiv
 from ui.multifuncbtn import Ui_MultiFuncBtn
 from models.enums import Signals,PkgStates,PageStates
 from models.globals import Globals
+from utils import run
 
 
 # class WorkType:
@@ -141,7 +142,10 @@ class MultiFunctionBtn(QWidget):
                 self.setBtnEnabledPlus(self.ui.btnRun, True)
                 self.setBtnEnabledPlus(self.ui.btnUpdate, False)
             elif(type == PkgStates.UPDATE):
-                self.setBtnEnabledPlus(self.ui.btnRun, False)
+                if(run.get_run_command(app.name) == ""):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                else:
+                    self.setBtnEnabledPlus(self.ui.btnRun, True)
                 self.setBtnEnabledPlus(self.ui.btnUpdate, True)
             self.setBtnEnabledPlus(self.ui.btnInstall, False)
             self.setBtnEnabledPlus(self.ui.btnUninstall, False)
@@ -160,7 +164,10 @@ class MultiFunctionBtn(QWidget):
                 self.setBtnEnabledPlus(self.ui.btnUninstall, False)
                 self.setBtnEnabledPlus(self.ui.btnInstall, False)
             elif(type == PkgStates.UNINSTALL):
-                self.setBtnEnabledPlus(self.ui.btnRun, True)
+                if(run.get_run_command(app.name) == ""):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                else:
+                    self.setBtnEnabledPlus(self.ui.btnRun, True)
                 self.setBtnEnabledPlus(self.ui.btnUninstall, True)
                 self.setBtnEnabledPlus(self.ui.btnInstall, False)
             elif(type == PkgStates.INSTALL):
@@ -242,6 +249,8 @@ class MultiFunctionBtn(QWidget):
         self.app.run()
 
     def slot_click_btn_install(self):
+        # kobe 1106
+        self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
         self.app.status = PkgStates.INSTALLING
         self.switchDirection = 'up'
         self.switch_animation()
@@ -249,6 +258,8 @@ class MultiFunctionBtn(QWidget):
         self.emit(Signals.mfb_click_install, self.app)
 
     def slot_click_btn_update(self):
+        # kobe 1106
+        self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
         self.app.status = PkgStates.UPGRADING
         self.switchDirection = 'up'
         self.switch_animation()
@@ -256,6 +267,8 @@ class MultiFunctionBtn(QWidget):
         self.emit(Signals.mfb_click_update, self.app)
 
     def slot_click_btn_uninstall(self):
+        # kobe 1106
+        self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
         self.app.status = PkgStates.REMOVING
         self.switchDirection = 'up'
         self.switch_animation()

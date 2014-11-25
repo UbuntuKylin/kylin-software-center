@@ -156,7 +156,7 @@ class PistonRemoterAuth(PistonAPI):
         postdata.language = language
         postdata.user = user
         postdata.user_display = user_display
-        return self._post('submitreview/', data=postdata, scheme='http', content_type='application/json')
+        return self._post('submitreview20141124/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
     def submit_rating(self, app_name, rating, user, user_display):
