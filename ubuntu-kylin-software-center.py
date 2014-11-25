@@ -1610,15 +1610,20 @@ class SoftwareCenter(QMainWindow):
     def slot_click_update_source(self):
         self.emit(Signals.update_source)
 
-    def slot_click_install_debfile(self, debfile):
+    def slot_click_install_debfile(self, debfile): #modified by zhangxin 11:19
         LOG.info("add an install debfile task:%s", debfile.path)
         # install deb deps
-        res = self.backend.install_deps(debfile.path)
-        if res:
-            # install deb
+        if debfile.get_missing_deps():
+            res = self.backend.install_deps(debfile.path)
+            if res:
+                # install deb
+                res = self.backend.install_debfile(debfile.path)
+                if res:
+                    self.add_task_item(debfile, isdeb=True)
+        else:
             res = self.backend.install_debfile(debfile.path)
-        if res:
-            self.add_task_item(debfile, isdeb=True)
+            if res:
+                self.add_task_item(debfile, isdeb=True)
 
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)

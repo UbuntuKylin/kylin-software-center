@@ -27,7 +27,7 @@ import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
-from models.enums import Signals,AptActionMsg
+from models.enums import Signals,AptActionMsg,PkgStates
 from models.enums import UBUNTUKYLIN_RES_ICON_PATH
 from utils import commontools
 from utils.debfile import DebFile
@@ -63,11 +63,11 @@ class TaskListItemWidget(QWidget):
 
         # this is deb file task
         if(isdeb == True):
-            if app.status == "installing":
+            if app.status == PkgStates.INSTALLING:#"installing":
                 self.ui.name.setText("安装 "+app.name)
-            if app.status == "uninstalling":
+            if app.status == PkgStates.REMOVING:#"uninstalling":
                 self.ui.name.setText("卸载 "+app.name)
-            if app.status == "upgrading":
+            if app.status == PkgStates.UPGRADING:#"upgrading":
                 self.ui.name.setText("升级 "+app.name)
 
             sizek = app.installedsize
@@ -83,11 +83,11 @@ class TaskListItemWidget(QWidget):
             img = QPixmap(iconpath)
             # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
-            if app.status == "installing":
+            if app.status == PkgStates.INSTALLING:#"installing":
                 self.ui.name.setText("安装 "+app.name)
-            if app.status == "uninstalling":
+            if app.status == PkgStates.REMOVING:#"uninstalling":
                 self.ui.name.setText("卸载 "+app.name)
-            if app.status == "upgrading":
+            if app.status == PkgStates.UPGRADING:#"upgrading":
                 self.ui.name.setText("升级 "+app.name)
 
             size = app.packageSize
