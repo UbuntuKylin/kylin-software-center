@@ -209,7 +209,7 @@ class NormalCard(QWidget):
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
-            elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):
+            elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE)):#zx11.27
                 if(app.is_installed):
                     self.star.hide()
                     self.ui.isInstalled.setVisible(True)
@@ -236,11 +236,11 @@ class NormalCard(QWidget):
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
-            elif(Globals.NOWPAGE == PageStates.SEARCHUPPAGE):
+            elif(Globals.NOWPAGE == PageStates.SEARCHUPPAGE): #zx 11.27
                 # init app.status
                 self.app.status = PkgStates.UPDATE
-                self.star.hide()
-                self.ui.isInstalled.setVisible(True)
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
                 if app.is_installed is True and app.is_upgradable is True:
@@ -253,8 +253,8 @@ class NormalCard(QWidget):
                 # init app.status
                 self.app.status = PkgStates.UNINSTALL
                 # add by kobe, Fixed Bug #1373740
-                self.star.hide()
-                self.ui.isInstalled.setVisible(True)
+                self.star.show()
+                self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                 if app.is_installed:

@@ -913,7 +913,15 @@ class SoftwareCenter(QMainWindow):
             app = self.appmgr.get_application_by_name(appname)
             if app is None:
                 continue
+            # in uppage and unpage we just can search the software which can be upgraded or uninstalled zx11.27
+            if Globals.NOWPAGE == PageStates.SEARCHUPPAGE:
+                if app.is_installed is False:
+                    continue
+                if app.is_installed is True and app.is_upgradable is False:
+                    continue
 
+            if Globals.NOWPAGE == PageStates.SEARCHUNPAGE and app.is_installed is False:
+                continue
             if count < listLen:
                 count = count + 1
                 continue
@@ -942,6 +950,7 @@ class SoftwareCenter(QMainWindow):
 
             if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
                 break
+        self.ui.searchcount.setText(str(count))
 
     def show_more_software(self, listWidget):
         # if self.nowPage == "searchpage":
@@ -1689,7 +1698,7 @@ class SoftwareCenter(QMainWindow):
                     continue
                 count = count + 1
             self.goto_search_page()
-            self.ui.searchcount.setText(str(count))
+
 
     def slot_search_text_change(self, text):
         self.searchDTimer.stop()

@@ -356,8 +356,6 @@ class StoreDatabase(GObject.GObject):
                                             xapian.QueryParser.FLAG_BOOLEAN)
 
         return SearchQuery([pkg_query, fuzzy_query])
-#Xapian::Query((youker:(pos=1) SYNONYM youker-assistant:(pos=1) SYNONYM youker_assistant:(pos=1) SYNONYM youker_assistant:i386:(pos=1) SYNONYM youkezhushou:(pos=1) SYNONYM youku:(pos=1))) 1
-
 
     def __len__(self):
         """return the doc count of the database"""

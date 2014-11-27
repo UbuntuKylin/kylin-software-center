@@ -96,20 +96,19 @@ class MultiFunctionBtn(QWidget):
                 btn.setText("卸载")
         else:
             if(btn.whatsThis() == "run"):
-                btn.setText("不可启动")
+                btn.setText("无法启动")
             if(btn.whatsThis() == "install"):
-                btn.setText("不可安装")
+                btn.setText("已经安装")
             if(btn.whatsThis() == "update"):
-                btn.setText("不可升级")
+                btn.setText("无法升级")
             if(btn.whatsThis() == "uninstall"):
-                btn.setText("不可卸载")
+                btn.setText("无法卸载")
 
     # confirm which btn on top, confirm the status of each btn
-    def reset_btns(self, app, type, debfile=None):
+    def reset_btns(self, app, type, debfile=None):#zx11.27
         self.debfile = debfile
         self.app = app
         y = 0
-
         if self.debfile:#for local deb file
             self.setBtnEnabledPlus(self.ui.btnInstall, True)
             self.setBtnEnabledPlus(self.ui.btnRun, False)
@@ -120,76 +119,113 @@ class MultiFunctionBtn(QWidget):
             self.ui.btnUpdate.move(0, y + 82)
             self.ui.btnUninstall.move(0, y + 123)
         else:# for apt deb file
-            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.UAPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):
+            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE)):#zx11.27
                 if(type == PkgStates.NORUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
-                    self.ui.btnRun.move(0, y)
-                    self.ui.btnInstall.move(0, y + 41)
-                    self.ui.btnUpdate.move(0, y + 82)
-                    self.ui.btnUninstall.move(0, y + 123)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    if app.is_upgradable is True:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                        self.ui.btnRun.move(0, 82)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y)
+                        self.ui.btnUninstall.move(0, y + 41)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                        self.ui.btnRun.move(0, y + 41)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y + 82)
+                        self.ui.btnUninstall.move(0, y)
                 elif(type == PkgStates.RUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, True)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
-                    self.ui.btnRun.move(0, y)
-                    self.ui.btnInstall.move(0, y + 41)
-                    self.ui.btnUpdate.move(0, y + 82)
-                    self.ui.btnUninstall.move(0, y + 123)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    if app.is_upgradable:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                        self.ui.btnRun.move(0, y)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y + 41)
+                        self.ui.btnUninstall.move(0, y + 82)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                        self.ui.btnRun.move(0, y)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y + 82)
+                        self.ui.btnUninstall.move(0, y + 41)
+
                 elif(type == PkgStates.INSTALL):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, False)
                     self.ui.btnInstall.move(0, y)
                     self.ui.btnRun.move(0, y + 41)
                     self.ui.btnUpdate.move(0, y + 82)
                     self.ui.btnUninstall.move(0, y + 123)
-                self.setBtnEnabledPlus(self.ui.btnUpdate, False)
-                self.setBtnEnabledPlus(self.ui.btnUninstall, False)
 
             elif(Globals.NOWPAGE == PageStates.UPPAGE or Globals.NOWPAGE == PageStates.SEARCHUPPAGE):
-                if(type == PkgStates.NORUN):
-                    self.setBtnEnabledPlus(self.ui.btnRun, False)
-                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
-                elif(type == PkgStates.RUN):
-                    self.setBtnEnabledPlus(self.ui.btnRun, True)
-                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
-                elif(type == PkgStates.UPDATE):
+                if(type == PkgStates.UPDATE):
                     if(run.get_run_command(app.name) == ""):
                         self.setBtnEnabledPlus(self.ui.btnRun, False)
                     else:
                         self.setBtnEnabledPlus(self.ui.btnRun, True)
                     self.setBtnEnabledPlus(self.ui.btnUpdate, True)
-                self.setBtnEnabledPlus(self.ui.btnInstall, False)
-                self.setBtnEnabledPlus(self.ui.btnUninstall, False)
-                self.ui.btnUpdate.move(0, y)
-                self.ui.btnRun.move(0, y + 41)
-                self.ui.btnInstall.move(0, y + 82)
-                self.ui.btnUninstall.move(0, y + 123)
-
-            elif(Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
-                if(type == PkgStates.NORUN):
-                    self.setBtnEnabledPlus(self.ui.btnRun, False)
-                    self.setBtnEnabledPlus(self.ui.btnUninstall, False)
-                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
-                elif(type == PkgStates.RUN):
-                    self.setBtnEnabledPlus(self.ui.btnRun, True)
-                    self.setBtnEnabledPlus(self.ui.btnUninstall, False)
-                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
-                elif(type == PkgStates.UNINSTALL):
-                    if(run.get_run_command(app.name) == ""):
-                        self.setBtnEnabledPlus(self.ui.btnRun, False)
-                    else:
-                        self.setBtnEnabledPlus(self.ui.btnRun, True)
                     self.setBtnEnabledPlus(self.ui.btnUninstall, True)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
                 elif(type == PkgStates.INSTALL):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnUninstall, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, True)
-                self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                elif(type == PkgStates.NORUN):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                elif(type == PkgStates.RUN):
+                    self.setBtnEnabledPlus(self.ui.btnRun, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+
+                self.ui.btnUpdate.move(0, y)
+                self.ui.btnRun.move(0, y + 41)
+                self.ui.btnInstall.move(0, y + 123)
+                self.ui.btnUninstall.move(0, y + 82)
+
+            elif(Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
+                if(type == PkgStates.UNINSTALL):
+                    if(run.get_run_command(app.name) == ""):
+                        self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnRun, True)
+
+                    if app.is_upgradable is True:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                elif(type == PkgStates.INSTALL):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+
+                elif(type == PkgStates.NORUN):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                elif(type == PkgStates.RUN):
+                    self.setBtnEnabledPlus(self.ui.btnRun, True)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
                 self.ui.btnUninstall.move(0, y)
                 self.ui.btnRun.move(0, y + 41)
-                self.ui.btnInstall.move(0, y + 82)
-                self.ui.btnUpdate.move(0, y + 123)
+                self.ui.btnInstall.move(0, y + 123)
+                self.ui.btnUpdate.move(0, y + 82)
 
     def start_work(self):
         self.isWorking = True
