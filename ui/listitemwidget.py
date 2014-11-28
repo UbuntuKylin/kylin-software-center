@@ -150,19 +150,22 @@ class ListItemWidget(QWidget):
                 else:
                     self.messageBox.alert_msg(self.app.name + "已经运行")
         else:
+            self.ui.btn.setEnabled(False)
+            self.ui.cbSelect.setEnabled(False)
             if(self.workType == 'ins'):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
                 self.emit(Signals.install_app, self.app)
+                self.ui.btn.setText("正在安装")
             elif(self.workType == 'up'):
                 self.app.status = PkgStates.UPGRADING
                 self.emit(Signals.upgrade_app, self.app)
+                self.ui.btn.setText("正在升级")
             elif(self.workType == 'un'):
                 self.app.status = PkgStates.REMOVING
                 self.emit(Signals.remove_app, self.app)
+                self.ui.btn.setText("正在卸载")
 
-            self.ui.btn.setEnabled(False)
-            self.ui.cbSelect.setEnabled(False)
-            self.ui.btn.setText("正在安装")
+
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)

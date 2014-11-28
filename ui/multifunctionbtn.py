@@ -371,7 +371,7 @@ class MultiFunctionBtn(QWidget):
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
             else:
-                print self.name + " 已经在运行了hhhhh"
+                print self.name + " 已经在运行了"
         else:
             self.app.run()
 
