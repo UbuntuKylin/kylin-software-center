@@ -160,7 +160,7 @@ class NormalCard(QWidget):
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
         else:
-            if(Globals.NOWPAGE == PageStates.ALLPAGE):
+            if(Globals.NOWPAGE == PageStates.ALLPAGE or Globals.NOWPAGE == PageStates.HOMEPAGE ):
                 if(app.is_installed):
                     # add by kobe
                     self.star.hide()
@@ -209,7 +209,7 @@ class NormalCard(QWidget):
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
-            elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE)):#zx11.27
+            elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):#zx11.27
                 if(app.is_installed):
                     self.star.hide()
                     self.ui.isInstalled.setVisible(True)
@@ -338,27 +338,44 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")
                 self.emit(Signals.install_app, self.app)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+
             elif(self.ui.btn.text() == "升级"):
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
                 self.emit(Signals.upgrade_app, self.app)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+
             elif(self.ui.btn.text() == "卸载"):
                 self.app.status = PkgStates.REMOVING
                 self.ui.btn.setText("正在卸载")
                 self.emit(Signals.remove_app, self.app)
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
         if self.app.name == pkgname:
+            self.ui.btn.setEnabled(False)
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
             elif status == PkgStates.REMOVING:
                 self.app.status = PkgStates.REMOVING
                 self.ui.btn.setText("正在卸载")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+
             elif status == PkgStates.UPGRADING:
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
@@ -386,6 +403,8 @@ class NormalCard(QWidget):
                         self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.INSTALL
                 self.star.show()

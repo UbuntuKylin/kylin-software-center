@@ -1282,7 +1282,8 @@ class SoftwareCenter(QMainWindow):
                 delitem = self.ui.taskListWidget.takeItem(top)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
-                del self.stmap[taskitem.app.name]
+                if taskitem.app.name in self.stmap.keys():#for bug keyerror
+                    del self.stmap[taskitem.app.name]
                 truecount = truecount + 1
             else:
                 top = top + 1
@@ -1541,7 +1542,7 @@ class SoftwareCenter(QMainWindow):
                 install_date = res['date']
                 app = self.appmgr.get_application_by_name(app_name)
                 app.install_date = install_date
-                item = ListItemWidget(app, self.userAppListWidget.cardPanel)
+                item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
                 self.userAppListWidget.add_card(item)
                 self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(item, Signals.install_app, self.slot_click_install)
@@ -1549,6 +1550,7 @@ class SoftwareCenter(QMainWindow):
                 self.connect(item, Signals.remove_app, self.slot_click_remove)
                 self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
+                self.connect(self, Signals.trans_card_status, item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
         else:
             self.ui.uaNoItemText.show()
             self.ui.uaNoItemWidget.show()

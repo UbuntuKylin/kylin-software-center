@@ -172,7 +172,7 @@ class Application:
         if pro_times == 0 or pro_times == 1:
             run.run_app(self.name)
         else:
-            print self.name + " 已经在运行了"
+            print self.name + "已经运行"
 
     # get total download size include dependencies
     def get_total_size(self):

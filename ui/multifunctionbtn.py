@@ -47,6 +47,7 @@ class MultiFunctionBtn(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.ui_init()
+        #self.messageBox = messageBox
 
         self.loading = MiniLoadingDiv(self,self)
         self.loading.raise_()
@@ -119,7 +120,7 @@ class MultiFunctionBtn(QWidget):
             self.ui.btnUpdate.move(0, y + 82)
             self.ui.btnUninstall.move(0, y + 123)
         else:# for apt deb file
-            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE)):#zx11.27
+            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):#zx11.27
                 if(type == PkgStates.NORUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
@@ -227,6 +228,78 @@ class MultiFunctionBtn(QWidget):
                 self.ui.btnInstall.move(0, y + 123)
                 self.ui.btnUpdate.move(0, y + 82)
 
+            elif(Globals.NOWPAGE == PageStates.UAPAGE): #zx.28 To keep the btn status change normally in UAPAGE
+                if(type == PkgStates.NORUN):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    if app.is_upgradable is True:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                        self.ui.btnRun.move(0, 82)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y)
+                        self.ui.btnUninstall.move(0, y + 41)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                        self.ui.btnRun.move(0, y + 41)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y + 82)
+                        self.ui.btnUninstall.move(0, y)
+                elif(type == PkgStates.RUN):
+                    self.setBtnEnabledPlus(self.ui.btnRun, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    if app.is_upgradable:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                        self.ui.btnRun.move(0, y)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y + 41)
+                        self.ui.btnUninstall.move(0, y + 82)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                        self.ui.btnRun.move(0, y)
+                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnUpdate.move(0, y + 82)
+                        self.ui.btnUninstall.move(0, y + 41)
+
+                elif(type == PkgStates.INSTALL):
+                    self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, False)
+                    self.ui.btnInstall.move(0, y)
+                    self.ui.btnRun.move(0, y + 41)
+                    self.ui.btnUpdate.move(0, y + 82)
+                    self.ui.btnUninstall.move(0, y + 123)
+                elif(type == PkgStates.UNINSTALL):
+                    if(run.get_run_command(app.name) == ""):
+                        self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnRun, True)
+
+                    if app.is_upgradable is True:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.ui.btnUninstall.move(0, y)
+                    self.ui.btnRun.move(0, y + 41)
+                    self.ui.btnInstall.move(0, y + 123)
+                    self.ui.btnUpdate.move(0, y + 82)
+                if(type == PkgStates.UPDATE):
+                    if(run.get_run_command(app.name) == ""):
+                        self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnRun, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.ui.btnUpdate.move(0, y)
+                    self.ui.btnRun.move(0, y + 41)
+                    self.ui.btnInstall.move(0, y + 123)
+                    self.ui.btnUninstall.move(0, y + 82)
+
     def start_work(self):
         self.isWorking = True
 
@@ -298,14 +371,14 @@ class MultiFunctionBtn(QWidget):
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
             else:
-                print self.name + " 已经在运行了"
+                print self.name + " 已经在运行了hhhhh"
         else:
             self.app.run()
 
     def slot_click_btn_install(self):
         # kobe 1106
-        self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
         self.app.status = PkgStates.INSTALLING
+        self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
@@ -316,8 +389,8 @@ class MultiFunctionBtn(QWidget):
 
     def slot_click_btn_update(self):
         # kobe 1106
-        self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
         self.app.status = PkgStates.UPGRADING
+        self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
@@ -325,8 +398,8 @@ class MultiFunctionBtn(QWidget):
 
     def slot_click_btn_uninstall(self):
         # kobe 1106
-        self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
         self.app.status = PkgStates.REMOVING
+        self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
