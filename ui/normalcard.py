@@ -383,9 +383,9 @@ class NormalCard(QWidget):
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
-                self.star.hide()
-                self.ui.isInstalled.setVisible(True)
                 if(Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
+                    self.star.show()
+                    self.ui.isInstalled.setVisible(False)
                     self.app.status = PkgStates.UNINSTALL
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
@@ -393,6 +393,8 @@ class NormalCard(QWidget):
                     self.ui.btn.setText("卸载")
                     self.ui.btn.setEnabled(True)
                 else:
+                    self.star.hide()
+                    self.ui.isInstalled.setVisible(True)
                     if(run.get_run_command(self.app.name) == ""):
                         self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
