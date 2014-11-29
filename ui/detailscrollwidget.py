@@ -57,20 +57,20 @@ class DetailScrollWidget(QScrollArea):
     currentreviewready = ''
     debfile = None
 
-    def __init__(self, parent=None):
+    def __init__(self,messageBox,parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
         self.detailWidget = QWidget()
         # self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet("QWidget{border:0px;}")
         self.ui_init()
-
+        self.messageBox = messageBox
         self.mainwindow = parent
 
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
 
-        self.btns = MultiFunctionBtn(self.detailWidget)
+        self.btns = MultiFunctionBtn(self.messageBox,self.detailWidget)
         self.btns.move(700, 24)
 
         self.connect(self.btns,Signals.mfb_click_install,parent.slot_click_install)

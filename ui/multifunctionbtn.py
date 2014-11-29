@@ -44,10 +44,10 @@ class MultiFunctionBtn(QWidget):
     isWorking = False
     app = ''
 
-    def __init__(self, parent=None):
+    def __init__(self,messageBox,parent=None):
         QWidget.__init__(self, parent)
         self.ui_init()
-        #self.messageBox = messageBox
+        self.messageBox = messageBox
 
         self.loading = MiniLoadingDiv(self,self)
         self.loading.raise_()
@@ -366,12 +366,16 @@ class MultiFunctionBtn(QWidget):
                 self.resize(self.width(), 40)
 
     def slot_click_btn_run(self):
-        if not hasattr(self.app, "run"):#for local deb file:DebFile instance has no attribute 'run' when it's installing progress finished
+        if (not hasattr(self.app, "run")) or (self.ui.btnRun.clicked):#for local deb file:DebFile instance has no attribute 'run' when it's installing progress finished
             pro_times = run.judge_app_run_or_not(self.app.name)
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
             else:
-                print self.name + " 已经在运行了"
+                word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
+                if(word_len > 31):
+                    self.messageBox.alert_msg(self.app.name + "\n已经运行")
+                else:
+                    self.messageBox.alert_msg(self.app.name + "已经运行")
         else:
             self.app.run()
 

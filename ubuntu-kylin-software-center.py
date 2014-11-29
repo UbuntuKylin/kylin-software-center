@@ -161,9 +161,6 @@ class SoftwareCenter(QMainWindow):
         self.winListWidget = CardWidget(427, 88, 6, self.ui.winpageWidget)
         self.winListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)
         self.winListWidget.calculate_data()
-        # detail page
-        self.detailScrollWidget = DetailScrollWidget(self)
-        self.detailScrollWidget.setGeometry(0, 0, self.ui.detailShellWidget.width(), self.ui.detailShellWidget.height())
         # loading div
         self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
@@ -171,6 +168,9 @@ class SoftwareCenter(QMainWindow):
         self.userload = MiniLoadingDiv(self.ui.beforeLoginWidget, self.ui.homeMsgWidget)
         # alert message box
         self.messageBox = MessageBox(self)
+        # detail page
+        self.detailScrollWidget = DetailScrollWidget(self.messageBox,self)
+        self.detailScrollWidget.setGeometry(0, 0, self.ui.detailShellWidget.width(), self.ui.detailShellWidget.height())
         # first update process bar
         self.updateSinglePB = SingleProcessBar(self)
         # config widget
