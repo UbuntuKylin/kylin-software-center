@@ -96,7 +96,11 @@ class WorkThread(threading.Thread):
                     print "Action exec failed..."
             except WorkitemError as e:
                 # print(e.errornum)
-                self.dbus_service.software_apt_signal("apt_error", {"errornum": str(e.errornum)})
+                kwarg = {"apt_appname": item.pkgname,
+                        "apt_percent": str(-e.errornum),
+                        "action": str(item.action),
+                        }
+                self.dbus_service.software_apt_signal("apt_error", kwarg)
 
 #            print "finish one acion....."
             time.sleep(0.5)
