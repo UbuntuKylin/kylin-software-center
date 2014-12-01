@@ -215,6 +215,7 @@ class DetailScrollWidget(QScrollArea):
 
     def show_by_local_debfile(self, path):
         # clear reviews
+        Globals.NOWPAGE = PageStates.ALLPAGE
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
@@ -261,6 +262,8 @@ class DetailScrollWidget(QScrollArea):
             # self.ui.btnInstall.setEnabled(True)
         else:
             print "it can not be installed......"
+            self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
+            self.messageBox.alert_msg("无法安装该软件包")
             # self.ui.btnInstall.setText("无法安装")
             # self.ui.btnInstall.setEnabled(False)
         # self.show()

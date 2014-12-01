@@ -1713,6 +1713,8 @@ class SoftwareCenter(QMainWindow):
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
         print "########### ", msg
+        if "安装本地包失败!" == msg:
+            self.messageBox.alert_msg("安装本地包失败!")
         if action == AppActions.UPDATE:
             if int(percent) == 0:
                 self.configWidget.slot_update_status_change(1)

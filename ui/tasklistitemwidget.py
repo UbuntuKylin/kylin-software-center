@@ -62,7 +62,7 @@ class TaskListItemWidget(QWidget):
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
         # this is deb file task
-        if(isdeb == True):
+        if(isdeb == True or isinstance(app,DebFile)):
             if app.status == PkgStates.INSTALLING:#"installing":
                 self.ui.name.setText("安装 "+app.name)
             if app.status == PkgStates.REMOVING:#"uninstalling":

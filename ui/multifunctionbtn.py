@@ -29,6 +29,7 @@ from ui.multifuncbtn import Ui_MultiFuncBtn
 from models.enums import Signals,PkgStates,PageStates
 from models.globals import Globals
 from utils import run
+from utils.debfile import DebFile
 
 
 # class WorkType:
@@ -99,7 +100,7 @@ class MultiFunctionBtn(QWidget):
             if(btn.whatsThis() == "run"):
                 btn.setText("无法启动")
             if(btn.whatsThis() == "install"):
-                btn.setText("已经安装")
+                btn.setText("无法安装")
             if(btn.whatsThis() == "update"):
                 btn.setText("无法升级")
             if(btn.whatsThis() == "uninstall"):
@@ -111,48 +112,75 @@ class MultiFunctionBtn(QWidget):
         self.app = app
         y = 0
         if self.debfile:#for local deb file
-            self.setBtnEnabledPlus(self.ui.btnInstall, True)
-            self.setBtnEnabledPlus(self.ui.btnRun, False)
-            self.setBtnEnabledPlus(self.ui.btnUpdate, False)
-            self.setBtnEnabledPlus(self.ui.btnUninstall, False)
-            self.ui.btnInstall.move(0, y)
-            self.ui.btnRun.move(0, y + 41)
-            self.ui.btnUpdate.move(0, y + 82)
-            self.ui.btnUninstall.move(0, y + 123)
+            if self.debfile.is_installable():
+                self.setBtnEnabledPlus(self.ui.btnInstall, True)
+                self.setBtnEnabledPlus(self.ui.btnRun, False)
+                self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                self.setBtnEnabledPlus(self.ui.btnUninstall, False)
+                self.ui.btnInstall.move(0, y)
+                self.ui.btnRun.move(0, y + 41)
+                self.ui.btnUpdate.move(0, y + 82)
+                self.ui.btnUninstall.move(0, y + 123)
+            else:
+                self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                self.setBtnEnabledPlus(self.ui.btnRun, False)
+                self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                self.setBtnEnabledPlus(self.ui.btnUninstall, False)
+                self.ui.btnInstall.move(0, y)
+                self.ui.btnRun.move(0, y + 41)
+                self.ui.btnUpdate.move(0, y + 82)
+                self.ui.btnUninstall.move(0, y + 123)
+
         else:# for apt deb file
             if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):#zx11.27
                 if(type == PkgStates.NORUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
                     self.setBtnEnabledPlus(self.ui.btnUninstall, True)
-                    if app.is_upgradable is True:
-                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
-                        self.ui.btnRun.move(0, 82)
-                        self.ui.btnInstall.move(0, y + 123)
-                        self.ui.btnUpdate.move(0, y)
-                        self.ui.btnUninstall.move(0, y + 41)
-                    else:
+
+                    if (isinstance(app,DebFile)):#check is local debfile or not for after click install
                         self.setBtnEnabledPlus(self.ui.btnUpdate, False)
-                        self.ui.btnRun.move(0, y + 41)
-                        self.ui.btnInstall.move(0, y + 123)
+                        self.ui.btnRun.move(0, y)
+                        self.ui.btnUninstall.move(0, y + 41)
                         self.ui.btnUpdate.move(0, y + 82)
-                        self.ui.btnUninstall.move(0, y)
+                        self.ui.btnInstall.move(0, y + 123)
+                    else:
+                        if app.is_upgradable is True:
+                            self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                            self.ui.btnRun.move(0, 82)
+                            self.ui.btnInstall.move(0, y + 123)
+                            self.ui.btnUpdate.move(0, y)
+                            self.ui.btnUninstall.move(0, y + 41)
+                        else:
+                            self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                            self.ui.btnRun.move(0, y + 41)
+                            self.ui.btnInstall.move(0, y + 123)
+                            self.ui.btnUpdate.move(0, y + 82)
+                            self.ui.btnUninstall.move(0, y)
                 elif(type == PkgStates.RUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, True)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
                     self.setBtnEnabledPlus(self.ui.btnUninstall, True)
-                    if app.is_upgradable:
-                        self.setBtnEnabledPlus(self.ui.btnUpdate, True)
-                        self.ui.btnRun.move(0, y)
-                        self.ui.btnInstall.move(0, y + 123)
-                        self.ui.btnUpdate.move(0, y + 41)
-                        self.ui.btnUninstall.move(0, y + 82)
-                    else:
+
+                    if (isinstance(app,DebFile)):#check is local debfile or not for after click install
                         self.setBtnEnabledPlus(self.ui.btnUpdate, False)
                         self.ui.btnRun.move(0, y)
-                        self.ui.btnInstall.move(0, y + 123)
-                        self.ui.btnUpdate.move(0, y + 82)
                         self.ui.btnUninstall.move(0, y + 41)
+                        self.ui.btnUpdate.move(0, y + 82)
+                        self.ui.btnInstall.move(0, y + 123)
+                    else:
+                        if app.is_upgradable:
+                            self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                            self.ui.btnRun.move(0, y)
+                            self.ui.btnInstall.move(0, y + 123)
+                            self.ui.btnUpdate.move(0, y + 41)
+                            self.ui.btnUninstall.move(0, y + 82)
+                        else:
+                            self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                            self.ui.btnRun.move(0, y)
+                            self.ui.btnInstall.move(0, y + 123)
+                            self.ui.btnUpdate.move(0, y + 82)
+                            self.ui.btnUninstall.move(0, y + 41)
 
                 elif(type == PkgStates.INSTALL):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
@@ -366,7 +394,7 @@ class MultiFunctionBtn(QWidget):
                 self.resize(self.width(), 40)
 
     def slot_click_btn_run(self):
-        if (not hasattr(self.app, "run")) or (self.ui.btnRun.clicked):#for local deb file:DebFile instance has no attribute 'run' when it's installing progress finished
+        if (not hasattr(self.app, "run")) or (self.ui.btnRun.clicked):#DebFile instance has no attribute 'run' when it's installing progress finished
             pro_times = run.judge_app_run_or_not(self.app.name)
             if pro_times == 0 or pro_times == 1:
                 run.run_app(self.app.name)
@@ -386,8 +414,8 @@ class MultiFunctionBtn(QWidget):
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
-        if self.debfile:# for local deb file
-            self.emit(Signals.install_debfile, self.debfile)
+        if isinstance(self.app,DebFile):# for local deb file
+            self.emit(Signals.install_debfile, self.app)
         else:# for apt deb file
             self.emit(Signals.mfb_click_install, self.app)
 
