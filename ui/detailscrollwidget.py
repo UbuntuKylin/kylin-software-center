@@ -56,6 +56,7 @@ class DetailScrollWidget(QScrollArea):
     maxpage = ''
     currentreviewready = ''
     debfile = None
+    smallstar_exsit = False
 
     def __init__(self,messageBox,parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
@@ -235,7 +236,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.scoretitle.hide()
         self.ui.size_install.hide()
         self.ui.split2.hide()
-
+        if self.smallstar_exsit == True:
+            self.smallstar.hide()
         # self.ui.btnUpdate.setVisible(False)
         # self.ui.btnUninstall.setVisible(False)
 
@@ -329,6 +331,7 @@ class DetailScrollWidget(QScrollArea):
 
         self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
         self.smallstar.move(180, 99)
+        self.smallstar_exsit = True
 
         #总评分
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)

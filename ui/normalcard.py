@@ -382,7 +382,7 @@ class NormalCard(QWidget):
 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
-            if action == AppActions.INSTALL:
+            if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
                 if(Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
                     self.star.show()
                     self.ui.isInstalled.setVisible(False)

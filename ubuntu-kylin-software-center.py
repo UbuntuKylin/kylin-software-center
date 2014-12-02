@@ -1136,7 +1136,7 @@ class SoftwareCenter(QMainWindow):
 
         if(len(pl) > 0):
             for p in pl:
-                card = PointCard(p, self.nowPage, self.messageBox, self.pointListWidget.cardPanel)
+                card = PointCard(p,self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                 self.connect(card, Signals.install_app, self.slot_click_install)

@@ -74,7 +74,7 @@ class XpItemWidget(QWidget):
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
             self.ui.btn.setEnabled(True)
-            if action == AppActions.INSTALL:
+            if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("已安装")
                     self.ui.btn.setEnabled(False)

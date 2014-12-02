@@ -291,19 +291,17 @@ class WinCard(QWidget):
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
-        try:
-            if self.app.name == pkgname:
-                if status == PkgStates.INSTALLING:
-                    self.app.status = PkgStates.INSTALLING
-                    self.ui.btn.setText("正在安装")
-                elif status == PkgStates.REMOVING:
-                    self.app.status = PkgStates.REMOVING
-                    self.ui.btn.setText("正在卸载")
-                elif status == PkgStates.UPGRADING:
-                    self.app.status = PkgStates.UPGRADING
-                    self.ui.btn.setText("正在升级")
-        except:
-            pass
+        if self.app.name == pkgname:
+            if status == PkgStates.INSTALLING:
+                self.app.status = PkgStates.INSTALLING
+                self.ui.btn.setText("正在安装")
+            elif status == PkgStates.REMOVING:
+                self.app.status = PkgStates.REMOVING
+                self.ui.btn.setText("正在卸载")
+            elif status == PkgStates.UPGRADING:
+                self.app.status = PkgStates.UPGRADING
+                self.ui.btn.setText("正在升级")
+
 
     def slot_emit_detail(self):
         if(self.app != None):
@@ -312,28 +310,38 @@ class WinCard(QWidget):
     def slot_work_finished(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
-                if action == AppActions.INSTALL:
+                if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
                     if(run.get_run_command(self.app.name) == ""):
                         self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-un-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-un-border.png');}")
                     else:
                         self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-run-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
                 elif action == AppActions.REMOVE:
                     self.app.status = PkgStates.INSTALL
                     self.ui.btn.setText("安装")
                     self.ui.btn.setEnabled(True)
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-install-border.png');}")
                 elif action == AppActions.UPGRADE:
                     if(run.get_run_command(self.app.name) == ""):
                         self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-un-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-un-border.png');}")
                     else:
                         self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-run-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
 
     def slot_work_cancel(self, pkgname, action):
         if self.app is not None:

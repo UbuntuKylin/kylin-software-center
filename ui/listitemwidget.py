@@ -154,8 +154,8 @@ class ListItemWidget(QWidget):
             self.ui.cbSelect.setEnabled(False)
             if(self.workType == 'ins'):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
-                self.emit(Signals.install_app, self.app)
                 self.ui.btn.setText("正在安装")
+                self.emit(Signals.install_app, self.app)
             elif(self.workType == 'up'):
                 self.app.status = PkgStates.UPGRADING
                 self.emit(Signals.upgrade_app, self.app)
@@ -172,7 +172,7 @@ class ListItemWidget(QWidget):
 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
-            if action == AppActions.INSTALL or action == AppActions.UPGRADE:
+            if action in (AppActions.INSTALL,AppActions.UPGRADE,AppActions.INSTALLDEBFILE):
                 self.ui.status.show()
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("卸载")

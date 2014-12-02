@@ -260,7 +260,7 @@ class RcmdCard(QWidget):
 
     def slot_work_finished(self, pkgname,action):
         if self.app.name == pkgname:
-            if action == AppActions.INSTALL or action == AppActions.INSTALLDEBFILE:
+            if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
                 self.star.hide()
                 self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
