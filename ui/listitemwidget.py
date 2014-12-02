@@ -156,14 +156,17 @@ class ListItemWidget(QWidget):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
                 self.ui.btn.setText("正在安装")
                 self.emit(Signals.install_app, self.app)
+                self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
             elif(self.workType == 'up'):
                 self.app.status = PkgStates.UPGRADING
                 self.emit(Signals.upgrade_app, self.app)
                 self.ui.btn.setText("正在升级")
+                self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
             elif(self.workType == 'un'):
                 self.app.status = PkgStates.REMOVING
                 self.emit(Signals.remove_app, self.app)
                 self.ui.btn.setText("正在卸载")
+                self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
 
 
 

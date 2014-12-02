@@ -338,6 +338,7 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")
                 self.emit(Signals.install_app, self.app)
+                self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
 
@@ -345,6 +346,7 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
                 self.emit(Signals.upgrade_app, self.app)
+                self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
@@ -352,6 +354,7 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.REMOVING
                 self.ui.btn.setText("正在卸载")
                 self.emit(Signals.remove_app, self.app)
+                self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 

@@ -241,6 +241,7 @@ class RcmdCard(QWidget):
             self.app.status = PkgStates.INSTALLING
             self.ui.btn.setText("正在安装")
             self.emit(Signals.install_app, self.app)
+            self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):

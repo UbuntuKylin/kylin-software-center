@@ -700,6 +700,7 @@ class SoftwareCenter(QMainWindow):
                     self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
                     self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                     self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                    self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
 
                     # kobe 1106
                     self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
@@ -713,6 +714,7 @@ class SoftwareCenter(QMainWindow):
                     self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
                     self.connect(card, Signals.install_app, self.slot_click_install)
                     self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                    self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
                     self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                     self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
 
@@ -942,6 +944,7 @@ class SoftwareCenter(QMainWindow):
             self.connect(card, Signals.remove_app, self.slot_click_remove)
             self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+            self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
 
             # kobe 1106
             self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
@@ -986,6 +989,7 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.remove_app, self.slot_click_remove)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
 
                 # kobe 1106
                 self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
@@ -1222,7 +1226,8 @@ class SoftwareCenter(QMainWindow):
             self.connect(recommend, Signals.install_app, self.slot_click_install)
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
-
+            self.connect(self, Signals.trans_card_status, recommend.slot_change_btn_status)
+            self.connect(recommend,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
         self.rec_ready = True
         self.check_init_ready()
 
@@ -1550,6 +1555,7 @@ class SoftwareCenter(QMainWindow):
                 self.connect(item, Signals.remove_app, self.slot_click_remove)
                 self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
+                self.connect(item,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
                 self.connect(self, Signals.trans_card_status, item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
         else:
             self.ui.uaNoItemText.show()

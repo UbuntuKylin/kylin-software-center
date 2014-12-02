@@ -280,27 +280,33 @@ class WinCard(QWidget):
                     self.app.status = PkgStates.INSTALLING
                     self.ui.btn.setText("正在安装")
                     self.emit(Signals.install_app, self.app)
+                    self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
                 elif(self.ui.btn.text() == '升级'):
                     self.app.status = PkgStates.UPGRADING
                     self.ui.btn.setText("正在升级")
                     self.emit(Signals.upgrade_app, self.app)
+                    self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
                 elif(self.ui.btn.text() == '卸载'):
                     self.app.status = PkgStates.REMOVING
                     self.ui.btn.setText("正在卸载")
                     self.emit(Signals.remove_app, self.app)
+                    self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
-        if self.app.name == pkgname:
-            if status == PkgStates.INSTALLING:
-                self.app.status = PkgStates.INSTALLING
-                self.ui.btn.setText("正在安装")
-            elif status == PkgStates.REMOVING:
-                self.app.status = PkgStates.REMOVING
-                self.ui.btn.setText("正在卸载")
-            elif status == PkgStates.UPGRADING:
-                self.app.status = PkgStates.UPGRADING
-                self.ui.btn.setText("正在升级")
+        if hasattr(self.app,"name"):
+            if self.app.name == pkgname:
+                if status == PkgStates.INSTALLING:
+                    self.app.status = PkgStates.INSTALLING
+                    self.ui.btn.setText("正在安装")
+                elif status == PkgStates.REMOVING:
+                    self.app.status = PkgStates.REMOVING
+                    self.ui.btn.setText("正在卸载")
+                elif status == PkgStates.UPGRADING:
+                    self.app.status = PkgStates.UPGRADING
+                    self.ui.btn.setText("正在升级")
+        else:
+            print "self.app is None in wincard"
 
 
     def slot_emit_detail(self):
