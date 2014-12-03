@@ -150,8 +150,10 @@ class NormalCard(QWidget):
             self.ui.btn.setText("正在卸载")
             self.star.hide()
             if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                self.star.show()
                 self.ui.isInstalled.setVisible(False)
             else:
+                self.star.hide()
                 self.ui.isInstalled.setVisible(True)
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
@@ -160,8 +162,10 @@ class NormalCard(QWidget):
             self.ui.btn.setText("正在升级")
             self.star.hide()
             if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                self.star.show()
                 self.ui.isInstalled.setVisible(False)
             else:
+                self.star.hide()
                 self.ui.isInstalled.setVisible(True)
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
@@ -450,10 +454,12 @@ class NormalCard(QWidget):
                 self.ui.btn.setEnabled(True)
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.UNINSTALL
-                self.star.hide()#* modify by zhangxin
+
                 if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                    self.star.show()
                     self.ui.isInstalled.setVisible(False)
                 else:
+                    self.star.hide()
                     self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("卸载")
                 self.ui.btn.setEnabled(True)
@@ -461,8 +467,10 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.UPDATE
                 self.star.hide()
                 if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                    self.star.show()
                     self.ui.isInstalled.setVisible(False)
                 else:
+                    self.star.hide()
                     self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("升级")
                 self.ui.btn.setEnabled(True)
