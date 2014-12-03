@@ -1147,6 +1147,8 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.03
+                self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
             self.pointout.show_animation(True)
         else:
             # in quiet mode, no pointout app.  quit uksc

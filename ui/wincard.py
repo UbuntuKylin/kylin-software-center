@@ -296,6 +296,7 @@ class WinCard(QWidget):
     def slot_change_btn_status(self, pkgname, status):
         if hasattr(self.app,"name"):
             if self.app.name == pkgname:
+                self.ui.btn.setEnabled(False)
                 if status == PkgStates.INSTALLING:
                     self.app.status = PkgStates.INSTALLING
                     self.ui.btn.setText("正在安装")
