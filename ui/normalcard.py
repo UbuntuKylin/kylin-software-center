@@ -451,12 +451,18 @@ class NormalCard(QWidget):
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.UNINSTALL
                 self.star.hide()#* modify by zhangxin
-                self.ui.isInstalled.setVisible(True)
+                if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                    self.ui.isInstalled.setVisible(False)
+                else:
+                    self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("卸载")
                 self.ui.btn.setEnabled(True)
             elif action == AppActions.UPGRADE:
                 self.app.status = PkgStates.UPDATE
                 self.star.hide()
-                self.ui.isInstalled.setVisible(True)
+                if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                    self.ui.isInstalled.setVisible(False)
+                else:
+                    self.ui.isInstalled.setVisible(True)
                 self.ui.btn.setText("升级")
                 self.ui.btn.setEnabled(True)
