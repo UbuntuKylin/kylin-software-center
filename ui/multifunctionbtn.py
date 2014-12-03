@@ -191,6 +191,18 @@ class MultiFunctionBtn(QWidget):
                     self.ui.btnRun.move(0, y + 41)
                     self.ui.btnUpdate.move(0, y + 82)
                     self.ui.btnUninstall.move(0, y + 123)
+                elif(type == PkgStates.UPDATE):#zx12.03 for update cancel in other page (why there isn't uninstall ,because uninstall can't be canceled)
+                    if(run.get_run_command(app.name) == ""):
+                        self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnRun, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
+                    self.ui.btnRun.move(0, y)
+                    self.ui.btnInstall.move(0, y + 123)
+                    self.ui.btnUpdate.move(0, y + 41)
+                    self.ui.btnUninstall.move(0, y + 82)
 
             elif(Globals.NOWPAGE == PageStates.UPPAGE or Globals.NOWPAGE == PageStates.SEARCHUPPAGE):
                 if(type == PkgStates.UPDATE):
@@ -251,6 +263,14 @@ class MultiFunctionBtn(QWidget):
                     self.setBtnEnabledPlus(self.ui.btnUninstall, True)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
                     self.setBtnEnabledPlus(self.ui.btnUpdate, False)
+                elif(type == PkgStates.UPDATE):#zx12.03 for update cancel in other page (why there isn't uninstall ,because uninstall can't be canceled)
+                    if(run.get_run_command(app.name) == ""):
+                        self.setBtnEnabledPlus(self.ui.btnRun, False)
+                    else:
+                        self.setBtnEnabledPlus(self.ui.btnRun, True)
+                    self.setBtnEnabledPlus(self.ui.btnUpdate, True)
+                    self.setBtnEnabledPlus(self.ui.btnUninstall, True)
+                    self.setBtnEnabledPlus(self.ui.btnInstall, False)
                 self.ui.btnUninstall.move(0, y)
                 self.ui.btnRun.move(0, y + 41)
                 self.ui.btnInstall.move(0, y + 123)

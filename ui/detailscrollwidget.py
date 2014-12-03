@@ -257,6 +257,8 @@ class DetailScrollWidget(QScrollArea):
 
         if(self.debfile.is_installable()):
             deps = self.debfile.get_missing_deps()
+            if (deps == []):
+                deps = ""
             self.ui.summary.setText("需要安装的依赖包: " + str(deps))
             self.ui.status.hide()
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)

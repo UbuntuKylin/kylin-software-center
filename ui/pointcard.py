@@ -261,12 +261,18 @@ class PointCard(QWidget):
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
             elif status == PkgStates.REMOVING:
                 self.app.status = PkgStates.REMOVING
                 self.ui.btn.setText("正在卸载")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
             elif status == PkgStates.UPGRADING:
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
     def slot_emit_detail(self):
         self.emit(Signals.show_app_detail, self.app)
