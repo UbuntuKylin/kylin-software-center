@@ -72,10 +72,12 @@ class Application:
 
         self.install_date = ''  # the date first install this app, get from server
 
+        self.status = PkgStates.NOTHING
+
     # app work status this moment: installing, updating ...
-    @property
-    def status(self):
-        return PkgStates.NOTHING
+    # @property
+    # def status(self):
+    #     return PkgStates.NOTHING
 
     @property
     def name(self):

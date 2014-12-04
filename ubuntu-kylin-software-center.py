@@ -966,8 +966,6 @@ class SoftwareCenter(QMainWindow):
 
             count = 0
             for pkgname, app in apps.iteritems():
-
-                # if self.nowPage == "uppage":
                 if Globals.NOWPAGE == PageStates.UPPAGE:
                     if app.is_installed is False:
                         continue

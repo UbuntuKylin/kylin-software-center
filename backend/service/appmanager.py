@@ -35,6 +35,7 @@ from piston_mini_client import auth
 
 from PyQt4.QtCore import *
 
+from models.globals import Globals
 from models.category import Category
 from models.application import Application
 from models.advertisement import Advertisement
@@ -232,36 +233,38 @@ class AppManager(QObject):
         for item in list:
             pkgname = UnicodeToAscii(item[0])
             displayname = item[1]
-            #            print "get_category_apps_from_db:",pkgname
-            app = Application(pkgname,displayname, cat, self.apt_cache)
-            if app.package:
-                apps[pkgname] = app
+            if pkgname in Globals.ALL_APPS.keys():
+                apps[pkgname] = Globals.ALL_APPS[pkgname]
+            else:
+                app = Application(pkgname,displayname, cat, self.apt_cache)
+                if app.package:
+                    apps[pkgname] = app
+                    Globals.ALL_APPS[pkgname] = app
+                    #if there has special information in db, get them
+                    #get_category_apps_from_db: 0 0
+                    #display_name, summary, description, rating_average,rating_total,review_total,download_total
+                    appinfo = self.db.query_application(pkgname)
+                    summary = appinfo[1]
+                    description = appinfo[2]
+                    rating_average = appinfo[3]
+                    rating_total = appinfo[4]
+                    review_total = appinfo[5]
+                    # rank = appinfo[6]
 
-                #if there has special information in db, get them
-                #get_category_apps_from_db: 0 0
-                #display_name, summary, description, rating_average,rating_total,review_total,download_total
-                appinfo = self.db.query_application(pkgname)
-                summary = appinfo[1]
-                description = appinfo[2]
-                rating_average = appinfo[3]
-                rating_total = appinfo[4]
-                review_total = appinfo[5]
-                # rank = appinfo[6]
-
-                #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
-                if summary is not None and summary != 'None':
-                    app.summary = summary
-                #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
-                if description is not None and summary != 'None':
-                    app.description = description
-                if rating_average is not None:
-                    app.ratings_average = float(rating_average)
-                if rating_total is not None:
-                    app.ratings_total = int(rating_total)
-                if review_total is not None:
-                    app.review_total = int(review_total)
-                    # if rank is not None:
-                    #     app.rank = int(rank)
+                    #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+                    if summary is not None and summary != 'None':
+                        app.summary = summary
+                    #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+                    if description is not None and summary != 'None':
+                        app.description = description
+                    if rating_average is not None:
+                        app.ratings_average = float(rating_average)
+                    if rating_total is not None:
+                        app.ratings_total = int(rating_total)
+                    if review_total is not None:
+                        app.review_total = int(review_total)
+                        # if rank is not None:
+                        #     app.rank = int(rank)
         return apps
 
     def download_category_apps(self,cat,catdir=""):

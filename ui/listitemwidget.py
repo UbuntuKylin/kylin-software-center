@@ -84,6 +84,7 @@ class ListItemWidget(QWidget):
         installDate = app.install_date[:app.install_date.find('T')]
         self.ui.installedDate.setText(installDate + " 安装")
         if (self.app.status in (PkgStates.INSTALLING,PkgStates.REMOVING,PkgStates.UPGRADING)):#zx11.28 keep btn status same in all page
+            self.ui.status.hide()
             if self.app.status == PkgStates.INSTALLING:
                 self.ui.btn.setText("正在安装")
                 self.ui.btn.setEnabled(False)
@@ -105,6 +106,7 @@ class ListItemWidget(QWidget):
                 self.ui.status.show()
                 if(app.is_upgradable):
                     self.ui.btn.setText("升级")
+                    self.ui.btn.setEnabled(True)
                     self.app.status = PkgStates.UPDATE
                     self.workType = "up"
                     self.ui.cbSelect.setEnabled(False)
@@ -112,12 +114,14 @@ class ListItemWidget(QWidget):
                 else:
                     if(run.get_run_command(self.app.name) != ""):
                         self.ui.btn.setText("启动")
+                        self.ui.btn.setEnabled(True)
                         self.app.status = PkgStates.RUN
                         self.workType = "run"
                         self.ui.cbSelect.setEnabled(False)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
                     else:
                         self.ui.btn.setText("卸载")
+                        self.ui.btn.setEnabled(True)
                         self.app.status = PkgStates.UNINSTALL
                         self.workType = "un"
                         self.ui.cbSelect.setEnabled(False)
@@ -125,6 +129,7 @@ class ListItemWidget(QWidget):
             else:
                 self.ui.status.hide()
                 self.ui.btn.setText("安装")
+                self.ui.btn.setEnabled(True)
                 self.app.status = PkgStates.INSTALL
                 self.workType = "ins"
                 self.ui.cbSelect.setEnabled(True)
@@ -151,6 +156,7 @@ class ListItemWidget(QWidget):
                     self.messageBox.alert_msg(self.app.name + "已经运行")
         else:
             self.ui.btn.setEnabled(False)
+            self.ui.status.hide()
             self.ui.cbSelect.setEnabled(False)
             if(self.workType == 'ins'):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
@@ -204,11 +210,13 @@ class ListItemWidget(QWidget):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
+                self.ui.status.hide()
                 self.ui.btn.setEnabled(True)
                 self.ui.cbSelect.setEnabled(True)
             elif action == AppActions.REMOVE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("卸载")
+                    self.ui.status.show()
                     self.ui.btn.setEnabled(True)
                 else:
                     self.ui.btn.setText("启动")
@@ -217,11 +225,13 @@ class ListItemWidget(QWidget):
             elif action == AppActions.UPGRADE:
                 self.ui.btn.setText("升级")
                 self.ui.btn.setEnabled(True)
+                self.ui.status.show()
                 self.ui.cbSelect.setEnabled(True)
 
     def slot_change_btn_status(self, pkgname, status):#zx11.28 To keep the same btn status in uapage and detailscrollwidget
         if self.app.name == pkgname:
             self.ui.btn.setEnabled(False)
+            self.ui.status.hide()
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")

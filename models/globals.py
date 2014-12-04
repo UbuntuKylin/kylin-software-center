@@ -55,3 +55,5 @@ class Globals:
     TOKEN = ''
 
     NOWPAGE = -1
+
+    ALL_APPS = {}
