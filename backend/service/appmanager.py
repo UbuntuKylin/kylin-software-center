@@ -216,6 +216,7 @@ class AppManager(QObject):
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
 
+        Globals.ALL_APPS = {}# zx10.05 To free the all_apps dict after all apps init ready for using less memeory
         return cat_list
 
     # get category list
@@ -239,7 +240,7 @@ class AppManager(QObject):
                 app = Application(pkgname,displayname, cat, self.apt_cache)
                 if app.package:
                     apps[pkgname] = app
-                    Globals.ALL_APPS[pkgname] = app
+                    Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
                     #if there has special information in db, get them
                     #get_category_apps_from_db: 0 0
                     #display_name, summary, description, rating_average,rating_total,review_total,download_total
