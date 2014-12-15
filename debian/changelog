@@ -1,3 +1,14 @@
+ubuntu-kylin-software-center (1.2.2.0) utopic; urgency=medium
+
+  * Fixed the problem that interface can not receive the errorcode signal
+  * Only upgradeable app,installed app can be searched in UPPAGE, UNPAGE
+  * Improve the detail logic in ui (normalcard.py,detailscrollwidget.py 
+    etc)
+  * Fixed bug #1396051 #1396403 #1396428 #1368208 #1379117 #1373916
+    #1396041 etc
+
+ -- Shine <shenghuang@ubuntukylin.com>  Mon, 15 Dec 2014 14:21:04 +0800
+
 ubuntu-kylin-software-center (1.2.1.0) utopic; urgency=medium
 
   * Icon from the server and automatically update the software.
