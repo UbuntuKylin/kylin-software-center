@@ -1,4 +1,4 @@
-ubuntu-kylin-software-center (1.2.2.0) utopic; urgency=medium
+ubuntu-kylin-software-center (1.2.2.0) vivid; urgency=medium
 
   * Fixed the problem that interface can not receive the errorcode signal
   * Only upgradeable app,installed app can be searched in UPPAGE, UNPAGE
