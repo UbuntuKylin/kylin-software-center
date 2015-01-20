@@ -430,16 +430,8 @@ class MultiFunctionBtn(QWidget):
                 self.resize(self.width(), 40)
 
     def slot_click_btn_run(self):
-        if (not hasattr(self.app, "run")) or (self.ui.btnRun.clicked):#DebFile instance has no attribute 'run' when it's installing progress finished
-            pro_times = run.judge_app_run_or_not(self.app.name)
-            if pro_times == 0 or pro_times == 1:
-                run.run_app(self.app.name)
-            else:
-                word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
-                if(word_len > 31):
-                    self.messageBox.alert_msg(self.app.name + "\n已经运行")
-                else:
-                    self.messageBox.alert_msg(self.app.name + "已经运行")
+        if (not hasattr(self.app, "run")): #or (self.ui.btnRun.clicked):#DebFile instance has no attribute 'run' when it's installing progress finished
+            run.run_app(self.app.name)
         else:
             self.app.run()
 

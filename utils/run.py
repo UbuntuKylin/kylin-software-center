@@ -77,10 +77,12 @@ def get_run_command(pkgname):
 def run_app(pkgname):
     cmd = get_run_command(pkgname)
     print("\n#####run_app:",cmd)
-    p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+    #p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
+    os.system(cmd[0] + "&")#fixed bug 1402953
 
 def run_appa():
     p = subprocess.Popen(["eog", "/home/shine/Downloads/009-01.png"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
+
 
 def judge_app_run_or_not(pkgname):
     result = 0
