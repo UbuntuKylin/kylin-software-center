@@ -1,3 +1,13 @@
+ubuntu-kylin-software-center (1.2.3.0) vivid; urgency=medium
+
+  * fix bug #1409187:When enter the live mode, there will popup 
+    a dialog about archive source update tip which is asking the 
+    user to update the source or not.
+  * fix bug #1402953:Part of the software starts up again after 
+    closing will prompt "×× already running."
+
+ -- Shine <shenghuang@ubuntukylin.com>  Tue, 20 Jan 2015 16:52:03 +0800
+
 ubuntu-kylin-software-center (1.2.2.0) vivid; urgency=medium
 
   * Fixed the problem that interface can not receive the errorcode signal
