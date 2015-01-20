@@ -265,15 +265,7 @@ class WinCard(QWidget):
             webbrowser.open_new_tab('http://dl.pps.tv/pps_linux_download.html')
         else:
             if(self.ui.btn.text() == "启动"):
-                pro_times = run.judge_app_run_or_not(self.app.name)
-                if pro_times == 0 or pro_times == 1:
-                    run.run_app(self.app.name)
-                else:
-                    word_len = len(self.app.name + " 已经运行")#一个汉字三个字节?
-                    if(word_len > 31):
-                        self.messageBox.alert_msg(self.app.name + "\n已经运行")
-                    else:
-                        self.messageBox.alert_msg(self.app.name + "已经运行")
+                self.app.run()
             else:
                 self.ui.btn.setEnabled(False)
                 if(self.ui.btn.text() == '安装'):
