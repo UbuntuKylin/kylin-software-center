@@ -1,9 +1,9 @@
 ubuntu-kylin-software-center (1.2.3.0) vivid; urgency=medium
 
-  * fix bug #1409187:When enter the live mode, there will popup 
+  * LP: #1409187 : When enter the live mode, there will popup 
     a dialog about archive source update tip which is asking the 
     user to update the source or not.
-  * fix bug #1402953:Part of the software starts up again after 
+  * LP: #1402953 : Part of the software starts up again after 
     closing will prompt "×× already running."
 
  -- Shine <shenghuang@ubuntukylin.com>  Tue, 20 Jan 2015 16:52:03 +0800
@@ -103,7 +103,7 @@ ubuntu-kylin-software-center (1.1.0.0) utopic; urgency=medium
   * Detailed interface remains left column status
   * The new schedule interface
 
- -- Shine <shenghuang@ubuntukylin.com>  Mon, 22 Sep 2014 09:53:05 +0800
+ -- Aron Xu <happyaron@ubuntu.com>  Mon, 22 Sep 2014 09:53:05 +0800
 
 ubuntu-kylin-software-center (1.0.0.1) utopic; urgency=medium
 
