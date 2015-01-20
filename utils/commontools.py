@@ -38,3 +38,13 @@ def get_icon_path(app_name):
         return UBUNTUKYLIN_RES_ICON_PATH + str(app_name) + ".jpg"
     else:
         return UBUNTUKYLIN_RES_ICON_PATH + "default.png"
+
+def is_livecd_mode():
+    f = open("/proc/cmdline")
+    for line in f:
+        if(line.find("casper") != -1):
+            f.close()
+            return True
+    else:
+        f.close()
+        return False

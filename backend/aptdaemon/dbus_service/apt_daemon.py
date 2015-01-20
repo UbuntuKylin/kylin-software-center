@@ -228,20 +228,29 @@ class AptDaemon():
         try:
             return self.cache[pkgName]
         except KeyError:
-            raise WorkitemError(1, "Package %s isn't available" % pkgName)
+            raise WorkitemError(1, "Package %s is not  available" % pkgName)
         # except Exception, e:
         #     print e
         #     return "ERROR"
 
     # install deb file
     def install_debfile(self, path, kwargs=None):
-        debfile = DebPackage(path)
-        pkgName = debfile._sections["Package"]
+        if not os.path.isfile(path):
+            raise WorkitemError(4, "%s is unreadable file" % path)
         try:
-            debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
-        except Exception, e:
-            print e
-            print "install debfile err"
+            debfile = DebPackage(path)
+        except IOError:
+            raise WorkitemError(4, "%s is unreadable file" % path)
+        except Exception as error:
+            raise WorkitemError(5, str(error))
+        pkgName = debfile._sections["Package"]
+        # try:
+        res = debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
+        if res:
+            raise WorkitemError(6, "package manager failed")
+        # except Exception, e:
+        #     print e
+        #     print "install debfile err"
 
     # install deps
     def install_deps(self, path, kwargs=None):
@@ -266,6 +275,8 @@ class AptDaemon():
     def install(self, pkgName, kwargs=None):
         self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
+        if pkg.is_installed:
+            raise WorkitemError(7, "Package %s  is installed" % pkgName)
         pkg.mark_install()
 
         try:
@@ -284,25 +295,39 @@ class AptDaemon():
     def remove(self, pkgName, kwargs=None):
         self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
+        if pkg.is_installed and not pkg.installed_files:
+            raise WorkitemError(8, "Package %s isn't installed" % pkgName)
         pkg.mark_delete()
 
         try:
             self.cache.commit(None, AptProcess(self.dbus_service,pkgName,AppActions.REMOVE))
-        except Exception, e:
-            print e
-            print "uninstall err"
+        except apt.cache.LockFailedException:
+            raise WorkitemError(3, "package manager is running.")
+        except Exception as error:
+            raise WorkitemError(0, "unknown error")
+        # except Exception, e:
+        #     print e
+        #     print "uninstall err"
 
     # update package
     def upgrade(self, pkgName, kwargs=None):
         self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
+        if pkg.is_installed and not pkg.installed_files:
+            raise WorkitemError(8, "Package %s isn't installed" % pkgName)
         pkg.mark_upgrade()
 
         try:
             self.cache.commit(FetchProcess(self.dbus_service,pkgName,AppActions.UPGRADE), AptProcess(self.dbus_service,pkgName,AppActions.UPGRADE))
-        except Exception, e:
-            print e
-            print "update err"
+        except apt.cache.FetchFailedException as error:
+            raise WorkitemError(2, str(error))
+        except apt.cache.LockFailedException:
+            raise WorkitemError(3, "package manager is running.")
+        except Exception as e:
+            raise WorkitemError(0, "unknown error")
+        # except Exception, e:
+        #     print e
+        #     print "update err"
 
     # apt-get update
     def update(self, taskName, kwargs=None):

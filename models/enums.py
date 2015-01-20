@@ -243,8 +243,13 @@ class ErrorCode:
         ERROR_NO_PACKAGE,
         ERROR_PACKAGE_DOWNLOAD_FAILED,
         ERROR_NO_LOCK,
+        ERROR_UNREADABLE_PACKAGE_FILE,
+        ERROR_INVALID_PACKAGE_FILE,
+        ERROR_PACKAGE_MANAGER_FAILED,
+        ERROR_PACKAGE_INSTALLED,
+        ERROR_PACKAGE_NOT_INSTALLED,
 
-    ) = range(4)
+    ) = range(9)
 
 
 def UnicodeToAscii(src):

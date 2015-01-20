@@ -58,8 +58,9 @@ from backend.ubuntusso import get_ubuntu_sso_backend
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates)
 from models.enums import Signals
 from models.globals import Globals
-
 from models.http import HttpDownLoad, unzip_resource
+
+from utils.commontools import *
 
 import sys
 reload(sys)
@@ -504,7 +505,7 @@ class SoftwareCenter(QMainWindow):
                 sys.exit(0)
 
     def check_source(self):
-        if(self.appmgr.check_source_update()):
+        if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
             if(Globals.LAUNCH_MODE == 'quiet'):
                 button = QMessageBox.question(self,"软件源更新提示",
                                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件中心触发此功能\n\n请选择:"),
