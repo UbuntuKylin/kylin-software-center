@@ -277,6 +277,7 @@ class DetailScrollWidget(QScrollArea):
     # fill fast property, show ui, request remote property
     def showSimple(self, app):
         # clear reviews
+        self.scrollToTop()
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
@@ -345,28 +346,28 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
-        if app.status == PkgStates.INSTALL:
-            self.btns.reset_btns(app, PkgStates.INSTALL)
+        if self.app.status == PkgStates.INSTALL:
+            self.btns.stop_work()#zx 2015.01.23 for bug1402527
             self.ui.status.hide()
-        elif app.status == PkgStates.UNINSTALL:
-            self.btns.reset_btns(app, PkgStates.UNINSTALL)
+        elif self.app.status == PkgStates.UNINSTALL:
+            self.btns.stop_work()
             self.ui.status.show()
-        elif app.status == PkgStates.UPDATE:
-            self.btns.reset_btns(app, PkgStates.UPDATE)
+        elif self.app.status == PkgStates.UPDATE:
+            self.btns.stop_work()
             self.ui.status.show()
-        elif app.status == PkgStates.RUN:
-            self.btns.reset_btns(app, PkgStates.RUN)
+        elif self.app.status == PkgStates.RUN:
+            self.btns.stop_work()
             self.ui.status.show()
-        elif app.status == PkgStates.NORUN:
-            self.btns.reset_btns(app, PkgStates.NORUN)
+        elif self.app.status == PkgStates.NORUN:
+            self.btns.stop_work()
             self.ui.status.show()
-        elif app.status == PkgStates.INSTALLING:#disabled all buttons
+        elif self.app.status == PkgStates.INSTALLING:#disabled all buttons
             self.btns.start_work()
             self.ui.status.hide()
-        elif app.status == PkgStates.REMOVING:#disabled all buttons
+        elif self.app.status == PkgStates.REMOVING:#disabled all buttons
             self.btns.start_work()
             self.ui.status.show()
-        elif app.status == PkgStates.UPGRADING:#disabled all buttons
+        elif self.app.status == PkgStates.UPGRADING:#disabled all buttons
             self.btns.start_work()
             self.ui.status.show()
         else:
@@ -588,6 +589,10 @@ class DetailScrollWidget(QScrollArea):
                 self.app.status = PkgStates.UPDATE
                 # self.btns.reset_btns(self.app, PkgStates.UPDATE)
                 self.ui.status.show()
+
+    def scrollToTop(self):#zx 2015.01.23 for bug1402930
+        vsb = self.verticalScrollBar()
+        vsb.setValue(0)
 
     def slot_scroll_end(self, now):
         # current page not ready
