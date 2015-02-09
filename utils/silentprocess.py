@@ -248,7 +248,7 @@ class SilentProcess(multiprocessing.Process):
             # update application icon to cache icons/
             for app in reslist:
                 app_name = app['name']
-                app_path = app['image']
+                app_path = app['path']
                 iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
                 try:
                     icon_rul = UK_APP_ICON_URL % {
