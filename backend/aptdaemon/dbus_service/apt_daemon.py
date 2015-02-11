@@ -26,6 +26,7 @@
 ### END LICENSE
 
 import apt
+import os
 import aptsources.sourceslist
 import apt.progress.base as apb
 from apt.debfile import DebPackage

@@ -23,6 +23,10 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QtGui.QApplication.translate(context, text, disambig)
 
+class UploadSshotwidget(QtGui.QDialog):
+    def __init__(self,parent=None):
+        super(UploadSshotwidget,self).__init__(parent)
+
 class Ui_DetailWidget(object):
     def setupUi(self, DetailWidget):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
@@ -36,14 +40,30 @@ class Ui_DetailWidget(object):
         self.status.setGeometry(QtCore.QRect(88, 48, 16, 16))
         self.status.setText(_fromUtf8(""))
         self.status.setObjectName(_fromUtf8("status"))
+
+        self.transNameStatus = QtGui.QLabel(DetailWidget)
+        self.transNameStatus.setGeometry(QtCore.QRect(115, 10, 16, 16))
+        self.transNameStatus.setText(_fromUtf8(""))
+        self.transNameStatus.setObjectName(_fromUtf8("transNameStatus"))
+
+        self.transSummaryStatus = QtGui.QLabel(DetailWidget)
+        self.transSummaryStatus.setGeometry(QtCore.QRect(25, 155, 16, 16))
+        self.transSummaryStatus.setText(_fromUtf8(""))
+        self.transSummaryStatus.setObjectName(_fromUtf8("transSummaryStatus"))
+
+        self.transDescriptionStatus = QtGui.QLabel(DetailWidget)
+        self.transDescriptionStatus.setGeometry(QtCore.QRect(25, 195, 16, 16))
+        self.transDescriptionStatus.setText(_fromUtf8(""))
+        self.transDescriptionStatus.setObjectName(_fromUtf8("transDescriptionStatus"))
+
         self.splitText1 = QtGui.QLabel(DetailWidget)
         self.splitText1.setGeometry(QtCore.QRect(25, 124, 66, 17))
         self.splitText1.setObjectName(_fromUtf8("splitText1"))
         self.summary = QtGui.QTextEdit(DetailWidget)
-        self.summary.setGeometry(QtCore.QRect(25, 150, 824, 40))
+        self.summary.setGeometry(QtCore.QRect(40, 150, 810, 40))
         self.summary.setObjectName(_fromUtf8("summary"))
         self.description = QtGui.QTextEdit(DetailWidget)
-        self.description.setGeometry(QtCore.QRect(25, 190, 824, 81))
+        self.description.setGeometry(QtCore.QRect(40, 190, 810, 81))
         self.description.setObjectName(_fromUtf8("description"))
         self.sshotBG = QtGui.QLabel(DetailWidget)
         self.sshotBG.setGeometry(QtCore.QRect(25, 290, 824, 200))
@@ -61,7 +81,7 @@ class Ui_DetailWidget(object):
         self.splitText3.setGeometry(QtCore.QRect(25, 660, 66, 17))
         self.splitText3.setObjectName(_fromUtf8("splitText3"))
         self.reviewListWidget = QtGui.QListWidget(DetailWidget)
-        self.reviewListWidget.setGeometry(QtCore.QRect(25, 810, 824, 85))
+        self.reviewListWidget.setGeometry(QtCore.QRect(40, 810, 810, 85))
         self.reviewListWidget.setAutoFillBackground(True)
         self.reviewListWidget.setObjectName(_fromUtf8("reviewListWidget"))
         self.thumbnail = QtGui.QPushButton(DetailWidget)
@@ -88,10 +108,10 @@ class Ui_DetailWidget(object):
         self.btnUninstall.setText(_fromUtf8(""))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
         self.gradeBG = QtGui.QWidget(DetailWidget)
-        self.gradeBG.setGeometry(QtCore.QRect(25, 516, 810, 132))
+        self.gradeBG.setGeometry(QtCore.QRect(40, 516, 810, 132))
         self.gradeBG.setObjectName(_fromUtf8("gradeBG"))
         self.gradeText2 = QtGui.QLabel(self.gradeBG)
-        self.gradeText2.setGeometry(QtCore.QRect(15, 100, 151, 17))
+        self.gradeText2.setGeometry(QtCore.QRect(22, 100, 151, 17))
         self.gradeText2.setText(_fromUtf8(""))
         self.gradeText2.setAlignment(QtCore.Qt.AlignCenter)
         self.gradeText2.setObjectName(_fromUtf8("gradeText2"))
@@ -105,7 +125,7 @@ class Ui_DetailWidget(object):
         self.grade.setAlignment(QtCore.Qt.AlignCenter)
         self.grade.setObjectName(_fromUtf8("grade"))
         self.vline = QtGui.QLabel(self.gradeBG)
-        self.vline.setGeometry(QtCore.QRect(450, 6, 1, 120))
+        self.vline.setGeometry(QtCore.QRect(435, 6, 1, 120))
         self.vline.setText(_fromUtf8(""))
         self.vline.setObjectName(_fromUtf8("vline"))
         self.gradetitle = QtGui.QLabel(self.gradeBG)
@@ -121,50 +141,98 @@ class Ui_DetailWidget(object):
         self.widget.setGeometry(QtCore.QRect(120, 0, 501, 121))
         self.widget.setObjectName(_fromUtf8("widget"))
         self.scoretitle = QtGui.QLabel(self.widget)
-        self.scoretitle.setGeometry(QtCore.QRect(0, 96, 66, 18))
+        self.scoretitle.setGeometry(QtCore.QRect(280, 42, 66, 18))
         self.scoretitle.setText(_fromUtf8(""))
         self.scoretitle.setObjectName(_fromUtf8("scoretitle"))
         self.size = QtGui.QLabel(self.widget)
-        self.size.setGeometry(QtCore.QRect(280, 38, 211, 18))
+        self.size.setGeometry(QtCore.QRect(280, 70, 211, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.candidateVersion = QtGui.QLabel(self.widget)
-        self.candidateVersion.setGeometry(QtCore.QRect(0, 68, 251, 18))
+        self.candidateVersion.setGeometry(QtCore.QRect(15, 98, 251, 18))
         self.candidateVersion.setText(_fromUtf8(""))
         self.candidateVersion.setObjectName(_fromUtf8("candidateVersion"))
         self.installedVersion = QtGui.QLabel(self.widget)
-        self.installedVersion.setGeometry(QtCore.QRect(0, 38, 251, 18))
+        self.installedVersion.setGeometry(QtCore.QRect(15, 70, 251, 18))
         self.installedVersion.setText(_fromUtf8(""))
         self.installedVersion.setObjectName(_fromUtf8("installedVersion"))
-        self.name = QtGui.QLabel(self.widget)
-        self.name.setGeometry(QtCore.QRect(0, 0, 501, 30))
+
+        self.name = QtGui.QLineEdit(self.widget)#zx 2015.01.26
+        self.name.setGeometry(QtCore.QRect(10, 0, 501, 30))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
+
+        self.btn_change = QtGui.QPushButton(DetailWidget)#zx 2015.01.26
+        self.btn_change.setGeometry(QtCore.QRect(700, 106, 148, 40))
+        self.btn_change.setText(_fromUtf8(""))
+        self.btn_change.setObjectName(_fromUtf8("change_name"))
+        self.btn_change.setToolTip("  点击此按钮翻译或完善\n"
+                                   "【软件名】【软件介绍】")
+
+        self.change_submit = QtGui.QPushButton(DetailWidget)#zx 2015.01.26
+        self.change_submit.setGeometry(QtCore.QRect(700, 106, 74, 40))
+        self.change_submit.setText(_fromUtf8(""))
+        self.change_submit.setObjectName(_fromUtf8("change_submit"))
+        self.change_submit.setToolTip("提交的内容被采纳后\n"
+                                      "才能被应用到客户端！！")
+
+        self.change_cancel = QtGui.QPushButton(DetailWidget)#zx 2015.01.26
+        self.change_cancel.setGeometry(QtCore.QRect(774, 106, 74, 40))
+        self.change_cancel.setText(_fromUtf8(""))
+        self.change_cancel.setObjectName(_fromUtf8("change_cancel"))
+
+        self.show_orig_description = QtGui.QLabel(DetailWidget)#zx 2015.01.26
+        self.show_orig_description.setGeometry(QtCore.QRect(25, 285, 75, 20))
+        self.show_orig_description.setText(_fromUtf8(""))
+        self.show_orig_description.setObjectName(_fromUtf8("btn_show_orig_description"))
+
+        self.orig_summary_widget = QtGui.QTextEdit(DetailWidget)#zx 2015.01.26
+        self.orig_summary_widget.setGeometry(QtCore.QRect(40, 310, 810, 40))
+        self.orig_summary_widget.setText(_fromUtf8(""))
+        self.orig_summary_widget.setObjectName(_fromUtf8("orig_summary_widget"))
+
+        self.orig_description_widget = QtGui.QTextEdit(DetailWidget)
+        self.orig_description_widget.setGeometry(QtCore.QRect(40, 350, 810, 105))
+        self.orig_description_widget.setText(_fromUtf8(""))
+        self.orig_description_widget.setObjectName(_fromUtf8("orig_description_widget"))
+
         self.size_install = QtGui.QLabel(self.widget)
-        self.size_install.setGeometry(QtCore.QRect(280, 68, 211, 18))
+        self.size_install.setGeometry(QtCore.QRect(280, 98, 211, 18))
         self.size_install.setText(_fromUtf8(""))
         self.size_install.setObjectName(_fromUtf8("size_install"))
+
+        self.debname = QtGui.QLabel(self.widget)
+        self.debname.setGeometry(QtCore.QRect(15, 42, 251, 18))
+        self.debname.setText(_fromUtf8(""))
+        self.debname.setObjectName(_fromUtf8("debname"))
+
         self.split1 = QtGui.QLabel(self.widget)
-        self.split1.setGeometry(QtCore.QRect(252, 38, 1, 18))
+        self.split1.setGeometry(QtCore.QRect(260, 42, 1, 15))
         self.split1.setText(_fromUtf8(""))
         self.split1.setObjectName(_fromUtf8("split1"))
         self.split2 = QtGui.QLabel(self.widget)
-        self.split2.setGeometry(QtCore.QRect(252, 68, 1, 18))
+        self.split2.setGeometry(QtCore.QRect(260, 70, 1, 15))
         self.split2.setText(_fromUtf8(""))
         self.split2.setObjectName(_fromUtf8("split2"))
+
+        self.split3 = QtGui.QLabel(self.widget)
+        self.split3.setGeometry(QtCore.QRect(260, 98, 1, 15))
+        self.split3.setText(_fromUtf8(""))
+        self.split3.setObjectName(_fromUtf8("split3"))
+
         self.fen = QtGui.QLabel(self.widget)
-        self.fen.setGeometry(QtCore.QRect(160, 96, 21, 18))
+        self.fen.setGeometry(QtCore.QRect(437, 42, 21, 18))
         self.fen.setText(_fromUtf8(""))
         self.fen.setObjectName(_fromUtf8("fen"))
         self.scorelabel = QtGui.QLabel(self.widget)
-        self.scorelabel.setGeometry(QtCore.QRect(136, 96, 21, 18))
+        self.scorelabel.setGeometry(QtCore.QRect(412, 42, 21, 18))
         self.scorelabel.setText(_fromUtf8(""))
         self.scorelabel.setObjectName(_fromUtf8("scorelabel"))
         self.reviewText = QtGui.QTextEdit(DetailWidget)
-        self.reviewText.setGeometry(QtCore.QRect(25, 685, 824, 76))
+        self.reviewText.setGeometry(QtCore.QRect(40, 685, 810, 66))#76->66
         self.reviewText.setObjectName(_fromUtf8("reviewText"))
         self.bntSubmit = QtGui.QPushButton(DetailWidget)
-        self.bntSubmit.setGeometry(QtCore.QRect(749, 762, 100, 32))
+        self.bntSubmit.setGeometry(QtCore.QRect(749, 752, 100, 32))#762->752
         self.bntSubmit.setText(_fromUtf8(""))
         self.bntSubmit.setObjectName(_fromUtf8("bntSubmit"))
 

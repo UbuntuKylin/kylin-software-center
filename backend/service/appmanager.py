@@ -233,31 +233,43 @@ class AppManager(QObject):
         apps = {}
         for item in list:
             pkgname = UnicodeToAscii(item[0])
-            displayname = item[1]
+            displayname_cn = item[1]
             if pkgname in Globals.ALL_APPS.keys():
                 apps[pkgname] = Globals.ALL_APPS[pkgname]
             else:
-                app = Application(pkgname,displayname, cat, self.apt_cache)
+                app = Application(pkgname,displayname_cn, cat, self.apt_cache)
                 if app.package:
                     apps[pkgname] = app
                     Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
                     #if there has special information in db, get them
                     #get_category_apps_from_db: 0 0
                     #display_name, summary, description, rating_average,rating_total,review_total,download_total
+                    app.orig_name = app.name#zx2015.01.26
+                    app.orig_summary = app.summary
+                    app.orig_description = app.description
+
                     appinfo = self.db.query_application(pkgname)
-                    summary = appinfo[1]
-                    description = appinfo[2]
+                    app.displayname = appinfo[0]
+                    app.summary = appinfo[1]
+                    app.description = appinfo[2]
                     rating_average = appinfo[3]
                     rating_total = appinfo[4]
                     review_total = appinfo[5]
                     # rank = appinfo[6]
 
-                    #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
-                    if summary is not None and summary != 'None':
-                        app.summary = summary
-                    #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
-                    if description is not None and summary != 'None':
-                        app.description = description
+                    # if app.name == 'fcitx':
+                    #     print app.summary,type(app.summary),"*****************f"
+                    # if app.name == 'gnome-screenshot':
+                    #     print app.summary,type(app.summary),"*****************s"
+                    # if app.name == 'osmo':
+                    #     print app.summary,type(app.summary),"*****************o"
+                    #     print '',type(''),"________","None",type("None")
+                    # #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+                    # if summary is not None and summary != 'None':
+                    #     app.summary = summary
+                    # #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+                    # if description is not None and summary != 'None':
+                    #     app.description = description
                     if rating_average is not None:
                         app.ratings_average = float(rating_average)
                     if rating_total is not None:
@@ -631,6 +643,14 @@ class AppManager(QObject):
 
         self.emit(Signals.submit_review_over, res)
 
+    def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):
+        # distroseries = get_distro_info()[2]
+        # language = get_language()
+
+        res = self.premoterauth.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
+        self.emit(Signals.submit_translate_appinfo_over, res)
+
+
     def submit_rating(self, app_name, rating):
         res = self.premoterauth.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
 
@@ -644,6 +664,12 @@ class AppManager(QObject):
         res = self.premoter.get_user_applist(Globals.USER)
 
         self.emit(Signals.get_user_applist_over, res)
+
+    def get_user_transapplist(self):#zx 2015.01.30
+        res = self.premoter.get_user_transapplist(Globals.USER)
+
+        self.emit(Signals.get_user_transapplist_over, res)
+
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):

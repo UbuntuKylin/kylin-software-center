@@ -70,9 +70,14 @@ class ListItemWidget(QWidget):
         self.ui.bg.setStyleSheet("QWidget#bg{background-color:#F3F2F5;border:1px solid #F8F7FA;}")
         self.ui.btnDetail.setStyleSheet("QPushButton#btnDetail{border:0px;}QPushButton#btnDetail:hover{background-image:url('res/listwidgethover.png');}")
         self.ui.cbSelect.setStyleSheet("QCheckBox{font-size:13px;}QCheckBox:hover{background-color:#F3F2F5;}")
-
-        self.ui.name.setText(app.displayname)
-        self.ui.summary.setText(app.summary)
+        if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
+            self.ui.name.setText(app.displayname_cn)
+        else:
+            self.ui.name.setText(app.displayname)
+        if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
+            self.ui.summary.setText(self.app.summary)
+        else:
+            self.ui.summary.setText(self.app.orig_summary)
 
         installedsize = app.installedSize
         installedsizek = installedsize / 1024

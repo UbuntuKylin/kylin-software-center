@@ -146,9 +146,16 @@ class WinCard(QWidget):
                 self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
             # add by kobe
-            setLongTextToElideFormat(self.ui.name, self.app.displayname)
-            setLongTextToElideFormat(self.ui.named, self.app.displayname)
-            self.ui.description.setText(self.app.summary)
+            if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
+                setLongTextToElideFormat(self.ui.name, self.app.displayname_cn)
+                setLongTextToElideFormat(self.ui.named, self.app.displayname_cn)
+            else:
+                setLongTextToElideFormat(self.ui.name, self.app.displayname)
+                setLongTextToElideFormat(self.ui.named, self.app.displayname)
+            if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
+                self.ui.description.setText(self.app.summary)
+            else:
+                self.ui.description.setText(self.app.orig_summary)
 
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):

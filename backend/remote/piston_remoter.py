@@ -72,6 +72,9 @@ class PingbackmainRequest(PistonSerializable):
 class PingbackappRequest(PistonSerializable):
     _atts = ('app_name', 'machine', 'isrcm', 'user')
 
+class AppTransinfoUKRequest(PistonSerializable):
+    _atts = ('app_name','type_appname', 'type_summary', 'type_description', 'original_appname', 'original_summary', 'original_description', 'transl_appname', 'transl_summary', 'transl_description', 'user', 'user_display')
+
 
 class PistonRemoter(PistonAPI):
 
@@ -139,6 +142,10 @@ class PistonRemoter(PistonAPI):
     def get_user_applist(self, user):
         return self._get('getapplist/?user=%s' % user, scheme="http")
 
+    @returns_json#zx 2015.01.30
+    def get_user_transapplist(self, user):
+        return self._get('getusertranslation/?user=%s' % user, scheme="http")
+
 
 class PistonRemoterAuth(PistonAPI):
 
@@ -157,6 +164,26 @@ class PistonRemoterAuth(PistonAPI):
         postdata.user = user
         postdata.user_display = user_display
         return self._post('submitreview20141124/', data=postdata, scheme='http', content_type='application/json')
+
+    @returns_json
+    def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, user, user_display):
+        postdata = AppTransinfoUKRequest()
+        postdata.app_name = appname
+        postdata.type_appname = type_appname
+        #print postdata.type_appname
+        postdata.type_summary = type_summary
+        #print postdata.type_summary
+        postdata.type_description = type_description
+        #print postdata.type_description
+        postdata.original_appname = orig_appname
+        postdata.original_summary = orig_summary
+        postdata.original_description = orig_description
+        postdata.transl_appname = trans_appname
+        postdata.transl_summary = trans_summary
+        postdata.transl_description = trans_description
+        postdata.user = user
+        postdata.user_display = user_display
+        return self._post('submittranslation/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
     def submit_rating(self, app_name, rating, user, user_display):

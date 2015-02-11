@@ -91,13 +91,15 @@ class PageStates:
      UNPAGE,
      WINPAGE,
      UAPAGE,
+     TRANSPAGE,
      SEARCHHOMEPAGE,
      SEARCHALLPAGE,
      SEARCHUPPAGE,
      SEARCHUNPAGE,
      SEARCHWINPAGE,
      SEARCHUAPAGE,
-     ) = range(12)
+     SEARCHTRANSPAGE,
+     ) = range(14)
 
 # transaction types
 class TransactionTypes:
@@ -182,6 +184,7 @@ class Signals:
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
     get_user_applist_over = SIGNAL("get-user-applist-over")
+    get_user_transapplist_over = SIGNAL("get-user-transapplist-over")#zx 2015.01.30
     submit_review = SIGNAL("submit-review")
     submit_review_over = SIGNAL("submit-review-over")
     submit_rating = SIGNAL("submit-rating")
@@ -195,6 +198,8 @@ class Signals:
     mfb_click_uninstall = SIGNAL("multifuncbtn-click-uninstall")
     get_card_status = SIGNAL("get-card-status")
     trans_card_status = SIGNAL("trans-card-status")
+    submit_translate_appinfo = SIGNAL("submit_translate_appinfo")#zx 2015.01.26
+    submit_translate_appinfo_over = SIGNAL("submit_translate_appinfo_over")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

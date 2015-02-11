@@ -139,7 +139,7 @@ class Ui_MainWindow(object):
         self.homeMsgWidget.setGeometry(QtCore.QRect(0, 0, 860, 44))
         self.homeMsgWidget.setObjectName(_fromUtf8("homeMsgWidget"))
         self.afterLoginWidget = QtGui.QWidget(self.homeMsgWidget)
-        self.afterLoginWidget.setGeometry(QtCore.QRect(0, 0, 290, 44))
+        self.afterLoginWidget.setGeometry(QtCore.QRect(0, 0, 330, 44))#zx 2015.01.30
         self.afterLoginWidget.setObjectName(_fromUtf8("afterLoginWidget"))
         self.userLogoafter = QtGui.QLabel(self.afterLoginWidget)
         self.userLogoafter.setGeometry(QtCore.QRect(0, 20, 16, 16))
@@ -154,13 +154,20 @@ class Ui_MainWindow(object):
         self.username.setText(_fromUtf8(""))
         self.username.setObjectName(_fromUtf8("username"))
         self.btnLogout = QtGui.QPushButton(self.afterLoginWidget)
-        self.btnLogout.setGeometry(QtCore.QRect(220, 20, 45, 15))
+        self.btnLogout.setGeometry(QtCore.QRect(290, 20, 45, 15))
         self.btnLogout.setText(_fromUtf8(""))
         self.btnLogout.setObjectName(_fromUtf8("btnLogout"))
+
+        self.btnTransList = QtGui.QPushButton(self.afterLoginWidget)#zx2015.01.30
+        self.btnTransList.setGeometry(QtCore.QRect(220, 20, 65, 15))
+        self.btnTransList.setText(_fromUtf8(""))
+        self.btnTransList.setObjectName(_fromUtf8("btnTransList"))
+
         self.btnAppList = QtGui.QPushButton(self.afterLoginWidget)
         self.btnAppList.setGeometry(QtCore.QRect(150, 20, 60, 15))
         self.btnAppList.setText(_fromUtf8(""))
         self.btnAppList.setObjectName(_fromUtf8("btnAppList"))
+
         self.beforeLoginWidget = QtGui.QWidget(self.homeMsgWidget)
         self.beforeLoginWidget.setGeometry(QtCore.QRect(0, 0, 290, 44))
         self.beforeLoginWidget.setObjectName(_fromUtf8("beforeLoginWidget"))
@@ -339,6 +346,7 @@ class Ui_MainWindow(object):
         self.detailShellWidget = QtGui.QWidget(self.rightWidget)
         self.detailShellWidget.setGeometry(QtCore.QRect(20, 50, 873, 558))
         self.detailShellWidget.setObjectName(_fromUtf8("detailShellWidget"))
+
         self.userAppListWidget = QtGui.QWidget(self.rightWidget)
         self.userAppListWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.userAppListWidget.setObjectName(_fromUtf8("userAppListWidget"))
@@ -367,6 +375,37 @@ class Ui_MainWindow(object):
         self.uaNoItemText.setGeometry(QtCore.QRect(210, 428, 459, 20))
         self.uaNoItemText.setText(_fromUtf8(""))
         self.uaNoItemText.setObjectName(_fromUtf8("uaNoItemText"))
+
+#"**************************************************************************************"
+        self.userTransListWidget = QtGui.QWidget(self.rightWidget)#zx 2015.01.30
+        self.userTransListWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
+        self.userTransListWidget.setObjectName(_fromUtf8("userTransListWidget"))
+        self.transline = QtGui.QLabel(self.userTransListWidget)
+        self.transline.setGeometry(QtCore.QRect(0, 44, 860, 1))
+        self.transline.setText(_fromUtf8(""))
+        self.transline.setObjectName(_fromUtf8("transline"))
+        self.transcw1 = QtGui.QWidget(self.userTransListWidget)
+        self.transcw1.setGeometry(QtCore.QRect(750, 20, 130, 15))
+        self.transcw1.setObjectName(_fromUtf8("transcw1"))
+        # self.cbSelectAll = QtGui.QCheckBox(self.uacw1)
+        # self.cbSelectAll.setGeometry(QtCore.QRect(0, 0, 120, 15))
+        # self.cbSelectAll.setObjectName(_fromUtf8("cbSelectAll"))
+        self.transtitle = QtGui.QLabel(self.userTransListWidget)
+        self.transtitle.setGeometry(QtCore.QRect(0, 20, 300, 15))
+        self.transtitle.setText(_fromUtf8(""))
+        self.transtitle.setObjectName(_fromUtf8("transtitle"))
+        # self.btnInstallAll = QtGui.QPushButton(self.userTransListWidget)
+        # self.btnInstallAll.setGeometry(QtCore.QRect(640, 18, 100, 20))
+        # self.btnInstallAll.setText(_fromUtf8(""))
+        # self.btnInstallAll.setObjectName(_fromUtf8("btnInstallAll"))
+        self.NoTransItemWidget = QtGui.QWidget(self.userTransListWidget)
+        self.NoTransItemWidget.setGeometry(QtCore.QRect(210, 134, 459, 264))
+        self.NoTransItemWidget.setObjectName(_fromUtf8("NoTransItemWidget"))
+        self.NoTransItemText = QtGui.QLabel(self.userTransListWidget)
+        self.NoTransItemText.setGeometry(QtCore.QRect(210, 428, 459, 20))
+        self.NoTransItemText.setText(_fromUtf8(""))
+        self.NoTransItemText.setObjectName(_fromUtf8("NoTransItemText"))
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)

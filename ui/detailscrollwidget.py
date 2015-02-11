@@ -85,12 +85,25 @@ class DetailScrollWidget(QScrollArea):
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
+        self.ui.btn_change.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
+        self.ui.change_cancel.setText("取消")#zx 2015.01.26
+        self.ui.change_cancel.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
+        self.ui.change_submit.setText("提交")#zx 2015.01.26
+        self.ui.change_submit.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
+
+
+        self.ui.show_orig_description.setText("原软件介绍")
+
+        self.ui.btn_change.clicked.connect(self.slot_btn_change)#zx 2015.01.26
+        self.ui.change_submit.clicked.connect(self.slot_change_submit)#zx 2015.01.26
+        self.ui.change_cancel.clicked.connect(self.slot_btn_cancel)
 
         self.hl = QLineEdit(self.detailWidget)
         self.hl.setGeometry(-10,-10,1,1)
 
         # self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.bntSubmit.setFocusPolicy(Qt.NoFocus)
+        self.ui.btn_change.setFocusPolicy(Qt.NoFocus)#zx 2015.01.26
 
         # self.ui.btnInstall.setFocusPolicy(Qt.NoFocus)
         # self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
@@ -100,8 +113,11 @@ class DetailScrollWidget(QScrollArea):
         self.ui.reviewListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.thumbnail.setFocusPolicy(Qt.NoFocus)
         self.ui.sshot.setFocusPolicy(Qt.NoFocus)
+        #self.ui.name.setFocusPolicy(Qt.StrongFocus)
+
         self.ui.summary.setReadOnly(True)
         self.ui.description.setReadOnly(True)
+
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         # self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
@@ -134,7 +150,11 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.gradeBG.setStyleSheet("QWidget{border:1px solid #cccccc;}")
         self.ui.iconBG.setStyleSheet("QLabel{background-image:url('res/icon-bg.png')}")
-        self.ui.name.setStyleSheet("QLabel{font-size:28px;font-weight:bold;color:#666666;}")
+
+        # self.ui.name.setStyleSheet("QLabel{font-size:28px;font-weight:bold;color:#666666;}")#zx 2015.01.26
+        self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
+        self.ui.debname.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
+
         self.ui.splitText1.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
         self.ui.splitText2.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
         self.ui.splitText3.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
@@ -165,6 +185,7 @@ class DetailScrollWidget(QScrollArea):
 
         self.ui.split1.setStyleSheet("QLabel{background-color:#a6a5a7;}")
         self.ui.split2.setStyleSheet("QLabel{background-color:#a6a5a7;}")
+        self.ui.split3.setStyleSheet("QLabel{background-color:#a6a5a7;}")
         self.ui.vline.setStyleSheet("QLabel{background-color:#E0E0E0;}")
 
         # self.ui.gradeText3.setStyleSheet("QLabel{font-size:13px;color:#9AA2AF;}")
@@ -198,6 +219,7 @@ class DetailScrollWidget(QScrollArea):
         self.reviewload = MiniLoadingDiv(self.ui.reviewListWidget, self.detailWidget)
         self.submitratingload = MiniLoadingDiv(self.ui.gradeBG, self.detailWidget)
         self.submitreviewload = MiniLoadingDiv(self.ui.reviewText, self.detailWidget)
+        #self.submitchangedappinfoload = MiniLoadingDiv(self.ui.change_submit, self.detailWidget)
 
         self.connect(self.mainwindow,Signals.apt_process_finish,self.slot_work_finished)
         self.connect(self.mainwindow,Signals.apt_process_cancel,self.slot_work_cancel)
@@ -230,19 +252,35 @@ class DetailScrollWidget(QScrollArea):
         self.sshotcount = 0
         self.ui.thumbnail.hide()
 
+        self.ui.change_submit.hide()#zx 2015.01.26
+        self.ui.btn_change.hide()
+        self.ui.change_cancel.hide()
+        self.ui.name.setReadOnly(True)
+        self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
+        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+        self.ui.show_orig_description.hide()
+        self.ui.orig_summary_widget.hide()
+
         self.ui.candidateVersion.hide()
         self.ui.fen.hide()
         self.ui.scorelabel.hide()
         self.ui.scoretitle.hide()
         self.ui.size_install.hide()
+        self.ui.split1.hide()
         self.ui.split2.hide()
-        if self.smallstar_exsit == True:
+        self.ui.split3.hide()
+        self.ui.transNameStatus.hide()
+        self.ui.transSummaryStatus.hide()
+        self.ui.transDescriptionStatus.hide()
+        if self.smallstar_exsit is True:
             self.smallstar.hide()
         # self.ui.btnUpdate.setVisible(False)
         # self.ui.btnUninstall.setVisible(False)
 
         self.debfile = DebFile(path)
         self.app = self.debfile
+        self.ui.debname.setText("软件包名: " + self.debfile.name)
 
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
         # self.ui.name.setText(self.debfile.name)
@@ -297,16 +335,44 @@ class DetailScrollWidget(QScrollArea):
         self.ui.scoretitle.show()
         self.ui.size_install.show()
         self.ui.split2.show()
+        self.ui.split3.show()
+        self.ui.transNameStatus.hide()
+        self.ui.transSummaryStatus.hide()
+        self.ui.transDescriptionStatus.hide()
 
         self.app = app
-
+        self.ui.name.setReadOnly(True)
+        self.ui.summary.setReadOnly(True)#zx 2015.01.26
+        self.ui.description.setReadOnly(True)
         # self.btns.reset_btns(self.app, self.workType)
         self.btns.reset_btns(self.app, self.app.status)
-        self.ui.name.setText(app.name)
+
+        self.ui.btn_change.show()#zx2015.01.26
+        self.ui.btn_change.setEnabled(True)
+        self.ui.change_submit.hide()
+        self.ui.change_submit.setEnabled(False)
+        self.ui.change_cancel.hide()
+        self.ui.change_cancel.setEnabled(False)
+        self.ui.show_orig_description.hide()
+        self.ui.orig_description_widget.hide()
+        self.ui.orig_description_widget.verticalScrollBar()
+        self.ui.orig_description_widget.setReadOnly(True)
+
+        self.ui.orig_summary_widget.setReadOnly(True)
+        self.ui.orig_summary_widget.hide()
+
+        if app.orig_summary == '':
+            self.ui.orig_summary_widget.setText(app.summary)
+        else:
+            self.ui.orig_summary_widget.setText(app.orig_summary)
+
+        if app.orig_description == '':
+            self.ui.orig_description_widget.setText(app.description)
+        else:
+            self.ui.orig_description_widget.setText(app.orig_description)
+        self.ui.debname.setText("软件包名: " + app.name)
         self.ui.installedVersion.setText("当前版本: " + app.installed_version)
         self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
-        self.ui.summary.setText(app.summary)
-        self.ui.description.setText(app.description)
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
@@ -333,17 +399,20 @@ class DetailScrollWidget(QScrollArea):
         self.ui.grade.setText(averate_rate)
 
         self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
-        self.smallstar.move(180, 99)
+        self.smallstar.move(460, 45)
         self.smallstar_exsit = True
 
         #总评分
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
-        self.star.move(70, 584)
+        self.star.move(90, 584)
         #我的评分
         self.ratingstar = DynamicStarWidget(self.detailWidget)
         self.ratingstar.move(620, 575)
         self.connect(self.ratingstar, Signals.get_user_rating,self.slot_submit_rating)
 
+        self.ui.transNameStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
+        self.ui.transSummaryStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
+        self.ui.transDescriptionStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
         if self.app.status == PkgStates.INSTALL:
@@ -385,9 +454,96 @@ class DetailScrollWidget(QScrollArea):
                 elif app.pkg_status == PkgStates.UPGRADABLE:
                     self.btns.reset_btns(app, PkgStates.UPDATE)
                     self.ui.status.show()
-            else:
                 print 'another status in detail page......'
                 print app.status
+
+        if Globals.NOWPAGE == PageStates.TRANSPAGE:
+            self.ui.btn_change.setText("完善翻译")
+            self.ui.status.hide()
+            if app.is_installed is True:
+                if(run.get_run_command(app.name) == ""):
+                    self.btns.reset_btns(app, PkgStates.NORUN)
+                else:
+                    self.btns.reset_btns(app, PkgStates.RUN)
+            else:
+                self.btns.reset_btns(app, PkgStates.INSTALL)
+
+            if hasattr(self.app,"transname"):
+                self.ui.name.setText(app.transname)
+                if self.app.transnamestatu is True:
+                    if self.app.transnameenable is True:
+                        self.ui.transNameStatus.show()
+                        self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:green;}")
+                    else:
+                        self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:gray;}")
+                else:
+                    self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:black;}")
+            else:
+                if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
+                    self.ui.name.setText(self.app.displayname_cn)
+                else:
+                    self.ui.name.setText(self.app.displayname)
+                self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
+
+            if hasattr(self.app,"transsummary"):
+                self.ui.summary.setText(app.transsummary)
+                if self.app.transsummarystatu is True:
+                    if self.app.transsummaryenable is True:
+                        self.ui.transSummaryStatus.show()
+                        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;font-weight:bold;color:green;}")
+                    else:
+                        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;font-weight:bold;color:gray;}")
+                else:
+                    self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;font-weight:bold;color:black;}")
+            else:
+                self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;color:#666666;}")
+                if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
+                    self.ui.summary.setText(app.summary)
+                else:
+                    self.ui.summary.setText(app.orig_summary)
+
+            if hasattr(self.app,"transdescription"):
+                self.ui.description.setText(app.transdescription)
+                if self.app.transdescriptionstatu is True:
+                    if self.app.transdescriptionenable is True:
+                        self.ui.transDescriptionStatus.show()
+                        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;font-weight:bold;color:green;}")
+                    else:
+                        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;font-weight:bold;color:gray;}")
+                else:
+                    self.ui.description.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;font-weight:bold;color:black;}")
+            else:
+                self.ui.description.setStyleSheet("QTextEdit{background-color:transparent;font-size:13px;color:#666666;}")
+                if self.app.description is not None and self.app.description != 'None' and self.app.description != '':
+                    self.ui.description.setText(app.description)
+                else:
+                    self.ui.description.setText(app.orig_description)
+        else:
+            self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")#zx 2015.01.26
+            if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
+                self.ui.name.setText(self.app.displayname_cn)
+            else:
+                self.ui.name.setText(self.app.displayname)
+            self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+            if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
+                self.ui.summary.setText(app.summary)
+            else:
+                self.ui.summary.setText(app.orig_summary)
+            self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+            self.ui.description.show()
+            if self.app.description is not None and self.app.description != 'None' and self.app.description != '':
+                self.ui.description.setText(app.description)
+            else:
+                self.ui.description.setText(app.orig_description)
+
+            if str(self.ui.name.text().toUtf8()) == self.app.displayname and str(self.ui.summary.toPlainText()) == self.app.orig_summary and str(self.ui.description.toPlainText()) == self.app.orig_description:
+                self.ui.btn_change.setText("翻译软件")
+            else:
+                self.ui.btn_change.setText("完善翻译")
+
+        self.init_name = str(self.ui.name.text().toUtf8()).strip()
+        self.init_summary = str(self.ui.summary.toPlainText()).strip()
+        self.init_description = str(self.ui.description.toPlainText()).strip()
 
         self.mainwindow.ui.detailShellWidget.show()
 
@@ -448,6 +604,118 @@ class DetailScrollWidget(QScrollArea):
             self.bigsshot.move_to_center()
             self.bigsshot.show()
 
+    def slot_btn_change(self):
+            self.change_start()
+
+    def slot_btn_cancel(self):
+            self.change_cancel()
+
+
+    def change_start(self):#zx 2015.01.26
+        if(Globals.USER != ''):
+            self.ui.name.setReadOnly(False)
+            self.ui.name.setStyleSheet("QLineEdit{font-size:28px;font-weight:bold;color:#666666;}")
+            self.ui.summary.setReadOnly(False)
+            self.ui.summary.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#666666;}")
+            self.ui.description.setReadOnly(False)
+            self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#666666;}")
+            self.ui.change_submit.setEnabled(True)
+            self.ui.change_submit.show()
+            self.ui.change_cancel.setEnabled(True)
+            self.ui.change_cancel.show()
+            self.ui.show_orig_description.show()
+            self.ui.orig_summary_widget.show()
+            self.ui.orig_description_widget.show()
+            self.ui.btn_change.hide()
+            self.sshotload.hide()
+            self.ui.btnSshotBack.hide()
+            self.ui.btnSshotNext.hide()
+        else:
+            self.emit(Signals.show_login)
+
+    def change_cancel(self):
+        self.ui.name.setText(self.init_name)
+        self.ui.summary.setText(self.init_summary)
+        self.ui.description.setText(self.init_description)
+        self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
+        self.ui.btn_change.show()
+        self.ui.name.setReadOnly(True)
+        self.ui.btn_change.setEnabled(True)
+        self.ui.change_submit.hide()
+        self.ui.change_cancel.hide()
+        self.ui.summary.setReadOnly(True)
+        self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+        self.ui.description.setReadOnly(True)
+        self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+        self.ui.orig_description_widget.hide()
+        self.ui.show_orig_description.hide()
+        self.ui.orig_summary_widget.hide()
+        self.ui.btnSshotBack.show()
+        self.ui.btnSshotNext.show()
+        self.scrollToTop()
+
+    def slot_change_submit(self):#zx 2015.01.26
+        appname = str(self.ui.name.text().toUtf8()).strip()
+        summary = str(self.ui.summary.toPlainText()).strip()
+        description = str(self.ui.description.toPlainText()).strip()
+        if(appname == '' or summary == '' or description == ''):
+            self.mainwindow.messageBox.alert_msg("软件名或软件介绍不能为空")
+        else:
+            if(appname == self.init_name  and summary == self.init_summary  and  description == self.init_description):
+                self.mainwindow.messageBox.alert_msg("您未翻译或修改任何部分")
+            else:
+                if appname != self.init_name:
+                    self.ui.transNameStatus.hide()
+                    self.init_name = appname
+                    type_appname = 'True'
+                else:
+                    type_appname = 'False'
+                    appname = "<1_1>"
+
+                if summary != self.init_summary:
+                    self.ui.transSummaryStatus.hide()
+                    self.init_summary = summary
+                    type_summary = 'True'
+                else:
+                    summary = "<1_1>"
+                    type_summary = 'False'
+
+                if description != self.init_description:
+                    self.ui.transDescriptionStatus.hide()
+                    self.init_description = description
+                    type_description = 'True'
+                else:
+                    description = "<1_1>"
+                    type_description = 'False'
+
+                self.emit(Signals.submit_translate_appinfo, self.app.name, type_appname, type_summary, type_description, self.app.displayname, self.app.orig_summary, self.app.orig_description, appname, summary, description)
+            self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
+            self.ui.name.setReadOnly(True)
+            self.ui.btn_change.setEnabled(True)
+            self.ui.change_submit.hide()
+            self.ui.change_cancel.hide()
+            self.ui.summary.setReadOnly(True)
+            self.ui.summary.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+            self.ui.description.setReadOnly(True)
+            self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
+            self.ui.orig_description_widget.hide()
+            self.ui.show_orig_description.hide()
+            self.ui.orig_summary_widget.hide()
+            self.ui.btnSshotBack.show()
+            self.ui.btnSshotNext.show()
+            self.ui.btn_change.show()
+            self.scrollToTop()
+
+    def slot_submit_translate_appinfo_over(self, res):
+        #print "************",res
+        if(res == 0):
+            self.mainwindow.messageBox.alert_msg("翻译已提交")
+        elif(res == 1):
+            self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")
+        else:
+            self.mainwindow.messageBox.alert_msg("翻译的字数过多\n"
+                                                 "或其它未知错误")
+
     def slot_submit_review(self):
         if(Globals.USER != ''):
             content = str(self.ui.reviewText.toPlainText())
@@ -459,6 +727,7 @@ class DetailScrollWidget(QScrollArea):
                 self.mainwindow.messageBox.alert_msg("不能发表空评论")
         else:
             self.emit(Signals.show_login)
+
 
     def slot_submit_review_over(self, res):
         self.submitreviewload.stop_loading()
@@ -575,19 +844,19 @@ class DetailScrollWidget(QScrollArea):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.app.status = PkgStates.INSTALL
-                # self.btns.reset_btns(self.app, PkgStates.INSTALL)
+                self.btns.reset_btns(self.app, PkgStates.INSTALL)#zx 2015.02.09
                 self.ui.status.hide()
                 if self.debfile:
                     self.debfile = None
 
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.UNINSTALL
-                # self.btns.reset_btns(self.app, PkgStates.UNINSTALL)
+                self.btns.reset_btns(self.app, PkgStates.UNINSTALL)#zx 2015.02.09
                 self.ui.status.show()
 
             elif action == AppActions.UPGRADE:
                 self.app.status = PkgStates.UPDATE
-                # self.btns.reset_btns(self.app, PkgStates.UPDATE)
+                self.btns.reset_btns(self.app, PkgStates.UPDATE)#zx 2015.02.09
                 self.ui.status.show()
 
     def scrollToTop(self):#zx 2015.01.23 for bug1402930
@@ -609,7 +878,6 @@ class DetailScrollWidget(QScrollArea):
                     self.reviewload.start_loading()
                     self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
-
 class ScreenShotBig(QWidget):
 
     def __init__(self, parent=None):
@@ -630,3 +898,4 @@ class ScreenShotBig(QWidget):
         windowWidth = QApplication.desktop().width()
         windowHeight = QApplication.desktop().height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+

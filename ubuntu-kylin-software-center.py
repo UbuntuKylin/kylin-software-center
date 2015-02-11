@@ -38,6 +38,7 @@ from ui.wincard import WinCard, WinGather, DataModel
 from ui.cardwidget import CardWidget
 from ui.pointcard import PointCard
 from ui.listitemwidget import ListItemWidget
+from ui.translistitemwidget import TransListItemWidget#ZX 2015.01.30
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
 from ui.adwidget import *
@@ -158,6 +159,10 @@ class SoftwareCenter(QMainWindow):
         self.userAppListWidget = CardWidget(860, 88, 4, self.ui.userAppListWidget)
         self.userAppListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.userAppListWidget.calculate_data()
+        #user translateapplist widget zx 2015.01.30
+        self.userTransAppListWidget = CardWidget(860, 88, 4, self.ui.userTransListWidget)
+        self.userTransAppListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.userTransAppListWidget.calculate_data()
         # win card widget
         self.winListWidget = CardWidget(427, 88, 6, self.ui.winpageWidget)
         self.winListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)
@@ -243,6 +248,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnInstallAll.setFocusPolicy(Qt.NoFocus)
         self.resizeCorner.setFocusPolicy(Qt.NoFocus)
 
+        self.ui.btnTransList.setFocusPolicy(Qt.NoFocus)#zx 2015.01.30
+
         # add by kobe
         self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
@@ -264,6 +271,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnReg.setText("去注册")
         self.ui.welcometext.setText("欢迎您")
         self.ui.btnAppList.setText("我的软件")
+        self.ui.btnTransList.setText("我的翻译")#zx.2015.01.30
         self.ui.btnLogout.setText("退出")
 
         self.ui.hometext1.setText("推荐软件")
@@ -332,6 +340,18 @@ class SoftwareCenter(QMainWindow):
         self.ui.cbSelectAll.setStyleSheet("QCheckBox{color:#666666;font-size:13px;}QCheckBox:hover{background-color:rgb(238, 237, 240);}")
         self.ui.btnInstallAll.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
 
+        self.ui.transtitle.setText("云端保存的翻译历史")#zx 2015.01.30
+        #self.ui.btnInstallAll.setText("一键安装")
+        self.ui.NoTransItemText.setText("您登陆后翻译的软件会被记录在这里，目前暂无记录")
+        self.ui.NoTransItemText.setAlignment(Qt.AlignCenter)
+        self.ui.NoTransItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
+        self.ui.NoTransItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
+        self.ui.transline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.transtitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+       # self.ui.cbSelectAll.setStyleSheet("QCheckBox{color:#666666;font-size:13px;}QCheckBox:hover{background-color:rgb(238, 237, 240);}")
+       # self.ui.btnInstallAll.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+
+
         self.ui.wintitle.setText("Windowns常用软件替换")
         self.ui.winlabel1.setText("可替换")
         self.ui.winlabel1.setAlignment(Qt.AlignLeft)
@@ -348,6 +368,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
         self.ui.btnAppList.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
+
+        self.ui.btnTransList.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")#zx 2015.01.30
+
         self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
         self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
         self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#EF9800;}")
@@ -427,6 +450,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnReg.clicked.connect(self.slot_do_register)
         self.ui.btnLogout.clicked.connect(self.slot_do_logout)
         self.ui.btnAppList.clicked.connect(self.slot_goto_uapage)
+
+        self.ui.btnTransList.clicked.connect(self.slot_goto_translatepage)
+
         self.sso.connect("whoami", self.slot_whoami_done)
 
         # add by kobe
@@ -444,6 +470,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
         self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
         self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
+        self.connect(self.detailScrollWidget, Signals.submit_translate_appinfo, self.slot_submit_translate_appinfo)#zx2015.01.26
 
         # widget status
         self.ui.btnUp.setEnabled(False)
@@ -457,6 +484,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.unWidget.hide()
         self.ui.searchWidget.hide()
         self.ui.userAppListWidget.hide()
+        self.ui.userTransListWidget.hide()#zx 2015.01.30
         self.ui.taskWidget.hide()
         self.ui.winpageWidget.hide()
         self.ui.headerWidget.hide()
@@ -483,6 +511,8 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.submit_review_over, self.detailScrollWidget.slot_submit_review_over)
         self.connect(self.appmgr, Signals.submit_rating_over, self.detailScrollWidget.slot_submit_rating_over)
         self.connect(self.appmgr, Signals.get_user_applist_over, self.slot_get_user_applist_over)
+        self.connect(self.appmgr, Signals.get_user_transapplist_over, self.slot_get_user_transapplist_over)
+        self.connect(self.appmgr, Signals.submit_translate_appinfo_over, self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -818,6 +848,7 @@ class SoftwareCenter(QMainWindow):
                     self.ui.winpageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
                     self.ui.searchWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
                     self.ui.userAppListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+                    self.ui.userTransListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
 
                     self.ui.rankWidget.move(self.ui.homepageWidget.width() - self.ui.rankWidget.width() - 20, self.ui.rankWidget.y())
                     self.ui.recommendWidget.resize(self.ui.rankWidget.x() - 20, self.ui.recommendWidget.height())
@@ -830,6 +861,7 @@ class SoftwareCenter(QMainWindow):
                     self.ui.searchcw1.move(self.ui.searchWidget.width() - self.ui.searchcw1.width(), self.ui.searchcw1.y())
                     self.ui.uacw1.move(self.ui.userAppListWidget.width() - self.ui.uacw1.width(), self.ui.uacw1.y())
                     self.ui.btnInstallAll.move(self.ui.uacw1.x() - self.ui.btnInstallAll.width() - 10, self.ui.btnInstallAll.y())
+                    self.ui.transcw1.move(self.ui.userTransListWidget.width()-self.ui.transcw1.width(),self.ui.transcw1.y())
 
                     self.ui.allline.resize(self.ui.allWidget.width() - 20, self.ui.allline.height())
                     self.ui.upline.resize(self.ui.upWidget.width() - 20, self.ui.upline.height())
@@ -838,6 +870,7 @@ class SoftwareCenter(QMainWindow):
                     self.ui.searchline.resize(self.ui.searchWidget.width() - 20, self.ui.searchline.height())
                     self.ui.ualine.resize(self.ui.userAppListWidget.width() - 20, self.ui.ualine.height())
                     self.ui.homeline1.resize(self.ui.recommendWidget.width(), self.ui.homeline1.height())
+                    self.ui.transline.resize(self.ui.userTransListWidget.width() - 20,self.ui.transline.height())
 
                     self.ui.virtuallabel.resize(self.ui.homepageWidget.width(), self.ui.virtuallabel.height())
                     self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
@@ -883,6 +916,9 @@ class SoftwareCenter(QMainWindow):
 
                     self.userAppListWidget.setGeometry(0, 50, self.ui.userAppListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userAppListWidget.height() - 50)
                     self.userAppListWidget.reload_cards()
+
+                    self.userTransAppListWidget.setGeometry(0, 50, self.ui.userTransListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userTransListWidget.height() - 50)
+                    self.userTransAppListWidget.reload_cards()
 
                     self.winListWidget.setGeometry(0, 50, self.ui.winpageWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.winpageWidget.height() - 50)
                     self.winListWidget.reload_cards()
@@ -958,7 +994,7 @@ class SoftwareCenter(QMainWindow):
 
     def show_more_software(self, listWidget):
         # if self.nowPage == "searchpage":
-        if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE):
+        if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE):
             self.show_more_search_result(listWidget)
         else:
             # print self.nowPage
@@ -1006,7 +1042,7 @@ class SoftwareCenter(QMainWindow):
             listWidget = self.upListWidget
         elif(Globals.NOWPAGE == PageStates.UNPAGE):
             listWidget = self.unListWidget
-        elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):
+        elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#
             listWidget = self.searchListWidget
         # if(self.nowPage == "allpage"):
         #     listWidget = self.allListWidget
@@ -1239,7 +1275,10 @@ class SoftwareCenter(QMainWindow):
             if app is not None:
                 oneitem = QListWidgetItem()
                 oneitem.setWhatsThis(app.name)
-                rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
+                if app.displayname_cn != '' and app.displayname_cn is not None and app.displayname_cn != 'None':
+                    rliw = RankListItemWidget(app.displayname_cn, self.ui.rankView.count() + 1)
+                else:
+                    rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
@@ -1334,6 +1373,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
         self.ui.btnHomepage.setEnabled(False)
@@ -1368,6 +1408,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
         self.ui.btnAll.setEnabled(False)
@@ -1402,6 +1443,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
         self.ui.btnUp.setEnabled(False)
@@ -1436,6 +1478,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.searchWidget.setVisible(False)
         self.ui.taskWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
         self.ui.btnUn.setEnabled(False)
@@ -1454,6 +1497,8 @@ class SoftwareCenter(QMainWindow):
             Globals.NOWPAGE = PageStates.SEARCHWINPAGE
         elif Globals.NOWPAGE == PageStates.UAPAGE:
             Globals.NOWPAGE = PageStates.SEARCHUAPAGE
+        elif Globals.NOWPAGE == PageStates.TRANSPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHTRANSPAGE
 
         self.reset_nav_bar_focus_one()
         # if self.nowPage != 'searchpage':
@@ -1473,6 +1518,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
     def slot_goto_taskpage(self, ishistory=False):
         self.reset_nav_bar_focus_one()
@@ -1506,6 +1552,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(True)
         self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
         self.ui.btnWin.setEnabled(False)
@@ -1530,11 +1577,35 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(True)
+        self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar()
 
         self.loadingDiv.start_loading("")
         self.appmgr.get_user_applist()
+
+    def slot_goto_translatepage(self):#zx 2015.01.30
+        Globals.NOWPAGE = PageStates.TRANSPAGE
+
+        self.ui.btnCloseDetail.setVisible(False)
+        self.categoryBar.hide()
+        self.ui.detailShellWidget.hide()
+
+        self.ui.homepageWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
+        self.ui.upWidget.setVisible(False)
+        self.ui.unWidget.setVisible(False)
+        self.ui.searchWidget.setVisible(False)
+        self.ui.taskWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
+        self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(True)
+
+        self.reset_nav_bar()
+        #
+        self.loadingDiv.start_loading("")
+        self.appmgr.get_user_transapplist()
+
 
     def slot_get_user_applist_over(self, reslist):
         if(len(reslist) > 0):
@@ -1563,6 +1634,62 @@ class SoftwareCenter(QMainWindow):
             self.ui.uaNoItemWidget.show()
             self.userAppListWidget.hide()
 
+        self.loadingDiv.stop_loading()
+
+    def slot_get_user_transapplist_over(self,reslist):#zx 2015.01.30
+        if(len(reslist) > 0):
+            self.userTransAppListWidget.clear()
+            self.ui.NoTransItemText.hide()
+            self.ui.NoTransItemWidget.hide()
+            self.userTransAppListWidget.show()
+            allapp = {}
+            allappname = []
+            for res in reslist:
+                app_name = res['aid']['app_name']
+                if allapp.has_key(app_name):
+                    if res["type"] == "appname":
+                        allapp[app_name].transname = res["transl"]
+                        allapp[app_name].transnamestatu = res["check"]
+                        allapp[app_name].transnameenable = res["enable"]
+                    if res["type"] == "summary":
+                        allapp[app_name].transsummary = res["transl"]
+                        allapp[app_name].transsummarystatu = res["check"]
+                        allapp[app_name].transsummaryenable = res["enable"]
+                    if res["type"] == "description":
+                        allapp[app_name].transdescription = res["transl"]
+                        allapp[app_name].transdescriptionstatu = res["check"]
+                        allapp[app_name].transdescriptionenable = res["enable"]
+
+                    newtranstime = res["modify_time"].replace("T"," ").replace("Z","")
+                    if newtranstime > allapp[app_name].translatedate:
+                        allapp[app_name].translatedate = newtranstime
+
+                else:
+                    app = self.appmgr.get_application_by_name(app_name)
+                    app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
+                    if res["type"] == "appname":
+                        app.transname = res["transl"]
+                        app.transnamestatu = res["check"]
+                        app.transnameenable = res["enable"]
+                    if res["type"] == "summary":
+                        app.transsummary = res["transl"]
+                        app.transsummarystatu = res["check"]
+                        app.transsummaryenable = res["enable"]
+                    if res["type"] == "description":
+                        app.transdescription = res["transl"]
+                        app.transdescriptionstatu = res["check"]
+                        app.transdescriptionenable = res["enable"]
+                    allapp[app_name] = app
+                    allappname.append(app.name)
+
+            for appname in allappname:
+                item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
+                self.userTransAppListWidget.add_card(item)
+                self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
+        else:
+            self.ui.NoTransItemText.show()
+            self.ui.NoTransItemWidget.show()
+            self.userTransAppListWidget.hide()
         self.loadingDiv.stop_loading()
 
     def slot_close(self):
@@ -1675,6 +1802,10 @@ class SoftwareCenter(QMainWindow):
     def slot_submit_review(self, app_name, content):
         LOG.info("submit one review:%s", content)
         self.appmgr.submit_review(app_name, content)
+
+    def slot_submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):#zx 2015.01.26
+        LOG.info("Translate the app %s "%(appname))
+        self.appmgr.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description)
 
     def slot_submit_rating(self, app_name, rating):
         LOG.info("submit one rating:%s", rating)

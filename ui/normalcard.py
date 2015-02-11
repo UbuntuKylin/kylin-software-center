@@ -128,9 +128,17 @@ class NormalCard(QWidget):
             self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
         # add by kobe
-        setLongTextToElideFormat(self.ui.name, self.app.displayname)
-        setLongTextToElideFormat(self.ui.named, self.app.displayname)
-        self.ui.description.setText(self.app.summary)
+        if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
+            setLongTextToElideFormat(self.ui.name, self.app.displayname_cn)
+            setLongTextToElideFormat(self.ui.named, self.app.displayname_cn)
+        else:
+            setLongTextToElideFormat(self.ui.name, self.app.displayname)
+            setLongTextToElideFormat(self.ui.named, self.app.displayname)
+
+        if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
+            self.ui.description.setText(self.app.summary)
+        else:
+            self.ui.description.setText(self.app.orig_summary)
 
         self.ui.isInstalled.setText("已安装")
         # rating star
@@ -211,8 +219,6 @@ class NormalCard(QWidget):
             elif(Globals.NOWPAGE == PageStates.UNPAGE):
                 # init app.status
                 self.app.status = PkgStates.UNINSTALL
-                if self.app.name == "wps-office":
-                    print 'test status.....->', self.app.status
                 self.star.show()
                 self.ui.isInstalled.setVisible(False)
                 self.ui.btn.setText("卸载")
@@ -220,7 +226,7 @@ class NormalCard(QWidget):
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
-            elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):#zx11.27
+            elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#zx11.27
                 if(self.app.is_installed):
                     self.star.hide()
                     self.ui.isInstalled.setVisible(True)

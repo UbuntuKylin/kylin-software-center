@@ -132,7 +132,7 @@ class MultiFunctionBtn(QWidget):
                 self.ui.btnUninstall.move(0, y + 123)
 
         else:# for apt deb file
-            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE)):#zx11.27
+            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.TRANSPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#zx11.27
                 if(type == PkgStates.NORUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)

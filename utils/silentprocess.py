@@ -204,6 +204,12 @@ class SilentProcess(multiprocessing.Process):
                 rating_total = app['rating_total']
                 review_total = app['review_total']
                 download_total = app['download_total']
+                # if summary == '':
+                #     summary = None
+                # if description == '':
+                #     description = None
+                # if command == '':
+                #     command = None
 
                 sql = "select count(*) from application where id=?"
                 self.cursor.execute(sql, (aid,))
@@ -248,7 +254,7 @@ class SilentProcess(multiprocessing.Process):
             # update application icon to cache icons/
             for app in reslist:
                 app_name = app['name']
-                app_path = app['image']
+                app_path = app['path']
                 iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
                 try:
                     icon_rul = UK_APP_ICON_URL % {
