@@ -63,10 +63,12 @@ from models.http import HttpDownLoad, unzip_resource
 
 from utils.commontools import *
 
+import socket
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 
@@ -1608,88 +1610,96 @@ class SoftwareCenter(QMainWindow):
 
 
     def slot_get_user_applist_over(self, reslist):
-        if(len(reslist) > 0):
-            self.userAppListWidget.clear()
-            self.ui.uaNoItemText.hide()
-            self.ui.uaNoItemWidget.hide()
-            self.userAppListWidget.show()
-
-            for res in reslist:
-                app_name = res['aid']['app_name']
-                install_date = res['date']
-                app = self.appmgr.get_application_by_name(app_name)
-                app.install_date = install_date
-                item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
-                self.userAppListWidget.add_card(item)
-                self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(item, Signals.install_app, self.slot_click_install)
-                self.connect(item, Signals.upgrade_app, self.slot_click_upgrade)
-                self.connect(item, Signals.remove_app, self.slot_click_remove)
-                self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
-                self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
-                self.connect(item,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
-                self.connect(self, Signals.trans_card_status, item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
+        self.userAppListWidget.clear()
+        if reslist == "False":
+            self.messageBox.alert_msg("网络连接出错\n"
+                                      "从服务器获取信息失败")
         else:
-            self.ui.uaNoItemText.show()
-            self.ui.uaNoItemWidget.show()
-            self.userAppListWidget.hide()
+            if(len(reslist) > 0):
+                self.ui.uaNoItemText.hide()
+                self.ui.uaNoItemWidget.hide()
+                self.userAppListWidget.show()
+
+                for res in reslist:
+                    app_name = res['aid']['app_name']
+                    install_date = res['date']
+                    app = self.appmgr.get_application_by_name(app_name)
+                    app.install_date = install_date
+                    item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
+                    self.userAppListWidget.add_card(item)
+                    self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
+                    self.connect(item, Signals.install_app, self.slot_click_install)
+                    self.connect(item, Signals.upgrade_app, self.slot_click_upgrade)
+                    self.connect(item, Signals.remove_app, self.slot_click_remove)
+                    self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
+                    self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
+                    self.connect(item,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                    self.connect(self, Signals.trans_card_status, item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
+            else:
+                self.ui.uaNoItemText.show()
+                self.ui.uaNoItemWidget.show()
+                self.userAppListWidget.hide()
 
         self.loadingDiv.stop_loading()
 
     def slot_get_user_transapplist_over(self,reslist):#zx 2015.01.30
-        if(len(reslist) > 0):
-            self.userTransAppListWidget.clear()
-            self.ui.NoTransItemText.hide()
-            self.ui.NoTransItemWidget.hide()
-            self.userTransAppListWidget.show()
-            allapp = {}
-            allappname = []
-            for res in reslist:
-                app_name = res['aid']['app_name']
-                if allapp.has_key(app_name):
-                    if res["type"] == "appname":
-                        allapp[app_name].transname = res["transl"]
-                        allapp[app_name].transnamestatu = res["check"]
-                        allapp[app_name].transnameenable = res["enable"]
-                    if res["type"] == "summary":
-                        allapp[app_name].transsummary = res["transl"]
-                        allapp[app_name].transsummarystatu = res["check"]
-                        allapp[app_name].transsummaryenable = res["enable"]
-                    if res["type"] == "description":
-                        allapp[app_name].transdescription = res["transl"]
-                        allapp[app_name].transdescriptionstatu = res["check"]
-                        allapp[app_name].transdescriptionenable = res["enable"]
+        self.userTransAppListWidget.clear()
+        if reslist != "False":
+            if(len(reslist) > 0):
+                self.ui.NoTransItemText.hide()
+                self.ui.NoTransItemWidget.hide()
+                self.userTransAppListWidget.show()
+                allapp = {}
+                allappname = []
+                for res in reslist:
+                    app_name = res['aid']['app_name']
+                    if allapp.has_key(app_name):
+                        if res["type"] == "appname":
+                            allapp[app_name].transname = res["transl"]
+                            allapp[app_name].transnamestatu = res["check"]
+                            allapp[app_name].transnameenable = res["enable"]
+                        if res["type"] == "summary":
+                            allapp[app_name].transsummary = res["transl"]
+                            allapp[app_name].transsummarystatu = res["check"]
+                            allapp[app_name].transsummaryenable = res["enable"]
+                        if res["type"] == "description":
+                            allapp[app_name].transdescription = res["transl"]
+                            allapp[app_name].transdescriptionstatu = res["check"]
+                            allapp[app_name].transdescriptionenable = res["enable"]
 
-                    newtranstime = res["modify_time"].replace("T"," ").replace("Z","")
-                    if newtranstime > allapp[app_name].translatedate:
-                        allapp[app_name].translatedate = newtranstime
+                        newtranstime = res["modify_time"].replace("T"," ").replace("Z","")
+                        if newtranstime > allapp[app_name].translatedate:
+                            allapp[app_name].translatedate = newtranstime
 
-                else:
-                    app = self.appmgr.get_application_by_name(app_name)
-                    app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
-                    if res["type"] == "appname":
-                        app.transname = res["transl"]
-                        app.transnamestatu = res["check"]
-                        app.transnameenable = res["enable"]
-                    if res["type"] == "summary":
-                        app.transsummary = res["transl"]
-                        app.transsummarystatu = res["check"]
-                        app.transsummaryenable = res["enable"]
-                    if res["type"] == "description":
-                        app.transdescription = res["transl"]
-                        app.transdescriptionstatu = res["check"]
-                        app.transdescriptionenable = res["enable"]
-                    allapp[app_name] = app
-                    allappname.append(app.name)
+                    else:
+                        app = self.appmgr.get_application_by_name(app_name)
+                        app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
+                        if res["type"] == "appname":
+                            app.transname = res["transl"]
+                            app.transnamestatu = res["check"]
+                            app.transnameenable = res["enable"]
+                        if res["type"] == "summary":
+                            app.transsummary = res["transl"]
+                            app.transsummarystatu = res["check"]
+                            app.transsummaryenable = res["enable"]
+                        if res["type"] == "description":
+                            app.transdescription = res["transl"]
+                            app.transdescriptionstatu = res["check"]
+                            app.transdescriptionenable = res["enable"]
+                        allapp[app_name] = app
+                        allappname.append(app.name)
 
-            for appname in allappname:
-                item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
-                self.userTransAppListWidget.add_card(item)
-                self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
+                for appname in allappname:
+                    item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
+                    self.userTransAppListWidget.add_card(item)
+                    self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
+            else:
+                self.ui.NoTransItemText.show()
+                self.ui.NoTransItemWidget.show()
+                self.userTransAppListWidget.hide()
         else:
-            self.ui.NoTransItemText.show()
-            self.ui.NoTransItemWidget.show()
-            self.userTransAppListWidget.hide()
+            self.messageBox.alert_msg("网络连接出错\n"
+                                      "从服务器获取信息失败")
         self.loadingDiv.stop_loading()
 
     def slot_close(self):

@@ -64,6 +64,11 @@ class StarWidget(QWidget):
         self.show()
 
     def changeGrade(self, grade):
+        self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+        self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+        self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+        self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+        self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
         if(self.size == 'small'):
             if(grade > 0):
                 # add by kobe

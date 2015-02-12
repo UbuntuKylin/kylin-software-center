@@ -91,12 +91,19 @@ class DetailScrollWidget(QScrollArea):
         self.ui.change_submit.setText("提交")#zx 2015.01.26
         self.ui.change_submit.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
 
-
+        self.ui.promptlabel.setText("* 从顶部往下三栏依次为[软件名] [简介] [描述] *")
+        self.ui.promptlabel.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:black;}")
         self.ui.show_orig_description.setText("原软件介绍")
+        self.ui.show_orig_description.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:black;}")
+        self.ui.orig_summary_widget.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:black;}")#color:#666666
+        self.ui.orig_description_widget.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:black;}")#color:666666
 
         self.ui.btn_change.clicked.connect(self.slot_btn_change)#zx 2015.01.26
         self.ui.change_submit.clicked.connect(self.slot_change_submit)#zx 2015.01.26
         self.ui.change_cancel.clicked.connect(self.slot_btn_cancel)
+
+        self.smallstar = StarWidget('small', 0, self.detailWidget)
+        self.smallstar.move(460, 45)
 
         self.hl = QLineEdit(self.detailWidget)
         self.hl.setGeometry(-10,-10,1,1)
@@ -200,6 +207,16 @@ class DetailScrollWidget(QScrollArea):
                                                              QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
                                                              QScrollBar::down-arrow:vertical{background-color:yellow;}\
                                                              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+
+        self.ui.summary.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+                                                             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+                                                             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+                                                             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+                                                             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+                                                             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+
         self.ui.reviewText.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
                                                              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
                                                              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
@@ -208,6 +225,25 @@ class DetailScrollWidget(QScrollArea):
                                                              QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
                                                              QScrollBar::down-arrow:vertical{background-color:yellow;}\
                                                              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+
+        self.ui.orig_summary_widget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+                                                             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+                                                             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+                                                             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+                                                             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+                                                             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+
+        self.ui.orig_description_widget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+                                                             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+                                                             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+                                                             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+                                                             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+                                                             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+                                                             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+
         self.ui.btnSshotBack.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-back-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-back-2')}QPushButton:pressed{background-image:url('res/btn-sshot-back-2')}")
         self.ui.btnSshotNext.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-sshot-next-1.png')}QPushButton:hover{background-image:url('res/btn-sshot-next-2')}QPushButton:pressed{background-image:url('res/btn-sshot-next-2')}")
         self.ui.reviewListWidget.setStyleSheet("QListWidget{background-color:transparent; border:0px;}QListWidget::item{height:85px;margin-top:-1px;border:0px;}")
@@ -273,8 +309,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.transNameStatus.hide()
         self.ui.transSummaryStatus.hide()
         self.ui.transDescriptionStatus.hide()
-        if self.smallstar_exsit is True:
-            self.smallstar.hide()
+        self.ui.promptlabel.hide()
+        self.smallstar.hide()
         # self.ui.btnUpdate.setVisible(False)
         # self.ui.btnUninstall.setVisible(False)
 
@@ -339,6 +375,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.transNameStatus.hide()
         self.ui.transSummaryStatus.hide()
         self.ui.transDescriptionStatus.hide()
+        self.ui.promptlabel.hide()
 
         self.app = app
         self.ui.name.setReadOnly(True)
@@ -398,9 +435,8 @@ class DetailScrollWidget(QScrollArea):
         self.ui.scorelabel.setText(averate_rate)
         self.ui.grade.setText(averate_rate)
 
-        self.smallstar = StarWidget('small', app.ratings_average, self.detailWidget)
-        self.smallstar.move(460, 45)
-        self.smallstar_exsit = True
+        self.smallstar.changeGrade(app.ratings_average)
+        self.smallstar.show()
 
         #总评分
         self.star = StarWidget('big', app.ratings_average, self.detailWidget)
@@ -590,7 +626,10 @@ class DetailScrollWidget(QScrollArea):
             self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
             # self.ui.thumbnail.move(400 - img.width() / 2, 521 - img.height() / 2)
             self.ui.thumbnail.move(430 - img.width() / 2, 380 - img.height() / 2)
-            self.ui.thumbnail.show()
+            if self.ui.orig_summary_widget.isVisible() is True:
+                self.ui.thumbnail.hide()
+            else:
+                self.ui.thumbnail.show()
         if(self.sshotcount > 1):
             img = QPixmap(self.app.screenshotfile)
             self.bigsshot.resize(img.width(), img.height())
@@ -626,10 +665,12 @@ class DetailScrollWidget(QScrollArea):
             self.ui.show_orig_description.show()
             self.ui.orig_summary_widget.show()
             self.ui.orig_description_widget.show()
+            self.ui.promptlabel.show()
             self.ui.btn_change.hide()
             self.sshotload.hide()
             self.ui.btnSshotBack.hide()
             self.ui.btnSshotNext.hide()
+            self.ui.thumbnail.hide()
         else:
             self.emit(Signals.show_login)
 
@@ -650,8 +691,10 @@ class DetailScrollWidget(QScrollArea):
         self.ui.orig_description_widget.hide()
         self.ui.show_orig_description.hide()
         self.ui.orig_summary_widget.hide()
+        self.ui.promptlabel.hide()
         self.ui.btnSshotBack.show()
         self.ui.btnSshotNext.show()
+        self.ui.thumbnail.show()
         self.scrollToTop()
 
     def slot_change_submit(self):#zx 2015.01.26
@@ -701,9 +744,11 @@ class DetailScrollWidget(QScrollArea):
             self.ui.orig_description_widget.hide()
             self.ui.show_orig_description.hide()
             self.ui.orig_summary_widget.hide()
+            self.ui.promptlabel.hide()
             self.ui.btnSshotBack.show()
             self.ui.btnSshotNext.show()
             self.ui.btn_change.show()
+            self.ui.thumbnail.show()
             self.scrollToTop()
 
     def slot_submit_translate_appinfo_over(self, res):
@@ -712,6 +757,9 @@ class DetailScrollWidget(QScrollArea):
             self.mainwindow.messageBox.alert_msg("翻译已提交")
         elif(res == 1):
             self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")
+        elif(res == "网络出错"):
+            self.messageBox.alert_msg("网络连接出错\n"
+                                        "提交翻译失败")
         else:
             self.mainwindow.messageBox.alert_msg("翻译的字数过多\n"
                                                  "或其它未知错误")

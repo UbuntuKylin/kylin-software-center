@@ -27,6 +27,7 @@ import apt
 import locale
 import os
 import time
+
 import logging
 import threading
 import multiprocessing
@@ -47,7 +48,6 @@ from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_
 from models.enums import Signals,UnicodeToAscii
 
 from backend.remote.piston_remoter import PistonRemoterAuth
-
 
 LOG = logging.getLogger("uksc")
 
@@ -257,13 +257,6 @@ class AppManager(QObject):
                     review_total = appinfo[5]
                     # rank = appinfo[6]
 
-                    # if app.name == 'fcitx':
-                    #     print app.summary,type(app.summary),"*****************f"
-                    # if app.name == 'gnome-screenshot':
-                    #     print app.summary,type(app.summary),"*****************s"
-                    # if app.name == 'osmo':
-                    #     print app.summary,type(app.summary),"*****************o"
-                    #     print '',type(''),"________","None",type("None")
                     # #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
                     # if summary is not None and summary != 'None':
                     #     app.summary = summary
@@ -646,8 +639,10 @@ class AppManager(QObject):
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):
         # distroseries = get_distro_info()[2]
         # language = get_language()
-
-        res = self.premoterauth.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
+        try:
+            res = self.premoterauth.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
+        except:
+             res = "网络出错"
         self.emit(Signals.submit_translate_appinfo_over, res)
 
 
@@ -661,13 +656,17 @@ class AppManager(QObject):
         self.db.update_app_ratingavg(app_name, ratingavg, ratingtotal)
 
     def get_user_applist(self):
-        res = self.premoter.get_user_applist(Globals.USER)
-
+        try:
+            res = self.premoter.get_user_applist(Globals.USER)
+        except:
+            res = "False"
         self.emit(Signals.get_user_applist_over, res)
 
     def get_user_transapplist(self):#zx 2015.01.30
-        res = self.premoter.get_user_transapplist(Globals.USER)
-
+        try:
+            res = self.premoter.get_user_transapplist(Globals.USER)
+        except:
+            res = "False"
         self.emit(Signals.get_user_transapplist_over, res)
 
 

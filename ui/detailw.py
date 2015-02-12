@@ -52,18 +52,26 @@ class Ui_DetailWidget(object):
         self.transSummaryStatus.setObjectName(_fromUtf8("transSummaryStatus"))
 
         self.transDescriptionStatus = QtGui.QLabel(DetailWidget)
-        self.transDescriptionStatus.setGeometry(QtCore.QRect(25, 195, 16, 16))
+        self.transDescriptionStatus.setGeometry(QtCore.QRect(25, 210, 16, 16))
         self.transDescriptionStatus.setText(_fromUtf8(""))
         self.transDescriptionStatus.setObjectName(_fromUtf8("transDescriptionStatus"))
 
         self.splitText1 = QtGui.QLabel(DetailWidget)
         self.splitText1.setGeometry(QtCore.QRect(25, 124, 66, 17))
         self.splitText1.setObjectName(_fromUtf8("splitText1"))
+
+        self.promptlabel = QtGui.QLabel(DetailWidget)
+        self.promptlabel.setGeometry(QtCore.QRect(95, 124, 280, 17))
+        self.promptlabel.setText(_fromUtf8(""))
+        self.promptlabel.setObjectName(_fromUtf8("promptlabel"))
+        self.promptlabel.setToolTip("在翻译或查询软件时,当点击鼠标,焦点不能进入输入框\n"
+                                    "时请按下键盘左下角Alt键,然后在点击输入框进行输入")
+
         self.summary = QtGui.QTextEdit(DetailWidget)
-        self.summary.setGeometry(QtCore.QRect(40, 150, 810, 40))
+        self.summary.setGeometry(QtCore.QRect(40, 150, 810, 50))
         self.summary.setObjectName(_fromUtf8("summary"))
         self.description = QtGui.QTextEdit(DetailWidget)
-        self.description.setGeometry(QtCore.QRect(40, 190, 810, 81))
+        self.description.setGeometry(QtCore.QRect(40, 205, 810, 81))
         self.description.setObjectName(_fromUtf8("description"))
         self.sshotBG = QtGui.QLabel(DetailWidget)
         self.sshotBG.setGeometry(QtCore.QRect(25, 290, 824, 200))
@@ -182,17 +190,17 @@ class Ui_DetailWidget(object):
         self.change_cancel.setObjectName(_fromUtf8("change_cancel"))
 
         self.show_orig_description = QtGui.QLabel(DetailWidget)#zx 2015.01.26
-        self.show_orig_description.setGeometry(QtCore.QRect(25, 285, 75, 20))
+        self.show_orig_description.setGeometry(QtCore.QRect(25, 300, 75, 15))
         self.show_orig_description.setText(_fromUtf8(""))
         self.show_orig_description.setObjectName(_fromUtf8("btn_show_orig_description"))
 
         self.orig_summary_widget = QtGui.QTextEdit(DetailWidget)#zx 2015.01.26
-        self.orig_summary_widget.setGeometry(QtCore.QRect(40, 310, 810, 40))
+        self.orig_summary_widget.setGeometry(QtCore.QRect(40, 315, 810, 50))
         self.orig_summary_widget.setText(_fromUtf8(""))
         self.orig_summary_widget.setObjectName(_fromUtf8("orig_summary_widget"))
 
         self.orig_description_widget = QtGui.QTextEdit(DetailWidget)
-        self.orig_description_widget.setGeometry(QtCore.QRect(40, 350, 810, 105))
+        self.orig_description_widget.setGeometry(QtCore.QRect(40, 370, 810, 100))
         self.orig_description_widget.setText(_fromUtf8(""))
         self.orig_description_widget.setObjectName(_fromUtf8("orig_description_widget"))
 
