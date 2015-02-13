@@ -56,7 +56,6 @@ class DetailScrollWidget(QScrollArea):
     maxpage = ''
     currentreviewready = ''
     debfile = None
-    smallstar_exsit = False
 
     def __init__(self,messageBox,parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
@@ -694,44 +693,62 @@ class DetailScrollWidget(QScrollArea):
         self.ui.promptlabel.hide()
         self.ui.btnSshotBack.show()
         self.ui.btnSshotNext.show()
-        self.ui.thumbnail.show()
+        if self.sshotcount > 0:
+            self.ui.thumbnail.show()
+        else:
+            self.ui.thumbnail.hide()
         self.scrollToTop()
 
     def slot_change_submit(self):#zx 2015.01.26
-        appname = str(self.ui.name.text().toUtf8()).strip()
-        summary = str(self.ui.summary.toPlainText()).strip()
-        description = str(self.ui.description.toPlainText()).strip()
-        if(appname == '' or summary == '' or description == ''):
+        if self.app.orig_description == '':
+            orig_description = self.app.description
+        else:
+            orig_description = self.app.orig_description
+        self.appname = str(self.ui.name.text().toUtf8()).strip()
+        self.summary = str(self.ui.summary.toPlainText()).strip()
+        self.description = str(self.ui.description.toPlainText()).strip()
+        if(self.appname == '' or self.summary == '' or self.description == ''):
             self.mainwindow.messageBox.alert_msg("软件名或软件介绍不能为空")
         else:
-            if(appname == self.init_name  and summary == self.init_summary  and  description == self.init_description):
+            if self.appname != self.init_name:
+                self.ui.transNameStatus.hide()
+                appname = self.appname
+                self.type_appname = 'True'
+            else:
+                self.type_appname = 'False'
+                appname = "<1_1>"
+
+            if self.summary != self.init_summary:
+                self.ui.transSummaryStatus.hide()
+                summary = self.summary
+                self.type_summary = 'True'
+            else:
+                self.type_summary = 'False'
+                summary = "<1_1>"
+
+            if self.description != self.init_description:
+                self.ui.transDescriptionStatus.hide()
+                description = self.description
+                self.type_description = 'True'
+            else:
+                self.type_description = 'False'
+                description = "<1_1"
+
+            if(self.appname == self.init_name  and self.summary == self.init_summary  and  self.description == self.init_description):
                 self.mainwindow.messageBox.alert_msg("您未翻译或修改任何部分")
             else:
-                if appname != self.init_name:
-                    self.ui.transNameStatus.hide()
-                    self.init_name = appname
-                    type_appname = 'True'
-                else:
-                    type_appname = 'False'
-                    appname = "<1_1>"
+                self.emit(Signals.submit_translate_appinfo, self.app.name, self.type_appname, self.type_summary, self.type_description, self.app.displayname, self.app.orig_summary, orig_description, appname, summary, description)
 
-                if summary != self.init_summary:
-                    self.ui.transSummaryStatus.hide()
-                    self.init_summary = summary
-                    type_summary = 'True'
-                else:
-                    summary = "<1_1>"
-                    type_summary = 'False'
 
-                if description != self.init_description:
-                    self.ui.transDescriptionStatus.hide()
-                    self.init_description = description
-                    type_description = 'True'
-                else:
-                    description = "<1_1>"
-                    type_description = 'False'
-
-                self.emit(Signals.submit_translate_appinfo, self.app.name, type_appname, type_summary, type_description, self.app.displayname, self.app.orig_summary, self.app.orig_description, appname, summary, description)
+    def slot_submit_translate_appinfo_over(self, res):
+        #print "************",res
+        if(res == 0):
+            if self.type_appname == 'True':
+                self.init_name = self.appname
+            if self.type_summary == 'True':
+                self.init_summary = self.summary
+            if self.type_description == 'True':
+                self.init_description = self.description
             self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
             self.ui.name.setReadOnly(True)
             self.ui.btn_change.setEnabled(True)
@@ -748,12 +765,11 @@ class DetailScrollWidget(QScrollArea):
             self.ui.btnSshotBack.show()
             self.ui.btnSshotNext.show()
             self.ui.btn_change.show()
-            self.ui.thumbnail.show()
+            if self.sshotcount > 0:
+                self.ui.thumbnail.show()
+            else:
+                self.ui.thumbnail.hide()
             self.scrollToTop()
-
-    def slot_submit_translate_appinfo_over(self, res):
-        #print "************",res
-        if(res == 0):
             self.mainwindow.messageBox.alert_msg("翻译已提交")
         elif(res == 1):
             self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")

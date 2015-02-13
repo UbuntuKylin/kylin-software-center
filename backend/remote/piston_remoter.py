@@ -169,6 +169,7 @@ class PistonRemoterAuth(PistonAPI):
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, user, user_display):
         postdata = AppTransinfoUKRequest()
         postdata.app_name = appname
+        #print postdata.app_name
         postdata.type_appname = type_appname
         #print postdata.type_appname
         postdata.type_summary = type_summary
@@ -176,13 +177,21 @@ class PistonRemoterAuth(PistonAPI):
         postdata.type_description = type_description
         #print postdata.type_description
         postdata.original_appname = orig_appname
+        #print postdata.original_appname
         postdata.original_summary = orig_summary
+        #print postdata.original_summary
         postdata.original_description = orig_description
+        #print postdata.original_description,type(orig_description)
         postdata.transl_appname = trans_appname
+        #print postdata.transl_appname
         postdata.transl_summary = trans_summary
+        #print postdata.transl_summary
         postdata.transl_description = trans_description
+        #print postdata.transl_description
         postdata.user = user
+        #print postdata.user
         postdata.user_display = user_display
+        #print postdata.user_display
         return self._post('submittranslation/', data=postdata, scheme='http', content_type='application/json')
 
     @returns_json
