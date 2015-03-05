@@ -101,20 +101,20 @@ class RcmdCard(QWidget):
         self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
 
         # letter spacing
-        font = QFont()
-        font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
-        self.ui.name.setFont(font)
-        self.ui.description.setFont(font)
-        if(len(self.app.displayname) > 20):
-            font2 = QFont()
-            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-            self.ui.name.setFont(font2)
-            self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        if(len(self.app.displayname) > 24):
-            font2 = QFont()
-            font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
-            self.ui.name.setFont(font2)
-            self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:#666666;}")
+        # font = QFont()
+        # font.setLetterSpacing(QFont.PercentageSpacing, 90.0)
+        # self.ui.name.setFont(font)
+        # self.ui.description.setFont(font)
+        # if(len(self.app.displayname) > 20):
+        #     font2 = QFont()
+        #     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #     self.ui.name.setFont(font2)
+        #     self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        # if(len(self.app.displayname) > 24):
+        #     font2 = QFont()
+        #     font2.setLetterSpacing(QFont.PercentageSpacing, 80.0)
+        #     self.ui.name.setFont(font2)
+        #     self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:#666666;}")
 
         # convert size
         installedsize = self.app.installedSize

@@ -57,7 +57,7 @@ from backend.utildbus import UtilDbus
 from backend.ubuntusso import get_ubuntu_sso_backend
 
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates)
-from models.enums import Signals
+from models.enums import Signals, setLongTextToElideFormat
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 
@@ -1921,7 +1921,7 @@ class SoftwareCenter(QMainWindow):
                 else:
                     self.messageBox.alert_msg(msg)
             else:
-                if(pkgname == "ubuntu-kylin-software-center"):
+                if pkgname == "ubuntu-kylin-software-center" and action == AppActions.UPGRADE:
                     cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
                     self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
                     cd.exec_()
@@ -2001,7 +2001,12 @@ class SoftwareCenter(QMainWindow):
         self.userload.stop_loading()
         self.ui.beforeLoginWidget.hide()
         self.ui.afterLoginWidget.show()
-        self.ui.username.setText(display_name)
+        #self.ui.username.setText(display_name)
+        username = setLongTextToElideFormat(self.ui.username, display_name)
+        if str(username).endswith("…") is True:
+            self.ui.username.setToolTip(display_name)
+        else:
+            self.ui.username.setToolTip("")
 
         Globals.USER = user
         Globals.USER_DISPLAY = display_name

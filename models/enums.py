@@ -45,6 +45,7 @@ def setLongTextToElideFormat(label, text):
     metrics = QFontMetrics(label.font())
     elidedText = metrics.elidedText(text, Qt.ElideRight, label.width())
     label.setText(elidedText)
+    return elidedText
 
 
 # pkg action state constants
