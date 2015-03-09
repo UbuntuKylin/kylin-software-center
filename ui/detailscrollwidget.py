@@ -104,6 +104,9 @@ class DetailScrollWidget(QScrollArea):
         self.smallstar = StarWidget('small', 0, self.detailWidget)
         self.smallstar.move(460, 45)
 
+        self.star = StarWidget('big', 0, self.detailWidget)
+        self.star.move(90, 584)
+
         self.hl = QLineEdit(self.detailWidget)
         self.hl.setGeometry(-10,-10,1,1)
 
@@ -310,6 +313,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.transDescriptionStatus.hide()
         self.ui.promptlabel.hide()
         self.smallstar.hide()
+        self.star.hide()
         # self.ui.btnUpdate.setVisible(False)
         # self.ui.btnUninstall.setVisible(False)
 
@@ -438,11 +442,11 @@ class DetailScrollWidget(QScrollArea):
         self.smallstar.show()
 
         #总评分
-        self.star = StarWidget('big', app.ratings_average, self.detailWidget)
-        self.star.move(90, 584)
+        self.star.changeGrade(app.ratings_average)
+        self.star.show()
         #我的评分
         self.ratingstar = DynamicStarWidget(self.detailWidget)
-        self.ratingstar.move(620, 575)
+        self.ratingstar.move(630, 575)
         self.connect(self.ratingstar, Signals.get_user_rating,self.slot_submit_rating)
 
         self.ui.transNameStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")

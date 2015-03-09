@@ -64,12 +64,12 @@ class StarWidget(QWidget):
         self.show()
 
     def changeGrade(self, grade):
-        self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
-        self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
-        self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
-        self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
-        self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
         if(self.size == 'small'):
+            self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+            self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+            self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+            self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
+            self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")
             if(grade > 0):
                 # add by kobe
                 if(grade < 1):
@@ -97,6 +97,11 @@ class StarWidget(QWidget):
                 else:
                     self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-small-1.png')}")
         if(self.size == 'big'):
+            self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
+            self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
+            self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
+            self.ui.star4.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
+            self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
             if(grade > 0):
                 if(grade < 1):
                     self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-3.png')}")
