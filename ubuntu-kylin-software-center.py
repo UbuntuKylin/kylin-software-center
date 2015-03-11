@@ -741,18 +741,18 @@ class SoftwareCenter(QMainWindow):
                     app = self.appmgr.get_application_by_name(context[0])
                     if app is not None:
                         self.winnum += 1
-                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
-                    card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
-                    self.winListWidget.add_card(card)
-                    self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-                    self.connect(card, Signals.install_app, self.slot_click_install)
-                    self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
-                    self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
-                    self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-                    self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                        winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                        card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
+                        self.winListWidget.add_card(card)
+                        self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                        self.connect(card, Signals.install_app, self.slot_click_install)
+                        self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                        self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                        self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                        self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
 
                     # kobe 1106
-                    self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+                        self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
         self.win_exists = 1
 
     def show_to_frontend(self):
@@ -1005,6 +1005,8 @@ class SoftwareCenter(QMainWindow):
 
             count = 0
             for pkgname, app in apps.iteritems():
+                if app is None:
+                    continue
                 if Globals.NOWPAGE == PageStates.UPPAGE:
                     if app.is_installed is False:
                         continue
@@ -1177,6 +1179,8 @@ class SoftwareCenter(QMainWindow):
 
         if(len(pl) > 0):
             for p in pl:
+                if p is None:
+                    continue
                 card = PointCard(p,self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
@@ -1259,6 +1263,8 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
 
         for app in applist:
+            if app is None:
+                continue
             recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
             self.recommendListWidget.add_card(recommend)
             self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
@@ -1624,6 +1630,8 @@ class SoftwareCenter(QMainWindow):
                     app_name = res['aid']['app_name']
                     install_date = res['date']
                     app = self.appmgr.get_application_by_name(app_name)
+                    if app is None:
+                        continue
                     app.install_date = install_date
                     item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
                     self.userAppListWidget.add_card(item)
@@ -1673,21 +1681,22 @@ class SoftwareCenter(QMainWindow):
 
                     else:
                         app = self.appmgr.get_application_by_name(app_name)
-                        app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
-                        if res["type"] == "appname":
-                            app.transname = res["transl"]
-                            app.transnamestatu = res["check"]
-                            app.transnameenable = res["enable"]
-                        if res["type"] == "summary":
-                            app.transsummary = res["transl"]
-                            app.transsummarystatu = res["check"]
-                            app.transsummaryenable = res["enable"]
-                        if res["type"] == "description":
-                            app.transdescription = res["transl"]
-                            app.transdescriptionstatu = res["check"]
-                            app.transdescriptionenable = res["enable"]
-                        allapp[app_name] = app
-                        allappname.append(app.name)
+                        if app is not None:
+                            app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
+                            if res["type"] == "appname":
+                                app.transname = res["transl"]
+                                app.transnamestatu = res["check"]
+                                app.transnameenable = res["enable"]
+                            if res["type"] == "summary":
+                                app.transsummary = res["transl"]
+                                app.transsummarystatu = res["check"]
+                                app.transsummaryenable = res["enable"]
+                            if res["type"] == "description":
+                                app.transdescription = res["transl"]
+                                app.transdescriptionstatu = res["check"]
+                                app.transdescriptionenable = res["enable"]
+                            allapp[app_name] = app
+                            allappname.append(app.name)
 
                 for appname in allappname:
                     item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
@@ -1731,7 +1740,8 @@ class SoftwareCenter(QMainWindow):
     def slot_click_ad(self, ad):
         if(ad.type == "pkg"):
             app = self.appmgr.get_application_by_name(ad.urlorpkgid)
-            self.slot_show_app_detail(app)
+            if app is not None:
+                self.slot_show_app_detail(app)
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
 

@@ -238,7 +238,7 @@ class AppManager(QObject):
                 apps[pkgname] = Globals.ALL_APPS[pkgname]
             else:
                 app = Application(pkgname,displayname_cn, cat, self.apt_cache)
-                if app.package:
+                if app.package and app.package.candidate:
                     apps[pkgname] = app
                     Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
                     #if there has special information in db, get them
