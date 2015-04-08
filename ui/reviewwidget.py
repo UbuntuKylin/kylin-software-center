@@ -58,4 +58,4 @@ class ReviewWidget(QWidget):
     def ui_init(self):
         self.ui = Ui_CommentWidget()
         self.ui.setupUi(self)
-        self.show()
+        #self.show() 'for lp Bug #1372283, just in test. There my be another way'
