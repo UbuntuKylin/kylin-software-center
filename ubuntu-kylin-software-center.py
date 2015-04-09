@@ -1770,7 +1770,11 @@ class SoftwareCenter(QMainWindow):
 
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")
-        self.backend.update_source(quiet)
+        #self.backend.update_source(quiet)
+        wb = self.backend.update_source(quiet)
+        #print 'wb111111111111:',wb
+        if wb:
+            self.configWidget.set_process_visiable(False)
 
     def slot_click_update_source(self):
         self.emit(Signals.update_source)

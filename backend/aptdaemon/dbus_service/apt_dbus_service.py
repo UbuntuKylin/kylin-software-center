@@ -369,7 +369,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要更新软件源")
         if not granted:
-            return False
+            return True
 
         kwargs = {"quiet":str(quiet),
                   }

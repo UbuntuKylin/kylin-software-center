@@ -88,6 +88,8 @@ class Ui_ConfigWidget(object):
         self.label.setText(_fromUtf8(""))
         self.label.setObjectName(_fromUtf8("label"))
 
+        self.btnCancel.hide()
+
         self.retranslateUi(ConfigWidget)
         QtCore.QMetaObject.connectSlotsByName(ConfigWidget)
 
