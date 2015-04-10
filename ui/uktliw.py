@@ -27,6 +27,11 @@ class Ui_TaskLIWidget(object):
     def setupUi(self, TaskLIWidget):
         TaskLIWidget.setObjectName(_fromUtf8("TaskLIWidget"))
         TaskLIWidget.resize(300, 64)
+        self.progressBar = QtGui.QProgressBar(TaskLIWidget)
+        self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
+        self.progressBar.setProperty("value", 24)
+        self.progressBar.setTextVisible(False)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.icon = QtGui.QLabel(TaskLIWidget)
         self.icon.setGeometry(QtCore.QRect(8, 8, 48, 48))
         self.icon.setText(_fromUtf8(""))
@@ -50,11 +55,6 @@ class Ui_TaskLIWidget(object):
         self.progresslabel.setGeometry(QtCore.QRect(240, 23, 35, 18))
         self.progresslabel.setText(_fromUtf8(""))
         self.progresslabel.setObjectName(_fromUtf8("progresslabel"))
-        self.progressBar = QtGui.QProgressBar(TaskLIWidget)
-        self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
-        self.progressBar.setProperty("value", 24)
-        self.progressBar.setTextVisible(False)
-        self.progressBar.setObjectName(_fromUtf8("progressBar"))
 
         self.retranslateUi(TaskLIWidget)
         QtCore.QMetaObject.connectSlotsByName(TaskLIWidget)

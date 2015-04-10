@@ -29,6 +29,7 @@ from PyQt4.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
 from models.enums import Signals,AptActionMsg,PkgStates
 from models.enums import UBUNTUKYLIN_RES_ICON_PATH
+from models.enums import setLongTextToElideFormat
 from utils import commontools
 from utils.debfile import DebFile
 
@@ -61,14 +62,30 @@ class TaskListItemWidget(QWidget):
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
 
+        if app.status == PkgStates.INSTALLING:#"installing":
+            #self.ui.name.setText("安装 "+app.name)
+            text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
+            if str(text).endswith("…") is True:
+                self.ui.name.setToolTip("安装 "+app.name)
+            else:
+                self.ui.name.setToolTip("")
+        if app.status == PkgStates.REMOVING:#"uninstalling":
+            #self.ui.name.setText("卸载 "+app.name)
+            text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
+            if str(text).endswith("…") is True:
+                self.ui.name.setToolTip("卸载 "+app.name)
+            else:
+                self.ui.name.setToolTip("")
+        if app.status == PkgStates.UPGRADING:#"upgrading":
+            #self.ui.name.setText("升级 "+app.name)
+            text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
+            if str(text).endswith("…") is True:
+                self.ui.name.setToolTip("升级 "+app.name)
+            else:
+                self.ui.name.setToolTip("")
+
         # this is deb file task
         if(isdeb == True or isinstance(app,DebFile)):
-            if app.status == PkgStates.INSTALLING:#"installing":
-                self.ui.name.setText("安装 "+app.name)
-            if app.status == PkgStates.REMOVING:#"uninstalling":
-                self.ui.name.setText("卸载 "+app.name)
-            if app.status == PkgStates.UPGRADING:#"upgrading":
-                self.ui.name.setText("升级 "+app.name)
 
             sizek = app.installedsize
             if(sizek <= 1024):
@@ -83,12 +100,7 @@ class TaskListItemWidget(QWidget):
             img = QPixmap(iconpath)
             # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
-            if app.status == PkgStates.INSTALLING:#"installing":
-                self.ui.name.setText("安装 "+app.name)
-            if app.status == PkgStates.REMOVING:#"uninstalling":
-                self.ui.name.setText("卸载 "+app.name)
-            if app.status == PkgStates.UPGRADING:#"upgrading":
-                self.ui.name.setText("升级 "+app.name)
+
 
             size = app.packageSize
             sizek = size / 1024

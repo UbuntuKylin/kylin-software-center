@@ -1841,7 +1841,8 @@ class SoftwareCenter(QMainWindow):
 
     def slot_remove_task(self, app):
         self.del_task_item(app.name)
-        del self.stmap[app.name]
+        if self.stmap.has_key(app.name):
+            del self.stmap[app.name]
 
     # search
     def slot_searchDTimer_timeout(self):
