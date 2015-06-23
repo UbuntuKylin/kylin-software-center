@@ -163,7 +163,7 @@ class AppManager(QObject):
             # fi = QFileInfo(f)
             # dt = fi.lastModified()
             # return dt.toString("yyyyMMddhh")
-            # return True\
+            # return True
             return False
 
     #open the apt cache and get the package count
