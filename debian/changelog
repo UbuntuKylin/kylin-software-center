@@ -1,10 +1,10 @@
 ubuntu-kylin-software-center (1.3.2) vivid; urgency=medium
-
+  
   * New upstream bug fix release
     LP: #1372283, #1396402, #1420670, #1467722
 
- -- Shine <shenghuang@ubuntukylin.com> Tue, 23 Jun 2015 17:28:08 +0800
- 
+ -- Shine <shenghuang@ubuntukylin.com>  Tue, 23 Jun 2015 18:07:24 +0800
+
 ubuntu-kylin-software-center (1.3.1) vivid; urgency=medium
 
   * New upstream bug fix release

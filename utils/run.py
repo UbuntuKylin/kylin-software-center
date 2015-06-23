@@ -33,11 +33,6 @@ from models.enums import Specials
 
 import commands
 
-
-
-import os
-import subprocess
-
 def RemoveArgs(Execline):
     NewExecline = []
     for elem in Execline:
