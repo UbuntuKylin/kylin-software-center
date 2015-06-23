@@ -39,6 +39,8 @@ UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 #UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
+Specials=["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
+
 
 # add by kobe to format long text
 def setLongTextToElideFormat(label, text):
