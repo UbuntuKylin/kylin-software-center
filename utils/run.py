@@ -102,7 +102,7 @@ def get_run_command(pkgname):
     fullcmd = ""
     desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
     if not os.path.exists(desktopfile):
-        if pkgname = "gnome-screenshot":
+        if pkgname == "gnome-screenshot":
             pkgname = "org.gnome.Screenshot"
             desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
     if os.path.exists(desktopfile):
