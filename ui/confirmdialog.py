@@ -29,15 +29,16 @@ from models.enums import UBUNTUKYLIN_RES_PATH
 
 class ConfirmDialog(QDialog):
 
-    def __init__(self, text, parent=None):
+    def __init__(self, text, parent=None, where=None):
         QDialog.__init__(self,parent)
+        self.where = where
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         # self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
         self.setGeometry(0, 0, 825, 598)
 
         self.centerwidget = QWidget(self)
-        self.centerwidget.setGeometry(280, 227, 265, 145)
+        self.centerwidget.setGeometry(350, 227, 265, 145)
 
         self.centerwidget.setAutoFillBackground(True)
         palette = QPalette()
@@ -47,7 +48,7 @@ class ConfirmDialog(QDialog):
 
         self.text = QLabel(self.centerwidget)
         self.text.setText(text)
-        self.text.setGeometry(30, 55, 200, 25)
+        self.text.setGeometry(30, 45, 200, 40)
         self.text.setAlignment(Qt.AlignCenter)
         self.text.setStyleSheet("QLabel{font-size:14px;}")
         self.btnok = QPushButton(self.centerwidget)
@@ -64,8 +65,9 @@ class ConfirmDialog(QDialog):
         self.raise_()
 
     def slot_ok(self):
-        self.emit(SIGNAL("confirmdialogok"))
+        self.emit(SIGNAL("confirmdialogok"), self.where)
         self.close()
 
     def slot_cancel(self):
+        self.emit(SIGNAL("confirmdialogno"), self.where)
         self.close()

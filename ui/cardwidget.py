@@ -117,3 +117,11 @@ class CardWidget(QWidget):
 
         self.cardPanel.setGeometry(0, 0, self.width(), self.height())
         self.cardcount = 0
+
+    def remove_card(self, appname):
+        cards = self.cardPanel.children()
+        count = len(cards)
+        for i in range(count):
+            if cards[i].app.name == appname:
+                sip.delete(cards[i])
+        self.reload_cards()

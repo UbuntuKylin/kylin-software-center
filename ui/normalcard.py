@@ -360,12 +360,28 @@ class NormalCard(QWidget):
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
             elif(self.ui.btn.text() == "卸载"):
-                self.app.status = PkgStates.REMOVING
-                self.ui.btn.setText("正在卸载")
-                self.emit(Signals.remove_app, self.app)
-                self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+                if self.app.name == "ubuntu-kylin-software-center":
+                    self.emit(Signals.uninstall_uksc_or_not, "normalcard")
+                else:
+                    self.app.status = PkgStates.REMOVING
+                    self.ui.btn.setText("正在卸载")
+                    self.emit(Signals.remove_app, self.app)
+                    self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+
+    def uninstall_uksc(self, where):
+        if where == "normalcard":
+            self.app.status = PkgStates.REMOVING
+            self.ui.btn.setText("正在卸载")
+            self.emit(Signals.remove_app, self.app)
+            self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+
+    def cancel_uninstall_uksc(self, where):
+        if where == "normalcard":
+            self.ui.btn.setEnabled(True)
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):

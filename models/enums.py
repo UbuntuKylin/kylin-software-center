@@ -203,6 +203,9 @@ class Signals:
     trans_card_status = SIGNAL("trans-card-status")
     submit_translate_appinfo = SIGNAL("submit_translate_appinfo")#zx 2015.01.26
     submit_translate_appinfo_over = SIGNAL("submit_translate_appinfo_over")
+    uninstall_uksc_or_not = SIGNAL("uninstall_uksc_or_not")
+    uninstall_uksc = SIGNAL("uninstall_uksc")
+    cancel_uninstall_uksc = SIGNAL("cancel_uninstall_uksc")
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

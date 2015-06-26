@@ -288,6 +288,7 @@ class Ui_MainWindow(object):
         self.btnConf.setGeometry(QtCore.QRect(84, 0, 28, 36))
         self.btnConf.setText(_fromUtf8(""))
         self.btnConf.setObjectName(_fromUtf8("btnConf"))
+        self.btnConf.hide()
         self.firstFocus = QtGui.QLineEdit(self.headerWidget)
         self.firstFocus.setGeometry(QtCore.QRect(2000, 2000, 10, 10))
         self.firstFocus.setObjectName(_fromUtf8("firstFocus"))

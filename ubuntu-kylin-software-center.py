@@ -473,6 +473,10 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
         self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
         self.connect(self.detailScrollWidget, Signals.submit_translate_appinfo, self.slot_submit_translate_appinfo)#zx2015.01.26
+        self.connect(self.detailScrollWidget.btns, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
+        self.connect(self, Signals.uninstall_uksc, self.detailScrollWidget.btns.uninstall_uksc)
+        self.connect(self, Signals.cancel_uninstall_uksc, self.detailScrollWidget.btns.cancel_uninstall_uksc)
+        self.connect(self, Signals.apt_process_finish, self.slot_update_listwidge)
 
         # widget status
         self.ui.btnUp.setEnabled(False)
@@ -540,7 +544,7 @@ class SoftwareCenter(QMainWindow):
         if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
             if(Globals.LAUNCH_MODE == 'quiet'):
                 button = QMessageBox.question(self,"软件源更新提示",
-                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件中心触发此功能\n\n请选择:"),
+                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"),
                                         "更新", "不更新", "", 0)
 
                 # show loading and update processbar this moment
@@ -554,7 +558,7 @@ class SoftwareCenter(QMainWindow):
                     sys.exit(0)
             else:
                 button = QMessageBox.question(self,"软件源更新提示",
-                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件中心，但部分操作无法执行\n\n请选择:"),
+                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
                                         "更新", "不更新", "", 0)
 
                 # show loading and update processbar this moment
@@ -984,6 +988,10 @@ class SoftwareCenter(QMainWindow):
             self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
             self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+            if app.name == "ubuntu-kylin-software-center":
+                self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
+                self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
+                self.connect(self, Signals.cancel_uninstall_uksc, card.cancel_uninstall_uksc)
 
             # kobe 1106
             self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
@@ -1029,6 +1037,10 @@ class SoftwareCenter(QMainWindow):
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
                 self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                if app.name == "ubuntu-kylin-software-center":
+                    self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
+                    self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
+                    self.connect(self, Signals.cancel_uninstall_uksc, card.cancel_uninstall_uksc)
 
                 # kobe 1106
                 self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
@@ -1151,15 +1163,28 @@ class SoftwareCenter(QMainWindow):
         if(self.uksc != None):
             if(self.uksc.is_upgradable == True):
                 self.show_mainwindow()
-                cd = ConfirmDialog("软件中心有新版本，是否升级？", self)
+                cd = ConfirmDialog("软件商店有新版本，是否升级？", self)
                 self.connect(cd, SIGNAL("confirmdialogok"), self.update_uksc)
                 cd.exec_()
+
+    def slot_uninstall_uksc_or_not(self, where):
+        cd = ConfirmDialog("您真的要卸载软件商店吗?\n卸载后该应用将会关闭.", self, where)
+        self.connect(cd, SIGNAL("confirmdialogok"), self.to_uninstall_uksc)
+        self.connect(cd, SIGNAL("confirmdialogno"), self.to_cancel_uninstall_uksc)
+        cd.exec_()
+
+    def to_uninstall_uksc(self, where):
+        self.emit(Signals.uninstall_uksc, where)
+
+    def to_cancel_uninstall_uksc(self, where):
+        self.emit(Signals.cancel_uninstall_uksc, where)
 
     def update_uksc(self):
         self.emit(Signals.install_app, self.uksc)
 
     def restart_uksc(self):
-        os.execv("/usr/bin/ubuntu-kylin-software-center", ["uksc"])
+        os.system("ubuntu-kylin-software-center restart")
+        sys.exit(0)
 
     # get the point out app
     def init_pointout(self):
@@ -1438,7 +1463,7 @@ class SoftwareCenter(QMainWindow):
         # add by kobe
         self.categoryBar.reset_categorybar()
         self.category = ''
-        self.categoryBar.show()
+        self.categoryBar.hide()
         self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
         self.ui.detailShellWidget.hide()
@@ -1473,7 +1498,7 @@ class SoftwareCenter(QMainWindow):
         # add by kobe
         self.categoryBar.reset_categorybar()
         self.category = ''
-        self.categoryBar.show()
+        self.categoryBar.hide()
         self.switch_to_category(self.category, forceChange)
         # self.detailScrollWidget.hide()
         self.ui.detailShellWidget.hide()
@@ -1909,9 +1934,22 @@ class SoftwareCenter(QMainWindow):
                     if processtype=='apt' and int(percent)>=200:
                         # (install debfile deps finish) is not the (install debfile task) finish
                         if(action != AppActions.INSTALLDEPS):
-                            self.emit(Signals.apt_process_finish,name,action)
+                            if name == "ubuntu-kylin-software-center" and action == AppActions.REMOVE:
+                                sys.exit(0)
+                            else:
+                                self.emit(Signals.apt_process_finish,name,action)
                     else:
                         taskItem.status_change(processtype, percent, msg)
+
+    def slot_update_listwidge(self, appname, action):
+        if action == AppActions.REMOVE:
+            self.unListWidget.remove_card(appname)
+            if Globals.NOWPAGE == PageStates.SEARCHUNPAGE:
+                self.searchListWidget.remove_card(appname)
+        if action == AppActions.UPGRADE:
+            self.upListWidget.remove_card(appname)
+            if Globals.NOWPAGE == PageStates.SEARCHUPPAGE:
+                self.searchListWidget.remove_card(appname)
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname,action):
@@ -1937,7 +1975,7 @@ class SoftwareCenter(QMainWindow):
                     self.messageBox.alert_msg(msg)
             else:
                 if pkgname == "ubuntu-kylin-software-center" and action == AppActions.UPGRADE:
-                    cd = ConfirmDialog("软件中心升级完成，重启程序？", self)
+                    cd = ConfirmDialog("软件商店升级完成，重启程序？", self)
                     self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
                     cd.exec_()
                 else:

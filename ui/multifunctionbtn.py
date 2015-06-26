@@ -458,12 +458,29 @@ class MultiFunctionBtn(QWidget):
 
     def slot_click_btn_uninstall(self):
         # kobe 1106
-        self.app.status = PkgStates.REMOVING
-        self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
-        self.switchDirection = 'up'
-        self.switch_animation()
-        self.start_work()
-        self.emit(Signals.mfb_click_uninstall, self.app)
+        if self.app.name == "ubuntu-kylin-software-center":
+            self.emit(Signals.uninstall_uksc_or_not, "detailscrollwidget")
+        else:
+            self.app.status = PkgStates.REMOVING
+            self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+            self.switchDirection = 'up'
+            self.switch_animation()
+            self.start_work()
+            self.emit(Signals.mfb_click_uninstall, self.app)
+
+    def uninstall_uksc(self, where):
+        if where == "detailscrollwidget":
+            self.app.status = PkgStates.REMOVING
+            self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+            self.switchDirection = 'up'
+            self.switch_animation()
+            self.start_work()
+            self.emit(Signals.mfb_click_uninstall, self.app)
+
+    def cancel_uninstall_uksc(self, where):
+        if where == "detailscrollwidget":
+            self.stop_work()
+            self.reset_btns(self.app, PkgStates.UNINSTALL)
 
     # def slot_work_finished(self, app, type):
     #     self.reset_btns(app, type)
