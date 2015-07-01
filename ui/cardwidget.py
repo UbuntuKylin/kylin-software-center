@@ -124,4 +124,4 @@ class CardWidget(QWidget):
         for i in range(count):
             if cards[i].app.name == appname:
                 sip.delete(cards[i])
-        self.reload_cards()
+                self.reload_cards()

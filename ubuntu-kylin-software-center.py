@@ -1944,11 +1944,8 @@ class SoftwareCenter(QMainWindow):
                     if processtype=='apt' and int(percent)>=200:
                         # (install debfile deps finish) is not the (install debfile task) finish
                         if(action != AppActions.INSTALLDEPS):
-                            if name == "ubuntu-kylin-software-center" and action == AppActions.REMOVE:
-                                sys.exit(0)
-                            else:
-                                self.emit(Signals.apt_process_finish,name,action)
-                                self.emit(Signals.normalcard_progress_finish, name)
+                            self.emit(Signals.apt_process_finish, name, action)
+                            self.emit(Signals.normalcard_progress_finish, name)
                     else:
                         taskItem.status_change(processtype, percent, msg)
                         self.emit(Signals.normalcard_progress_change, name, percent)
@@ -1992,7 +1989,11 @@ class SoftwareCenter(QMainWindow):
                     cd.exec_()
                 else:
                     self.messageBox.alert_msg(msg)
-        self.slot_update_listwidge(pkgname, action)
+
+        if pkgname == "ubuntu-kylin-software-center" and action == AppActions.REMOVE:
+            sys.exit(0)
+        else:
+            self.slot_update_listwidge(pkgname, action)
 
     # user login
     def slot_do_login_account(self):

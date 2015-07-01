@@ -104,7 +104,9 @@ def get_run_command(pkgname):
     if not os.path.exists(desktopfile):
         if pkgname == "gnome-screenshot":
             pkgname = "org.gnome.Screenshot"
-            desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
+        if pkgname == "gnome-mines":
+            pkgname = "gnomine"
+        desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
     if os.path.exists(desktopfile):
         DeskTopEntry = xdg.DesktopEntry.DesktopEntry(desktopfile)
         fullcmd = DeskTopEntry.getExec()
