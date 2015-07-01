@@ -476,7 +476,6 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget.btns, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
         self.connect(self, Signals.uninstall_uksc, self.detailScrollWidget.btns.uninstall_uksc)
         self.connect(self, Signals.cancel_uninstall_uksc, self.detailScrollWidget.btns.cancel_uninstall_uksc)
-        self.connect(self, Signals.apt_process_finish, self.slot_update_listwidge)
 
         # widget status
         self.ui.btnUp.setEnabled(False)
@@ -993,6 +992,11 @@ class SoftwareCenter(QMainWindow):
                 self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
                 self.connect(self, Signals.cancel_uninstall_uksc, card.cancel_uninstall_uksc)
 
+            # wb : show_progress
+            self.connect(self, Signals.normalcard_progress_change,card.slot_progress_change)
+            self.connect(self, Signals.normalcard_progress_finish,card.slot_progress_finish)
+            self.connect(self, Signals.normalcard_progress_cancel,card.slot_progress_cancel)
+
             # kobe 1106
             self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
 
@@ -1041,6 +1045,11 @@ class SoftwareCenter(QMainWindow):
                     self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
                     self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
                     self.connect(self, Signals.cancel_uninstall_uksc, card.cancel_uninstall_uksc)
+
+                # wb : show_progress
+                self.connect(self, Signals.normalcard_progress_change,card.slot_progress_change)
+                self.connect(self, Signals.normalcard_progress_finish,card.slot_progress_finish)
+                self.connect(self, Signals.normalcard_progress_cancel,card.slot_progress_cancel)
 
                 # kobe 1106
                 self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
@@ -1920,6 +1929,7 @@ class SoftwareCenter(QMainWindow):
         else:
             if processtype=='cancel':
                 self.emit(Signals.apt_process_cancel,name,action)
+                self.emit(Signals.normalcard_progress_cancel, name)
 
             if self.stmap.has_key(name) is False:
                 print "has no key :  ",name
@@ -1938,8 +1948,10 @@ class SoftwareCenter(QMainWindow):
                                 sys.exit(0)
                             else:
                                 self.emit(Signals.apt_process_finish,name,action)
+                                self.emit(Signals.normalcard_progress_finish, name)
                     else:
                         taskItem.status_change(processtype, percent, msg)
+                        self.emit(Signals.normalcard_progress_change, name, percent)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:
@@ -1980,6 +1992,7 @@ class SoftwareCenter(QMainWindow):
                     cd.exec_()
                 else:
                     self.messageBox.alert_msg(msg)
+        self.slot_update_listwidge(pkgname, action)
 
     # user login
     def slot_do_login_account(self):

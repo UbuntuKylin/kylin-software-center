@@ -207,6 +207,11 @@ class Signals:
     uninstall_uksc = SIGNAL("uninstall_uksc")
     cancel_uninstall_uksc = SIGNAL("cancel_uninstall_uksc")
 
+    #wb 2015.06.26
+    normalcard_progress_change = SIGNAL("normalcard_progress_change")
+    normalcard_progress_finish = SIGNAL("normalcard_progress_finish")
+    normalcard_progress_cancel = SIGNAL("normalcard_progress_cancel")
+
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"

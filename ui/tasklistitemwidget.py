@@ -65,6 +65,8 @@ class TaskListItemWidget(QWidget):
         if app.status == PkgStates.INSTALLING:#"installing":
             #self.ui.name.setText("安装 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                            "QProgressBar:chunk{background-color:#BBF9A3;}")
             if str(text).endswith("…") is True:
                 self.ui.name.setToolTip("安装 "+app.name)
             else:
@@ -72,6 +74,8 @@ class TaskListItemWidget(QWidget):
         if app.status == PkgStates.REMOVING:#"uninstalling":
             #self.ui.name.setText("卸载 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                            "QProgressBar:chunk{background-color:#C5CED9;}")
             if str(text).endswith("…") is True:
                 self.ui.name.setToolTip("卸载 "+app.name)
             else:
@@ -79,6 +83,8 @@ class TaskListItemWidget(QWidget):
         if app.status == PkgStates.UPGRADING:#"upgrading":
             #self.ui.name.setText("升级 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                            "QProgressBar:chunk{background-color:#FDD99A;}")
             if str(text).endswith("…") is True:
                 self.ui.name.setToolTip("升级 "+app.name)
             else:

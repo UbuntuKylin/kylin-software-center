@@ -95,6 +95,7 @@ class NormalCard(QWidget):
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.progressBar_icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
@@ -346,6 +347,7 @@ class NormalCard(QWidget):
             if(self.ui.btn.text() == "安装"):
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")
+                self.slot_show_progress("install")
                 self.emit(Signals.install_app, self.app)
                 self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
@@ -354,6 +356,7 @@ class NormalCard(QWidget):
             elif(self.ui.btn.text() == "升级"):
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
+                self.slot_show_progress("upgrade")
                 self.emit(Signals.upgrade_app, self.app)
                 self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
@@ -365,6 +368,7 @@ class NormalCard(QWidget):
                 else:
                     self.app.status = PkgStates.REMOVING
                     self.ui.btn.setText("正在卸载")
+                    self.slot_show_progress("remove")
                     self.emit(Signals.remove_app, self.app)
                     self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
@@ -382,6 +386,45 @@ class NormalCard(QWidget):
     def cancel_uninstall_uksc(self, where):
         if where == "normalcard":
             self.ui.btn.setEnabled(True)
+
+    # wb
+    def slot_show_progress(self,status):
+        self.ui.progressBar.setVisible(True)
+        self.ui.progresslabel.setVisible(True)
+        self.ui.progressBar_icon.setVisible(True)
+        if status == "install":
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                              "QProgressBar:chunk{background-color:#BBF9A3;}")
+        elif status == "upgrade":
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                              "QProgressBar:chunk{background-color:#FDD99A;}")
+        else :
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                            "QProgressBar:chunk{background-color:#C5CED9;}")
+        #self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+        #                                    "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
+        self.ui.progressBar.setRange(0,100)
+        self.ui.progresslabel.setText(str(0) + '%')
+        self.ui.progressBar.reset()
+
+    def slot_progress_change(self, pkgname ,percent):
+        if self.app.name == pkgname:
+            self.ui.progressBar.setValue(percent)
+            self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+
+    def slot_progress_finish(self,pkgname):
+        if self.app.name == pkgname:
+            self.ui.progresslabel.setVisible(False)
+            self.ui.progressBar_icon.setVisible(False)
+            self.ui.progressBar.setVisible(False)
+            self.ui.progressBar.reset()
+
+    def slot_progress_cancel(self,pkgname):
+        if self.app.name == pkgname:
+            self.ui.progresslabel.setVisible(False)
+            self.ui.progressBar_icon.setVisible(False)
+            self.ui.progressBar.setVisible(False)
+            self.ui.progressBar.reset()
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
