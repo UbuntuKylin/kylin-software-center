@@ -53,6 +53,8 @@ class RankListItemWidget(QWidget):
 
     def enterEvent(self, event):
         self.resize(200, 52)
+        self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#444444;}")
 
     def leaveEvent(self, event):
         self.resize(200, 24)
+        self.ui.name.setStyleSheet("QLabel{font-size:13px;color:#666666;}")

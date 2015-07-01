@@ -237,7 +237,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnMax.setFocusPolicy(Qt.NoFocus)
         self.ui.btnNormal.setFocusPolicy(Qt.NoFocus)
         self.ui.btnConf.setFocusPolicy(Qt.NoFocus)
-        self.ui.lebg.setFocusPolicy(Qt.NoFocus)
+        # self.ui.headercw1.lebg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
@@ -259,7 +259,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
         self.ui.virtuallabel.setStyleSheet("QLabel{background-image:url('res/virtual-bg.png')}")
 
-        self.ui.leSearch.stackUnder(self.ui.lebg)
+        # self.ui.headercw1.leSearch.stackUnder(self.ui.headercw1.lebg)
         self.ui.detailShellWidget.raise_()
         self.ui.taskWidget.raise_()
         self.ui.virtuallabel.raise_()
@@ -279,7 +279,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.hometext1.setText("推荐软件")
         self.ui.hometext2.setText("评分排行")
 
-        self.ui.leSearch.setPlaceholderText("请输入您要搜索的软件")
+        # self.ui.headercw1.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
         # style by qss
         self.ui.hometext3.setText("共有")
@@ -391,8 +391,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
 
         # add by kobe
-        self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
-        self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
+        #self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
+        #self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
         self.ui.btnMax.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
@@ -442,7 +442,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnNormal.clicked.connect(self.slot_normal)
         self.ui.btnMin.clicked.connect(self.slot_min)
         self.ui.btnConf.clicked.connect(self.slot_show_config)
-        self.ui.leSearch.textChanged.connect(self.slot_search_text_change)
+        self.ui.headercw1.leSearch.textChanged.connect(self.slot_search_text_change)
         self.ui.cbSelectAll.clicked.connect(self.slot_ua_select_all)
         self.ui.btnInstallAll.clicked.connect(self.slot_click_ua_install_all)
 
@@ -458,8 +458,8 @@ class SoftwareCenter(QMainWindow):
         self.sso.connect("whoami", self.slot_whoami_done)
 
         # add by kobe
-        self.ui.lebg.clicked.connect(self.slot_searchDTimer_timeout)
-        self.ui.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
+        self.ui.headercw1.lebg.clicked.connect(self.slot_searchDTimer_timeout)
+        self.ui.headercw1.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
         self.connect(self, Signals.install_app, self.slot_click_install)
@@ -1666,7 +1666,7 @@ class SoftwareCenter(QMainWindow):
                     self.connect(item, Signals.remove_app, self.slot_click_remove)
                     self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
                     self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
-                    self.connect(item,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                    self.connect(item, Signals.get_card_status, self.slot_get_normal_card_status)#12.02
                     self.connect(self, Signals.trans_card_status, item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
             else:
                 self.ui.uaNoItemText.show()
@@ -1872,8 +1872,8 @@ class SoftwareCenter(QMainWindow):
     # search
     def slot_searchDTimer_timeout(self):
         self.searchDTimer.stop()
-        if self.ui.leSearch.text():
-            s = self.ui.leSearch.text().toUtf8()
+        if self.ui.headercw1.leSearch.text():
+            s = self.ui.headercw1.leSearch.text().toUtf8()
             if len(s) < 2:
                 return
 

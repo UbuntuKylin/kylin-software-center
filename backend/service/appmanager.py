@@ -395,6 +395,7 @@ class AppManager(QObject):
         tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps-office"))
         tmpads.append(Advertisement("dota2", "url", "ad3.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7687&extra=page%3D1"))
         tmpads.append(Advertisement("pps", "url", "ad4.png", "http://dl.pps.tv/pps_linux_download.html"))
+        tmpads.append(Advertisement("pchomewallpaper", "url", "ad0.png", "http://download.pchome.net/wallpaper/"))
         self.emit(Signals.ads_ready,tmpads)
 
     #get apps in ubuntukylin archives, this is now implemented with config file

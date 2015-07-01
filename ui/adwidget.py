@@ -126,14 +126,15 @@ class ADWidget(QWidget):
             ad.connect(ad, SIGNAL("adsignal"), parent.slot_click_ad)
             self.ads.append(ad)
 
-            adbtn = ADButton(i, self.adBtnWidget)
-            adbtn.resize(10, 10)
-            adbtn.move(adbx, 10)
-            adbx += 16
-            adbtn.setFocusPolicy(Qt.NoFocus)
-            adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
-            adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad_immediately)
-            self.adbs.append(adbtn)
+            if i < self.adl - 1:
+                adbtn = ADButton(i, self.adBtnWidget)
+                adbtn.resize(10, 10)
+                adbtn.move(adbx, 10)
+                adbx += 16
+                adbtn.setFocusPolicy(Qt.NoFocus)
+                adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
+                adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad_immediately)
+                self.adbs.append(adbtn)
 
             i += 1
 
@@ -150,12 +151,15 @@ class ADWidget(QWidget):
         self.adtimer.start(2500)
 
     def slot_change_ad(self, i):
+        self.speed = self.move_speed()
         if(len(self.adbs) == 0):
             return
 
         self.lock_adbs(False)
 
         self.adi = i
+        if i == self.adl - 1:
+            i = 0
         for adb in self.adbs:
             adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
         self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/adbtn-2.png');border:0px;}")
@@ -164,7 +168,7 @@ class ADWidget(QWidget):
         self.distance = self.adi * self.adwidth - self.adContentWidget.x()
         # self.adtimer.stop()
         self.admtimer.stop()
-        self.admtimer.start(12)
+        self.admtimer.start(1)
 
     def slot_adtimer_timeout(self):
         if(self.adi == (self.adl - 1)):
@@ -178,13 +182,15 @@ class ADWidget(QWidget):
         if(self.adx - self.adi * self.adwidth * -1 <= 8):
             self.adx = self.adi * self.adwidth * - 1
             self.adContentWidget.move(self.adx, 0)
-
             self.lock_adbs(True)
 
             self.admtimer.stop()
             self.adtimer.start(2500)
         else:
-            self.adx -= 8
+            try:
+                self.adx -= self.speed.next()
+            except:
+                self.adx = self.adi * self.adwidth * - 1
             self.adContentWidget.move(self.adx, 0)
 
     def lock_adbs(self, flag):
@@ -194,6 +200,12 @@ class ADWidget(QWidget):
     def update_total_count(self,count):
         # self.softCount.setText(str(count))
         pass
+    def move_speed(self):
+        #for x in xrange(0, 200, 1):
+        x = 0
+        while(x < 200):
+            x = x + 0.02
+            yield x
 
 class ADButton(QPushButton):
     obj = ''

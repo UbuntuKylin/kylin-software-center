@@ -7,6 +7,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 from PyQt4 import QtCore, QtGui
 
 try:
@@ -300,20 +302,20 @@ class Ui_MainWindow(object):
         self.btnNormal.setGeometry(QtCore.QRect(56, 0, 28, 36))
         self.btnNormal.setText(_fromUtf8(""))
         self.btnNormal.setObjectName(_fromUtf8("btnNormal"))
-        self.headercw1 = QtGui.QWidget(self.headerWidget)
+        self.headercw1 = Searchcw1(self.headerWidget)
         self.headercw1.setGeometry(QtCore.QRect(575, 0, 285, 36))
         self.headercw1.setObjectName(_fromUtf8("headercw1"))
         self.btnCloseDetail = QtGui.QPushButton(self.headercw1)
         self.btnCloseDetail.setGeometry(QtCore.QRect(0, 14, 15, 19))
         self.btnCloseDetail.setText(_fromUtf8(""))
         self.btnCloseDetail.setObjectName(_fromUtf8("btnCloseDetail"))
-        self.leSearch = QtGui.QLineEdit(self.headercw1)
-        self.leSearch.setGeometry(QtCore.QRect(25, 12, 260, 24))
-        self.leSearch.setObjectName(_fromUtf8("leSearch"))
-        self.lebg = QtGui.QPushButton(self.headercw1)
-        self.lebg.setGeometry(QtCore.QRect(264, 16, 16, 16))
-        self.lebg.setText(_fromUtf8(""))
-        self.lebg.setObjectName(_fromUtf8("lebg"))
+        # self.leSearch = QtGui.QLineEdit(self.headercw1)
+        # self.leSearch.setGeometry(QtCore.QRect(25, 12, 260, 24))
+        # self.leSearch.setObjectName(_fromUtf8("leSearch"))
+        # self.lebg = QtGui.QPushButton(self.headercw1)
+        # self.lebg.setGeometry(QtCore.QRect(264, 16, 16, 16))
+        # self.lebg.setText(_fromUtf8(""))
+        # self.lebg.setObjectName(_fromUtf8("lebg"))
         self.winpageWidget = QtGui.QWidget(self.rightWidget)
         self.winpageWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.winpageWidget.setObjectName(_fromUtf8("winpageWidget"))
@@ -416,3 +418,27 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.cbSelectAll.setText(_translate("MainWindow", "全选/取消全选", None))
 
+class Searchcw1(QWidget):
+
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        self.leSearch = QLineEdit(self)
+        self.leSearch.setGeometry(QtCore.QRect(25, 12, 260, 24))
+        self.leSearch.setObjectName(_fromUtf8("leSearch"))
+        self.lebg = QtGui.QPushButton(self)
+        self.lebg.setGeometry(QtCore.QRect(264, 16, 16, 16))
+        self.lebg.setText(_fromUtf8(""))
+        self.lebg.setObjectName(_fromUtf8("lebg"))
+        self.leSearch.stackUnder(self.lebg)
+        self.lebg.setFocusPolicy(Qt.NoFocus)
+        self.leSearch.setPlaceholderText("请输入您要搜索的软件")
+        self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}")
+        self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
+
+    def enterEvent(self, QEvent):
+        #print "********************"
+        self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-2.png');border:0px;}QPushButton:pressed{background:url('res/search-2.png');}")
+        self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
+    def leaveEvent(self, QEvent):
+        self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}")
+        self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
