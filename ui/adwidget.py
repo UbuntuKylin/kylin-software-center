@@ -180,12 +180,17 @@ class ADWidget(QWidget):
 
     def slot_admtimer_update(self):
         if(self.adx - self.adi * self.adwidth * -1 <= 8):
-            self.adx = self.adi * self.adwidth * - 1
-            self.adContentWidget.move(self.adx, 0)
-            self.lock_adbs(True)
 
-            self.admtimer.stop()
-            self.adtimer.start(2500)
+            if self.adi == self.adl - 1:
+                self.slot_change_ad_immediately(0)
+                self.lock_adbs(True)
+            else:
+                self.adx = self.adi * self.adwidth * - 1
+                self.adContentWidget.move(self.adx, 0)
+                self.lock_adbs(True)
+
+                self.admtimer.stop()
+                self.adtimer.start(2500)
         else:
             try:
                 self.adx -= self.speed.next()
