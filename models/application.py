@@ -74,6 +74,8 @@ class Application:
 
         self.status = PkgStates.NOTHING
 
+        self.percent = 0
+
     # app work status this moment: installing, updating ...
     # @property
     # def status(self):

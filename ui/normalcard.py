@@ -147,36 +147,50 @@ class NormalCard(QWidget):
         self.star.move(75, 56)
 
         # btn & border
-        if self.app.status == PkgStates.INSTALLING:
-            self.ui.btn.setEnabled(False)
-            self.ui.btn.setText("正在安装")
-            self.star.show()
-            self.ui.isInstalled.setVisible(False)
-            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
-            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
-        elif self.app.status == PkgStates.REMOVING:
-            self.ui.btn.setEnabled(False)
-            self.ui.btn.setText("正在卸载")
-            if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+        if self.app.percent != 0:
+            self.ui.progressBar.setVisible(True)
+            self.ui.progresslabel.setVisible(True)
+            self.ui.progressBar_icon.setVisible(True)
+            self.ui.progressBar.setValue(self.app.percent)
+            self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
+
+            if self.app.status == PkgStates.INSTALLING:
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setText("正在安装")
                 self.star.show()
+
                 self.ui.isInstalled.setVisible(False)
-            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                             "QProgressBar:chunk{background-color:#BBF9A3;}")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+            elif self.app.status == PkgStates.REMOVING:
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setText("正在卸载")
+                if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                    self.star.show()
+                    self.ui.isInstalled.setVisible(False)
+                else:
+                    self.star.hide()
+                    self.ui.isInstalled.setVisible(True)
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                                  "QProgressBar:chunk{background-color:#C5CED9;}")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+            elif self.app.status == PkgStates.UPGRADING:
+                self.ui.btn.setEnabled(False)
+                self.ui.btn.setText("正在升级")
                 self.star.hide()
-                self.ui.isInstalled.setVisible(True)
-            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
-            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
-        elif self.app.status == PkgStates.UPGRADING:
-            self.ui.btn.setEnabled(False)
-            self.ui.btn.setText("正在升级")
-            self.star.hide()
-            if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
-                self.star.show()
-                self.ui.isInstalled.setVisible(False)
-            else:
-                self.star.hide()
-                self.ui.isInstalled.setVisible(True)
-            self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
-            self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+                if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                    self.star.show()
+                    self.ui.isInstalled.setVisible(False)
+                else:
+                    self.star.hide()
+                    self.ui.isInstalled.setVisible(True)
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                             "QProgressBar:chunk{background-color:#FDD99A;}")
+                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
         else:
             if(Globals.NOWPAGE == PageStates.ALLPAGE or Globals.NOWPAGE == PageStates.HOMEPAGE ):
                 if(self.app.is_installed):
@@ -407,20 +421,21 @@ class NormalCard(QWidget):
         self.ui.progresslabel.setText(str(0) + '%')
         self.ui.progressBar.reset()
 
-    def slot_progress_change(self, pkgname ,percent, status):
+    def slot_progress_change(self, pkgname, percent, status):
         if self.app.name == pkgname:
+            self.app.percent = percent
             self.ui.progressBar.setVisible(True)
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
             if status == AppActions.INSTALL:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
-                                              "QProgressBar:chunk{background-color:#BBF9A3;}")
+               self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                             "QProgressBar:chunk{background-color:#BBF9A3;}")
             elif status == AppActions.UPGRADE:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
-                                              "QProgressBar:chunk{background-color:#FDD99A;}")
+               self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                             "QProgressBar:chunk{background-color:#FDD99A;}")
             elif status == AppActions.REMOVE:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
-                                            "QProgressBar:chunk{background-color:#C5CED9;}")
+               self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                           "QProgressBar:chunk{background-color:#C5CED9;}")
             self.ui.progressBar.setValue(percent)
             self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
@@ -430,6 +445,7 @@ class NormalCard(QWidget):
             self.ui.progressBar_icon.setVisible(False)
             self.ui.progressBar.setVisible(False)
             self.ui.progressBar.reset()
+            self.app.percent = 0
 
     def slot_progress_cancel(self,pkgname):
         if self.app.name == pkgname:
@@ -437,6 +453,7 @@ class NormalCard(QWidget):
             self.ui.progressBar_icon.setVisible(False)
             self.ui.progressBar.setVisible(False)
             self.ui.progressBar.reset()
+            self.app.percent = 0
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
