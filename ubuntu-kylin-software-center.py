@@ -1953,7 +1953,7 @@ class SoftwareCenter(QMainWindow):
                             self.emit(Signals.normalcard_progress_finish, name)
                     else:
                         taskItem.status_change(processtype, percent, msg)
-                        self.emit(Signals.normalcard_progress_change, name, percent)
+                        self.emit(Signals.normalcard_progress_change, name, percent, action)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:

@@ -266,8 +266,20 @@ class RcmdCard(QWidget):
         self.ui.progresslabel.setText(str(0) + '%')
         self.ui.progressBar.reset()
 
-    def slot_progress_change(self, pkgname ,percent):
+    def slot_progress_change(self, pkgname, percent, status):
         if self.app.name == pkgname:
+            self.ui.progressBar.setVisible(True)
+            self.ui.progresslabel.setVisible(True)
+            self.ui.progressBar_icon.setVisible(True)
+            if status == AppActions.INSTALL:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                              "QProgressBar:chunk{background-color:#BBF9A3;}")
+            elif status == AppActions.UPGRADE:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                              "QProgressBar:chunk{background-color:#FDD99A;}")
+            elif status == AppActions.REMOVE:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                            "QProgressBar:chunk{background-color:#C5CED9;}")
             self.ui.progressBar.setValue(percent)
             self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
