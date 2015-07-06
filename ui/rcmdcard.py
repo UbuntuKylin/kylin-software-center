@@ -92,6 +92,7 @@ class RcmdCard(QWidget):
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.progressBar_icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
@@ -241,8 +242,48 @@ class RcmdCard(QWidget):
             # self.ui.btn.setText("正在处理")
             self.app.status = PkgStates.INSTALLING
             self.ui.btn.setText("正在安装")
+            self.slot_show_progress("install")
             self.emit(Signals.install_app, self.app)
             self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
+
+    # wb
+    def slot_show_progress(self,status):
+        self.ui.progressBar.setVisible(True)
+        self.ui.progresslabel.setVisible(True)
+        self.ui.progressBar_icon.setVisible(True)
+        if status == "install":
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                              "QProgressBar:chunk{background-color:#BBF9A3;}")
+        elif status == "upgrade":
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                              "QProgressBar:chunk{background-color:#FDD99A;}")
+        else :
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                            "QProgressBar:chunk{background-color:#C5CED9;}")
+        #self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+        #                                    "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
+        self.ui.progressBar.setRange(0,100)
+        self.ui.progresslabel.setText(str(0) + '%')
+        self.ui.progressBar.reset()
+
+    def slot_progress_change(self, pkgname ,percent):
+        if self.app.name == pkgname:
+            self.ui.progressBar.setValue(percent)
+            self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+
+    def slot_progress_finish(self,pkgname):
+        if self.app.name == pkgname:
+            self.ui.progresslabel.setVisible(False)
+            self.ui.progressBar_icon.setVisible(False)
+            self.ui.progressBar.setVisible(False)
+            self.ui.progressBar.reset()
+
+    def slot_progress_cancel(self,pkgname):
+        if self.app.name == pkgname:
+            self.ui.progresslabel.setVisible(False)
+            self.ui.progressBar_icon.setVisible(False)
+            self.ui.progressBar.setVisible(False)
+            self.ui.progressBar.reset()
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):

@@ -1306,6 +1306,11 @@ class SoftwareCenter(QMainWindow):
             self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
             self.connect(self, Signals.trans_card_status, recommend.slot_change_btn_status)
+            # wb : show_progress
+            self.connect(self, Signals.normalcard_progress_change,recommend.slot_progress_change)
+            self.connect(self, Signals.normalcard_progress_finish,recommend.slot_progress_finish)
+            self.connect(self, Signals.normalcard_progress_cancel,recommend.slot_progress_cancel)
+
             self.connect(recommend,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
         self.rec_ready = True
         self.check_init_ready()
