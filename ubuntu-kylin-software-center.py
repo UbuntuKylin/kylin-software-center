@@ -1322,10 +1322,7 @@ class SoftwareCenter(QMainWindow):
             if app is not None:
                 oneitem = QListWidgetItem()
                 oneitem.setWhatsThis(app.name)
-                if app.displayname_cn != '' and app.displayname_cn is not None and app.displayname_cn != 'None':
-                    rliw = RankListItemWidget(app.displayname_cn, self.ui.rankView.count() + 1)
-                else:
-                    rliw = RankListItemWidget(app.displayname, self.ui.rankView.count() + 1)
+                rliw = RankListItemWidget(app, self.ui.rankView.count() + 1, self.ui.rankView)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)

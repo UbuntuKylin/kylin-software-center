@@ -32,9 +32,21 @@ class Ui_RankListWidget(object):
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.number = QtGui.QLabel(RankListWidget)
-        self.number.setGeometry(QtCore.QRect(4, 4, 18, 16))
+        self.number.setGeometry(QtCore.QRect(4, 3, 25, 16))
         self.number.setText(_fromUtf8(""))
         self.number.setObjectName(_fromUtf8("number"))
+
+        self.appstatus = QtGui.QLabel(RankListWidget)
+        self.appstatus.setGeometry(QtCore.QRect(60, 18, 150, 16))
+        self.appstatus.setText(_fromUtf8(""))
+        self.appstatus.setObjectName(_fromUtf8("appstatus"))
+        self.appstatus.hide()
+
+        self.icon = QtGui.QLabel(RankListWidget)
+        self.icon.setGeometry(QtCore.QRect(32, 3, 25, 25))
+        self.icon.setText(_fromUtf8(""))
+        self.icon.setObjectName(_fromUtf8("icon"))
+        self.icon.hide()
 
         self.retranslateUi(RankListWidget)
         QtCore.QMetaObject.connectSlotsByName(RankListWidget)

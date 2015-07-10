@@ -625,7 +625,10 @@ class AppManager(QObject):
             app = self.get_application_by_name(rr[0])
             if(app is not None):
                 app.ratingrank = rr[1]
-                applist.append(app)
+                try:
+                    applist.index(app)
+                except:
+                    applist.append(app)
 
         self.emit(Signals.ratingrank_ready,applist)
 
