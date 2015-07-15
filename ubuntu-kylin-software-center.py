@@ -32,6 +32,7 @@ from PyQt4.QtCore import *
 
 from ui.mainwindow import Ui_MainWindow
 from ui.categorybar import CategoryBar
+from ui.taskwidget import  Taskwidget
 from ui.rcmdcard import RcmdCard
 from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather, DataModel
@@ -132,6 +133,7 @@ class SoftwareCenter(QMainWindow):
 
         # category bar
         self.categoryBar = CategoryBar(self.ui.rightWidget)
+        self.Taskwidget = Taskwidget(self.ui.taskWidget)
         # point out widget
         self.pointout = PointOutWidget(self)
         self.pointListWidget = CardWidget(212, 88, 4, self.pointout.ui.contentliw)
@@ -245,6 +247,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
+        self.ui.taskListWidget_complete.setFocusPolicy(Qt.NoFocus)
         self.ui.rankView.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelectAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnInstallAll.setFocusPolicy(Qt.NoFocus)
@@ -389,7 +392,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-
+        self.ui.btnGoto.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+        self.ui.btnGoto.setText("去宝库看看")
+        self.ui.notaskImg.setStyleSheet("QLabel{background-image:url('res/no-download.png')}")
         # add by kobe
         #self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
         #self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
@@ -409,10 +414,20 @@ class SoftwareCenter(QMainWindow):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
         self.ui.taskListWidget.setSpacing(1)
+        self.ui.taskListWidget_complete.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
+        self.ui.taskListWidget_complete.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+             QScrollBar::down-arrow:vertical{background-color:yellow;}\
+             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+        self.ui.taskListWidget_complete.setSpacing(1)
         self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
-        self.ui.tasklabel.setText("任务列表")
+        #self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
+        #self.ui.tasklabel.setText("任务列表")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
 
@@ -445,6 +460,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.headercw1.leSearch.textChanged.connect(self.slot_search_text_change)
         self.ui.cbSelectAll.clicked.connect(self.slot_ua_select_all)
         self.ui.btnInstallAll.clicked.connect(self.slot_click_ua_install_all)
+        self.ui.btnGoto.pressed.connect(self.slot_goto_allpage)
 
         # user account
         self.sso = get_ubuntu_sso_backend()
@@ -465,6 +481,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self, Signals.install_app, self.slot_click_install)
         self.connect(self, Signals.update_source,self.slot_update_source)
         self.connect(self.categoryBar, Signals.click_categoy, self.slot_change_category)
+        self.connect(self.Taskwidget, Signals.click_task, self.slot_change_task)
         self.connect(self.detailScrollWidget, Signals.install_debfile, self.slot_click_install_debfile)
         self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
         self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
@@ -891,6 +908,7 @@ class SoftwareCenter(QMainWindow):
                     # task widget
                     self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.height())
                     self.ui.taskListWidget.resize(self.ui.taskListWidget.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
+                    self.ui.taskListWidget_complete.resize(self.ui.taskListWidget_complete.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
                     self.ui.taskBottomWidget.move(self.ui.taskBottomWidget.x(), self.ui.taskWidget.height() - self.ui.taskBottomWidget.height())
 
                     # resize, recalculate, refill the card widgets
@@ -1097,6 +1115,7 @@ class SoftwareCenter(QMainWindow):
 
         self.emit(Signals.count_application_update)
 
+
     def add_task_item(self, app, isdeb=False):
         # add a deb file task
         if(isdeb == True):
@@ -1114,20 +1133,42 @@ class SoftwareCenter(QMainWindow):
             self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-            self.stmap[app.name] = tliw
 
-    def del_task_item(self, pkgname):
-        count = self.ui.taskListWidget.count()
-        print "del_task_item:",count
-        for i in range(count):
-            item = self.ui.taskListWidget.item(i)
-            taskitem = self.ui.taskListWidget.itemWidget(item)
-            if taskitem.app.name == pkgname:
-                print "del_task_item: found an item",i,pkgname
-                delitem = self.ui.taskListWidget.takeItem(i)
-                self.ui.taskListWidget.removeItemWidget(delitem)
-                del delitem
-                break
+            self.stmap[app.name] = tliw
+        self.ui.btnGoto.setVisible(False)
+        self.ui.notaskImg.setVisible(False)
+
+    def del_task_item(self, pkgname, iscancel=False, isfinish=False):
+        if iscancel:
+            count = self.ui.taskListWidget.count()
+            print "del_task_item:",count
+            for i in range(count):
+                item = self.ui.taskListWidget.item(i)
+                taskitem = self.ui.taskListWidget.itemWidget(item)
+                if taskitem.app.name == pkgname:
+                    print "del_task_item: found an item",i,pkgname
+                    delitem = self.ui.taskListWidget.takeItem(i)
+                    self.ui.taskListWidget.removeItemWidget(delitem)
+                    if isfinish:
+                        self.ui.taskListWidget_complete.addItem(item)
+                        self.ui.taskListWidget_complete.setItemWidget(item, taskitem)
+                    #if self.ui.taskListWidget.count() == 0 :
+                    #    self.ui.btnGoto.setVisible(True)
+                    #    self.ui.notaskImg.setVisible(True)
+                    del delitem
+                    break
+        else:
+            count = self.ui.taskListWidget_complete.count()
+            print "del_task_item:",count
+            for i in range(count):
+                item = self.ui.taskListWidget_complete.item(i)
+                taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+                if taskitem.app.name == pkgname:
+                    print "del_task_item: found an item",i,pkgname
+                    delitem = self.ui.taskListWidget_complete.takeItem(i)
+                    self.ui.taskListWidget_complete.removeItemWidget(delitem)
+                    del delitem
+                    break
 
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
@@ -1276,6 +1317,25 @@ class SoftwareCenter(QMainWindow):
         # if(self.nowPage == "winpage" and self.ui.winpageWidget.isVisible() == False):
         #     self.ui.winpageWidget.setVisible(True)
 
+
+    def slot_change_task(self, category):
+        if category == "正在下载":
+            self.ui.taskListWidget.setVisible(True)
+            self.ui.taskListWidget_complete.setVisible(False)
+            count = self.ui.taskListWidget.count()
+            if count == 0:
+                self.ui.btnGoto.setVisible(True)
+                self.ui.notaskImg.setVisible(True)
+            else:
+                self.ui.btnGoto.setVisible(False)
+                self.ui.notaskImg.setVisible(False)
+        elif category == "下载完成":
+            self.ui.taskListWidget.setVisible(False)
+            self.ui.taskListWidget_complete.setVisible(True)
+            self.ui.btnGoto.setVisible(False)
+            self.ui.notaskImg.setVisible(False)
+
+
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
         max = listWidget.verticalScrollBar().maximum()
@@ -1354,28 +1414,36 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_clear_all_task_list(self):
-        count = self.ui.taskListWidget.count()
+        count = self.ui.taskListWidget_complete.count()
         print "del_task_item:",count
 
         truecount = 0
-        top = 0 #Add by zhangxin 
+        top = 0 #Add by zhangxin
         for i in range(count):
             # list is empty now
             if(truecount == count):
                 break
-            item = self.ui.taskListWidget.item(top)
-            taskitem = self.ui.taskListWidget.itemWidget(item)
+            item = self.ui.taskListWidget_complete.item(top)
+            taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+            print "del_task_item: found an item",truecount,taskitem.app.name
+            delitem = self.ui.taskListWidget_complete.takeItem(top)
+            self.ui.taskListWidget_complete.removeItemWidget(delitem)
+            del delitem
+            if taskitem.app.name in self.stmap.keys():#for bug keyerror
+                del self.stmap[taskitem.app.name]
+            truecount = truecount + 1
+
             # delete all finished task items
-            if taskitem.finish == True:
-                print "del_task_item: found an item",top,taskitem.app.name
-                delitem = self.ui.taskListWidget.takeItem(top)
-                self.ui.taskListWidget.removeItemWidget(delitem)
-                del delitem
-                if taskitem.app.name in self.stmap.keys():#for bug keyerror
-                    del self.stmap[taskitem.app.name]
-                truecount = truecount + 1
-            else:
-                top = top + 1
+            # if taskitem.finish == True:
+            #     print "del_task_item: found an item",top,taskitem.app.name
+            #     delitem = self.ui.taskListWidget_complete.takeItem(top)
+            #     self.ui.taskListWidget_complete.removeItemWidget(delitem)
+            #     del delitem
+            #     if taskitem.app.name in self.stmap.keys():#for bug keyerror
+            #         del self.stmap[taskitem.app.name]
+            #     truecount = truecount + 1
+            # else:
+            #     top = top + 1
 
     def slot_count_application_update(self):
         (inst,up, all) = self.appmgr.get_application_count()
@@ -1939,7 +2007,7 @@ class SoftwareCenter(QMainWindow):
             else:
                 taskItem = self.stmap[name]
                 if processtype=='cancel':
-                    self.del_task_item(name)
+                    self.del_task_item(name,True,False)
                     del self.stmap[name]
                     #self.emit(Signals.apt_process_cancel,name,action)
                 else:
@@ -1948,6 +2016,7 @@ class SoftwareCenter(QMainWindow):
                         if(action != AppActions.INSTALLDEPS):
                             self.emit(Signals.apt_process_finish, name, action)
                             self.emit(Signals.normalcard_progress_finish, name)
+                            self.del_task_item(name,True,True)
                     else:
                         taskItem.status_change(processtype, percent, msg)
                         self.emit(Signals.normalcard_progress_change, name, percent, action)

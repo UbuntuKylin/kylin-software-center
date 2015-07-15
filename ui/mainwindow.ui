@@ -661,6 +661,9 @@
       </property>
      </widget>
      <widget class="QLabel" name="tasklabel">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -714,6 +717,42 @@
         <string/>
        </property>
       </widget>
+     </widget>
+     <widget class="QListWidget" name="taskListWidget_complete">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>65</y>
+        <width>300</width>
+        <height>475</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnGoto">
+      <property name="geometry">
+       <rect>
+        <x>85</x>
+        <y>400</y>
+        <width>148</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PushButton</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="notaskImg">
+      <property name="geometry">
+       <rect>
+        <x>105</x>
+        <y>180</y>
+        <width>110</width>
+        <height>150</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
      </widget>
     </widget>
     <widget class="QWidget" name="upWidget" native="true">
@@ -1026,6 +1065,7 @@
        <height>558</height>
       </rect>
      </property>
+     <zorder>userAppListWidget</zorder>
     </widget>
     <widget class="QWidget" name="userAppListWidget" native="true">
      <property name="geometry">
@@ -1121,6 +1161,13 @@
        <string/>
       </property>
      </widget>
+     <zorder>ualine</zorder>
+     <zorder>uacw1</zorder>
+     <zorder>uatitle</zorder>
+     <zorder>btnInstallAll</zorder>
+     <zorder>uaNoItemWidget</zorder>
+     <zorder>uaNoItemText</zorder>
+     <zorder>pushButton</zorder>
     </widget>
    </widget>
    <zorder>rightWidget</zorder>
