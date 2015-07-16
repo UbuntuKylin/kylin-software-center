@@ -67,19 +67,19 @@ class Ui_NormalCard(object):
         self.btn.setObjectName(_fromUtf8("btn"))
 
         # wb:
-        self.progressBar = QtGui.QProgressBar(NormalCard)
+        self.progressBar = QtGui.QProgressBar(self.baseWidget)
         self.progressBar.setGeometry(QtCore.QRect(0, 0, 212, 88))
         self.progressBar.setProperty("value", 24)
         self.progressBar.setTextVisible(False)
         self.progressBar.setVisible(False)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
-        self.progresslabel = QtGui.QLabel(NormalCard)
+        self.progresslabel = QtGui.QLabel(self.baseWidget)
         self.progresslabel.setGeometry(QtCore.QRect(120, 35, 35, 18))
         self.progresslabel.setText(_fromUtf8(""))
         self.progresslabel.setVisible(False)
         self.progresslabel.setObjectName(_fromUtf8("progresslabel"))
 
-        self.progressBar_icon = QtGui.QLabel(NormalCard)
+        self.progressBar_icon = QtGui.QLabel(self.baseWidget)
         self.progressBar_icon.setGeometry(QtCore.QRect(20, 20, 48, 48))
         self.progressBar_icon.setText(_fromUtf8(""))
         self.progressBar_icon.setVisible(False)

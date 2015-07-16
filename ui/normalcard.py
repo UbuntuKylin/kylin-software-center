@@ -414,6 +414,7 @@ class NormalCard(QWidget):
         self.ui.progressBar.setVisible(True)
         self.ui.progresslabel.setVisible(True)
         self.ui.progressBar_icon.setVisible(True)
+        self.star.setVisible(False)
         if status == "install":
             self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                               "QProgressBar:chunk{background-color:#BBF9A3;}")
@@ -435,6 +436,7 @@ class NormalCard(QWidget):
             self.ui.progressBar.setVisible(True)
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
+            self.star.setVisible(False)
             if status == AppActions.INSTALL:
                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                              "QProgressBar:chunk{background-color:#BBF9A3;}")
@@ -455,6 +457,7 @@ class NormalCard(QWidget):
             self.ui.progresslabel.setVisible(False)
             self.ui.progressBar_icon.setVisible(False)
             self.ui.progressBar.setVisible(False)
+            self.star.setVisible(True)
             self.ui.progressBar.reset()
             self.app.percent = 0
 
@@ -463,6 +466,7 @@ class NormalCard(QWidget):
             self.ui.progresslabel.setVisible(False)
             self.ui.progressBar_icon.setVisible(False)
             self.ui.progressBar.setVisible(False)
+            self.star.setVisible(True)
             self.ui.progressBar.reset()
             self.app.percent = 0
 
