@@ -156,7 +156,7 @@ class TaskListItemWidget(QWidget):
                 if percent < float(0.0):
                     self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
-                    self.ui.status.setText("       失败")
+                    self.ui.status.setText("失败")
                     self.ui.status.show()
                 elif percent >= 100:
                     text = "安装完成"

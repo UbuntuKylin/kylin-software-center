@@ -61,7 +61,6 @@ DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
 UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
 
 
-
 class WorkItem:
      def __init__(self, pkgname, action, kwargs):
         self.pkgname = pkgname
@@ -74,11 +73,15 @@ class WorkThread(threading.Thread):
     def __init__(self, dbus_service):
         threading.Thread.__init__(self)
         self.dbus_service = dbus_service
+        self.thread_is_working = 0
 
     def run(self):
 #        print "The backend start the work thread..."
         while(True):
-
+            if self.thread_is_working <100:
+                self.thread_is_working += 1
+            else:
+                self.thread_is_working = 0    
             if len(self.dbus_service.worklist) == 0:
                 time.sleep(0.5)
                 continue
@@ -193,12 +196,14 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         del_work_item = None
         self.mutex.acquire()
-
-        for item in self.worklist:
-            if item.pkgname == cancelinfo[0] and item.action == cancelinfo[1]:
-                self.worklist.remove(item)
-                del_work_item = item
-                break
+        try:
+            for item in self.worklist:
+                if item.pkgname == cancelinfo[0] and item.action == cancelinfo[1]:
+                    self.worklist.remove(item)
+                    del_work_item = item
+                    break
+        except:
+            pass
         self.mutex.release()
 
         self.cancelmutex.acquire()
@@ -583,6 +588,11 @@ class SoftwarecenterDbusService(dbus.service.Object):
     def clear_all_work_item(self):
         self.worklist = []
         self.cancel_name_list = []
+        
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='i')
+    def check_dbus_thread_is_working(self):
+        return self.worker_thread.thread_is_working
+    
 
 if __name__ == '__main__':
     os.environ["TERM"] = "xterm"

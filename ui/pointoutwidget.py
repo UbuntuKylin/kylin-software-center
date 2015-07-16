@@ -91,7 +91,7 @@ class PointOutWidget(QWidget):
 
         self.ui.logo.setStyleSheet("QLabel{background-image:url('res/logo-tooltip.png');}")#QLabel{background-color:#0f84bc;
         self.ui.header.setStyleSheet("QLabel{background-color:#0f84bc;}")
-        self.ui.btnClose.setStyleSheet("QPushButton{border:0px;background-image:url('res/close-1.png');}QPushButton:pressed{background-image:url('res/close-3.png');}")
+        self.ui.btnClose.setStyleSheet("QPushButton{border:0px;background-image:url('res/close-1.png');}QPushButton:hover{background-image:url('res/close-3.png');}QPushButton:pressed{background-image:url('res/close-3.png');}")
         self.ui.title.setStyleSheet("QLabel{background-color:#E7EDF0;font-size:14px;}")
         self.ui.cbisshow.setStyleSheet("QCheckBox{border:0px;font-size:13px;}")
         # self.ui.bottom.setStyleSheet("QLabel{background-color:white;}")
