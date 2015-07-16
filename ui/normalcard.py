@@ -147,12 +147,20 @@ class NormalCard(QWidget):
         self.star.move(75, 56)
 
         # btn & border
-        if self.app.percent != 0:
-            self.ui.progressBar.setVisible(True)
-            self.ui.progresslabel.setVisible(True)
-            self.ui.progressBar_icon.setVisible(True)
-            self.ui.progressBar.setValue(self.app.percent)
-            self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
+        if self.app.percent != 0 or self.app.status in (PkgStates.INSTALLING, PkgStates.REMOVING, PkgStates.UPGRADING):
+            if self.app.percent < float(0.0):
+
+                self.ui.progressBar.setVisible(True)
+                self.ui.progresslabel.setVisible(True)
+                self.ui.progressBar_icon.setVisible(True)
+                self.ui.progressBar.setValue(self.app.percent)
+                self.ui.progresslabel.setText("失败")
+            else:
+                self.ui.progressBar.setVisible(True)
+                self.ui.progresslabel.setVisible(True)
+                self.ui.progressBar_icon.setVisible(True)
+                self.ui.progressBar.setValue(self.app.percent)
+                self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
 
             if self.app.status == PkgStates.INSTALLING:
                 self.ui.btn.setEnabled(False)
@@ -437,7 +445,10 @@ class NormalCard(QWidget):
                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                            "QProgressBar:chunk{background-color:#C5CED9;}")
             self.ui.progressBar.setValue(percent)
-            self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+            if percent < float(0.0):
+                self.ui.progresslabel.setText("失败")
+            else:
+                self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
     def slot_progress_finish(self,pkgname):
         if self.app.name == pkgname:
@@ -447,7 +458,7 @@ class NormalCard(QWidget):
             self.ui.progressBar.reset()
             self.app.percent = 0
 
-    def slot_progress_cancel(self,pkgname):
+    def slot_progress_cancel(self, pkgname):
         if self.app.name == pkgname:
             self.ui.progresslabel.setVisible(False)
             self.ui.progressBar_icon.setVisible(False)
@@ -546,7 +557,7 @@ class NormalCard(QWidget):
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
 
-    def slot_work_cancel(self, pkgname,action):
+    def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.app.status = PkgStates.INSTALL

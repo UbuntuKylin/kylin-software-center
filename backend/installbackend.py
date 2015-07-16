@@ -101,7 +101,8 @@ class InstallBackend(QObject):
         res = None
         try:
             res = func(kwargs)
-        except dbus.DBusException:
+        except dbus.DBusException as e:
+
             return None
 
         return res
@@ -175,8 +176,8 @@ class InstallBackend(QObject):
     def upgrade_package(self,pkgname):
         return self.call_dbus_iface(AppActions.UPGRADE,pkgname)
 
-    def cancel_package(self,pkgname):
-        return self.call_dbus_iface(AppActions.CANCEL,pkgname)
+    def cancel_package(self,cancelinfo):
+        return self.call_dbus_iface(AppActions.CANCEL,cancelinfo)
 
     def update_source(self,quiet=False):
         return self.call_dbus_iface(AppActions.UPDATE,False)
@@ -189,6 +190,12 @@ class InstallBackend(QObject):
 
     def remove_source(self,text):
         return self.call_dbus_iface(AppActions.REMOVE_SOURCE,text)
+
+    def clear_dbus_worklist(self):
+        return self.call_dbus_iface("clear_all_work_item")
+
+    def check_dbus_workitem(self):
+        return self.call_dbus_iface("check_work_item")
 
     def get_sources(self,except_ubuntu):
         list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)

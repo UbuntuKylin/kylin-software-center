@@ -43,6 +43,7 @@ import apt
 import aptsources.sourceslist
 import apt_pkg
 import time
+import fcntl
 
 from apt_daemon import AptDaemon,AppActions
 from apt_daemon import WorkitemError
@@ -82,6 +83,10 @@ class WorkThread(threading.Thread):
                 time.sleep(0.5)
                 continue
 
+            if is_dpkg_active("/var/lib/dpkg/lock") is True:
+                time.sleep(0.5)
+                continue
+
             self.dbus_service.mutex.acquire()
             item = self.dbus_service.worklist.pop(0) # pop(0) is get first item and remove it from list
             self.dbus_service.mutex.release()
@@ -103,7 +108,36 @@ class WorkThread(threading.Thread):
                 self.dbus_service.software_apt_signal("apt_error", kwarg)
 
 #            print "finish one acion....."
-            time.sleep(0.5)
+            #time.sleep(0.5)
+
+
+def is_dpkg_active(lockfile):
+    """
+    Check whether ``apt-get`` or ``dpkg`` is currently active.
+
+    This works by checking whether the lock file ``/var/lib/dpkg/lock`` is
+    locked by an ``apt-get`` or ``dpkg`` process, which in turn is done by
+    momentarily trying to acquire the lock. This means that the current process
+    needs to have sufficient privileges.
+
+    :returns: ``True`` when the lock is already taken (``apt-get`` or ``dpkg``
+              is running), ``False`` otherwise.
+    :raises: :py:exc:`exceptions.IOError` if the required privileges are not
+             available.
+
+    .. note:: ``apt-get`` doesn't acquire this lock until it needs it, for
+              example an ``apt-get update`` run consists of two phases (first
+              fetching updated package lists and then updating the local
+              package index) and only the second phase claims the lock (because
+              the second phase writes the local package index which is also
+              read from and written to by ``dpkg``).
+    """
+    with open(lockfile, 'w') as handle:
+        try:
+            fcntl.lockf(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return False
+        except IOError:
+            return True
 
 class SoftwarecenterDbusService(dbus.service.Object):
 
@@ -154,34 +188,36 @@ class SoftwarecenterDbusService(dbus.service.Object):
         self.mutex.release()
         print "####add_worker_item finished!"
 
-    def del_worker_item_by_name(self, pkgname):
-        print "####del_worker_item_by_name:",pkgname
-        exist = False
+    def del_worker_item_by_name(self, cancelinfo):
+        print "####del_worker_item_by_name:",cancelinfo[0]
+
+        del_work_item = None
         self.mutex.acquire()
+
         for item in self.worklist:
-            if item.pkgname == pkgname:
-                exist = True
+            if item.pkgname == cancelinfo[0] and item.action == cancelinfo[1]:
+                self.worklist.remove(item)
+                del_work_item = item
                 break
-        if exist is True:
-            self.worklist.remove(pkgname)
         self.mutex.release()
 
         self.cancelmutex.acquire()
-        self.cancel_name_list.append(pkgname)
+        if del_work_item != None:
+            self.cancel_name_list.append(del_work_item)
         self.cancelmutex.release()
         print "####del_worker_item_by_name finished!"
 
-    def check_cancel_worker_item(self, pkgname):
+    def check_cancel_worker_item(self, cancelinfo):
 #        print "####check_cancel_worker_item:",pkgname
         cancel = False
         self.cancelmutex.acquire()
 #        print "check_cancel_worker_item:",len(self.cancel_name_list)
+
         for item in self.cancel_name_list:
-            if item == pkgname:
+            if item.pkgname == cancelinfo[0] and item.action == cancelinfo[1]:
+                self.cancel_name_list.remove(item)
                 cancel = True
                 break
-        if cancel is True:
-            self.cancel_name_list.remove(pkgname)
         self.cancelmutex.release()
 
 #        print "####check_cancel_worker_item finished!:",cancel
@@ -349,18 +385,20 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print "####upgrade return"
         return True
 
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
-    def cancel(self, pkgName, sender=None):
-        print "####cancel: ",pkgName
+    @dbus.service.method(INTERFACE, in_signature='as', out_signature='s', sender_keyword='sender')
+    def cancel(self, cancelinfo, sender=None):
+        print "####cancel: ",cancelinfo[0]
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
             return False
 
-        self.del_worker_item_by_name(pkgName)
-
-        print "####cancel return"
-        return True
+        self.del_worker_item_by_name(cancelinfo)
+        if self.check_cancel_worker_item(cancelinfo) is True:
+            print "####cancel return"
+            return "True"
+        else:
+            return "False"
 
     # apt-get update sa:software_fetch_signal()
     @dbus.service.method(INTERFACE, in_signature='b', out_signature='b', sender_keyword='sender')
@@ -526,6 +564,25 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.signal(INTERFACE, signature='s')
     def software_signal_test(self, msg):
         pass
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='ai')
+    def check_work_item(self):
+        dpkg_is_running = 0
+        workitemcount = 0
+        self.mutex.acquire()
+        if len(self.worklist) != 0:
+            workitemcount = len(self.worklist)
+        self.mutex.release()
+        dpkg_is_running = is_dpkg_active("/var/lib/dpkg/lock")
+        res = []
+        res.append(workitemcount)
+        res.append(dpkg_is_running)
+        return res
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='')
+    def clear_all_work_item(self):
+        self.worklist = []
+        self.cancel_name_list = []
 
 if __name__ == '__main__':
     os.environ["TERM"] = "xterm"

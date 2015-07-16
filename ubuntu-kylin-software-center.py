@@ -97,6 +97,7 @@ class SoftwareCenter(QMainWindow):
     # init flags
     win_exists = 0
     ua_exists = 0
+    task_number = 0
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
@@ -1117,29 +1118,32 @@ class SoftwareCenter(QMainWindow):
 
 
     def add_task_item(self, app, isdeb=False):
-        # add a deb file task
+        self.task_number += 1
         if(isdeb == True):
             oneitem = QListWidgetItem()
-            tliw = TaskListItemWidget(app, self, isdeb=True)
+            tliw = TaskListItemWidget(app, self.task_number, self, isdeb=True)
             # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
             self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-            self.stmap[app.name] = tliw
+
         else:
             oneitem = QListWidgetItem()
-            tliw = TaskListItemWidget(app,self)
+            tliw = TaskListItemWidget(app, self.task_number, self)
             self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
             self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
-            self.stmap[app.name] = tliw
+        self.stmap[app.name] = tliw
+        self.connect(self, Signals.apt_process_finish, tliw.slot_work_finished)
         self.ui.btnGoto.setVisible(False)
         self.ui.notaskImg.setVisible(False)
 
     def del_task_item(self, pkgname, iscancel=False, isfinish=False):
-        if iscancel:
+        #print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        if iscancel is False and isfinish is True:
+            #print "111111111111111111111111111111111111"
             count = self.ui.taskListWidget.count()
             print "del_task_item:",count
             for i in range(count):
@@ -1149,25 +1153,26 @@ class SoftwareCenter(QMainWindow):
                     print "del_task_item: found an item",i,pkgname
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
-                    if isfinish:
-                        self.ui.taskListWidget_complete.addItem(item)
-                        self.ui.taskListWidget_complete.setItemWidget(item, taskitem)
-                    #if self.ui.taskListWidget.count() == 0 :
-                    #    self.ui.btnGoto.setVisible(True)
-                    #    self.ui.notaskImg.setVisible(True)
+
+                    self.ui.taskListWidget_complete.addItem(item)
+                    self.ui.taskListWidget_complete.setItemWidget(item, taskitem)
+                #if self.ui.taskListWidget.count() == 0 :
+                #    self.ui.btnGoto.setVisible(True)
+                #    self.ui.notaskImg.setVisible(True)
                     del delitem
                     break
-        else:
-            count = self.ui.taskListWidget_complete.count()
+
+        elif iscancel is True and isfinish is False:
+            #print "222222222222222222222222222222222"
+            count = self.ui.taskListWidget.count()
             print "del_task_item:",count
             for i in range(count):
-                item = self.ui.taskListWidget_complete.item(i)
-                taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+                item = self.ui.taskListWidget.item(i)
+                taskitem = self.ui.taskListWidget.itemWidget(item)
                 if taskitem.app.name == pkgname:
                     print "del_task_item: found an item",i,pkgname
-                    delitem = self.ui.taskListWidget_complete.takeItem(i)
-                    self.ui.taskListWidget_complete.removeItemWidget(delitem)
-                    del delitem
+                    delitem = self.ui.taskListWidget.takeItem(i)
+                    self.ui.taskListWidget.removeItemWidget(delitem)
                     break
 
     def reset_nav_bar(self):
@@ -1233,6 +1238,7 @@ class SoftwareCenter(QMainWindow):
         self.emit(Signals.install_app, self.uksc)
 
     def restart_uksc(self):
+        self.backend.clear_dbus_worklist()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
 
@@ -1320,6 +1326,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_change_task(self, category):
         if category == "正在下载":
+            self.ui.btnClearTask.hide()
             self.ui.taskListWidget.setVisible(True)
             self.ui.taskListWidget_complete.setVisible(False)
             count = self.ui.taskListWidget.count()
@@ -1330,6 +1337,7 @@ class SoftwareCenter(QMainWindow):
                 self.ui.btnGoto.setVisible(False)
                 self.ui.notaskImg.setVisible(False)
         elif category == "下载完成":
+            self.ui.btnClearTask.show()
             self.ui.taskListWidget.setVisible(False)
             self.ui.taskListWidget_complete.setVisible(True)
             self.ui.btnGoto.setVisible(False)
@@ -1816,6 +1824,17 @@ class SoftwareCenter(QMainWindow):
         self.loadingDiv.stop_loading()
 
     def slot_close(self):
+        if self.backend.check_dbus_workitem()[0] > 0:
+            cd = ConfirmDialog("正在安装或者卸载软件\n   您确定要退出吗？", self)
+            self.connect(cd, SIGNAL("confirmdialogok"), self.slot_exit_uksc)
+            cd.exec_()
+        else:
+            self.backend.clear_dbus_worklist()
+            self.dbusControler.stop()
+            sys.exit(0)
+
+    def slot_exit_uksc(self):
+        self.backend.clear_dbus_worklist()
         self.dbusControler.stop()
         sys.exit(0)
 
@@ -1939,14 +1958,29 @@ class SoftwareCenter(QMainWindow):
         LOG.info("submit one rating:%s", rating)
         self.appmgr.submit_rating(app_name, rating)
 
-    def slot_click_cancel(self, appname):
-        LOG.info("cancel an task:%s",appname)
-        self.backend.cancel_package(appname)
+    def slot_click_cancel(self, app, action):
+        LOG.info("cancel an task:%s",app.name)
+        cancelinfo = [app.name, action]
+        res = self.backend.cancel_package(cancelinfo)
+        #print res
+        if res == 'True':
+            #print app.name,"    ", action
+            self.emit(Signals.normalcard_progress_finish, app.name)
+            self.emit(Signals.apt_process_cancel, app.name, action)
+            self.del_task_item(app.name, True, False)
 
-    def slot_remove_task(self, app):
-        self.del_task_item(app.name)
-        if self.stmap.has_key(app.name):
-            del self.stmap[app.name]
+    def slot_remove_task(self, tasknumber, app):
+        count = self.ui.taskListWidget_complete.count()
+        print "del_task_item:",count
+        for i in range(count):
+            item = self.ui.taskListWidget_complete.item(i)
+            taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+            if taskitem.tasknumber == tasknumber:
+                print "del_task_item: found an item",i,app.name
+                delitem = self.ui.taskListWidget_complete.takeItem(i)
+                self.ui.taskListWidget_complete.removeItemWidget(delitem)
+                del delitem
+                break
 
     # search
     def slot_searchDTimer_timeout(self):
@@ -1998,28 +2032,38 @@ class SoftwareCenter(QMainWindow):
                 self.updateSinglePB.value_change(percent)
         else:
             if processtype=='cancel':
-                self.emit(Signals.apt_process_cancel,name,action)
                 self.emit(Signals.normalcard_progress_cancel, name)
-
-            if self.stmap.has_key(name) is False:
-                print "has no key :  ",name
-                LOG.warning("there is no task for this app:%s",name)
-            else:
-                taskItem = self.stmap[name]
-                if processtype=='cancel':
-                    self.del_task_item(name,True,False)
+                self.emit(Signals.apt_process_cancel,name,action)
+                self.del_task_item(name,True,False)
+                try:
                     del self.stmap[name]
-                    #self.emit(Signals.apt_process_cancel,name,action)
+                except:
+                    pass
+
+            # if self.stmap.has_key(name) is False:
+            #     print "has no key :  ",name
+            #     LOG.warning("there is no task for this app:%s",name)
+            # else:
+            #     taskItem = self.stmap[name]
+            #     if processtype=='cancel':
+            #         self.del_task_item(name,True,False)
+            #         del self.stmap[name]
+            #         #self.emit(Signals.apt_process_cancel,name,action)
+            else:
+                if processtype=='apt' and int(percent)>=200:
+                    # (install debfile deps finish) is not the (install debfile task) finish
+                    if(action != AppActions.INSTALLDEPS):
+                        self.emit(Signals.apt_process_finish, name, action)
+                        self.emit(Signals.normalcard_progress_finish, name)
+                        self.del_task_item(name,False,True)
                 else:
-                    if processtype=='apt' and int(percent)>=200:
-                        # (install debfile deps finish) is not the (install debfile task) finish
-                        if(action != AppActions.INSTALLDEPS):
-                            self.emit(Signals.apt_process_finish, name, action)
-                            self.emit(Signals.normalcard_progress_finish, name)
-                            self.del_task_item(name,True,True)
-                    else:
-                        taskItem.status_change(processtype, percent, msg)
-                        self.emit(Signals.normalcard_progress_change, name, percent, action)
+                    count = self.ui.taskListWidget.count()
+                    for i in range(count):
+                        item = self.ui.taskListWidget.item(i)
+                        taskitem = self.ui.taskListWidget.itemWidget(item)
+                        if taskitem.app.name == name:
+                            taskitem.status_change(processtype, percent, msg)
+                    self.emit(Signals.normalcard_progress_change, name, percent, action)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:
@@ -2062,6 +2106,7 @@ class SoftwareCenter(QMainWindow):
                     self.messageBox.alert_msg(msg)
 
         if pkgname == "ubuntu-kylin-software-center" and action == AppActions.REMOVE:
+            self.backend.clear_dbus_worklist()
             sys.exit(0)
         else:
             self.slot_update_listwidge(pkgname, action)
