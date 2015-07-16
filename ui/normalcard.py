@@ -457,7 +457,7 @@ class NormalCard(QWidget):
             self.ui.progresslabel.setVisible(False)
             self.ui.progressBar_icon.setVisible(False)
             self.ui.progressBar.setVisible(False)
-            self.star.setVisible(True)
+            #self.star.setVisible(True)
             self.ui.progressBar.reset()
             self.app.percent = 0
 
@@ -466,7 +466,7 @@ class NormalCard(QWidget):
             self.ui.progresslabel.setVisible(False)
             self.ui.progressBar_icon.setVisible(False)
             self.ui.progressBar.setVisible(False)
-            self.star.setVisible(True)
+            #self.star.setVisible(True)
             self.ui.progressBar.reset()
             self.app.percent = 0
 

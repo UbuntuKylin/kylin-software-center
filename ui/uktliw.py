@@ -45,7 +45,7 @@ class Ui_TaskLIWidget(object):
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
         self.status = QtGui.QLabel(TaskLIWidget)
-        self.status.setGeometry(QtCore.QRect(220, 23, 50, 18))
+        self.status.setGeometry(QtCore.QRect(235, 23, 50, 18))
         self.status.setObjectName(_fromUtf8("status"))
         self.btnCancel = QtGui.QPushButton(TaskLIWidget)
         self.btnCancel.setGeometry(QtCore.QRect(278, 25, 13, 13))
