@@ -40,6 +40,7 @@ class CategoryBar(QWidget):
 
         self.setGeometry(20, 52, 740, 32)
         self.categorytab = QLabel(self)
+
         self.categorytab.setGeometry(0, 27, 53, 5)
         self.categorytab.hide()
         self.categoryPanel = QWidget(self)
@@ -47,6 +48,10 @@ class CategoryBar(QWidget):
         self.btnGroup.buttonClicked.connect(self.slot_btn_clicked)
 
         self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
+
+        # self.btnvline = QLabel(self)
+        # self.btnvline.setGeometry(62, 0, 1, 28)
+
 
     def enterEvent(self, event):
         # print "enter"
@@ -73,7 +78,12 @@ class CategoryBar(QWidget):
 
         x = self.categorycount * (self.itemwidth + self.categoryspacing)
         btnCategory.move(x, 0)
+
         self.categorycount = self.categorycount + 1
+
+        btnvline = CategoryLable(self.categoryPanel)
+        #btnvline.move(x+57, 7)
+        btnvline.move(x-5, 7)
 
     def scrollToLeft(self):
         pass
@@ -128,3 +138,11 @@ class CategoryButton(QPushButton):
         self.setText(self.display_name)
 
         self.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
+class CategoryLable(QLabel):
+        #setGeometry(QtCore.QRect(160, 37, 1, 14))
+    def __init__(self,parent=None):
+        QLabel.__init__(self, parent)
+        self.setAlignment(Qt.AlignCenter)
+        self.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.resize(1, 14)

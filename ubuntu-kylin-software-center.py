@@ -1893,7 +1893,7 @@ class SoftwareCenter(QMainWindow):
         LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
         res = self.backend.update_source(quiet)
-        print 'wb111111111111:',res
+        #print 'wb111111111111:',res
         if res == "False":
             self.configWidget.set_process_visiable(False)
         elif res == "Locked":
