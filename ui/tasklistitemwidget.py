@@ -154,7 +154,7 @@ class TaskListItemWidget(QWidget):
             elif(processtype == 'apt'):
                 text = "正在执行: "
                 if percent < float(0.0):
-                    print percent
+                    #print percent
                     self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     self.ui.status.setText("失败")

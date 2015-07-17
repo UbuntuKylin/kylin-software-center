@@ -2036,9 +2036,6 @@ class SoftwareCenter(QMainWindow):
 
         app = self.appmgr.get_application_by_name(name)
         app.percent = percent
-        if percent < 0:
-            print percent
-            self.slot_cancel_for_work_filed(name, action)
 
         if action == AppActions.UPDATE:
             if int(percent) == 0:
@@ -2096,6 +2093,10 @@ class SoftwareCenter(QMainWindow):
                         if taskitem.app.name == name:
                             taskitem.status_change(processtype, percent, msg)
                     self.emit(Signals.normalcard_progress_change, name, percent, action)
+
+        if percent < 0:
+            print percent
+            self.slot_cancel_for_work_filed(name, action)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:

@@ -285,8 +285,13 @@ class RcmdCard(QWidget):
                 self.ui.btn.setText("正在卸载")
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:#C5CED9;}")
+
             self.ui.progressBar.setValue(percent)
-            self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+            if percent < float(0.0):
+                self.ui.progressBar.setValue(0)
+                self.ui.progresslabel.setText("失败")
+            else:
+                self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
     def slot_progress_finish(self,pkgname):
         if self.app.name == pkgname:
@@ -376,8 +381,9 @@ class RcmdCard(QWidget):
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
 
-    def slot_work_cancel(self, pkgname,action):
+    def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
+
             if action == AppActions.INSTALL:
                 self.app.status = PkgStates.INSTALL
                 self.star.show()
@@ -407,3 +413,6 @@ class RcmdCard(QWidget):
                 self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+
+            if self.app.percent < 0:
+                self.star.hide()

@@ -451,17 +451,17 @@ class NormalCard(QWidget):
             self.ui.progressBar_icon.setVisible(True)
             self.star.setVisible(False)
             if status == AppActions.INSTALL:
-               self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                              "QProgressBar:chunk{background-color:#BBF9A3;}")
-               self.ui.btn.setText("正在安装")
+                self.ui.btn.setText("正在安装")
             elif status == AppActions.UPGRADE:
-               self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                              "QProgressBar:chunk{background-color:#FDD99A;}")
-               self.ui.btn.setText("正在升级")
+                self.ui.btn.setText("正在升级")
             elif status == AppActions.REMOVE:
-               self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                            "QProgressBar:chunk{background-color:#C5CED9;}")
-               self.ui.btn.setText("正在卸载")
+                self.ui.btn.setText("正在卸载")
             self.ui.progressBar.setValue(percent)
             if percent < float(0.0):
                 self.ui.progressBar.setValue(0)
@@ -587,8 +587,6 @@ class NormalCard(QWidget):
 
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
-            if self.app.percent < 0:
-                self.star.hide()
             if action == AppActions.INSTALL:
                 self.app.status = PkgStates.INSTALL
                 self.star.show()
@@ -623,3 +621,6 @@ class NormalCard(QWidget):
                 self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+
+            if self.app.percent < 0:
+                self.star.hide()
