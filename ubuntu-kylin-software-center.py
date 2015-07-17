@@ -57,7 +57,7 @@ from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
 from backend.ubuntusso import get_ubuntu_sso_backend
 
-from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates)
+from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
 from models.enums import Signals, setLongTextToElideFormat
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
@@ -1005,8 +1005,7 @@ class SoftwareCenter(QMainWindow):
             self.connect(card, Signals.remove_app, self.slot_click_remove)
             self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-            self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
-            self.connect(card, Signals.cancel_for_work_filed, self.slot_cancel_for_work_filed)
+            self.connect(card, Signals.get_card_status, self.slot_get_normal_card_status)#12.02
             if app.name == "ubuntu-kylin-software-center":
                 self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
                 self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
@@ -1060,8 +1059,7 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.remove_app, self.slot_click_remove)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-                self.connect(card, Signals.get_card_status,self.slot_get_normal_card_status)#12.02
-                self.connect(card, Signals.cancel_for_work_filed, self.slot_cancel_for_work_filed)
+                self.connect(card, Signals.get_card_status, self.slot_get_normal_card_status)#12.02
                 if app.name == "ubuntu-kylin-software-center":
                     self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
                     self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
@@ -1973,6 +1971,14 @@ class SoftwareCenter(QMainWindow):
         #print res
         if res == 'True':
             #print app.name,"    ", action
+            app = self.appmgr.get_application_by_name(app.name)
+            app.percent = 0
+            if action == AppActions.INSTALL:
+                app.status = PkgStates.INSTALL
+            elif action == AppActions.REMOVE:
+                app.status = PkgStates.UNINSTALL
+            elif action == AppActions.UPGRADE:
+                app.status = PkgStates.UPDATE
             self.emit(Signals.normalcard_progress_finish, app.name)
             self.emit(Signals.apt_process_cancel, app.name, action)
             self.del_task_item(app.name, True, False)
@@ -2027,6 +2033,13 @@ class SoftwareCenter(QMainWindow):
         print "########### ", msg
         if "安装本地包失败!" == msg:
             self.messageBox.alert_msg("安装本地包失败!")
+
+        app = self.appmgr.get_application_by_name(name)
+        app.percent = percent
+        if percent < 0:
+            print percent
+            self.slot_cancel_for_work_filed(name, action)
+
         if action == AppActions.UPDATE:
             if int(percent) == 0:
                 self.configWidget.slot_update_status_change(1)
@@ -2043,6 +2056,13 @@ class SoftwareCenter(QMainWindow):
                 self.updateSinglePB.value_change(percent)
         else:
             if processtype=='cancel':
+                app.percent = 0
+                if action == AppActions.INSTALL:
+                    app.status = PkgStates.INSTALL
+                elif action == AppActions.REMOVE:
+                    app.status = PkgStates.UNINSTALL
+                elif action == AppActions.UPGRADE:
+                    app.status = PkgStates.UPDATE
                 self.emit(Signals.normalcard_progress_cancel, name)
                 self.emit(Signals.apt_process_cancel,name,action)
                 self.del_task_item(name,True,False)
@@ -2064,6 +2084,7 @@ class SoftwareCenter(QMainWindow):
                 if processtype=='apt' and int(percent)>=200:
                     # (install debfile deps finish) is not the (install debfile task) finish
                     if(action != AppActions.INSTALLDEPS):
+                        app.percent = 0
                         self.emit(Signals.apt_process_finish, name, action)
                         self.emit(Signals.normalcard_progress_finish, name)
                         self.del_task_item(name,False,True)

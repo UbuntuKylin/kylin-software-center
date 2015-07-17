@@ -241,7 +241,7 @@ class RcmdCard(QWidget):
             self.ui.btn.setEnabled(False)
             # self.ui.btn.setText("正在处理")
             self.app.status = PkgStates.INSTALLING
-            self.ui.btn.setText("正在安装")
+            self.ui.btn.setText("等待安装")
             self.slot_show_progress("install")
             self.emit(Signals.install_app, self.app)
             self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
@@ -274,12 +274,15 @@ class RcmdCard(QWidget):
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
             if status == AppActions.INSTALL:
+                self.ui.btn.setText("正在安装")
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                               "QProgressBar:chunk{background-color:#BBF9A3;}")
             elif status == AppActions.UPGRADE:
+                self.ui.btn.setText("正在升级")
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                               "QProgressBar:chunk{background-color:#FDD99A;}")
             elif status == AppActions.REMOVE:
+                self.ui.btn.setText("正在卸载")
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:#C5CED9;}")
             self.ui.progressBar.setValue(percent)
@@ -305,18 +308,27 @@ class RcmdCard(QWidget):
             self.ui.btn.setEnabled(False)
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
-                self.ui.btn.setText("正在安装")
+                if self.app.percent > 0:
+                    self.ui.btn.setText("正在安装")
+                else:
+                    self.ui.btn.setText("等待安装")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
             elif status == PkgStates.REMOVING:
                 self.app.status = PkgStates.REMOVING
-                self.ui.btn.setText("正在卸载")
+                if self.app.percent > 0:
+                    self.ui.btn.setText("正在卸载")
+                else:
+                    self.ui.btn.setText("等待卸载")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
             elif status == PkgStates.UPGRADING:
                 self.app.status = PkgStates.UPGRADING
-                self.ui.btn.setText("正在升级")
+                if self.app.percent > 0:
+                    self.ui.btn.setText("正在升级")
+                else:
+                    self.ui.btn.setText("等待升级")
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
