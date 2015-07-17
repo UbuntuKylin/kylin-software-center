@@ -102,7 +102,7 @@ class InstallBackend(QObject):
         try:
             res = func(kwargs)
         except dbus.DBusException as e:
-
+            print "DBusException from uksc dbus",e
             return None
 
         return res

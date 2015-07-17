@@ -71,3 +71,34 @@ class ConfirmDialog(QDialog):
     def slot_cancel(self):
         self.emit(SIGNAL("confirmdialogno"), self.where)
         self.close()
+
+class TipsDialog(QDialog):
+
+    def __init__(self, text, parent=None):
+        QDialog.__init__(self,parent)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        # self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
+        self.setGeometry(0, 0, 568, 380)
+
+        self.centerwidget = QWidget(self)
+        self.centerwidget.setGeometry(151, 117, 265, 145)
+
+        self.centerwidget.setAutoFillBackground(True)
+        palette = QPalette()
+        img = QPixmap(UBUNTUKYLIN_RES_PATH + "confirmdialog4.png")
+        palette.setBrush(QPalette.Window, QBrush(img))
+        self.centerwidget.setPalette(palette)
+
+        self.text = QLabel(self.centerwidget)
+        self.text.setText(text)
+        self.text.setGeometry(30, 45, 220, 50)
+        self.text.setAlignment(Qt.AlignCenter)
+        self.text.setStyleSheet("QLabel{font-size:14px;color:#666666;}")
+        self.btnClose= QPushButton(self.centerwidget)
+        self.btnClose.setGeometry(240, 5, 15, 15)
+        self.btnClose.setStyleSheet("QPushButton{background-image:url('res/delete-hover.png');color:blue;border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
+        self.btnClose.clicked.connect(self.slot_close)
+
+    def slot_close(self):
+        self.close()

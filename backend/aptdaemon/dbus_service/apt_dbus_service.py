@@ -86,7 +86,7 @@ class WorkThread(threading.Thread):
                 time.sleep(0.5)
                 continue
 
-            if is_dpkg_active("/var/lib/dpkg/lock") is True:
+            if is_file_locked("/var/lib/dpkg/lock") is True:
                 time.sleep(0.5)
                 continue
 
@@ -109,19 +109,25 @@ class WorkThread(threading.Thread):
                         "action": str(item.action),
                         }
                 self.dbus_service.software_apt_signal("apt_error", kwarg)
+            except:
+                kwarg = {"apt_appname": item.pkgname,
+                        "apt_percent": str(-6.6),
+                        "action": str(item.action),
+                        }
+                self.dbus_service.software_apt_signal("apt_error", kwarg)
 
 #            print "finish one acion....."
             #time.sleep(0.5)
 
 
-def is_dpkg_active(lockfile):
+def is_file_locked(lockfile):
     """
-    Check whether ``apt-get`` or ``dpkg`` is currently active.
+    Check whether ``apt-get`` or ``dpkg`` is currently active by check the lock file.
 
-    This works by checking whether the lock file ``/var/lib/dpkg/lock`` is
-    locked by an ``apt-get`` or ``dpkg`` process, which in turn is done by
-    momentarily trying to acquire the lock. This means that the current process
-    needs to have sufficient privileges.
+    This works by checking whether the lock file like ``/var/lib/dpkg/lock``
+    ``/var/lib/apt/lists/lock`` is locked by an ``apt-get`` or ``dpkg`` process,
+    which in turn is done by momentarily trying to acquire the lock.
+     This means that the current process needs to have sufficient privileges.
 
     :returns: ``True`` when the lock is already taken (``apt-get`` or ``dpkg``
               is running), ``False`` otherwise.
@@ -396,7 +402,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
-            return False
+            return "False"
 
         self.del_worker_item_by_name(cancelinfo)
         if self.check_cancel_worker_item(cancelinfo) is True:
@@ -406,13 +412,16 @@ class SoftwarecenterDbusService(dbus.service.Object):
             return "False"
 
     # apt-get update sa:software_fetch_signal()
-    @dbus.service.method(INTERFACE, in_signature='b', out_signature='b', sender_keyword='sender')
+    @dbus.service.method(INTERFACE, in_signature='b', out_signature='s', sender_keyword='sender')
     def update(self, quiet, sender=None):
         print "####update: "
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要更新软件源")
         if not granted:
-            return True
+            return "False"
+
+        if is_file_locked("/var/lib/apt/lists/lock") is True:
+            return "Locked"
 
         kwargs = {"quiet":str(quiet),
                   }
@@ -422,8 +431,8 @@ class SoftwarecenterDbusService(dbus.service.Object):
         self.add_worker_item(item)
 
 #        self.daemonApt.update()
-
-        print "####update return"
+        #print "####update return"
+        return "True"
     #????????????????????????????
     # apt-get update sa:software_fetch_signal()
     @dbus.service.method(INTERFACE, in_signature='b', out_signature='b', sender_keyword='sender')
@@ -578,7 +587,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         if len(self.worklist) != 0:
             workitemcount = len(self.worklist)
         self.mutex.release()
-        dpkg_is_running = is_dpkg_active("/var/lib/dpkg/lock")
+        dpkg_is_running = is_file_locked("/var/lib/dpkg/lock")
         res = []
         res.append(workitemcount)
         res.append(dpkg_is_running)

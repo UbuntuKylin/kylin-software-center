@@ -46,7 +46,7 @@ from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
-from ui.confirmdialog import ConfirmDialog
+from ui.confirmdialog import ConfirmDialog, TipsDialog
 from ui.configwidget import ConfigWidget
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
@@ -1829,9 +1829,7 @@ class SoftwareCenter(QMainWindow):
             self.connect(cd, SIGNAL("confirmdialogok"), self.slot_exit_uksc)
             cd.exec_()
         else:
-            self.backend.clear_dbus_worklist()
-            self.dbusControler.stop()
-            sys.exit(0)
+            self.slot_exit_uksc()
 
     def slot_exit_uksc(self):
         self.backend.clear_dbus_worklist()
@@ -1894,10 +1892,18 @@ class SoftwareCenter(QMainWindow):
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
-        wb = self.backend.update_source(quiet)
-        #print 'wb111111111111:',wb
-        if wb:
+        res = self.backend.update_source(quiet)
+        print 'wb111111111111:',res
+        if res == "False":
             self.configWidget.set_process_visiable(False)
+        elif res == "Locked":
+            self.configWidget.set_process_visiable(False)
+            cd = TipsDialog("无法获得锁 /var/lib/apt/lists/lock\n 请稍后再尝试更新源", self.configWidget)
+            cd.exec_()
+        elif res == None:
+            self.configWidget.set_process_visiable(False)
+            cd = TipsDialog("更新软件源出现异常\n请稍后再尝试更新源", self.configWidget)
+            cd.exec_()
 
     def slot_click_update_source(self):
         self.emit(Signals.update_source)
