@@ -184,6 +184,7 @@ class Signals:
     dbus_apt_process = SIGNAL("dbus-apt-process")
     apt_process_finish = SIGNAL("apt-process-finish")
     apt_process_cancel = SIGNAL("apt-process-cancel")
+    cancel_for_work_filed = SIGNAL("cancel_for_work_filed")
     apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
     get_user_applist_over = SIGNAL("get-user-applist-over")

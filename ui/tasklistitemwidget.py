@@ -192,11 +192,10 @@ class TaskListItemWidget(QWidget):
         if(self.finish == True):
             self.emit(Signals.task_remove, self.tasknumber, self.app)
         else:
-            #print self.app.status,"+++++++++++++++++++"
-            if self.app.status == PkgStates.INSTALLING:
+            if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
                 appaction = "install"
-            elif self.app.status == PkgStates.UPGRADING:
+            elif self.app.status in (PkgStates.UPGRADING, PkgStates.UPDATE):
                 appaction = "upgrade"
-            elif self.app.status == PkgStates.REMOVING:
+            elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
                 appaction = "remove"
             self.emit(Signals.task_cancel, self.app, appaction)

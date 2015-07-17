@@ -1006,6 +1006,7 @@ class SoftwareCenter(QMainWindow):
             self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
             self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
             self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+            self.connect(card, Signals.cancel_for_work_filed, self.slot_cancel_for_work_filed)
             if app.name == "ubuntu-kylin-software-center":
                 self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
                 self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
@@ -1059,7 +1060,8 @@ class SoftwareCenter(QMainWindow):
                 self.connect(card, Signals.remove_app, self.slot_click_remove)
                 self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
                 self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-                self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                self.connect(card, Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                self.connect(card, Signals.cancel_for_work_filed, self.slot_cancel_for_work_filed)
                 if app.name == "ubuntu-kylin-software-center":
                     self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
                     self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
@@ -1893,7 +1895,7 @@ class SoftwareCenter(QMainWindow):
         LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
         res = self.backend.update_source(quiet)
-        print 'wb111111111111:',res
+        #print 'wb111111111111:',res
         if res == "False":
             self.configWidget.set_process_visiable(False)
         elif res == "Locked":
@@ -1974,6 +1976,9 @@ class SoftwareCenter(QMainWindow):
             self.emit(Signals.normalcard_progress_finish, app.name)
             self.emit(Signals.apt_process_cancel, app.name, action)
             self.del_task_item(app.name, True, False)
+
+    def slot_cancel_for_work_filed(self, appname, action):
+        self.emit(Signals.apt_process_cancel, appname, action)
 
     def slot_remove_task(self, tasknumber, app):
         count = self.ui.taskListWidget_complete.count()

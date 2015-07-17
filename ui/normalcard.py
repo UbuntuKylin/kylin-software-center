@@ -148,13 +148,16 @@ class NormalCard(QWidget):
 
         # btn & border
         if self.app.percent != 0 or self.app.status in (PkgStates.INSTALLING, PkgStates.REMOVING, PkgStates.UPGRADING):
+            self.star.hide()
             if self.app.percent < float(0.0):
-
                 self.ui.progressBar.setVisible(True)
                 self.ui.progresslabel.setVisible(True)
                 self.ui.progressBar_icon.setVisible(True)
-                self.ui.progressBar.setValue(self.app.percent)
+                self.ui.progressBar.setValue(0)
                 self.ui.progresslabel.setText("失败")
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                                 "QProgressBar:chunk{background-color:#BBF9A3;}")
+                self.slot_change_btn_status(self.app.name, self.app.status)
             else:
                 self.ui.progressBar.setVisible(True)
                 self.ui.progresslabel.setVisible(True)
@@ -162,43 +165,43 @@ class NormalCard(QWidget):
                 self.ui.progressBar.setValue(self.app.percent)
                 self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
 
-            if self.app.status == PkgStates.INSTALLING:
-                self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("正在安装")
-                self.star.show()
+                if self.app.status == PkgStates.INSTALLING:
+                    self.ui.btn.setEnabled(False)
+                    self.ui.btn.setText("正在安装")
+                    self.star.show()
 
-                self.ui.isInstalled.setVisible(False)
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
-                                             "QProgressBar:chunk{background-color:#BBF9A3;}")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
-            elif self.app.status == PkgStates.REMOVING:
-                self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("正在卸载")
-                if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
-                    self.star.show()
                     self.ui.isInstalled.setVisible(False)
-                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                                 "QProgressBar:chunk{background-color:#BBF9A3;}")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+                elif self.app.status == PkgStates.REMOVING:
+                    self.ui.btn.setEnabled(False)
+                    self.ui.btn.setText("正在卸载")
+                    if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                        self.star.show()
+                        self.ui.isInstalled.setVisible(False)
+                    else:
+                        self.star.hide()
+                        self.ui.isInstalled.setVisible(True)
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                                      "QProgressBar:chunk{background-color:#C5CED9;}")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+                elif self.app.status == PkgStates.UPGRADING:
+                    self.ui.btn.setEnabled(False)
+                    self.ui.btn.setText("正在升级")
                     self.star.hide()
-                    self.ui.isInstalled.setVisible(True)
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
-                                                  "QProgressBar:chunk{background-color:#C5CED9;}")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
-            elif self.app.status == PkgStates.UPGRADING:
-                self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("正在升级")
-                self.star.hide()
-                if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
-                    self.star.show()
-                    self.ui.isInstalled.setVisible(False)
-                else:
-                    self.star.hide()
-                    self.ui.isInstalled.setVisible(True)
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
-                                             "QProgressBar:chunk{background-color:#FDD99A;}")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+                    if (Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.UNPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE)):
+                        self.star.show()
+                        self.ui.isInstalled.setVisible(False)
+                    else:
+                        self.star.hide()
+                        self.ui.isInstalled.setVisible(True)
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+                                                 "QProgressBar:chunk{background-color:#FDD99A;}")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
         else:
             if(Globals.NOWPAGE == PageStates.ALLPAGE or Globals.NOWPAGE == PageStates.HOMEPAGE ):
                 if(self.app.is_installed):
@@ -449,6 +452,7 @@ class NormalCard(QWidget):
             self.ui.progressBar.setValue(percent)
             if percent < float(0.0):
                 self.ui.progresslabel.setText("失败")
+                self.slot_change_btn_status(pkgname, status)
             else:
                 self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
@@ -473,23 +477,35 @@ class NormalCard(QWidget):
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
         if self.app.name == pkgname:
-            self.ui.btn.setEnabled(False)
-            if status == PkgStates.INSTALLING:
-                self.app.status = PkgStates.INSTALLING
-                self.ui.btn.setText("正在安装")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
-            elif status == PkgStates.REMOVING:
-                self.app.status = PkgStates.REMOVING
-                self.ui.btn.setText("正在卸载")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
+            if self.app.percent < 0.0:
+                print self.app.percent
+                if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
+                    appaction = "install"
+                elif self.app.status in (PkgStates.UPGRADING, PkgStates.UPDATE):
+                    appaction = "upgrade"
+                elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
+                    appaction = "remove"
+                self.emit(Signals.cancel_for_work_filed, pkgname, appaction)
+                self.slot_work_cancel(pkgname, appaction)
+                self.star.hide()
+            else:
+                self.ui.btn.setEnabled(False)
+                if status == PkgStates.INSTALLING:
+                    self.app.status = PkgStates.INSTALLING
+                    self.ui.btn.setText("正在安装")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
+                elif status == PkgStates.REMOVING:
+                    self.app.status = PkgStates.REMOVING
+                    self.ui.btn.setText("正在卸载")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
-            elif status == PkgStates.UPGRADING:
-                self.app.status = PkgStates.UPGRADING
-                self.ui.btn.setText("正在升级")
-                self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
-                self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
+                elif status == PkgStates.UPGRADING:
+                    self.app.status = PkgStates.UPGRADING
+                    self.ui.btn.setText("正在升级")
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
 
     def slot_emit_detail(self):

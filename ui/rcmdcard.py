@@ -248,6 +248,7 @@ class RcmdCard(QWidget):
 
     # wb
     def slot_show_progress(self,status):
+        self.star.hide()
         self.ui.progressBar.setVisible(True)
         self.ui.progresslabel.setVisible(True)
         self.ui.progressBar_icon.setVisible(True)
@@ -268,6 +269,7 @@ class RcmdCard(QWidget):
 
     def slot_progress_change(self, pkgname, percent, status):
         if self.app.name == pkgname:
+            self.star.hide()
             self.ui.progressBar.setVisible(True)
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
