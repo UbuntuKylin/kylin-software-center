@@ -91,7 +91,6 @@ class ADWidget(QWidget):
         self.show()
 
     def resize_(self, width, height):
-        print "wb:1111111",width,height
         self.resize(width, height)
         self.adsshadow.resize(width, self.adsshadow.height())
         self.adContentWidget.resize(self.adl * width, height)
@@ -111,15 +110,11 @@ class ADWidget(QWidget):
             #ads_item.setStyleSheet("QPushButton{background-color:transparent}")#;border-image:url('res/adbtn-2.png')
             if width >= 1455 :
                 ads_item.resize(1455, height)
-                print "wb:2222222222",ads_item.width(),ads_item.height(),num
                 ads_item.setStyleSheet("QPushButton{background-image:url('data/ads/ad%s-big.png');border:0px;}" % str(num))
             else :
                 ads_item.resize(width, height)
-                print "wb:3333333333",ads_item.width(),ads_item.height(),num
                 ads_item.setStyleSheet("QPushButton{background-image:url('data/ads/ad%s.png');border:0px;}" % str(num))
             num += 1
-            if num > 5:
-                num = 0
 
         # move btns to left
         #if(width > self.adwidth):
