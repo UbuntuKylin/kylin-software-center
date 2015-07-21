@@ -34,10 +34,12 @@ class Advertisement:
     name = ''   # ad name
     type = ''   # package: pkg    websitelink: url
     pic = ''    # downloaded pic url
+    pic_bground = ''
     urlorpkgid = '' # url or a package name
 
-    def __init__(self, name, type, pic, urlorpkgid):
+    def __init__(self, name, type, pic, pic_bground, urlorpkgid):
         self.name = name
         self.type = type
         self.pic = pic
+        self.pic_bground = pic_bground
         self.urlorpkgid = urlorpkgid

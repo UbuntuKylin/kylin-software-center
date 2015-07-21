@@ -36,6 +36,7 @@ class ADWidget(QWidget):
     adheight = 220
     # ad model list
     ads = []
+    ads_background = []
     # adbtn list
     adbs = []
     # now index
@@ -90,14 +91,42 @@ class ADWidget(QWidget):
         self.show()
 
     def resize_(self, width, height):
+        print "wb:1111111",width,height
         self.resize(width, height)
         self.adsshadow.resize(width, self.adsshadow.height())
+        self.adContentWidget.resize(self.adl * width, height)
+        self.adwidth = width
+        adb = 0
+        adx = 0#(width - 860)/2
+        num = 0
+        for ads_item_background in self.ads_background:
+            ads_item_background.resize(width, height)
+            ads_item_background.move(adb, 0)
+            adb += width
+
+        for ads_item in self.ads:
+        #    ads_item.resize(width, height)
+            ads_item.move(adx, 0)
+            adx += width
+            #ads_item.setStyleSheet("QPushButton{background-color:transparent}")#;border-image:url('res/adbtn-2.png')
+            if width >= 1455 :
+                ads_item.resize(1455, height)
+                print "wb:2222222222",ads_item.width(),ads_item.height(),num
+                ads_item.setStyleSheet("QPushButton{background-image:url('data/ads/ad%s-big.png');border:0px;}" % str(num))
+            else :
+                ads_item.resize(width, height)
+                print "wb:3333333333",ads_item.width(),ads_item.height(),num
+                ads_item.setStyleSheet("QPushButton{background-image:url('data/ads/ad%s.png');border:0px;}" % str(num))
+            num += 1
+            if num > 5:
+                num = 0
 
         # move btns to left
-        if(width > self.adwidth):
-            self.adBtnWidget.move(0, self.adBtnWidget.y())
-        else:
-            self.adBtnWidget.move(760, self.adBtnWidget.y())
+        #if(width > self.adwidth):
+        #    self.adBtnWidget.move(0, self.adBtnWidget.y())
+        #else:
+        #    self.adBtnWidget.move(760, self.adBtnWidget.y())
+        self.adBtnWidget.move(self.adwidth-self.adBtnWidget.width()-10, self.adBtnWidget.y())
 
     def add_advertisements(self, addata):
         self.adl = len(addata)
@@ -116,6 +145,14 @@ class ADWidget(QWidget):
         adx = 0
         adbx = 10
         for one in addata:
+
+            ad_background = QPushButton(self.adContentWidget)
+            ad_background.resize(self.adwidth, self.adheight)
+            ad_background.move(adx, 0)
+            ad_background.setFocusPolicy(Qt.NoFocus)
+            ad_background.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic_bground))
+            self.ads_background.append(ad_background)
+
             ad = ADButton(one, self.adContentWidget)
             ad.resize(self.adwidth, self.adheight)
             ad.move(adx, 0)
@@ -148,7 +185,7 @@ class ADWidget(QWidget):
         self.adContentWidget.move(self.adx, 0)
 
         self.admtimer.stop()
-        self.adtimer.start(2500)
+        self.adtimer.start(3000)
 
     def slot_change_ad(self, i):
         self.speed = self.move_speed()
@@ -190,7 +227,7 @@ class ADWidget(QWidget):
                 self.lock_adbs(True)
 
                 self.admtimer.stop()
-                self.adtimer.start(2500)
+                self.adtimer.start(3000)
         else:
             try:
                 self.adx -= self.speed.next()
@@ -207,9 +244,9 @@ class ADWidget(QWidget):
         pass
     def move_speed(self):
         #for x in xrange(0, 200, 1):
-        x = 0
+        x = 0.5
         while(x < 200):
-            x = x + 0.02
+            x = x + 0.15
             yield x
 
 class ADButton(QPushButton):
@@ -223,6 +260,11 @@ class ADButton(QPushButton):
 
     def adclicked(self):
         self.emit(SIGNAL("adsignal"),self.obj)
+
+class ADButton_Background(QPushButton):
+
+    def __init__(self, parent):
+        QPushButton.__init__(self, parent)
 
 
 def main():
