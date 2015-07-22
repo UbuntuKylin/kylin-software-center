@@ -129,7 +129,7 @@ class CategoryButton(QPushButton):
     def __init__(self, categoryname, displayname, parent=None):
         QPushButton.__init__(self, parent)
 
-        self.resize(55, 27)
+        self.resize(58, 27)
         self.setCheckable(True)
         self.setFocusPolicy(Qt.NoFocus)
 
