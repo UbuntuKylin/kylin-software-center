@@ -266,6 +266,7 @@ class Ui_MainWindow(object):
         self.btnClearTask.setGeometry(QtCore.QRect(146, 17, 28, 28))
         self.btnClearTask.setText(_fromUtf8(""))
         self.btnClearTask.setObjectName(_fromUtf8("btnClearTask"))
+        self.btnClearTask.hide()
         self.upWidget = QtGui.QWidget(self.rightWidget)
         self.upWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.upWidget.setObjectName(_fromUtf8("upWidget"))
