@@ -1,8 +1,7 @@
 #!/bin/sh
 
-set -e
-
-#DEBHELPER#
-
 echo "kill ubuntu-kylin-software-center-daemon"
-kill -s 9 `ps -aux | grep ubuntu-kylin-software-center-daemon | grep -v grep | awk '{print $2}'`
+
+if [ -f "/bin/kill" ]; then
+    /bin/kill -s 9 `ps -aux | grep ubuntu-kylin-software-center-daemon | grep -v grep | awk '{print $2}'`
+fi
