@@ -2035,7 +2035,8 @@ class SoftwareCenter(QMainWindow):
             self.messageBox.alert_msg("安装本地包失败!")
 
         app = self.appmgr.get_application_by_name(name)
-        app.percent = percent
+        if app is not None:
+            app.percent = percent
 
         if action == AppActions.UPDATE:
             if int(percent) == 0:
