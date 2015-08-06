@@ -3,7 +3,7 @@
 if [ "$1" = "configure" ] ; then
     PKILL=$(which pkill)
     if [ -x $PKILL ] ; then
-        $PKILL -x -9 ubuntu-kylin-software-center-daemon
+        $PKILL -f -9 ubuntu-kylin-software-center-daemon
     fi
 fi
 
