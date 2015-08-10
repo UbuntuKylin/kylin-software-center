@@ -2,7 +2,9 @@
 
 if [ "$1" = "configure" ] ; then
     PKILL=$(which pkill)
-    if [ -x $PKILL ] ; then
+    PGREP=$(which pgrep)
+    FLAG=`$PGREP -f ubuntu-kylin-software-center-daemon`
+    if [ $FLAG > 1 ] ; then
         $PKILL -f -9 ubuntu-kylin-software-center-daemon
     fi
 fi
