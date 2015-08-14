@@ -851,8 +851,6 @@ class DetailScrollWidget(QScrollArea):
         self.ui.gradeText2.setText(str(self.app.ratings_total) + "人参加评分")
 
     def slot_work_finished(self, pkgname, action):
-        self.btns.stop_work()
-
         #add this to prevent slot received from other signal before show_detail is not called
         if self.app is None:
             return
@@ -902,10 +900,9 @@ class DetailScrollWidget(QScrollArea):
                     self.app.status = PkgStates.RUN
                     self.btns.reset_btns(self.app, PkgStates.RUN)
                 self.ui.status.show()
-
-    def slot_work_cancel(self, pkgname, action):
         self.btns.stop_work()
 
+    def slot_work_cancel(self, pkgname, action):
         if self.app is None:
             return
 
@@ -926,6 +923,7 @@ class DetailScrollWidget(QScrollArea):
                 self.app.status = PkgStates.UPDATE
                 self.btns.reset_btns(self.app, PkgStates.UPDATE)#zx 2015.02.09
                 self.ui.status.show()
+        self.btns.stop_work()
 
     def scrollToTop(self):#zx 2015.01.23 for bug1402930
         vsb = self.verticalScrollBar()

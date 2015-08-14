@@ -1117,11 +1117,11 @@ class SoftwareCenter(QMainWindow):
         self.emit(Signals.count_application_update)
 
 
-    def add_task_item(self, app, isdeb=False):
+    def add_task_item(self, app, action, isdeb=False):
         self.task_number += 1
         if(isdeb == True):
             oneitem = QListWidgetItem()
-            tliw = TaskListItemWidget(app, self.task_number, self, isdeb=True)
+            tliw = TaskListItemWidget(app, action, self.task_number, self, isdeb=True)
             # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
             self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
@@ -1129,7 +1129,7 @@ class SoftwareCenter(QMainWindow):
 
         else:
             oneitem = QListWidgetItem()
-            tliw = TaskListItemWidget(app, self.task_number, self)
+            tliw = TaskListItemWidget(app, action, self.task_number, self)
             self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
             self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
@@ -1140,40 +1140,48 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnGoto.setVisible(False)
         self.ui.notaskImg.setVisible(False)
 
-    def del_task_item(self, pkgname, iscancel=False, isfinish=False):
-        #print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    def del_task_item(self, pkgname, action, iscancel=False, isfinish=False):
+        i = 0
         if iscancel is False and isfinish is True:
-            #print "111111111111111111111111111111111111"
             count = self.ui.taskListWidget.count()
             print "del_task_item:",count
-            for i in range(count):
+            #for i in range(count):
+            while(i < count):
+                print "i: ",i,"   count: ",count
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
-                if taskitem.app.name == pkgname:
+
+                if taskitem.app.name == pkgname and taskitem.action == action:
                     print "del_task_item: found an item",i,pkgname
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
 
                     self.ui.taskListWidget_complete.addItem(item)
                     self.ui.taskListWidget_complete.setItemWidget(item, taskitem)
+                    i -= 1
+                    count -= 1
+                i += 1
                 #if self.ui.taskListWidget.count() == 0 :
                 #    self.ui.btnGoto.setVisible(True)
                 #    self.ui.notaskImg.setVisible(True)
-                    del delitem
-                    break
+                #    del delitem
 
         elif iscancel is True and isfinish is False:
-            #print "222222222222222222222222222222222"
             count = self.ui.taskListWidget.count()
             print "del_task_item:",count
-            for i in range(count):
+            # for i in range(count):
+            while(i < count):
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
-                if taskitem.app.name == pkgname:
+
+                if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
                     print "del_task_item: found an item",i,pkgname
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
-                    break
+                    i -= 1
+                    count -= 1
+                i += 1
+                    #break
 
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
@@ -1917,25 +1925,25 @@ class SoftwareCenter(QMainWindow):
                 # install deb
                 res = self.backend.install_debfile(debfile.path)
                 if res:
-                    self.add_task_item(debfile, isdeb=True)
+                    self.add_task_item(debfile, "install_debfile", isdeb=True)
         else:
             res = self.backend.install_debfile(debfile.path)
             if res:
-                self.add_task_item(debfile, isdeb=True)
+                self.add_task_item(debfile, "install_debfile", isdeb=True)
 
     def slot_click_install(self, app):
         LOG.info("add an install task:%s",app.name)
         self.appmgr.submit_pingback_app(app.name)
         res = self.backend.install_package(app.name)
         if res:
-            self.add_task_item(app)
+            self.add_task_item(app, AppActions.INSTALL)
 
     def slot_click_install_rcm(self, app):
         LOG.info("add an install task:%s",app.name)
         self.appmgr.submit_pingback_app(app.name, isrcm=True)
         res = self.backend.install_package(app.name)
         if res:
-            self.add_task_item(app)
+            self.add_task_item(app, AppActions.INSTALL)
 
 
     def slot_click_upgrade(self, app):
@@ -1943,14 +1951,14 @@ class SoftwareCenter(QMainWindow):
 
         res = self.backend.upgrade_package(app.name)
         if res:
-            self.add_task_item(app)
+            self.add_task_item(app, AppActions.UPGRADE)
 
     def slot_click_remove(self, app):
         LOG.info("add a remove task:%s",app.name)
 
         res = self.backend.remove_package(app.name)
         if res:
-            self.add_task_item(app)
+            self.add_task_item(app, AppActions.REMOVE)
 
     def slot_submit_review(self, app_name, content):
         LOG.info("submit one review:%s", content)
@@ -1981,7 +1989,7 @@ class SoftwareCenter(QMainWindow):
                 app.status = PkgStates.UPDATE
             self.emit(Signals.normalcard_progress_finish, app.name)
             self.emit(Signals.apt_process_cancel, app.name, action)
-            self.del_task_item(app.name, True, False)
+            self.del_task_item(app.name, action, True, False)
 
     def slot_cancel_for_work_filed(self, appname, action):
         self.emit(Signals.apt_process_cancel, appname, action)
@@ -2063,7 +2071,7 @@ class SoftwareCenter(QMainWindow):
                     app.status = PkgStates.UPDATE
                 self.emit(Signals.normalcard_progress_cancel, name)
                 self.emit(Signals.apt_process_cancel,name,action)
-                self.del_task_item(name,True,False)
+                self.del_task_item(name, action, True, False)
                 try:
                     del self.stmap[name]
                 except:
@@ -2085,13 +2093,13 @@ class SoftwareCenter(QMainWindow):
                         app.percent = 0
                         self.emit(Signals.apt_process_finish, name, action)
                         self.emit(Signals.normalcard_progress_finish, name)
-                        self.del_task_item(name,False,True)
+                        self.del_task_item(name,action,False,True)
                 else:
                     count = self.ui.taskListWidget.count()
                     for i in range(count):
                         item = self.ui.taskListWidget.item(i)
                         taskitem = self.ui.taskListWidget.itemWidget(item)
-                        if taskitem.app.name == name:
+                        if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                             taskitem.status_change(processtype, percent, msg)
                     self.emit(Signals.normalcard_progress_change, name, percent, action)
 

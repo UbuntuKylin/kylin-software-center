@@ -38,13 +38,15 @@ class TaskListItemWidget(QWidget):
     app = ''
     finish = False
 
-    def __init__(self, app, tasknumber, parent=None, isdeb=False):
+    def __init__(self, app, action, tasknumber, parent=None, isdeb=False):
         QWidget.__init__(self,parent)
         self.isdeb = isdeb
         self.tasknumber = tasknumber
         self.ui_init()
         self.app = app
         self.parent = parent
+        self.action = action
+        self.finish = False
 
         self.ui.size.setAlignment(Qt.AlignCenter)
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
@@ -159,6 +161,7 @@ class TaskListItemWidget(QWidget):
                     self.ui.progresslabel.hide()
                     self.ui.status.setText("失败")
                     self.ui.status.show()
+                    self.finish = True
                 elif percent >= 100:
                     text = "安装完成"
                     self.ui.progressBar.hide()
@@ -178,13 +181,13 @@ class TaskListItemWidget(QWidget):
 
 
     def slot_work_finished(self, pkgname, action):
-        if self.app.name == pkgname and self.finish == False:
+        if self.app.name == pkgname and action == self.action:
             self.ui.progressBar.setValue(100)
             self.ui.progresslabel.setText("")
             self.ui.progressBar.hide()
             self.ui.progresslabel.hide()
             self.ui.status.show()
-            self.ui.status.setText("  完成")
+            self.ui.status.setText("完成")
             self.finish = True
 
     def slot_click_cancel(self):
@@ -193,10 +196,10 @@ class TaskListItemWidget(QWidget):
         if(self.finish == True):
             self.emit(Signals.task_remove, self.tasknumber, self.app)
         else:
-            if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
-                appaction = "install"
-            elif self.app.status in (PkgStates.UPGRADING, PkgStates.UPDATE):
-                appaction = "upgrade"
-            elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
-                appaction = "remove"
-            self.emit(Signals.task_cancel, self.app, appaction)
+            # if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
+            #     appaction = "install"
+            # elif self.app.status in (PkgStates.UPGRADING, PkgStates.UPDATE):
+            #     appaction = "upgrade"
+            # elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
+            #     appaction = "remove"
+            self.emit(Signals.task_cancel, self.app, self.action)
