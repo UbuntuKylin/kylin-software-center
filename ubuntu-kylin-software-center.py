@@ -1979,7 +1979,6 @@ class SoftwareCenter(QMainWindow):
         #print res
         if res == 'True':
             #print app.name,"    ", action
-            app = self.appmgr.get_application_by_name(app.name)
             app.percent = 0
             if action == AppActions.INSTALL:
                 app.status = PkgStates.INSTALL
@@ -2061,14 +2060,15 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.updateSinglePB.value_change(percent)
         else:
-            if processtype=='cancel':
-                app.percent = 0
-                if action == AppActions.INSTALL:
-                    app.status = PkgStates.INSTALL
-                elif action == AppActions.REMOVE:
-                    app.status = PkgStates.UNINSTALL
-                elif action == AppActions.UPGRADE:
-                    app.status = PkgStates.UPDATE
+            if processtype == 'cancel':
+                if app is not None:
+                    app.percent = 0
+                    if action == AppActions.INSTALL:
+                        app.status = PkgStates.INSTALL
+                    elif action == AppActions.REMOVE:
+                        app.status = PkgStates.UNINSTALL
+                    elif action == AppActions.UPGRADE:
+                        app.status = PkgStates.UPDATE
                 self.emit(Signals.normalcard_progress_cancel, name)
                 self.emit(Signals.apt_process_cancel,name,action)
                 self.del_task_item(name, action, True, False)
@@ -2090,7 +2090,8 @@ class SoftwareCenter(QMainWindow):
                 if processtype=='apt' and int(percent)>=200:
                     # (install debfile deps finish) is not the (install debfile task) finish
                     if(action != AppActions.INSTALLDEPS):
-                        app.percent = 0
+                        if app is not None:
+                            app.percent = 0
                         self.emit(Signals.apt_process_finish, name, action)
                         self.emit(Signals.normalcard_progress_finish, name)
                         self.del_task_item(name,action,False,True)

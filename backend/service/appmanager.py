@@ -425,7 +425,8 @@ class AppManager(QObject):
         item = WorkerItem("get_reviews",kwargs)
 
         app = self.get_application_by_name(pkgname)
-        reviews = app.get_reviews(page)
+        if app is not None:
+            reviews = app.get_reviews(page)
 
         # force == True means need get review from server immediately
         if reviews is not None and force == False:
@@ -473,14 +474,20 @@ class AppManager(QObject):
             page = item.kwargs['page']
 
             app = self.get_application_by_name(item.kwargs['packagename'])
-            app.add_reviews(page,reviews)
+            if app is not None:
+                app.add_reviews(page,reviews)
+            else:
+                print item.kwargs['packagename'], " not exist"
 
             self.emit(Signals.app_reviews_ready,reviews)
         elif item.funcname == "get_screenshots":
             LOG.debug("screenshots ready:%s",len(reslist))
             screenshots = reslist
             app = self.get_application_by_name(item.kwargs['packagename'])
-            app.screenshots = screenshots
+            if app is not None:
+                app.screenshots = screenshots
+            else:
+                print item.kwargs['packagename'], " not exist"
 
             self.emit(Signals.app_screenshots_ready,screenshots)
         elif item.funcname == "get_rating_review_stats":
