@@ -197,6 +197,12 @@ class InstallBackend(QObject):
     def check_dbus_workitem(self):
         return self.call_dbus_iface("check_work_item")
 
+    def check_uksc_is_working(self):
+        return self.call_dbus_iface("check_uksc_is_working")
+
+    def set_uksc_not_working(self):
+        return self.call_dbus_iface("set_uksc_not_working")
+
     def get_sources(self,except_ubuntu):
         list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
         resList = []

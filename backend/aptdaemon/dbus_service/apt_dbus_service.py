@@ -74,6 +74,7 @@ class WorkThread(threading.Thread):
         threading.Thread.__init__(self)
         self.dbus_service = dbus_service
         self.thread_is_working = 0
+        self.uksc_is_working = 0
 
     def run(self):
 #        print "The backend start the work thread..."
@@ -93,6 +94,7 @@ class WorkThread(threading.Thread):
             self.dbus_service.mutex.acquire()
             item = self.dbus_service.worklist.pop(0) # pop(0) is get first item and remove it from list
             self.dbus_service.mutex.release()
+            self.uksc_is_working = 1
 
             try:
                 func = getattr(self.dbus_service.daemonApt,item.action)
@@ -104,12 +106,14 @@ class WorkThread(threading.Thread):
                     print "Action exec failed..."
             except WorkitemError as e:
                 # print(e.errornum)
+                self.uksc_is_working = 0
                 kwarg = {"apt_appname": item.pkgname,
                         "apt_percent": str(-e.errornum),
                         "action": str(item.action),
                         }
                 self.dbus_service.software_apt_signal("apt_error", kwarg)
             except:
+                self.uksc_is_working = 0
                 kwarg = {"apt_appname": item.pkgname,
                         "apt_percent": str(-6.6),
                         "action": str(item.action),
@@ -588,19 +592,30 @@ class SoftwarecenterDbusService(dbus.service.Object):
             workitemcount = len(self.worklist)
         self.mutex.release()
         dpkg_is_running = is_file_locked("/var/lib/dpkg/lock")
-        res = []
-        res.append(workitemcount)
-        res.append(dpkg_is_running)
+        if dpkg_is_running is True:
+            dpkg_is_running = 1
+        else:
+            dpkg_is_running = 0
+        res = [workitemcount, dpkg_is_running]
         return res
 
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def clear_all_work_item(self):
         self.worklist = []
         self.cancel_name_list = []
+        self.worker_thread.uksc_is_working = 0
         
     @dbus.service.method(INTERFACE, in_signature='', out_signature='i')
     def check_dbus_thread_is_working(self):
         return self.worker_thread.thread_is_working
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='i')
+    def check_uksc_is_working(self):
+        return self.worker_thread.uksc_is_working
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='')
+    def set_uksc_not_working(self):
+        self.worker_thread.uksc_is_working = 0
     
 
 if __name__ == '__main__':

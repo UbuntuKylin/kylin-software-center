@@ -154,6 +154,8 @@ class FetchProcess(apb.AcquireProgress):
                  "action":str(self.action),
                  }
         print "########stop:",kwarg
+        if self.action == "update" or self.action == "update_first":
+            self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
@@ -176,6 +178,7 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(self.percent),
                  "action":str(self.action),
                  }
+        self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_apt_signal("apt_error", kwarg)
 
     def start_update(self):
@@ -194,6 +197,7 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(200),
                  "action":str(self.action),
                  }
+        self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_apt_signal("apt_finish", kwarg)
 
     def status_change(self, pkg, percent, status):
