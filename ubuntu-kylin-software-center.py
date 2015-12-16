@@ -183,7 +183,7 @@ class SoftwareCenter(QMainWindow):
         self.detailScrollWidget = DetailScrollWidget(self.messageBox,self)
         self.detailScrollWidget.setGeometry(0, 0, self.ui.detailShellWidget.width(), self.ui.detailShellWidget.height())
         # first update process bar
-        self.updateSinglePB = SingleProcessBar(self)
+        self.updateSinglePB = SingleProcessBar(self.launchLoadingDiv.loadinggif)
         # config widget
         self.configWidget = ConfigWidget(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
@@ -570,7 +570,9 @@ class SoftwareCenter(QMainWindow):
                 if button == 0:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
-                    self.backend.update_source_first_os()
+                    res = self.backend.update_source_first_os()
+                    if "False" == res:
+                        sys.exit(0)
                 elif button == 1:
                     sys.exit(0)
             else:
@@ -584,7 +586,9 @@ class SoftwareCenter(QMainWindow):
                 if button == 0:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
-                    self.backend.update_source_first_os()
+                    res = self.backend.update_source_first_os()
+                    if "False" == res:
+                        sys.exit(0)
                 elif button == 1:
                     self.appmgr.init_models()
         else:

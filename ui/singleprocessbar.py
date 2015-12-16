@@ -30,11 +30,16 @@ class SingleProcessBar(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
-        self.setGeometry(815 / 2 - 96, 417, 197, 17)
+        self.setGeometry(103, 220, 150, 65) #815 / 2 - 96, 417,
+        self.setWindowFlags(Qt.FramelessWindowHint)
+
+        self.updatelabel = QLabel(self)
+        self.updatelabel.setGeometry(25, 10, 125, 35)
+        self.updatelabel.setText("正在更新软件源...")
 
         self.progressBar = QProgressBar(self)
-        self.progressBar.setGeometry(0, 0, 194, 17)
-        self.progressBar.setRange(0,100)
+        self.progressBar.setGeometry(0, 45, 149, 17)
+        self.progressBar.setRange(0, 100)
         self.progressBar.reset()
         self.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg2.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-image:url('res/progress2.png');}")

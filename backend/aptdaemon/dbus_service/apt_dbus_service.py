@@ -439,13 +439,13 @@ class SoftwarecenterDbusService(dbus.service.Object):
         return "True"
     #????????????????????????????
     # apt-get update sa:software_fetch_signal()
-    @dbus.service.method(INTERFACE, in_signature='b', out_signature='b', sender_keyword='sender')
+    @dbus.service.method(INTERFACE, in_signature='b', out_signature='s', sender_keyword='sender')
     def update_first(self, quiet, sender=None):
         print "####update first: "
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要更新软件源")
         if not granted:
-            return False
+            return "False"
 
         kwargs = {"quiet":str(quiet),
                   }
@@ -456,7 +456,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
 
 #        self.daemonApt.update()
 
-        print "####update return"
+        return "True"
 
     # check packages status by pkgNameList sa:software_check_status_signal()
     @dbus.service.method(INTERFACE, in_signature='as', out_signature='')
