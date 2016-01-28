@@ -565,7 +565,8 @@ class SoftwareCenter(QMainWindow):
                                         "更新", "不更新", "", 0)
 
                 # show loading and update processbar this moment
-                self.show()
+                # self.show()
+                self.launchLoadingDiv.start_loading("")
 
                 if button == 0:
                     LOG.info("update source when first start...")
@@ -2067,7 +2068,15 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.configWidget.slot_update_status_change(percent)
         elif action == AppActions.UPDATE_FIRST:
+            # print "--------------------",percent
             if int(percent) >= 200:
+                self.updateSinglePB.value_change(100)
+                self.updateSinglePB.set_updatelabel_text("源更新完成")
+                self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
+            elif (percent == float(-7.7)):
+                # self.updateSinglePB.value_change(0)
+                self.updateSinglePB.set_updatelabel_text("更新源失败")
+                self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
             else:
                 self.updateSinglePB.value_change(percent)
@@ -2137,8 +2146,11 @@ class SoftwareCenter(QMainWindow):
     # update backend models ready
     def slot_apt_cache_update_ready(self, action, pkgname):
         if(action == AppActions.UPDATE_FIRST):
-            self.updateSinglePB.hide()
-            self.appmgr.init_models()
+            if(Globals.LAUNCH_MODE == 'quiet'):
+                sys.exit(0)
+            else:
+                self.updateSinglePB.hide()
+                self.appmgr.init_models()
         else:
             (inst,up, all) = self.appmgr.get_application_count(self.category)
             (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count()

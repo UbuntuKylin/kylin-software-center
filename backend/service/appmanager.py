@@ -179,7 +179,7 @@ class AppManager(QObject):
         self.cat_list = self.get_category_list_from_db()
 
     def init_models(self):
-        item  = WorkerItem("init_models",None)
+        item = WorkerItem("init_models",None)
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()

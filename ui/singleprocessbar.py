@@ -34,8 +34,9 @@ class SingleProcessBar(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.updatelabel = QLabel(self)
-        self.updatelabel.setGeometry(25, 10, 125, 35)
+        self.updatelabel.setGeometry(12, 10, 125, 35)
         self.updatelabel.setText("正在更新软件源...")
+        self.updatelabel.setAlignment(Qt.AlignCenter)
 
         self.progressBar = QProgressBar(self)
         self.progressBar.setGeometry(0, 45, 149, 17)
@@ -49,3 +50,6 @@ class SingleProcessBar(QWidget):
     def value_change(self, percent):
         if percent <= 100:
             self.progressBar.setValue(percent)
+
+    def set_updatelabel_text(self, text):
+        self.updatelabel.setText(text)
