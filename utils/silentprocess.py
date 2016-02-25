@@ -35,6 +35,8 @@ import multiprocessing
 from backend.remote.piston_remoter import PistonRemoter
 from backend.ubuntu_sw import UK_APP_ICON_URL
 from utils.machine import *
+from utils.debfile import DebFile
+
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
 # from models.http import HttpDownLoad
@@ -61,9 +63,7 @@ class SilentProcess(multiprocessing.Process):
 
     def run(self):
         while True:
-            workqueuelen = self.squeue.qsize()
-            # print "silent worklist size : ", str(workqueuelen)
-            if workqueuelen == 0:
+            if self.squeue.empty():
                 time.sleep(1)
                 continue
 
@@ -87,7 +87,7 @@ class SilentProcess(multiprocessing.Process):
                 self.get_newer_application_icon()
             #**************************************************#
             elif item.funcname == "update_xapiandb":
-                self.update_xapiandb()
+                self.update_xapiandb(item.kwargs)
             # elif item.funcname == "download_images":
             #     self.download_images()
 
@@ -281,112 +281,137 @@ class SilentProcess(multiprocessing.Process):
             print "all newer application icon update over : ",len(reslist)
         
     #*************************update for xapiandb***********************************#
-    def update_xapiandb(self):
-    
-        modified_num = 0
-        add_num = 0
-        xapiandb_update = "No"
-                  
-        database = xapian.WritableDatabase(XAPIAN_DB_PATH,xapian.DB_OPEN)
+    def update_xapiandb(self, kwargs):
+        database = xapian.WritableDatabase(XAPIAN_DB_PATH, xapian.DB_OPEN)
         DB = xapian.Database(database)
         enquire = xapian.Enquire(database)
         indexer = xapian.TermGenerator()
-        query_xapiandb_version = xapian.Query("the_#ukxapiandb#_version")
-        enquire.set_query(query_xapiandb_version)
-        matches = enquire.get_mset(0,1)
-        for re in matches:
-            docid_for_xapiandb_version = re.document.get_docid()
-            doc_for_xapiandb_version = re.document
-            doc_data = doc_for_xapiandb_version.get_data()
-            if ("XAPIANDB_VERSION" == doc_data):
-                the_latest_update_time = doc_for_xapiandb_version.get_value(2) #valueslot:2 xapiandb update time
-            else:
-                the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
-                print "Failed to get the latest update time from client xapiandb,use default time.localtime()"
 
-        reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
-            
-        for app in reslist:
-            app_name = str(app["app_name"])
-            display_name_cn = str(app["display_name_cn"])
-            keywords_for_search = str(app["keywords_for_search"])
-            
-            query = xapian.Query(app_name)
-            enquire.set_query(query)
-            doccount = DB.get_doccount()
-            matches = enquire.get_mset(0,doccount)
-            if matches.size() != 0:
-                for re in matches:
-                    if re.document.get_data() == app_name:
-                        docid = re.docid
-                        doc = re.document
-                        doc.clear_terms()
-                        indexer.set_document(doc)
-                        doc.add_term(app_name,10)
-                        if keywords_for_search != "None":
-                            keywords = display_name_cn+";"+keywords_for_search+";"+app_name
-                        else:
-                            keywords = display_name_cn+";"+app_name
-                        indexer.index_text(keywords,10)
-                        
-                        try:
-                            from mmseg.search import seg_txt_search,seg_txt_2_dict
-                            for word,value in seg_txt_2_dict(keywords).iteritems():
-                                if word != "none":
-                                    doc.add_term(word,10)
-                                else:
-                                    pass
-                        except:
-                            pass
-                            
-                        database.replace_document(docid,doc)
-                        xapiandb_update = "Yes"
-                        modified_num = modified_num + 1
-                        
-                    else:
-                        continue
-            else:
-                doc = xapian.Document()
-                doc.set_data(app_name)
-                doc.add_term(app_name,10)
-                indexer.set_document(doc)
-                if keywords_for_search != "None":
-                    keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+        if "" == kwargs["pkgname"]:
+            modified_num = 0
+            add_num = 0
+            xapiandb_update = "No"
+
+            query_xapiandb_version = xapian.Query("the_#ukxapiandb#_version")
+            enquire.set_query(query_xapiandb_version)
+            matches = enquire.get_mset(0, 1)
+            for re in matches:
+                docid_for_xapiandb_version = re.document.get_docid()
+                doc_for_xapiandb_version = re.document
+                doc_data = doc_for_xapiandb_version.get_data()
+                if ("XAPIANDB_VERSION" == doc_data):
+                    the_latest_update_time = doc_for_xapiandb_version.get_value(2) #valueslot:2 xapiandb update time
                 else:
-                    keywords = display_name_cn+";"+app_name
-                indexer.index_text(keywords,10)
-                
-                try:
-                    for word,value in seg_txt_2_dict(keywords).iteritems():
-                        if word != "none":
-                            doc.add_term(word,10)
+                    the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
+                    print "Failed to get the latest update time from client xapiandb,use default time.localtime()"
+
+            reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
+
+            for app in reslist:
+                app_name = str(app["app_name"])
+                display_name_cn = str(app["display_name_cn"])
+                keywords_for_search = str(app["keywords_for_search"])
+
+                query = xapian.Query(app_name)
+                enquire.set_query(query)
+                doccount = DB.get_doccount()
+                matches = enquire.get_mset(0,doccount)
+                if matches.size() != 0:
+                    for re in matches:
+                        if re.document.get_data() == app_name:
+                            docid = re.docid
+                            doc = re.document
+                            doc.clear_terms()
+                            indexer.set_document(doc)
+                            doc.add_term(app_name,10)
+                            if keywords_for_search != "None":
+                                keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+                            else:
+                                keywords = display_name_cn+";"+app_name
+                            indexer.index_text(keywords,10)
+
+                            try:
+                                from mmseg.search import seg_txt_search,seg_txt_2_dict
+                                for word, value in seg_txt_2_dict(keywords).iteritems():
+                                    if word != "none":
+                                        doc.add_term(word,10)
+                                    else:
+                                        pass
+                            except:
+                                print "----No mmseg model---"
+
+                            database.replace_document(docid,doc)
+                            xapiandb_update = "Yes"
+                            modified_num = modified_num + 1
+
                         else:
-                            pass                           
-                except:
-                    pass
-                database.add_document(doc)
-                add_num = add_num + 1
-                print "App:",doc.get_data(),"  ","terms:",
-                for itr in doc.termlist():
-                    print itr.term,
-                xapiandb_update = "Yes"
-                print "  "                
-                    
-        try:
-            if xapiandb_update == "Yes":
-                now = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
-                doc_for_xapiandb_version.add_value(2,now)
-                database.replace_document(docid_for_xapiandb_version,doc_for_xapiandb_version)
-                all_update_is_done = "Yes"
-                if "Yes" == all_update_is_done:
+                            continue
+                else:
+                    doc = xapian.Document()
+                    doc.set_data(app_name)
+                    doc.add_term(app_name,10)
+                    indexer.set_document(doc)
+                    if keywords_for_search != "None":
+                        keywords = display_name_cn+";"+keywords_for_search+";"+app_name
+                    else:
+                        keywords = display_name_cn+";"+app_name
+                    indexer.index_text(keywords,10)
+
+                    try:
+                        for word,value in seg_txt_2_dict(keywords).iteritems():
+                            if word != "none":
+                                doc.add_term(word,10)
+                            else:
+                                pass
+                    except:
+                        pass
+                    database.add_document(doc)
+                    add_num = add_num + 1
+                    print "App:",doc.get_data(),"  ","terms:",
+                    for itr in doc.termlist():
+                        print itr.term,
+                    xapiandb_update = "Yes"
+                    print "  "
+
+            try:
+                if xapiandb_update == "Yes":
+                    now = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
+                    doc_for_xapiandb_version.add_value(2,now)
+                    database.replace_document(docid_for_xapiandb_version, doc_for_xapiandb_version)
                     database.commit()
                     print "Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist))
-                
-                else:
-                    print "Failed to update xapian database (/home/ice_bird/.cache/uksc/xapiandb)"
-        except:
-            print "The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!"
-        print "update uksc xapiandb over"
+            except:
+                print "The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!"
+            print "update uksc xapiandb over"
+
+        else:
+            appinfo_query = xapian.Query(kwargs["pkgname"])
+            enquire.set_query(appinfo_query)
+            matches = enquire.get_mset(0, DB.get_doccount())
+            for re in matches:
+                doc_for_appinfo = re.document
+                doc_data = doc_for_appinfo.get_data()
+                if kwargs["pkgname"] == doc_data:
+                    return
+
+            doc = xapian.Document()
+            doc.set_data(kwargs["pkgname"])
+            doc.add_term(kwargs["pkgname"], 10)
+
+            deb = DebFile(kwargs["path"])
+            terms = kwargs["pkgname"]
+            try:
+                terms = terms + " " + deb.description
+            except:
+                print "Failed to get app description"
+            indexer.set_document(doc)
+            indexer.index_text(terms)
+            database.add_document(doc)
+            database.commit()
+            print "update xapiandb over: ", kwargs["pkgname"], "terms:",
+            for itr in doc.termlist():
+                print itr.term,
+            print " "
             
 class SilentWorkerItem:
 

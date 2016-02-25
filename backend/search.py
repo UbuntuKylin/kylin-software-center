@@ -50,7 +50,7 @@ APT_XAPIAN_INDEX_UPDATE_STAMP_PATH = (APT_XAPIAN_INDEX_BASE_PATH +
                                       "/update-timestamp")
                                       
 #ubuntu software-center paths
-UTSC_PATH = "/var/cache/software-center/xapian"                   
+UTSC_PATH = "/var/cache/software-center/xapian"
 
 def parse_axi_values_file(filename="/var/lib/apt-xapian-index/values"):
     """ parse the apt-xapian-index "values" file and provide the
@@ -430,7 +430,7 @@ class Search:
         enquire = xapian.Enquire(self.db.xapiandb)
         query = query_string[1]
         enquire.set_query(query)
-        matches = enquire.get_mset(0, len(self.db))
+        matches = enquire.get_mset(0, 100)
 #        print "res len=",len(self.db),len(matches)
         pkgnamelist = []
         for m in matches:

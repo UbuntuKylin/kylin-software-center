@@ -714,7 +714,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_all_ratings()
         self.appmgr.get_all_categories()
         self.appmgr.get_all_rank_and_recommend()
-        self.appmgr.update_xapiandb()
+        self.appmgr.update_xapiandb("")
         # self.appmgr.download_other_images()
 
         self.httpmodel = HttpDownLoad()
@@ -1989,7 +1989,7 @@ class SoftwareCenter(QMainWindow):
         LOG.info("cancel an task:%s",app.name)
         cancelinfo = [app.name, action]
         res = self.backend.cancel_package(cancelinfo)
-        #print res
+        # print res,cancelinfo
         if res == 'True':
             #print app.name,"    ", action
             app.percent = 0

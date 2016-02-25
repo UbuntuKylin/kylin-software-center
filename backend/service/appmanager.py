@@ -44,6 +44,8 @@ from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRati
 from backend.service.dbmanager import Database
 from utils.silentprocess import *
 from utils.machine import *
+from utils.debfile import DebFile
+from models.globals import Globals
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import Signals,UnicodeToAscii
 
@@ -136,17 +138,17 @@ class AppManager(QObject):
         self.distroseries = 'any'  #'any' for all
         self.db = Database()
 
-        self.worklist = []
-        self.mutex = threading.RLock()
-        self.worker_thread = ThreadWorkerDaemon(self)
-        self.worker_thread.setDaemon(True)
-        self.worker_thread.start()
-
         # silent process work queue
         self.squeue = multiprocessing.Queue()
         self.silent_process = SilentProcess(self.squeue)
         self.silent_process.daemon = True
         self.silent_process.start()
+
+        self.worklist = []
+        self.mutex = threading.RLock()
+        self.worker_thread = ThreadWorkerDaemon(self)
+        self.worker_thread.setDaemon(True)
+        self.worker_thread.start()
 
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
@@ -192,15 +194,16 @@ class AppManager(QObject):
             for aname,app in apps.iteritems():
                 app.update_cache(self.apt_cache)
 
-    def update_models(self,action,pkgname=""):
+    def update_models(self,action, pkgname=""):
         kwargs = {"packagename": pkgname,
                   "action": action,
                   }
-
-        item  = WorkerItem("update_models",kwargs)
+        item = WorkerItem("update_models",kwargs)
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()
+        if "install_debfile" == action:
+            self.update_xapiandb(pkgname)
 
     def get_category_list_from_db(self):
         list = self.db.query_categories()
@@ -326,6 +329,20 @@ class AppManager(QObject):
             app = cat.get_application_byname(pkgname)
             if app is not None:
                 return app
+
+        if self.get_package_by_name(pkgname) is not None:
+            displayname_cn = pkgname
+            cat = self.cat_list["Accessories"]
+            app = Application(pkgname, displayname_cn, cat, self.apt_cache)
+            app.orig_name = app.name
+            app.orig_summary = app.summary
+            app.orig_description = app.description
+
+            app.displayname = app.name
+            app.summary = app.summary
+            app.description = app.description
+            cat.apps["pkgname"] = app
+            return app
 
         return None
 
@@ -577,9 +594,8 @@ class AppManager(QObject):
         self.squeue.put_nowait(item)
 
     # update xapiandb add by zhangxin
-    def update_xapiandb(self):
-        kwargs = {}
-        
+    def update_xapiandb(self, pkgname):
+        kwargs = {"pkgname": pkgname, "path": Globals.LOCAL_DEB_FILE}
         item = SilentWorkerItem("update_xapiandb", kwargs)
         self.squeue.put_nowait(item)
 
