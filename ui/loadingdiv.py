@@ -59,6 +59,9 @@ class LoadingDiv(QWidget):
         self.loadinggif = QLabel(self)
         self.loadinggif.setGeometry(Globals.MAIN_WIDTH / 2 - 350 / 2, Globals.MAIN_HEIGHT / 2 - 350 / 2, 350, 350)
 
+        # self.loadingtext = QLabel(self)
+        # self.loadingtext.setGeometry()
+
         self.raise_()
         self.hide()
 

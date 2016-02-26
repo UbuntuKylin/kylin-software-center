@@ -202,7 +202,7 @@ class AptProcess(apb.InstallProgress):
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg
-        print str(int(percent)) + "%  status : " + status
+#        print str(int(percent)) + "%  status : " + status
 #        self.percent = percent
 #        if percent != self.percent:
 #            print "&&&&&&&&&&&&&&&&&&&:",self.percent

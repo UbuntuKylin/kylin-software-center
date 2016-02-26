@@ -325,23 +325,23 @@ class AppManager(QObject):
         if self.cat_list is None:
             return None
         #
-        for (catname, cat) in self.cat_list.iteritems():
+        for (catname, cat) in self.cat_list.iteritems(): #get app in cat which init in uksc startup
             app = cat.get_application_byname(pkgname)
             if app is not None:
                 return app
 
-        if self.get_package_by_name(pkgname) is not None:
+        if self.get_package_by_name(pkgname) is not None: #get app from cache and add it to cat  when app not in cat
             displayname_cn = pkgname
-            cat = self.cat_list["Accessories"]
             app = Application(pkgname, displayname_cn, cat, self.apt_cache)
             app.orig_name = app.name
             app.orig_summary = app.summary
             app.orig_description = app.description
-
             app.displayname = app.name
             app.summary = app.summary
             app.description = app.description
-            cat.apps["pkgname"] = app
+
+            cat = self.cat_list["Accessories"]
+            cat.apps[pkgname] = app
             return app
 
         return None

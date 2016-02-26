@@ -547,7 +547,7 @@ class SoftwareCenter(QMainWindow):
         while res == False:
             button=QMessageBox.question(self,"初始化提示",
                                     self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
-                                    "重试", "忽略", "退出", 0)
+                                    "重试", "忽略", "退出", 0, 2)
             if button == 0:
                 res = self.backend.init_dbus_ifaces()
             elif button == 1:
@@ -562,7 +562,7 @@ class SoftwareCenter(QMainWindow):
             if(Globals.LAUNCH_MODE == 'quiet'):
                 button = QMessageBox.question(self,"软件源更新提示",
                                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"),
-                                        "更新", "不更新", "", 0)
+                                        "更新", "不更新", "退出", 0, 2)
 
                 # show loading and update processbar this moment
                 # self.show()
@@ -574,16 +574,15 @@ class SoftwareCenter(QMainWindow):
                     res = self.backend.update_source_first_os()
                     if "False" == res:
                         sys.exit(0)
-                elif button == 1:
+                else:
                     sys.exit(0)
             else:
                 button = QMessageBox.question(self,"软件源更新提示",
                                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
-                                        "更新", "不更新", "", 0)
+                                        "更新", "不更新", "退出", 0, 2)
 
                 # show loading and update processbar this moment
                 self.show()
-
                 if button == 0:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
@@ -592,6 +591,8 @@ class SoftwareCenter(QMainWindow):
                         sys.exit(0)
                 elif button == 1:
                     self.appmgr.init_models()
+                else:
+                    sys.exit(0)
         else:
             if(Globals.LAUNCH_MODE == 'normal'):
                 self.show()
@@ -2125,7 +2126,7 @@ class SoftwareCenter(QMainWindow):
                             taskitem.status_change(processtype, percent, msg)
                     self.emit(Signals.normalcard_progress_change, name, percent, action)
 
-        if percent < 0:
+        if percent < 0 and app is not None:
             print percent
             self.slot_cancel_for_work_filed(name, action)
 

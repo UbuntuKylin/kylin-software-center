@@ -167,6 +167,7 @@ class StoreDatabase(GObject.GObject):
                 xapiandb.add_database(axi)
             except Exception as e:
                 logging.warn("failed to add apt-xapian-index db %s" % e)
+                print "Failed to add apt-xapian-index,some software may not be searched"
         if (self._use_agent and
                 os.path.exists(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)):
             try:

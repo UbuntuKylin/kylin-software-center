@@ -435,7 +435,7 @@ class NormalCard(QWidget):
         elif status == "upgrade":
             self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                               "QProgressBar:chunk{background-color:#FDD99A;}")
-        else :
+        else:
             self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:#C5CED9;}")
         #self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"

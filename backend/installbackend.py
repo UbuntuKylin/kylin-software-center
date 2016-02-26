@@ -126,10 +126,10 @@ class InstallBackend(QObject):
 
         self.download_percent = self.download_percent + percent
 
-        if ("down_stop" == type):
+        if "down_stop" == type:
             temp = self.download_percent
             self.download_percent = 0
-            if (float(200) >= temp and action == "update_first"):
+            if float(200) >= temp and action == "update_first":
                 percent = float(-7.7)
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
