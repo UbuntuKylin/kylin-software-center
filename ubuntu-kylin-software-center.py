@@ -537,6 +537,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.get_user_transapplist_over, self.slot_get_user_transapplist_over)
         self.connect(self.appmgr, Signals.submit_translate_appinfo_over, self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
         self.connect(self.appmgr, Signals.count_application_update,self.slot_count_application_update)
+        self.connect(self.appmgr, Signals.refresh_page, self.slot_refresh_page)
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -686,7 +687,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.centralwidget.show()
             # self.ui.leftWidget.show()
 
-            self.slot_goto_homepage()
+            self.show_homepage()
             self.launchLoadingDiv.stop_loading()
             self.show_mainwindow()
 
@@ -701,6 +702,7 @@ class SoftwareCenter(QMainWindow):
 
             # base loading finish, start backend work
             self.start_silent_work()
+            self.ads_ready = self.rec_ready = False
 
     # silent background works
     def start_silent_work(self):
@@ -1386,7 +1388,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_recommend_apps_ready(self,applist):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
-
+        self.recommendListWidget.clear()
         for app in applist:
             if app is None:
                 continue
@@ -1478,17 +1480,22 @@ class SoftwareCenter(QMainWindow):
 
     def slot_count_application_update(self):
         (inst, up, all) = self.appmgr.get_application_count(self.category)
+        self.ui.homecount.setText(str(all))
         self.ui.allcount.setText(str(all))
         self.ui.uncount.setText(str(inst))
         self.ui.upcount.setText(str(up))
 
         self.ui.wincountlabel.setText(str(self.winnum))
 
-    def slot_goto_homepage(self, ishistory=False):
-        # if self.nowPage != 'homepage':
-        #     forceChange = True
-        # else:
-        #     forceChange = False
+    def slot_goto_homepage(self, bysignal = False):
+        if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
+            self.appmgr.get_advertisements()
+            self.appmgr.get_recommend_apps()
+            self.appmgr.get_ratingrank_apps()
+        else:
+            self.show_homepage()
+
+    def show_homepage(self):
         Globals.NOWPAGE = PageStates.HOMEPAGE
         # self.prePage = "homepage"
         self.ui.btnCloseDetail.setVisible(False)
@@ -1513,8 +1520,10 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar_focus_one()
         self.ui.btnHomepage.setEnabled(False)
 
-    def slot_goto_allpage(self):
-        if Globals.NOWPAGE != PageStates.ALLPAGE:
+    def slot_goto_allpage(self, bysignal = False):
+        if bysignal is True:
+            forceChange = True
+        elif Globals.NOWPAGE != PageStates.ALLPAGE:
             forceChange = True
         else:
             forceChange = False
@@ -1548,8 +1557,10 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar_focus_one()
         self.ui.btnAll.setEnabled(False)
 
-    def slot_goto_uppage(self, ishistory=False):
-        if Globals.NOWPAGE != PageStates.UPPAGE:
+    def slot_goto_uppage(self, bysignal=False):
+        if bysignal is True:
+            forceChange = True
+        elif Globals.NOWPAGE != PageStates.UPPAGE:
             forceChange = True
         else:
             forceChange = False
@@ -1583,8 +1594,10 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar_focus_one()
         self.ui.btnUp.setEnabled(False)
 
-    def slot_goto_unpage(self, ishistory=False):
-        if Globals.NOWPAGE != PageStates.UNPAGE:
+    def slot_goto_unpage(self, bysignal=False):
+        if bysignal is True:
+            forceChange = True
+        elif Globals.NOWPAGE != PageStates.UNPAGE:
             forceChange = True
         else:
             forceChange = False
@@ -1618,7 +1631,7 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar_focus_one()
         self.ui.btnUn.setEnabled(False)
 
-    def goto_search_page(self, ishistory=False):
+    def goto_search_page(self):
 
         if Globals.NOWPAGE == PageStates.HOMEPAGE:
             Globals.NOWPAGE = PageStates.SEARCHHOMEPAGE
@@ -1740,6 +1753,32 @@ class SoftwareCenter(QMainWindow):
         #
         self.loadingDiv.start_loading("")
         self.appmgr.get_user_transapplist()
+
+    def slot_refresh_page(self):
+
+        if PageStates.HOMEPAGE == Globals.NOWPAGE:
+            self.slot_goto_homepage(True)
+
+        elif PageStates.ALLPAGE == Globals.NOWPAGE:
+            self.slot_goto_allpage(True)
+
+        elif PageStates.UPPAGE == Globals.NOWPAGE:
+            self.slot_goto_uppage(True)
+
+        elif PageStates.UNPAGE == Globals.NOWPAGE:
+            self.slot_goto_unpage(True)
+
+        elif PageStates.WINPAGE == Globals.NOWPAGE:
+            self.slot_goto_winpage()
+
+        elif PageStates.TRANSPAGE == Globals.NOWPAGE:
+            self.slot_goto_translatepage()
+
+        elif PageStates.UAPAGE == Globals.NOWPAGE:
+            self.slot_goto_uapage()
+
+        else:
+            self.goto_search_page()
 
 
     def slot_get_user_applist_over(self, reslist):

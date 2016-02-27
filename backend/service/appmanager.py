@@ -204,7 +204,9 @@ class AppManager(QObject):
         if "install_debfile" == action:
             self.update_xapiandb(pkgname)
         if "update" == action:
+            self._init_models()
             self.emit(Signals.count_application_update)
+            self.emit(Signals.refresh_page)
 
     def get_category_list_from_db(self):
         list = self.db.query_categories()
@@ -331,7 +333,8 @@ class AppManager(QObject):
             if app is not None:
                 return app
 
-        if self.get_package_by_name(pkgname) is not None: #get app from cache and add it to cat  when app not in cat
+        pkg = self.get_package_by_name(pkgname)
+        if pkg is not None and pkg.candidate is not None: #get app from cache and add it to cat  when app not in cat
             displayname_cn = pkgname
             app = Application(pkgname, displayname_cn, cat, self.apt_cache)
             app.orig_name = app.name

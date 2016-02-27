@@ -206,6 +206,7 @@ class Signals:
     uninstall_uksc_or_not = SIGNAL("uninstall_uksc_or_not")
     uninstall_uksc = SIGNAL("uninstall_uksc")
     cancel_uninstall_uksc = SIGNAL("cancel_uninstall_uksc")
+    refresh_page = SIGNAL("refresh-page")
 
 
     #wb 2015.06.26
