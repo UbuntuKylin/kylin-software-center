@@ -81,10 +81,12 @@ class FetchProcess(apb.AcquireProgress):
     def fetch(self, item):
 #        print 'one item download finished:',item
 #        if item is not None:
-#            print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
+        #print "FetchProcess, fetch, Item:", self.appname, item.shortdesc, item.uri, item.owner
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(self.percent),
                  "action":str(self.action),
+                 "shortdesc":item.shortdesc,
+                 "uri":item.uri,
                  }
 
         self.dbus_service.software_fetch_signal("down_fetch", kwarg)
@@ -118,10 +120,6 @@ class FetchProcess(apb.AcquireProgress):
             if self.total_bytes != 0:
                 self.percent = float(self.current_bytes * 100.0 / self.total_bytes)
 
-        #kwarg = "download_appname:"+ self.appname + ",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items)
-#        print "FetchProcess, pulse: ", str(self.percent)
-
-
         self.dbus_service.software_fetch_signal("down_pulse",kwarg)
 
         # cancel the operation
@@ -153,7 +151,8 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(200),
                  "action":str(self.action),
                  }
-        print "########stop:",kwarg
+        if self.total_items > 0 and (self.current_items / self.total_items) < 1:
+            kwarg["download_percent"] = str(-8)
         if self.action == "update" or self.action == "update_first":
             self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
@@ -342,7 +341,6 @@ class AptDaemon():
 
         try:
             if quiet == True:
-                print "quiet=True"
                 self.cache.update()
             else:
                 print "quiet=False"

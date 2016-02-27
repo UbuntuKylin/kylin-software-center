@@ -59,7 +59,6 @@ class InstallBackend(QObject):
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
 
         self.iface = None
-        self.download_percent = 0
 
     def init_dbus_ifaces(self):
         try:
@@ -124,37 +123,15 @@ class InstallBackend(QObject):
 #            sendMsg = "操作取消"
             percent = -1
 
-        self.download_percent = self.download_percent + percent
-
-        if "down_stop" == type:
-            temp = self.download_percent
-            self.download_percent = 0
-            if float(200) >= temp and action == "update_first":
-                percent = float(-7.7)
-
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
     def _on_software_apt_signal(self,type, kwarg):
-        # print "********************",type
         sendType = "apt"
         appname = str(kwarg['apt_appname'])
         sendMsg  = ""
         percent = float(str(kwarg['apt_percent']))
         action = str(kwarg['action'])
         sendMsg = AptActionMsg[action] + AptProcessMsg[str(type)]
-
- #       if(type == "apt_pulse"):
-#            sendMsg = sendMsg + kwarg['status']
- #           print kwarg['status']
-#        if( type == "apt_start"):
-#            sendMsg = "安装开始..."
-#        if( type == "apt_finish"):
-#            percent = 200
-#            sendMsg = "安装完成！"
-#        if( type == "apt_error"):
-#            sendMsg = "安装失败!"
-#        if( type == "apt_pulse"):
-#            sendMsg = "安装中..." + str(kwarg['status'])
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 

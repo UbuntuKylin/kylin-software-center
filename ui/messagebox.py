@@ -49,6 +49,7 @@ class MessageBox(QObject):
         self.alertDelayTimer = QTimer(self)
         self.alertDelayTimer.timeout.connect(self.slot_hide_alert)
         self.alertGOE = QGraphicsOpacityEffect()
+        self.statu = "success"
 
         self.alert = QPushButton(parent)
         self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2, Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
@@ -61,13 +62,15 @@ class MessageBox(QObject):
     def re_move(self):
         self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2, Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
 
-    def alert_msg(self, alertText):
+    def alert_msg(self, alertText, statu = "success"):
+        self.statu = statu
         self.alertTimer.stop()
         self.alertDelayTimer.stop()
         self.ay = 410
         self.ao = 0.0
         self.alertGOE.setOpacity(self.ao)
         self.alert.setText(alertText)
+        self.alert.raise_()
         self.alert.show()
         self.alertTimer.start(12)
 
@@ -78,7 +81,10 @@ class MessageBox(QObject):
         if(self.ay <= 280):
             self.alertTimer.stop()
             # close after * second
-            self.alertDelayTimer.start(4000)
+            if self.statu == "success":
+                self.alertDelayTimer.start(4000)
+            else:
+                self.alertDelayTimer.stop()
         else:
             self.ay -= 2
             self.alert.move(self.alert.x(), self.ay)

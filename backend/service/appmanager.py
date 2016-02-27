@@ -187,14 +187,13 @@ class AppManager(QObject):
         self.mutex.release()
 
     def _update_models(self):
-        self.open_cache()
-
         for cname,citem in self.cat_list.iteritems():
             apps = citem.apps
             for aname,app in apps.iteritems():
                 app.update_cache(self.apt_cache)
 
     def update_models(self,action, pkgname=""):
+        self.open_cache()
         kwargs = {"packagename": pkgname,
                   "action": action,
                   }
@@ -204,6 +203,8 @@ class AppManager(QObject):
         self.mutex.release()
         if "install_debfile" == action:
             self.update_xapiandb(pkgname)
+        if "update" == action:
+            self.emit(Signals.count_application_update)
 
     def get_category_list_from_db(self):
         list = self.db.query_categories()
@@ -366,7 +367,7 @@ class AppManager(QObject):
     def get_application_count(self,cat_name=""):
         sum_inst = 0
         sum_up = 0
-        sum_all = 0
+        sum_all = len(self.apt_cache)
 
         if len(cat_name)>0:
             cat = self.cat_list[cat_name]

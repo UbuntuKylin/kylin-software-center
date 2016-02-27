@@ -536,6 +536,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.get_user_applist_over, self.slot_get_user_applist_over)
         self.connect(self.appmgr, Signals.get_user_transapplist_over, self.slot_get_user_transapplist_over)
         self.connect(self.appmgr, Signals.submit_translate_appinfo_over, self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
+        self.connect(self.appmgr, Signals.count_application_update,self.slot_count_application_update)
 
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
@@ -1476,18 +1477,10 @@ class SoftwareCenter(QMainWindow):
             #     top = top + 1
 
     def slot_count_application_update(self):
-        (inst,up, all) = self.appmgr.get_application_count()
-        (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count(self.category)
-
-        LOG.debug("receive installed app count: %d", inst)
-        if len(self.category) > 0:
-            self.ui.allcount.setText(str(all))
-            self.ui.uncount.setText(str(inst))
-            self.ui.upcount.setText(str(up))
-        else:
-            self.ui.allcount.setText(str(all))
-            self.ui.uncount.setText(str(inst))
-            self.ui.upcount.setText(str(up))
+        (inst, up, all) = self.appmgr.get_application_count(self.category)
+        self.ui.allcount.setText(str(all))
+        self.ui.uncount.setText(str(inst))
+        self.ui.upcount.setText(str(up))
 
         self.ui.wincountlabel.setText(str(self.winnum))
 
@@ -1915,7 +1908,7 @@ class SoftwareCenter(QMainWindow):
         LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
         res = self.backend.update_source(quiet)
-        #print 'wb111111111111:',res
+        # print 'wb111111111111:',res
         if res == "False":
             self.configWidget.set_process_visiable(False)
         elif res == "Locked":
@@ -2060,8 +2053,11 @@ class SoftwareCenter(QMainWindow):
             app.percent = percent
 
         if action == AppActions.UPDATE:
-            if int(percent) == 0:
-                self.configWidget.slot_update_status_change(1)
+            if int(percent) < 0:
+                self.messageBox.alert_msg("软件源更新失败", "Failed")
+                self.configWidget.slot_update_finish()
+            elif int(percent) == 0:
+                self.configWidget.slot_update_status_change(0)
             elif int(percent) == 100:
                 self.configWidget.slot_update_status_change(99)
             elif int(percent) >= 200:
@@ -2069,12 +2065,13 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.configWidget.slot_update_status_change(percent)
         elif action == AppActions.UPDATE_FIRST:
+            print action, percent
             # print "--------------------",percent
             if int(percent) >= 200:
                 self.updateSinglePB.value_change(100)
                 self.updateSinglePB.set_updatelabel_text("源更新完成")
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
-            elif (percent == float(-7.7)):
+            elif int(percent) < 0:
                 # self.updateSinglePB.value_change(0)
                 self.updateSinglePB.set_updatelabel_text("更新源失败")
                 self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
@@ -2153,8 +2150,6 @@ class SoftwareCenter(QMainWindow):
                 self.updateSinglePB.hide()
                 self.appmgr.init_models()
         else:
-            (inst,up, all) = self.appmgr.get_application_count(self.category)
-            (cat_inst,cat_up, cat_all) = self.appmgr.get_application_count()
             self.emit(Signals.count_application_update)
 
             msg = "软件" + AptActionMsg[action] + "操作完成"
