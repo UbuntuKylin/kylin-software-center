@@ -79,6 +79,7 @@ class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
     recommendNumber = 0
+    mainwindow_show = False
     # pre page
     # prePage = ''
     # now page
@@ -690,6 +691,7 @@ class SoftwareCenter(QMainWindow):
             self.show_homepage()
             self.launchLoadingDiv.stop_loading()
             self.show_mainwindow()
+            self.mainwindow_show = True
 
             # self.trayicon.show()
 
@@ -1311,7 +1313,8 @@ class SoftwareCenter(QMainWindow):
         self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
         windowWidth = QApplication.desktop().width()
         windowHeight = QApplication.desktop().height()
-        self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+        if self.mainwindow_show != True:
+            self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
     #-------------------------------------------------slots-------------------------------------------------
 
@@ -2166,6 +2169,11 @@ class SoftwareCenter(QMainWindow):
         if percent < 0 and app is not None:
             print percent
             self.slot_cancel_for_work_filed(name, action)
+        if int(percent) == int(-9):
+            buttom = QMessageBox.information(self,"升级软件包出错",name + "升级包不存在，您可能在软件中心运行过程中更新了源！\n比如使用了命令:sudo apt-get update","知道了","","",0,0)
+
+        if int(percent) == int(-11):
+            buttom = QMessageBox.information(self,"升级软件包出错",name + "软件包不存在，您可能在软件中心运行过程中更新了源！\n比如使用了命令:sudo apt-get update","知道了","","",0,0)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:

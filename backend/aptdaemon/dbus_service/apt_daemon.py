@@ -152,7 +152,7 @@ class FetchProcess(apb.AcquireProgress):
                  "action":str(self.action),
                  }
         if self.total_items > 0 and (self.current_items / self.total_items) < 1:
-            kwarg["download_percent"] = str(-8)
+            kwarg["download_percent"] = str(-12)
         if self.action == "update" or self.action == "update_first":
             self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
@@ -232,7 +232,7 @@ class AptDaemon():
         try:
             return self.cache[pkgName]
         except KeyError:
-            raise WorkitemError(1, "Package %s is not  available" % pkgName)
+            raise WorkitemError(11, "Package %s is not  available" % pkgName)
         # except Exception, e:
         #     print e
         #     return "ERROR"
@@ -290,7 +290,7 @@ class AptDaemon():
         except apt.cache.LockFailedException:
             raise WorkitemError(3, "package manager is running.")
         except Exception as e:
-            raise WorkitemError(0, "unknown error")
+            raise WorkitemError(13, "unknown error")
         # except Exception, e:
         #     print e
         #     print "install err"
@@ -308,7 +308,7 @@ class AptDaemon():
         except apt.cache.LockFailedException:
             raise WorkitemError(3, "package manager is running.")
         except Exception as error:
-            raise WorkitemError(0, "unknown error")
+            raise WorkitemError(13, "unknown error")
         # except Exception, e:
         #     print e
         #     print "uninstall err"
@@ -319,6 +319,8 @@ class AptDaemon():
         pkg = self.get_pkg_by_name(pkgName)
         if pkg.is_installed and not pkg.installed_files:
             raise WorkitemError(8, "Package %s isn't installed" % pkgName)
+        if pkg.is_upgradable is False:
+            raise WorkitemError(9, "Package %s isn't installed" % pkgName)
         pkg.mark_upgrade()
 
         try:
@@ -328,7 +330,7 @@ class AptDaemon():
         except apt.cache.LockFailedException:
             raise WorkitemError(3, "package manager is running.")
         except Exception as e:
-            raise WorkitemError(0, "unknown error")
+            raise WorkitemError(13, "unknown error")
         # except Exception, e:
         #     print e
         #     print "update err"
