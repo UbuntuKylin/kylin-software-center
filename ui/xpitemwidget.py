@@ -133,7 +133,7 @@ class DataModel():
                 if line[2] not in self.category_list:
                     self.category_list.append(line[2])
             # app = self.appmgr.get_application_by_name(line[1])
-            # if app is not None:
+            # if app is not None and app.package is not None:
             #     self.soft_app_list.append(app)
             # if app is not None or line[1] == 'wine-qq' or line[1] == 'ppstream':
             #     self.linux_soft_list.append(line[1])

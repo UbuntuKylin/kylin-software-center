@@ -519,6 +519,7 @@ class SoftwareCenter(QMainWindow):
 
     def init_main_service(self):
         self.appmgr = AppManager()
+
         # self.win_exists = 0
         self.winnum = 0
         self.win_model = DataModel(self.appmgr)
@@ -649,7 +650,7 @@ class SoftwareCenter(QMainWindow):
         self.searchList = {}
 
         # init others
-        self.category = ""
+        self.category = ''
 
         Globals.NOWPAGE = PageStates.HOMEPAGE
 
@@ -769,7 +770,7 @@ class SoftwareCenter(QMainWindow):
                     self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
                 else:
                     app = self.appmgr.get_application_by_name(context[0])
-                    if app is not None:
+                    if app is not None and app.package is not None:
                         self.winnum += 1
                         winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
                         card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
@@ -983,7 +984,7 @@ class SoftwareCenter(QMainWindow):
         count = 0
         for appname in self.searchList:
             app = self.appmgr.get_application_by_name(appname)
-            if app is None:
+            if app is None or app.package is None:
                 continue
             # in uppage and unpage we just can search the software which can be upgraded or uninstalled zx11.27
             if Globals.NOWPAGE == PageStates.SEARCHUPPAGE:
@@ -1045,7 +1046,7 @@ class SoftwareCenter(QMainWindow):
 
             count = 0
             for pkgname, app in apps.iteritems():
-                if app is None:
+                if app is None or app.package is None:
                     continue
                 if Globals.NOWPAGE == PageStates.UPPAGE:
                     if app.is_installed is False:
@@ -1390,7 +1391,7 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
         self.recommendListWidget.clear()
         for app in applist:
-            if app is None:
+            if app is None or app.package is None:
                 continue
             recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
             self.recommendListWidget.add_card(recommend)
@@ -1412,7 +1413,7 @@ class SoftwareCenter(QMainWindow):
         LOG.debug("receive rating rank apps ready, count is %d", len(applist))
         self.ui.rankView.clear()
         for app in applist:
-            if app is not None:
+            if app is not None and app.package is not None:
                 oneitem = QListWidgetItem()
                 oneitem.setWhatsThis(app.name)
                 rliw = RankListItemWidget(app, self.ui.rankView.count() + 1, self.ui.rankView)
@@ -1796,7 +1797,7 @@ class SoftwareCenter(QMainWindow):
                     app_name = res['aid']['app_name']
                     install_date = res['date']
                     app = self.appmgr.get_application_by_name(app_name)
-                    if app is None:
+                    if app is None or app.package is None:
                         continue
                     app.install_date = install_date
                     item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
@@ -1847,7 +1848,7 @@ class SoftwareCenter(QMainWindow):
 
                     else:
                         app = self.appmgr.get_application_by_name(app_name)
-                        if app is not None:
+                        if app is not None and app.package is not None:
                             app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
                             if res["type"] == "appname":
                                 app.transname = res["transl"]
@@ -1915,7 +1916,7 @@ class SoftwareCenter(QMainWindow):
     def slot_click_ad(self, ad):
         if(ad.type == "pkg"):
             app = self.appmgr.get_application_by_name(ad.urlorpkgid)
-            if app is not None:
+            if app is not None and app.package is not None:
                 self.slot_show_app_detail(app)
         elif(ad.type == "url"):
             webbrowser.open_new_tab(ad.urlorpkgid)
@@ -1923,7 +1924,7 @@ class SoftwareCenter(QMainWindow):
     def slot_click_rank_item(self, item):
         pkgname = item.whatsThis()
         app = self.appmgr.get_application_by_name(str(pkgname))
-        if app is not None:
+        if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
         else:
             LOG.debug("rank item does not have according app...")
@@ -2067,7 +2068,7 @@ class SoftwareCenter(QMainWindow):
             count = 0
             for appname in self.searchList:
                 app = self.appmgr.get_application_by_name(appname)
-                if app is None:
+                if app is None or app.package is None:
                     continue
                 count = count + 1
             self.goto_search_page()
@@ -2088,7 +2089,7 @@ class SoftwareCenter(QMainWindow):
             self.messageBox.alert_msg("安装本地包失败!")
 
         app = self.appmgr.get_application_by_name(name)
-        if app is not None:
+        if app is not None and app.package is not None:
             app.percent = percent
 
         if action == AppActions.UPDATE:
@@ -2119,7 +2120,7 @@ class SoftwareCenter(QMainWindow):
                 self.updateSinglePB.value_change(percent)
         else:
             if processtype == 'cancel':
-                if app is not None:
+                if app is not None and app.package is not None:
                     app.percent = 0
                     if action == AppActions.INSTALL:
                         app.status = PkgStates.INSTALL
@@ -2148,7 +2149,7 @@ class SoftwareCenter(QMainWindow):
                 if processtype=='apt' and int(percent)>=200:
                     # (install debfile deps finish) is not the (install debfile task) finish
                     if(action != AppActions.INSTALLDEPS):
-                        if app is not None:
+                        if app is not None and app.package is not None:
                             app.percent = 0
                         self.emit(Signals.apt_process_finish, name, action)
                         self.emit(Signals.normalcard_progress_finish, name)

@@ -330,7 +330,7 @@ class AppManager(QObject):
         #
         for (catname, cat) in self.cat_list.iteritems(): #get app in cat which init in uksc startup
             app = cat.get_application_byname(pkgname)
-            if app is not None:
+            if app is not None and app.package is not None:
                 return app
 
         pkg = self.get_package_by_name(pkgname)
@@ -423,7 +423,12 @@ class AppManager(QObject):
     #then we can sync with the archive
     def get_ubuntukylin_apps(self):
         print "we need to get the applications by condition recommend"
-        return self.get_category_apps("ubuntukylin")
+        apps = self.get_category_apps("ubuntukylin")
+        for(pkgname, app) in apps:
+            if app is None or app.package is None:
+                del apps[pkgname]
+        return apps
+
 
     #get rating and review status
     def get_rating_review_stats(self,callback=None):
@@ -446,7 +451,7 @@ class AppManager(QObject):
         item = WorkerItem("get_reviews",kwargs)
 
         app = self.get_application_by_name(pkgname)
-        if app is not None:
+        if app is not None and app.package is not None:
             reviews = app.get_reviews(page)
 
         # force == True means need get review from server immediately
@@ -463,7 +468,7 @@ class AppManager(QObject):
     def get_application_screenshots(self,pkgname, cachedir=UBUNTUKYLIN_RES_SCREENSHOT_PATH, callback=None):
         LOG.debug("request to get screenshots:%s",pkgname)
         app = self.get_application_by_name(pkgname)
-        if app is None:
+        if app is None or app.package is None:
             return False
 
         kwargs = {"packagename": pkgname,
@@ -495,7 +500,7 @@ class AppManager(QObject):
             page = item.kwargs['page']
 
             app = self.get_application_by_name(item.kwargs['packagename'])
-            if app is not None:
+            if app is not None and app.package is not None:
                 app.add_reviews(page,reviews)
             else:
                 print item.kwargs['packagename'], " not exist"
@@ -505,7 +510,7 @@ class AppManager(QObject):
             LOG.debug("screenshots ready:%s",len(reslist))
             screenshots = reslist
             app = self.get_application_by_name(item.kwargs['packagename'])
-            if app is not None:
+            if app is not None and app.package is not None:
                 app.screenshots = screenshots
             else:
                 print item.kwargs['packagename'], " not exist"
@@ -519,7 +524,7 @@ class AppManager(QObject):
 
             for rnrStat in rnrStats:
                 app = self.get_application_by_name(str(rnrStat.pkgname))
-                if app is not None:
+                if app is not None and app.package is not None:
                     app.ratings_average = rnrStat.ratings_average
                     app.ratings_total = rnrStat.ratings_total
                 if(str(rnrStat.pkgname) == "gparted"):
