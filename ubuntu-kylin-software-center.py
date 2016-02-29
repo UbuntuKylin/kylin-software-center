@@ -75,7 +75,6 @@ mainloop = DBusGMainLoop(set_as_default=True)
 
 LOG = logging.getLogger("uksc")
 
-
 class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
@@ -746,6 +745,7 @@ class SoftwareCenter(QMainWindow):
 
     # add by kobe
     def init_win_solution_widget(self):
+        self.winListWidget.clear()
         self.winnum = 0
         self.win_model.init_data_model()
         category_list = self.win_model.get_win_category_list()#win替换分类在xp数据表中的所有分类列表，无重复
@@ -1682,6 +1682,9 @@ class SoftwareCenter(QMainWindow):
         # self.ui.btnCloseDetail.setVisible(False)
 
     def slot_goto_winpage(self, ishistory=False):
+
+        self.init_win_solution_widget()
+        self.emit(Signals.count_application_update)
         Globals.NOWPAGE = PageStates.WINPAGE
         # self.prePage = "winpage"
         # self.nowPage = 'winpage'
@@ -1706,9 +1709,6 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar_focus_one()
         self.ui.btnWin.setEnabled(False)
 
-        if not self.win_exists:
-            self.init_win_solution_widget()
-            self.emit(Signals.count_application_update)
 
     def slot_goto_uapage(self):
         Globals.NOWPAGE = PageStates.UAPAGE
@@ -2146,7 +2146,7 @@ class SoftwareCenter(QMainWindow):
             #         del self.stmap[name]
             #         #self.emit(Signals.apt_process_cancel,name,action)
             else:
-                if processtype=='apt' and int(percent)>=200:
+                if processtype =='apt' and int(percent)>=200:
                     # (install debfile deps finish) is not the (install debfile task) finish
                     if(action != AppActions.INSTALLDEPS):
                         if app is not None and app.package is not None:
