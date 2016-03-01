@@ -2166,14 +2166,14 @@ class SoftwareCenter(QMainWindow):
                             taskitem.status_change(processtype, percent, msg)
                     self.emit(Signals.normalcard_progress_change, name, percent, action)
 
-        if percent < 0 and app is not None:
+        if percent < 0 and app is not None and app.package is not None:
             print percent
             self.slot_cancel_for_work_filed(name, action)
         if int(percent) == int(-9):
-            buttom = QMessageBox.information(self,"升级软件包出错",name + "升级包不存在，您可能在软件中心运行过程中更新了源！\n比如使用了命令:sudo apt-get update","知道了","","",0,0)
+            buttom = QMessageBox.information(self,"升级软件包出错",name + "找不到对应的升级包，您可能在软件中心运行过程中更新了源！\n比如使用了命令:sudo apt-get update","知道了","","",0,0)
 
-        if int(percent) == int(-11):
-            buttom = QMessageBox.information(self,"升级软件包出错",name + "软件包不存在，您可能在软件中心运行过程中更新了源！\n比如使用了命令:sudo apt-get update","知道了","","",0,0)
+        if int(percent) == int(-1):
+            buttom = QMessageBox.information(self,"升级软件包出错",name + "找不到对应的安装包，您可能在软件中心运行过程中更新了源！\n比如使用了命令:sudo apt-get update","知道了","","",0,0)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:

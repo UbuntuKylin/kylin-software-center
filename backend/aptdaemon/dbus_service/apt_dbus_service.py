@@ -223,7 +223,6 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print "####del_worker_item_by_name finished!"
 
     def check_cancel_worker_item(self, cancelinfo):
-#        print "####check_cancel_worker_item:",pkgname
         cancel = False
         self.cancelmutex.acquire()
 #        print "check_cancel_worker_item:",len(self.cancel_name_list)

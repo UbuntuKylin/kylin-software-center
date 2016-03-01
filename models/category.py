@@ -83,11 +83,12 @@ class Category:
         all = 0
         if(self.apps is not None):
             for (appname, app) in self.apps.iteritems():
-                all = all + 1
-                if app.is_installed:
-                    inst = inst + 1
-                if app.is_upgradable:
-                    up = up + 1
+                if app.package is not None:
+                    all = all + 1
+                    if app.is_installed:
+                        inst = inst + 1
+                    if app.is_upgradable:
+                        up = up + 1
 
         return (inst, up, all)
 

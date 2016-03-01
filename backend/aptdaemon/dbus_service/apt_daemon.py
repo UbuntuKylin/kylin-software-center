@@ -123,9 +123,9 @@ class FetchProcess(apb.AcquireProgress):
         self.dbus_service.software_fetch_signal("down_pulse",kwarg)
 
         # cancel the operation
-        if self.dbus_service.check_cancel_worker_item(self.appname) is True:
-            self.dbus_service.software_fetch_signal("down_cancel",kwarg)
-            return False
+        # if self.dbus_service.check_cancel_worker_item(self.appname) is True:
+        #     self.dbus_service.software_fetch_signal("down_cancel",kwarg)
+        #     return False
 
     def start(self):
         # Reset all our values.
@@ -146,13 +146,12 @@ class FetchProcess(apb.AcquireProgress):
         self.dbus_service.software_fetch_signal("down_start", kwarg)
 
     def stop(self):
-#        print 'fetch progress stop ...'
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(200),
                  "action":str(self.action),
                  }
         if self.total_items > 0 and (self.current_items / self.total_items) < 1:
-            kwarg["download_percent"] = str(-12)
+            kwarg["download_percent"] = str(-15)
         if self.action == "update" or self.action == "update_first":
             self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
@@ -218,6 +217,22 @@ class AptProcess(apb.InstallProgress):
 
 
 #class AptDaemon(threading.Thread):
+"""
+error number:
+1           本地cache不存在软件包
+2           下载失败
+3           dpkg锁被占用
+4           本地deb包读取出错
+5           本地deb包未知错误
+6           安装本地deb包出错
+7           在线安装出错（重复安装）
+8           在线安装未知错误
+9           升级出错（没有对应升级包）
+10          升级未知错误
+11          卸载出错（未安装）
+12          卸载未知错误
+13          更新未知错误
+"""
 class AptDaemon():
 
     def __init__(self, dbus_service):
@@ -232,7 +247,7 @@ class AptDaemon():
         try:
             return self.cache[pkgName]
         except KeyError:
-            raise WorkitemError(11, "Package %s is not  available" % pkgName)
+            raise WorkitemError(1, "Package %s is not  available" % pkgName)
         # except Exception, e:
         #     print e
         #     return "ERROR"
@@ -245,8 +260,8 @@ class AptDaemon():
             debfile = DebPackage(path)
         except IOError:
             raise WorkitemError(4, "%s is unreadable file" % path)
-        except Exception as error:
-            raise WorkitemError(5, str(error))
+        except Exception as e:
+            raise WorkitemError(5, e.message)
         pkgName = debfile._sections["Package"]
         # try:
         res = debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
@@ -272,8 +287,7 @@ class AptDaemon():
             try:
                 self.cache.commit(FetchProcess(self.dbus_service, pkgName, AppActions.INSTALLDEPS), AptProcess(self.dbus_service, pkgName, AppActions.INSTALLDEPS))
             except Exception, e:
-                print e
-                print "install err"
+                raise WorkitemError(6, e.message)
 
     # install package
     def install(self, pkgName, kwargs=None):
@@ -290,28 +304,7 @@ class AptDaemon():
         except apt.cache.LockFailedException:
             raise WorkitemError(3, "package manager is running.")
         except Exception as e:
-            raise WorkitemError(13, "unknown error")
-        # except Exception, e:
-        #     print e
-        #     print "install err"
-
-    # uninstall package
-    def remove(self, pkgName, kwargs=None):
-        self.cache.open()
-        pkg = self.get_pkg_by_name(pkgName)
-        if pkg.is_installed and not pkg.installed_files:
-            raise WorkitemError(8, "Package %s isn't installed" % pkgName)
-        pkg.mark_delete()
-
-        try:
-            self.cache.commit(None, AptProcess(self.dbus_service,pkgName,AppActions.REMOVE))
-        except apt.cache.LockFailedException:
-            raise WorkitemError(3, "package manager is running.")
-        except Exception as error:
-            raise WorkitemError(13, "unknown error")
-        # except Exception, e:
-        #     print e
-        #     print "uninstall err"
+            raise WorkitemError(8, e.message)
 
     # update package
     def upgrade(self, pkgName, kwargs=None):
@@ -320,7 +313,7 @@ class AptDaemon():
         if pkg.is_installed and not pkg.installed_files:
             raise WorkitemError(8, "Package %s isn't installed" % pkgName)
         if pkg.is_upgradable is False:
-            raise WorkitemError(9, "Package %s isn't installed" % pkgName)
+            raise WorkitemError(9, "Package %s can't be upgraded" % pkgName)
         pkg.mark_upgrade()
 
         try:
@@ -330,10 +323,23 @@ class AptDaemon():
         except apt.cache.LockFailedException:
             raise WorkitemError(3, "package manager is running.")
         except Exception as e:
-            raise WorkitemError(13, "unknown error")
-        # except Exception, e:
-        #     print e
-        #     print "update err"
+            raise WorkitemError(10, e.message)
+
+    # uninstall package
+    def remove(self, pkgName, kwargs=None):
+        self.cache.open()
+        pkg = self.get_pkg_by_name(pkgName)
+        if pkg.is_installed and not pkg.installed_files:
+            raise WorkitemError(11, "Package %s isn't installed" % pkgName)
+        pkg.mark_delete()
+
+        try:
+            self.cache.commit(None, AptProcess(self.dbus_service,pkgName,AppActions.REMOVE))
+        except apt.cache.LockFailedException:
+            raise WorkitemError(3, "package manager is running.")
+        except Exception as e:
+            raise WorkitemError(12, e.message)
+
 
     # apt-get update
     def update(self, taskName, kwargs=None):
@@ -345,11 +351,11 @@ class AptDaemon():
             if quiet == True:
                 self.cache.update()
             else:
-                print "quiet=False"
                 self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
-        except Exception, e:
-            print e
-            print "update except"
+        except Exception as e:
+            raise WorkitemError(13, e.message)
+        else:
+            self.cache.open()
 
     # apt-get update first launch os
     def update_first(self, taskName, kwargs=None):
@@ -359,14 +365,13 @@ class AptDaemon():
 
         try:
             if quiet == True:
-                print "quiet=True"
                 self.cache.update()
             else:
-                print "quiet=False"
                 self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE_FIRST))
         except Exception, e:
-            print e
-            print "update except"
+            raise WorkitemError(13, e.message)
+        else:
+            self.cache.open()
 
     # check package status by pkgName, i = installed u = can update n = notinstall
     def check_pkg_status(self, pkgName):

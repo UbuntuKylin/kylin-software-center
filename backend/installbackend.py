@@ -118,10 +118,10 @@ class InstallBackend(QObject):
             itempercent = str(int(kwarg['download_items'])) + "/" + str(int(kwarg['total_items']))
             sendMsg = sendMsg + "(" + sizepercent + ")" + "(" + itempercent + ")"
 
-        if(type == "down_cancel"):
-            sendType = "cancel"
-#            sendMsg = "操作取消"
-            percent = -1
+#         if(type == "down_cancel"):
+#             sendType = "cancel"
+# #            sendMsg = "操作取消"
+#             percent = -1
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
