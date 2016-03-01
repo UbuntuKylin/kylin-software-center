@@ -343,15 +343,16 @@ class AptDaemon():
 
     # apt-get update
     def update(self, taskName, kwargs=None):
-        quiet = False
-        if kwargs is not None:
-            quiet = int(kwargs["quiet"])
+        self.cache.open()
+        # quiet = False
+        # if kwargs is not None:
+        #     quiet = int(kwargs["quiet"])
 
         try:
-            if quiet == True:
-                self.cache.update()
-            else:
-                self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
+            # if quiet == True:
+            #     self.cache.update()
+            # else:
+            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE))
         except Exception as e:
             raise WorkitemError(13, e.message)
         else:
@@ -359,15 +360,16 @@ class AptDaemon():
 
     # apt-get update first launch os
     def update_first(self, taskName, kwargs=None):
-        quiet = False
-        if kwargs is not None:
-            quiet = int(kwargs["quiet"])
+        self.cache.open()
+        # quiet = False
+        # if kwargs is not None:
+        #     quiet = int(kwargs["quiet"])
 
         try:
-            if quiet == True:
-                self.cache.update()
-            else:
-                self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE_FIRST))
+            # if quiet == True:
+            #     self.cache.update()
+            # else:
+            self.cache.update(fetch_progress=FetchProcess(self.dbus_service,taskName,AppActions.UPDATE_FIRST))
         except Exception, e:
             raise WorkitemError(13, e.message)
         else:

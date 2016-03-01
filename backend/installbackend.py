@@ -122,6 +122,8 @@ class InstallBackend(QObject):
 #             sendType = "cancel"
 # #            sendMsg = "操作取消"
 #             percent = -1
+        if type == "down_fetch":
+            print "正在下载：",kwarg["uri"]
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 

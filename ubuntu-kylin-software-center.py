@@ -79,7 +79,7 @@ class SoftwareCenter(QMainWindow):
 
     # recommend number in function "fill"
     recommendNumber = 0
-    mainwindow_show = False
+    first_start = True
     # pre page
     # prePage = ''
     # now page
@@ -691,8 +691,6 @@ class SoftwareCenter(QMainWindow):
             self.show_homepage()
             self.launchLoadingDiv.stop_loading()
             self.show_mainwindow()
-            self.mainwindow_show = True
-
             # self.trayicon.show()
 
             # user clicked local deb file, show info
@@ -703,7 +701,9 @@ class SoftwareCenter(QMainWindow):
                 self.hide()
 
             # base loading finish, start backend work
-            self.start_silent_work()
+            if True == self.first_start:
+                self.start_silent_work()
+            self.first_start = False
             self.ads_ready = self.rec_ready = False
 
     # silent background works
@@ -1313,7 +1313,7 @@ class SoftwareCenter(QMainWindow):
         self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
         windowWidth = QApplication.desktop().width()
         windowHeight = QApplication.desktop().height()
-        if self.mainwindow_show != True:
+        if True == self.first_start:
             self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
     #-------------------------------------------------slots-------------------------------------------------
