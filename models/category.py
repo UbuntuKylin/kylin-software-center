@@ -75,6 +75,9 @@ class Category:
             app = self.apps[pkgname]
         except:
             app = None
+        else:
+            if app.package.candidate is None:
+                app = None
         return app
 
     def get_application_count(self):
@@ -83,12 +86,13 @@ class Category:
         all = 0
         if(self.apps is not None):
             for (appname, app) in self.apps.iteritems():
-                if app.package is not None:
-                    all = all + 1
-                    if app.is_installed:
-                        inst = inst + 1
-                    if app.is_upgradable:
-                        up = up + 1
+                if app.package is None or app.package.candidate is None:
+                    continue
+                all = all + 1
+                if app.is_installed:
+                    inst = inst + 1
+                if app.is_upgradable:
+                    up = up + 1
 
         return (inst, up, all)
 

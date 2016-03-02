@@ -364,6 +364,9 @@ class AppManager(QObject):
             package = self.apt_cache[pkgname]
         except:
             package = None
+        else:
+            if package.candidate is None:
+                package = None
 
         return package
 
@@ -383,7 +386,6 @@ class AppManager(QObject):
                 if package is None:
                     continue
 
-                sum_all = sum_all + 1
                 if package.is_installed:
                     sum_inst = sum_inst + 1
                 if package.is_upgradable:

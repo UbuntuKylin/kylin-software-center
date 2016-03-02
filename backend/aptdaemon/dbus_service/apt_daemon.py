@@ -245,9 +245,15 @@ class AptDaemon():
     def get_pkg_by_name(self, pkgName):
 #        print pkgName
         try:
-            return self.cache[pkgName]
+            pkg = self.cache[pkgName]
         except KeyError:
             raise WorkitemError(1, "Package %s is not  available" % pkgName)
+        else:
+            if pkg.candidate is None:
+                raise WorkitemError(1, "Package %s is not  available" % pkgName)
+            else:
+                return pkg
+
         # except Exception, e:
         #     print e
         #     return "ERROR"
