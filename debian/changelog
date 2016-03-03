@@ -1,3 +1,16 @@
+ubuntu-kylin-software-center (1.3.8) xenial; urgency=medium
+
+  * fixed bug LP: #1550107,"Sudo apt-get update" command can not be 
+    fully implemented.
+  * LP: #1550099,Click on the close button in the prompt box for source 
+    update is invalid.
+  * LP: #1538152,After the system has started up for the first time, 
+    the software sources update operation could not be loaded graphical 
+    interface.
+  * refresh page when update source by uksc.
+
+ -- Shine <shenghuang@ubuntukylin.com>  Thu, 03 Mar 2016 14:22:44 +0800
+
 ubuntu-kylin-software-center (1.3.7) xenial; urgency=medium
 
   * LP: #1535550 can't start uksc without giving password at uksc 
