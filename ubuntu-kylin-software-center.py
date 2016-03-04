@@ -1492,12 +1492,13 @@ class SoftwareCenter(QMainWindow):
         self.ui.wincountlabel.setText(str(self.winnum))
 
     def slot_goto_homepage(self, bysignal = False):
-        if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-            self.appmgr.get_advertisements()
-            self.appmgr.get_recommend_apps()
-            self.appmgr.get_ratingrank_apps()
-        else:
-            self.show_homepage()
+        # if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
+        #     self.appmgr.get_advertisements()
+        #     self.appmgr.get_recommend_apps()
+        #     self.appmgr.get_ratingrank_apps()
+        # else:
+        #     self.show_homepage()
+        self.show_homepage()
 
     def show_homepage(self):
         Globals.NOWPAGE = PageStates.HOMEPAGE
