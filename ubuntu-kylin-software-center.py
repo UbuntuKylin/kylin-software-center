@@ -652,7 +652,7 @@ class SoftwareCenter(QMainWindow):
         # init others
         self.category = ''
 
-        Globals.NOWPAGE = PageStates.HOMEPAGE
+        # Globals.NOWPAGE = PageStates.HOMEPAGE
 
         # self.prePage = "homepage"
         # self.nowPage = "homepage"
@@ -660,7 +660,7 @@ class SoftwareCenter(QMainWindow):
         # init data flags
         self.ads_ready = False
         self.rec_ready = False
-        self.rnr_ready = True
+        self.rank_ready = False
 
         # check uksc upgradable
         self.check_uksc_update()
@@ -673,10 +673,10 @@ class SoftwareCenter(QMainWindow):
 
     # check base init
     def check_init_ready(self):
-        LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rnr_ready)
-
+        LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
+        #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
-        if self.ads_ready and self.rec_ready and self.rnr_ready:
+        if self.ads_ready and self.rec_ready and self.rank_ready:
             # self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
@@ -694,7 +694,7 @@ class SoftwareCenter(QMainWindow):
             # self.trayicon.show()
 
             # user clicked local deb file, show info
-            if(Globals.LOCAL_DEB_FILE != None):
+            if Globals.LOCAL_DEB_FILE != None and self.first_start is True:
                 self.slot_show_deb_detail(Globals.LOCAL_DEB_FILE)
 
             if(Globals.LAUNCH_MODE == 'quiet'):
@@ -704,7 +704,7 @@ class SoftwareCenter(QMainWindow):
             if True == self.first_start:
                 self.start_silent_work()
             self.first_start = False
-            self.ads_ready = self.rec_ready = False
+            self.rec_ready = self.rank_ready = False
 
     # silent background works
     def start_silent_work(self):
@@ -1425,6 +1425,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankWidget.setVisible(True)
 
         self.topratedload.stop_loading()
+        self.rank_ready = True
+        self.check_init_ready()
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
@@ -1492,13 +1494,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.wincountlabel.setText(str(self.winnum))
 
     def slot_goto_homepage(self, bysignal = False):
-        # if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-        #     self.appmgr.get_advertisements()
-        #     self.appmgr.get_recommend_apps()
-        #     self.appmgr.get_ratingrank_apps()
-        # else:
-        #     self.show_homepage()
-        self.show_homepage()
+        if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
+            self.appmgr.get_recommend_apps()
+            self.appmgr.get_ratingrank_apps()
+        else:
+            self.show_homepage()
 
     def show_homepage(self):
         Globals.NOWPAGE = PageStates.HOMEPAGE

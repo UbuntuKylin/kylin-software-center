@@ -276,7 +276,6 @@ class DetailScrollWidget(QScrollArea):
 
     def show_by_local_debfile(self, path):
         # clear reviews
-        Globals.NOWPAGE = PageStates.ALLPAGE
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()

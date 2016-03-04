@@ -657,14 +657,14 @@ class AppManager(QObject):
         applist = []
         for rr in ratingranks:
             app = self.get_application_by_name(rr[0])
-            if(app is not None):
+            if(app is not None and app.package is not None):
                 app.ratingrank = rr[1]
                 try:
                     applist.index(app)
                 except:
                     applist.append(app)
 
-        self.emit(Signals.ratingrank_ready,applist)
+        self.emit(Signals.ratingrank_ready, applist)
 
     def submit_review(self, app_name, content):
         distroseries = get_distro_info()[2]
