@@ -286,15 +286,14 @@ class AptDaemon():
         deps = debfile.missing_deps
 
         if(len(deps) > 0):
-            self.cache.open()
             for pkgn in deps:
+                self.cache.open()
                 pkg = self.get_pkg_by_name(pkgn)
                 pkg.mark_install()
-
-            try:
-                self.cache.commit(FetchProcess(self.dbus_service, pkgName, AppActions.INSTALLDEPS), AptProcess(self.dbus_service, pkgName, AppActions.INSTALLDEPS))
-            except Exception, e:
-                raise WorkitemError(6, e.message)
+                try:
+                    self.cache.commit(FetchProcess(self.dbus_service, pkgn, AppActions.INSTALLDEPS), AptProcess(self.dbus_service, pkgn, AppActions.INSTALLDEPS))
+                except Exception, e:
+                    raise WorkitemError(6, e.message)
 
     # install package
     def install(self, pkgName, kwargs=None):
