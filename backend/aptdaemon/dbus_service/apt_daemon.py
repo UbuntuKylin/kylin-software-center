@@ -244,6 +244,7 @@ class AptDaemon():
     # get package by pkgName
     def get_pkg_by_name(self, pkgName):
 #        print pkgName
+        self.cache.open()
         try:
             pkg = self.cache[pkgName]
         except KeyError:
