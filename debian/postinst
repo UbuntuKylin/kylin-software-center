@@ -13,13 +13,6 @@ if [ "$1" = "configure" ] ; then
     if [ -n "$FLAG" ] ; then
         $PKILL -f -9 ubuntu-kylin-software-center-daemon
     fi
-    
-    echo "configure uksc.db ..."
-    username=$(who am i | awk -F ' ' '{print $1}')
-    ukscdbfile="/home/${username}/.cache/uksc/uksc.db"
-    if [ -e $ukscdbfile ];then
-        rm $ukscdbfile
-    fi
 fi
 
 #DEBHELPER#
