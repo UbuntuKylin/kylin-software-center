@@ -3,21 +3,23 @@
 if [ "$1" = "configure" ] ; then
     PKILL=$(which pkill)
     PGREP=$(which pgrep)
-    FLAG=`$PGREP -f ubuntu-kylin-software-center-daemon`
-    if [ -n "$FLAG" ] ; then
-        $PKILL -f -9 ubuntu-kylin-software-center-daemon
-    fi
     
     FLAG=`$PGREP -f ubuntu-kylin-software-center.py`
     if [ -n "$FLAG" ] ; then
         $PKILL -f -9 ubuntu-kylin-software-center.py
     fi
     
+    FLAG=`$PGREP -f ubuntu-kylin-software-center-daemon`
+    if [ -n "$FLAG" ] ; then
+        $PKILL -f -9 ubuntu-kylin-software-center-daemon
+    fi
+    
     echo "configure uksc.db ..."
-    homedir=`cat /etc/passwd | grep $(whoami) |awk -F: '{print $6}'`
-    ukscdbfile="${homedir}/.cache/uksc/uksc.db"
+    username=$(who am i | awk -F ' ' '{print $1}')
+    ukscdbfile="/home/${username}/.cache/uksc/uksc.db"
     if [ -e $ukscdbfile ];then
         rm $ukscdbfile
+    fi
 fi
 
 #DEBHELPER#
