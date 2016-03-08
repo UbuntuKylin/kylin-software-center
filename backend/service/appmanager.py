@@ -159,13 +159,11 @@ class AppManager(QObject):
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
-        if(f.exists() == False):
-            return True
+        if(f.exists() == True):
+            return False
         else:
-            # fi = QFileInfo(f)
-            # dt = fi.lastModified()
-            # return dt.toString("yyyyMMddhh")
-            # return True
+            if self.sourcelist_need_update():
+                return True
             return False
 
     #open the apt cache and get the package count
@@ -717,6 +715,16 @@ class AppManager(QObject):
 
     def update_exists_data(self, exists, id):
         self.db.update_exists_data(exists, id)
+
+    def sourcelist_need_update(self):
+        res = self.db.need_do_sourcelist_update()
+        if('True' == res):
+            return True
+        else:
+            return False
+
+    def set_check_update_false(self):
+        self.db.set_update_sourcelist_false()
 
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,

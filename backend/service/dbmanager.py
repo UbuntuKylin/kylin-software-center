@@ -46,7 +46,6 @@ QUERY_NAME_CATEGORIES = "select id,app_name,categories,windows_app_name from xp 
 QUERY_APP_ACCORD_CATEGORIES = "select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
 UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
 
-
 class Database:
 
     def __init__(self):
@@ -442,6 +441,16 @@ class Database:
         self.cursor.execute(UPDATE_EXISTS % (exists, id))
         self.connect.commit()
 
+    def need_do_sourcelist_update(self):
+        self.cursor.execute("select value from dict where key=?", ('sourcelist_need_update',))
+        res = self.cursor.fetchall()
+        for item in res:
+            re = item[0]
+            return re
+
+    def set_update_sourcelist_false(self):
+        self.cursor.execute("update dict set value=? where key='sourcelist_need_update'", ("False",))
+        self.connect.commit()
 
 if __name__ == "__main__":
     db = Database()

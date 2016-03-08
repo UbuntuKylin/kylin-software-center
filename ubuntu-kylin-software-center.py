@@ -46,7 +46,7 @@ from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
-from ui.confirmdialog import ConfirmDialog, TipsDialog
+from ui.confirmdialog import ConfirmDialog, TipsDialog, Update_Source_Dialog
 from ui.configwidget import ConfigWidget
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
@@ -562,37 +562,51 @@ class SoftwareCenter(QMainWindow):
 
     def check_source(self):
         if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
-            if(Globals.LAUNCH_MODE == 'quiet'):
-                button = QMessageBox.question(self,"软件源更新提示",
-                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"),
-                                        "更新", "不更新", "退出", 0, 2)
 
-                # show loading and update processbar this moment
-                # self.show()
+            MessageBox = Update_Source_Dialog()
+            if Globals.LAUNCH_MODE == 'quiet':
+                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能，勾选不再提醒将不再弹出提示\n\n请选择:"))
+                MessageBox.exec_()
+                button = MessageBox.clickedButton()
+                # button = MessageBox.question(self,"软件源更新提示",
+                #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"),
+                #                         "更新", "不更新", "退出", 0, 2)
+                #
+                # # show loading and update processbar this moment
+                # # self.show()
                 self.launchLoadingDiv.start_loading("")
+                if MessageBox.checkbox.isChecked():
+                    self.appmgr.set_check_update_false()
 
-                if button == 0:
+                if MessageBox.button_update == button:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
                     res = self.backend.update_source_first_os()
                     if "False" == res:
                         sys.exit(0)
+                # elif button_checkbox == button:
+                #     pass
                 else:
                     sys.exit(0)
             else:
-                button = QMessageBox.question(self,"软件源更新提示",
-                                        self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
-                                        "更新", "不更新", "退出", 0, 2)
+                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"))
+                MessageBox.exec_()
+                button = MessageBox.clickedButton()
+                # button = MessageBox.question(self,"软件源更新提示",
+                #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
+                #                         "更新", "不更新", "退出", 0, 2)
 
                 # show loading and update processbar this moment
                 self.show()
-                if button == 0:
+                if MessageBox.checkbox.isChecked():
+                    self.appmgr.set_check_update_false()
+                if MessageBox.button_update == button:
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
                     res = self.backend.update_source_first_os()
                     if "False" == res:
                         sys.exit(0)
-                elif button == 1:
+                elif MessageBox.button_notupdate == button:
                     self.appmgr.init_models()
                 else:
                     sys.exit(0)
