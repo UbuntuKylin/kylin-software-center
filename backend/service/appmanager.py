@@ -83,11 +83,17 @@ class ThreadWorkerDaemon(threading.Thread):
 
             reslist = []
             if item.funcname == "update_models":
-                self.appmgr._update_models()
+                self.appmgr._update_models(item.kwargs)
             elif item.funcname == "init_models":
-                self.appmgr._init_models()
+                try:
+                    self.appmgr._init_models()
+                except Exception as e:
+                    print e.message
             elif item.funcname == "get_reviews":
-                reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
+                try: #if no network the thread will be crashed, so add try except
+                    reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
+                except Exception as e:
+                    print e.message
             # elif item.funcname == "get_images":
             #     pass
             else:
@@ -113,7 +119,7 @@ class ThreadWorkerDaemon(threading.Thread):
                         #queue.close()
                     except Queue.Empty:
 #                        print "&&&&&&&&&&get error:",queue.qsize()
-                        count  += 1
+                        count += 1
 
                     resLen = queue.qsize()
                 print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),len(reslist)
@@ -184,14 +190,17 @@ class AppManager(QObject):
         self.worklist.append(item)
         self.mutex.release()
 
-    def _update_models(self):
+    def _update_models(self,kwargs):
+        self.open_cache()
         for cname,citem in self.cat_list.iteritems():
             apps = citem.apps
             for aname,app in apps.iteritems():
                 app.update_cache(self.apt_cache)
+        if "update" == kwargs["action"]:
+            self.emit(Signals.count_application_update)
+        self.emit(Signals.refresh_page)
 
     def update_models(self,action, pkgname=""):
-        self.open_cache()
         kwargs = {"packagename": pkgname,
                   "action": action,
                   }
@@ -201,10 +210,6 @@ class AppManager(QObject):
         self.mutex.release()
         if "install_debfile" == action:
             self.update_xapiandb(pkgname)
-        if "update" == action:
-            self._init_models()
-            self.emit(Signals.count_application_update)
-            self.emit(Signals.refresh_page)
 
     def get_category_list_from_db(self):
         list = self.db.query_categories()

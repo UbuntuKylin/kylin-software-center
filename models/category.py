@@ -76,7 +76,7 @@ class Category:
         except:
             app = None
         else:
-            if app.package.candidate is None:
+            if app.package is None or app.package.candidate is None:
                 app = None
         return app
 

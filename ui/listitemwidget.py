@@ -91,19 +91,28 @@ class ListItemWidget(QWidget):
         if (self.app.status in (PkgStates.INSTALLING,PkgStates.REMOVING,PkgStates.UPGRADING)):#zx11.28 keep btn status same in all page
             self.ui.status.hide()
             if self.app.status == PkgStates.INSTALLING:
-                self.ui.btn.setText("正在安装")
+                if self.app.percent > 0:
+                    self.ui.btn.setText("正在安装")
+                else:
+                    self.ui.btn.setText("等待安装")
                 self.ui.btn.setEnabled(False)
                 self.ui.cbSelect.setEnabled(False)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
 
             elif self.app.status == PkgStates.REMOVING:
                 self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("正在卸载")
+                if self.app.percent > 0:
+                    self.ui.btn.setText("正在卸载")
+                else:
+                    self.ui.btn.setText("等待卸载")
                 self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
 
             elif self.app.status == PkgStates.UPGRADING:
                 self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("正在升级")
+                if self.app.percent > 0:
+                    self.ui.btn.setText("正在升级")
+                else:
+                    self.ui.btn.setText("等待升级")
                 self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
 
         else:

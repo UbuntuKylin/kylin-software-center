@@ -44,11 +44,13 @@ class DebFile():
         self.path = path
 
     # check if the deb file is installable
+    @property
     def is_installable(self):
         return self.debfile.check()
 
     # get missing dependencies
     def get_missing_deps(self):
+        self.debfile.check() #do check for get missing_deps
         return self.debfile.missing_deps
 
     # get deb file name, version, installedsize, description

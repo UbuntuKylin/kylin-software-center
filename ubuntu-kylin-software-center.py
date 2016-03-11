@@ -62,6 +62,8 @@ from models.enums import Signals, setLongTextToElideFormat
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 
+from apt.debfile import DebPackage
+
 from utils.commontools import *
 
 import socket
@@ -1178,6 +1180,7 @@ class SoftwareCenter(QMainWindow):
                 taskitem = self.ui.taskListWidget.itemWidget(item)
 
                 if taskitem.app.name == pkgname and taskitem.action == action:
+                    taskitem.ui.status.setText("完成")
                     print "del_task_item: found an item",i,pkgname
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
@@ -1797,7 +1800,7 @@ class SoftwareCenter(QMainWindow):
             self.slot_goto_uapage()
 
         else:
-            self.goto_search_page()
+            self.slot_searchDTimer_timeout()
 
 
     def slot_get_user_applist_over(self, reslist):
@@ -2102,13 +2105,13 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
-        print "########### ", msg
-        if "安装本地包失败!" == msg:
-            self.messageBox.alert_msg("安装本地包失败!")
+        print "########### ", msg," ",name," ",action," ",percent
+        # if "安装本地包失败!" == msg:
+        #     self.messageBox.alert_msg("安装本地包失败!")
+        if action == AppActions.INSTALLDEBFILE and ".deb" == name[-4:]:
+            name = DebPackage(name).pkgname
 
         app = self.appmgr.get_application_by_name(name)
-        if app is not None and app.package is not None:
-            app.percent = percent
 
         if action == AppActions.UPDATE:
             if int(percent) < 0:
@@ -2164,31 +2167,45 @@ class SoftwareCenter(QMainWindow):
             #         del self.stmap[name]
             #         #self.emit(Signals.apt_process_cancel,name,action)
             else:
-                if processtype =='apt' and int(percent)>=200:
-                    # (install debfile deps finish) is not the (install debfile task) finish
-                    if(action != AppActions.INSTALLDEPS):
-                        if app is not None and app.package is not None:
-                            app.percent = 0
+                if app is not None and app.package is not None:
+                    if action == AppActions.INSTALLDEPS:
+                        pass
+                    elif processtype == 'apt' and int(percent) >= 200:
+                        # (install debfile deps finish) is not the (install debfile task) finish
+                        app.percent = 0
                         self.emit(Signals.apt_process_finish, name, action)
                         self.emit(Signals.normalcard_progress_finish, name)
-                        self.del_task_item(name,action,False,True)
-                else:
-                    count = self.ui.taskListWidget.count()
-                    for i in range(count):
-                        item = self.ui.taskListWidget.item(i)
-                        taskitem = self.ui.taskListWidget.itemWidget(item)
-                        if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
-                            taskitem.status_change(processtype, percent, msg)
-                    self.emit(Signals.normalcard_progress_change, name, percent, action)
+                        self.del_task_item(name, action, False, True)
+                    elif percent < 0:
+                        app.percent = percent
+                        count = self.ui.taskListWidget.count()
+                        for i in range(count):
+                            item = self.ui.taskListWidget.item(i)
+                            taskitem = self.ui.taskListWidget.itemWidget(item)
+                            if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                                taskitem.status_change(processtype, percent, msg)
+                        self.slot_cancel_for_work_filed(name, action)
+                        self.appmgr.update_models(action, name)
 
-        if percent < 0 and app is not None and app.package is not None:
-            print percent
-            self.slot_cancel_for_work_filed(name, action)
-        if int(percent) == int(-9):
-            buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n您可能在软件中心运行过程中更新了源！比如使用了命令:sudo apt-get update\n请尝试重启软件中心","知道了","","",0,0)
+                        if int(percent) == int(-9):
+                            buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                        elif int(percent) == int(-1):
+                            buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                        elif int(percent) == int(-11):
+                            buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                        elif int(percent) == int(-7):
+                            self.del_task_item(name, action, False, True)
 
-        if int(percent) == int(-1):
-            buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n您可能在软件中心运行过程中更新了源！比如使用了命令:sudo apt-get update\n请尝试重启软件中心","知道了","","",0,0)
+                    else:
+                        app.percent = percent
+                        count = self.ui.taskListWidget.count()
+                        for i in range(count):
+                            item = self.ui.taskListWidget.item(i)
+                            taskitem = self.ui.taskListWidget.itemWidget(item)
+                            if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                                taskitem.status_change(processtype, percent, msg)
+                        self.emit(Signals.normalcard_progress_change, name, percent, action)
+
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:
@@ -2206,18 +2223,25 @@ class SoftwareCenter(QMainWindow):
 
     # update backend models ready
     def slot_apt_cache_update_ready(self, action, pkgname):
-        if(action == AppActions.UPDATE_FIRST):
-            if(Globals.LAUNCH_MODE == 'quiet'):
+        if action == AppActions.UPDATE_FIRST:
+            if Globals.LAUNCH_MODE == 'quiet':
                 sys.exit(0)
             else:
-                self.updateSinglePB.hide()
-                self.appmgr.init_models()
+                if self.updateSinglePB.isVisible():
+                    self.updateSinglePB.hide()
+                    self.appmgr.init_models()
         else:
             self.emit(Signals.count_application_update)
 
-            msg = "软件" + AptActionMsg[action] + "操作完成"
+            app = self.appmgr.get_application_by_name(pkgname)
+            if app is not None:
+                print app.percent,"ooooooooooooooooooo"
+                if app.percent < 0:
+                    msg = AptActionMsg[action] + "失败"
+                else:
+                    msg = AptActionMsg[action] + "完成"
 
-            if(action == AppActions.UPDATE):
+            if action == AppActions.UPDATE:
                 self.configWidget.slot_update_finish()
                 if(self.configWidget.iscanceled == True):
                     self.messageBox.alert_msg("已取消更新软件源")
@@ -2234,8 +2258,8 @@ class SoftwareCenter(QMainWindow):
         if pkgname == "ubuntu-kylin-software-center" and action == AppActions.REMOVE:
             self.backend.clear_dbus_worklist()
             sys.exit(0)
-        else:
-            self.slot_update_listwidge(pkgname, action)
+        # else:
+        #     self.slot_update_listwidge(pkgname, action)
 
     # user login
     def slot_do_login_account(self):

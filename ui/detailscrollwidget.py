@@ -45,7 +45,6 @@ from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
 
-
 class DetailScrollWidget(QScrollArea):
     mainwindow = ''
     app = None
@@ -276,6 +275,7 @@ class DetailScrollWidget(QScrollArea):
 
     def show_by_local_debfile(self, path):
         # clear reviews
+        self.btns.loading.stop_loading()
         self.reviewpage = 1
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
@@ -331,15 +331,19 @@ class DetailScrollWidget(QScrollArea):
             self.ui.size.setText("安装大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
         self.ui.description.setText(self.debfile.description)
 
-        if(self.debfile.is_installable()):
-            deps = self.debfile.get_missing_deps()
-            if (deps == []):
-                deps = ""
-            self.ui.summary.setText("需要安装的依赖包: " + str(deps))
+        deps = self.debfile.get_missing_deps()
+        if (deps == []):
+            deps = ""
+        self.ui.summary.setText("需要安装的依赖包: " + str(deps))
+
+        if(self.debfile.is_installable):
             self.ui.status.hide()
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
             # self.ui.btnInstall.setText("安装此包")
             # self.ui.btnInstall.setEnabled(True)
+        elif 1 == self.debfile.debfile.compare_to_version_in_cache(True):
+            self.debfile.is_installable = True
+            self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
         else:
             print "it can not be installed......"
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
@@ -349,6 +353,17 @@ class DetailScrollWidget(QScrollArea):
         # self.show()
         self.mainwindow.ui.detailShellWidget.show()
         self.mainwindow.loadingDiv.stop_loading()
+
+        # if 1 == self.debfile.debfile.compare_to_version_in_cache(True):
+        #     button = QMessageBox.warning(self,"版本冲突",
+        #                 self.tr("当前安装包的版本低于已安装版本\n确定要安装更低版本？\n\n请选择:"),
+        #                 "安装", "取消", "", 1, 1)
+        #     if 0 == button:
+        #         self.ui.status.hide()
+        #         self.debfile.is_installable = True
+        #         self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
+        #     else:
+        #         self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
 
     # fill fast property, show ui, request remote property
     def showSimple(self, app):
@@ -906,12 +921,13 @@ class DetailScrollWidget(QScrollArea):
             return
 
         if self.app.name == pkgname:
-            if action == AppActions.INSTALL:
-                self.app.status = PkgStates.INSTALL
+            if action in (AppActions.INSTALL, AppActions.INSTALLDEBFILE):
+                if action == AppActions.INSTALL:
+                    self.app.status = PkgStates.INSTALL
                 self.btns.reset_btns(self.app, PkgStates.INSTALL)#zx 2015.02.09
                 self.ui.status.hide()
-                if self.debfile:
-                    self.debfile = None
+                # if self.debfile:
+                #     self.debfile = None
 
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.UNINSTALL

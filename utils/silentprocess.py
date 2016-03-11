@@ -71,23 +71,26 @@ class SilentProcess(multiprocessing.Process):
 
             print "silent process get one workitem : ", item.funcname
 
-            if item.funcname == "get_all_ratings":
-                self.get_all_ratings()
-            elif item.funcname == "submit_pingback_main":
-                self.submit_pingback_main()
-            elif item.funcname == "submit_pingback_app":
-                self.submit_pingback_app(item.kwargs)
-            elif item.funcname == "get_all_categories":
-                self.get_all_categories()
-            elif item.funcname == "get_all_rank_and_recommend":
-                self.get_all_rank_and_recommend()
-            elif item.funcname == "get_newer_application_info":
-                self.get_newer_application_info()
-            elif item.funcname == "get_newer_application_icon":
-                self.get_newer_application_icon()
-            #**************************************************#
-            elif item.funcname == "update_xapiandb":
-                self.update_xapiandb(item.kwargs)
+            try: #if no network the process will be crashed
+                if item.funcname == "get_all_ratings":
+                    self.get_all_ratings()
+                elif item.funcname == "submit_pingback_main":
+                    self.submit_pingback_main()
+                elif item.funcname == "submit_pingback_app":
+                    self.submit_pingback_app(item.kwargs)
+                elif item.funcname == "get_all_categories":
+                    self.get_all_categories()
+                elif item.funcname == "get_all_rank_and_recommend":
+                    self.get_all_rank_and_recommend()
+                elif item.funcname == "get_newer_application_info":
+                    self.get_newer_application_info()
+                elif item.funcname == "get_newer_application_icon":
+                    self.get_newer_application_icon()
+                #**************************************************#
+                elif item.funcname == "update_xapiandb":
+                    self.update_xapiandb(item.kwargs)
+            except Exception as e:
+                print e.message
             # elif item.funcname == "download_images":
             #     self.download_images()
 

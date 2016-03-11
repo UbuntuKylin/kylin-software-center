@@ -235,9 +235,9 @@ class AppActions:
 AptActionMsg = {
     "install_deps":"安装依赖包",
     "install_debfile":"安装本地包",
-    "install":"安装",
-    "remove":"卸载",
-    "upgrade":"更新",
+    "install":"软件安装",
+    "remove":"软件卸载",
+    "upgrade":"软件升级",
     "update":"源更新",
     "update_first":"源初始化",
 }

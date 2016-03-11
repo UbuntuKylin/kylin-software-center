@@ -31,6 +31,8 @@ import aptsources.sourceslist
 import apt.progress.base as apb
 from apt.debfile import DebPackage
 from apt.cache import FetchFailedException
+import socket
+socket.setdefaulttimeout(30)
 
 import locale
 
@@ -268,14 +270,16 @@ class AptDaemon():
             raise WorkitemError(4, "%s is unreadable file" % path)
         except Exception as e:
             raise WorkitemError(5, e.message)
+
         pkgName = debfile._sections["Package"]
-        # try:
-        res = debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
-        if res:
-            raise WorkitemError(6, "package manager failed")
-        # except Exception, e:
-        #     print e
-        #     print "install debfile err"
+        debfile.check() #do debfile.check for the next to do debfile.missing_deps
+        if 0 == len(debfile.missing_deps):
+            # try:
+            res = debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
+            if res:
+                raise WorkitemError(6, "package manager failed")
+        else:
+            raise WorkitemError(6, "dependence not be satisfied")
 
     # install deps
     def install_deps(self, path, kwargs=None):
@@ -334,7 +338,7 @@ class AptDaemon():
     def remove(self, pkgName, kwargs=None):
         self.cache.open()
         pkg = self.get_pkg_by_name(pkgName)
-        if pkg.is_installed and not pkg.installed_files:
+        if pkg.is_installed is False:
             raise WorkitemError(11, "Package %s isn't installed" % pkgName)
         pkg.mark_delete()
 

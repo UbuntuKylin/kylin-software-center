@@ -116,7 +116,7 @@ class MultiFunctionBtn(QWidget):
         self.app = app
         y = 0
         if self.debfile:#for local deb file
-            if self.debfile.is_installable():
+            if self.debfile.is_installable:
                 self.setBtnEnabledPlus(self.ui.btnInstall, True)
                 self.setBtnEnabledPlus(self.ui.btnRun, False)
                 self.setBtnEnabledPlus(self.ui.btnUpdate, False)
