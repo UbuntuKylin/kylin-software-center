@@ -2261,7 +2261,7 @@ class SoftwareCenter(QMainWindow):
                     msg = AptActionMsg[action] + "失败"
                 else:
                     msg = AptActionMsg[action] + "完成"
-
+                app.percent = 0
             if action == AppActions.UPDATE:
                 self.configWidget.slot_update_finish()
                 if(self.configWidget.iscanceled == True):

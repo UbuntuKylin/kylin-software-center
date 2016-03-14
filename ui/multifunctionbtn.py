@@ -225,8 +225,8 @@ class MultiFunctionBtn(QWidget):
                             self.setBtnEnabledPlus(self.ui.btnUpdate, False)
                             self.ui.btnRun.move(0, y + 82)
                             self.ui.btnInstall.move(0, y + 123)
-                            self.ui.btnUpdate.move(0, y)
-                            self.ui.btnUninstall.move(0, y + 41)
+                            self.ui.btnUpdate.move(0, y + 41)
+                            self.ui.btnUninstall.move(0, y)
                     else:
                         self.setBtnEnabledPlus(self.ui.btnRun, True)
                         if app.is_upgradable is True:
@@ -242,10 +242,8 @@ class MultiFunctionBtn(QWidget):
                             self.ui.btnUpdate.move(0, y + 82)
                             self.ui.btnUninstall.move(0, y + 41)
 
-
                     self.setBtnEnabledPlus(self.ui.btnUninstall, True)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
-
 
             elif(Globals.NOWPAGE == PageStates.UPPAGE or Globals.NOWPAGE == PageStates.SEARCHUPPAGE):
                 if(type == PkgStates.UPDATE):

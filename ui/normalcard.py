@@ -152,8 +152,12 @@ class NormalCard(QWidget):
             self.ui.progressBar.setVisible(True)
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
-            self.ui.progressBar.setValue(self.app.percent)
-            self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
+            if self.app.percent < 0:
+                self.ui.progressBar.setValue(0)
+                self.ui.progresslabel.setText(str(0) + '%')
+            else:
+                self.ui.progressBar.setValue(self.app.percent)
+                self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
 
             if self.app.status == PkgStates.INSTALLING:
                 self.ui.btn.setEnabled(False)
