@@ -86,11 +86,10 @@ class SilentProcess(multiprocessing.Process):
                     self.get_newer_application_info()
                 elif item.funcname == "get_newer_application_icon":
                     self.get_newer_application_icon()
-                #**************************************************#
                 elif item.funcname == "update_xapiandb":
                     self.update_xapiandb(item.kwargs)
             except Exception as e:
-                print e.message
+                print "silent process error:", e.message
             # elif item.funcname == "download_images":
             #     self.download_images()
 

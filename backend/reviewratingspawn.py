@@ -118,7 +118,10 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
             return
 
         #run the function sync
-        func_method(self.kwargs,self.queue)
+        try:
+            func_method(self.kwargs,self.queue)
+        except Exception as e:
+            print "SpawnProcess error: ",e.message
 
         self.event.set()
 

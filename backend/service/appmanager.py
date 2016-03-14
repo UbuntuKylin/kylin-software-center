@@ -88,12 +88,12 @@ class ThreadWorkerDaemon(threading.Thread):
                 try:
                     self.appmgr._init_models()
                 except Exception as e:
-                    print e.message
+                    print "ThreadWorkerDaemon error", e.message
             elif item.funcname == "get_reviews":
                 try: #if no network the thread will be crashed, so add try except
                     reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
                 except Exception as e:
-                    print e.message
+                    print "ThreadWorkerDaemon error", e.message
             # elif item.funcname == "get_images":
             #     pass
             else:
@@ -107,7 +107,7 @@ class ThreadWorkerDaemon(threading.Thread):
                 resLen = queue.qsize()
                 while resLen:
                     try:
-                        count  = 0
+                        count = 0
 #                        print "@@@@@@@@@:",queue.qsize(),item
                         while queue.qsize():
              #               print "@@enter while"
@@ -413,7 +413,7 @@ class AppManager(QObject):
         return rnrStat
 
     #get advertisements, this is now implemented locally
-    def get_advertisements(self):
+    def get_advertisements(self, bysignal=False):
         print "we need to get the advertisements"
         tmpads = []
         tmpads.append(Advertisement("pchomewallpaper", "url", "ad0.png", "adbground0.png", "http://download.pchome.net/wallpaper/"))
@@ -422,7 +422,7 @@ class AppManager(QObject):
         tmpads.append(Advertisement("dota2", "url", "ad3.png", "adbground3.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7687&extra=page%3D1"))
         tmpads.append(Advertisement("pps", "url", "ad4.png", "adbground4.png", "http://dl.pps.tv/pps_linux_download.html"))
         tmpads.append(Advertisement("pchomewallpaper", "url", "ad5.png", "adbground5.png", "http://download.pchome.net/wallpaper/"))
-        self.emit(Signals.ads_ready,tmpads)
+        self.emit(Signals.ads_ready, tmpads, bysignal)
 
     #get apps in ubuntukylin archives, this is now implemented with config file
     #then we can sync with the archive
@@ -620,7 +620,7 @@ class AppManager(QObject):
         self.squeue.put_nowait(item)
         
     # get recommend apps
-    def get_recommend_apps(self):
+    def get_recommend_apps(self, bysignal=False):
         recommends = self.db.get_recommend_apps()
         applist = []
         for rec in recommends:
@@ -629,7 +629,7 @@ class AppManager(QObject):
                 app.recommendrank = rec[1]
                 applist.append(app)
 
-        self.emit(Signals.recommend_ready,applist)
+        self.emit(Signals.recommend_ready, applist, bysignal)
 
     # get pointout apps
     def get_pointout_apps(self):
@@ -655,7 +655,7 @@ class AppManager(QObject):
         self.db.set_pointout_is_show(flag)
 
     # get rating rank apps
-    def get_ratingrank_apps(self):
+    def get_ratingrank_apps(self, bysignal=False):
         ratingranks = self.db.get_ratingrank_apps()
         applist = []
         for rr in ratingranks:
@@ -667,7 +667,7 @@ class AppManager(QObject):
                 except:
                     applist.append(app)
 
-        self.emit(Signals.ratingrank_ready, applist)
+        self.emit(Signals.ratingrank_ready, applist, bysignal)
 
     def submit_review(self, app_name, content):
         distroseries = get_distro_info()[2]

@@ -683,12 +683,12 @@ class SoftwareCenter(QMainWindow):
 
         self.topratedload.start_loading()
 
-        self.appmgr.get_advertisements()
-        self.appmgr.get_recommend_apps()
-        self.appmgr.get_ratingrank_apps()
+        self.appmgr.get_advertisements(False)
+        self.appmgr.get_recommend_apps(False)
+        self.appmgr.get_ratingrank_apps(False)
 
     # check base init
-    def check_init_ready(self):
+    def check_init_ready(self, bysignal=False):
         LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
@@ -704,7 +704,7 @@ class SoftwareCenter(QMainWindow):
             self.ui.centralwidget.show()
             # self.ui.leftWidget.show()
 
-            self.show_homepage()
+            self.show_homepage(bysignal)
             self.launchLoadingDiv.stop_loading()
             self.show_mainwindow()
             # self.trayicon.show()
@@ -1396,7 +1396,7 @@ class SoftwareCenter(QMainWindow):
         if(now > (max - (max / 10))):
             self.show_more_software(listWidget)
 
-    def slot_advertisement_ready(self,adlist):
+    def slot_advertisement_ready(self,adlist, bysignal=False):
         LOG.debug("receive ads ready, count is %d", len(adlist))
         if adlist is not None:
             self.adw = ADWidget(adlist, self)
@@ -1405,9 +1405,9 @@ class SoftwareCenter(QMainWindow):
             self.ui.homecount.setText(str(sum_all))
 
         self.ads_ready = True
-        self.check_init_ready()
+        self.check_init_ready(bysignal)
 
-    def slot_recommend_apps_ready(self,applist):
+    def slot_recommend_apps_ready(self, applist, bysignal):
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
         self.recommendListWidget.clear()
         for app in applist:
@@ -1427,9 +1427,9 @@ class SoftwareCenter(QMainWindow):
 
             self.connect(recommend,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
         self.rec_ready = True
-        self.check_init_ready()
+        self.check_init_ready(bysignal)
 
-    def slot_ratingrank_apps_ready(self, applist):
+    def slot_ratingrank_apps_ready(self, applist, bysignal):
         LOG.debug("receive rating rank apps ready, count is %d", len(applist))
         self.ui.rankView.clear()
         for app in applist:
@@ -1443,7 +1443,7 @@ class SoftwareCenter(QMainWindow):
 
         self.topratedload.stop_loading()
         self.rank_ready = True
-        self.check_init_ready()
+        self.check_init_ready(bysignal)
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
@@ -1512,20 +1512,23 @@ class SoftwareCenter(QMainWindow):
 
     def slot_goto_homepage(self, bysignal = False):
         if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-            self.appmgr.get_recommend_apps()
-            self.appmgr.get_ratingrank_apps()
+            self.appmgr.get_recommend_apps(bysignal)
+            self.appmgr.get_ratingrank_apps(bysignal)
         else:
-            self.show_homepage()
+            self.show_homepage(bysignal)
 
-    def show_homepage(self):
+    def show_homepage(self, bysignal):
+        if bysignal is False:
+            self.ui.btnCloseDetail.setVisible(False)
+            self.ui.detailShellWidget.hide()
+        # else:
+        #     self.ui.detailShellWidget.btns.reset_btns.refresh_btn(self.ui.detailShellWidget.app)
         Globals.NOWPAGE = PageStates.HOMEPAGE
         # self.prePage = "homepage"
-        self.ui.btnCloseDetail.setVisible(False)
         # self.nowPage = 'homepage'
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
-        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
         self.ui.rankWidget.setVisible(True)
@@ -1546,8 +1549,12 @@ class SoftwareCenter(QMainWindow):
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.ALLPAGE:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
             forceChange = True
         else:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
             forceChange = False
         Globals.NOWPAGE = PageStates.ALLPAGE
         # if self.nowPage != 'allpage':
@@ -1556,7 +1563,6 @@ class SoftwareCenter(QMainWindow):
         #     forceChange = False
         # self.prePage = "allpage"
         # self.nowPage = 'allpage'
-        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
         self.categoryBar.reset_categorybar()
@@ -1564,7 +1570,7 @@ class SoftwareCenter(QMainWindow):
         self.categoryBar.show()
         self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
-        self.ui.detailShellWidget.hide()
+
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(True)
@@ -1583,8 +1589,12 @@ class SoftwareCenter(QMainWindow):
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.UPPAGE:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
             forceChange = True
         else:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
             forceChange = False
         Globals.NOWPAGE = PageStates.UPPAGE
         # if self.nowPage != 'uppage':
@@ -1593,7 +1603,6 @@ class SoftwareCenter(QMainWindow):
         #     forceChange = False
         # self.prePage = "uppage"
         # self.nowPage = 'uppage'
-        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
         self.categoryBar.reset_categorybar()
@@ -1601,7 +1610,6 @@ class SoftwareCenter(QMainWindow):
         self.categoryBar.hide()
         self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
-        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1620,8 +1628,12 @@ class SoftwareCenter(QMainWindow):
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.UNPAGE:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
             forceChange = True
         else:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
             forceChange = False
         Globals.NOWPAGE = PageStates.UNPAGE
         # if self.nowPage != 'unpage':
@@ -1630,7 +1642,6 @@ class SoftwareCenter(QMainWindow):
         #     forceChange = False
         # self.prePage = "unpage"
         # self.nowPage = 'unpage'
-        self.ui.btnCloseDetail.setVisible(False)
         # self.ui.categoryView.setEnabled(True)
         # add by kobe
         self.categoryBar.reset_categorybar()
@@ -1638,7 +1649,6 @@ class SoftwareCenter(QMainWindow):
         self.categoryBar.hide()
         self.switch_to_category(self.category, forceChange)
         # self.detailScrollWidget.hide()
-        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1653,7 +1663,10 @@ class SoftwareCenter(QMainWindow):
         self.reset_nav_bar_focus_one()
         self.ui.btnUn.setEnabled(False)
 
-    def goto_search_page(self):
+    def goto_search_page(self, bysignal = False):
+        if bysignal is False:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
 
         if Globals.NOWPAGE == PageStates.HOMEPAGE:
             Globals.NOWPAGE = PageStates.SEARCHHOMEPAGE
@@ -1674,12 +1687,11 @@ class SoftwareCenter(QMainWindow):
         # if self.nowPage != 'searchpage':
         #     self.hisPage = self.nowPage
         # self.nowPage = 'searchpage'
-        self.ui.btnCloseDetail.setVisible(False)
+
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
         # self.detailScrollWidget.hide()
-        self.ui.detailShellWidget.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1702,20 +1714,20 @@ class SoftwareCenter(QMainWindow):
         # self.nowPage = 'taskpage'
         # self.ui.btnCloseDetail.setVisible(False)
 
-    def slot_goto_winpage(self, ishistory=False):
-
+    def slot_goto_winpage(self, bysignal=False):
+        if bysignal is False:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
         self.init_win_solution_widget()
         self.emit(Signals.count_application_update)
         Globals.NOWPAGE = PageStates.WINPAGE
         # self.prePage = "winpage"
         # self.nowPage = 'winpage'
-        self.ui.btnCloseDetail.setVisible(False)
         # self.emit(Signals.count_application_update)
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
         # self.detailScrollWidget.hide()
-        self.ui.detailShellWidget.hide()
         # self.ui.searchBG.setVisible(False)
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1731,14 +1743,15 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnWin.setEnabled(False)
 
 
-    def slot_goto_uapage(self):
+    def slot_goto_uapage(self, bysignal=False):
+        if bysignal is False:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
         Globals.NOWPAGE = PageStates.UAPAGE
         # self.nowPage = 'uapage'
 
         self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
-        self.ui.detailShellWidget.hide()
-
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1754,13 +1767,13 @@ class SoftwareCenter(QMainWindow):
         self.loadingDiv.start_loading("")
         self.appmgr.get_user_applist()
 
-    def slot_goto_translatepage(self):#zx 2015.01.30
+    def slot_goto_translatepage(self, bysignal=False):#zx 2015.01.30
+        if bysignal is False:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
         Globals.NOWPAGE = PageStates.TRANSPAGE
 
-        self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
-        self.ui.detailShellWidget.hide()
-
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
@@ -1791,16 +1804,16 @@ class SoftwareCenter(QMainWindow):
             self.slot_goto_unpage(True)
 
         elif PageStates.WINPAGE == Globals.NOWPAGE:
-            self.slot_goto_winpage()
+            self.slot_goto_winpage(True)
 
         elif PageStates.TRANSPAGE == Globals.NOWPAGE:
-            self.slot_goto_translatepage()
+            self.slot_goto_translatepage(True)
 
         elif PageStates.UAPAGE == Globals.NOWPAGE:
-            self.slot_goto_uapage()
+            self.slot_goto_uapage(True)
 
         else:
-            self.slot_searchDTimer_timeout()
+            self.slot_searchDTimer_timeout(True)
 
 
     def slot_get_user_applist_over(self, reslist):
@@ -2075,7 +2088,7 @@ class SoftwareCenter(QMainWindow):
                 break
 
     # search
-    def slot_searchDTimer_timeout(self):
+    def slot_searchDTimer_timeout(self, bysignal=False):
         self.searchDTimer.stop()
         if self.ui.headercw1.leSearch.text():
             s = self.ui.headercw1.leSearch.text().toUtf8()
@@ -2092,7 +2105,7 @@ class SoftwareCenter(QMainWindow):
                 if app is None or app.package is None:
                     continue
                 count = count + 1
-            self.goto_search_page()
+            self.goto_search_page(bysignal)
 
 
     def slot_search_text_change(self, text):
@@ -2184,17 +2197,26 @@ class SoftwareCenter(QMainWindow):
                             taskitem = self.ui.taskListWidget.itemWidget(item)
                             if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                                 taskitem.status_change(processtype, percent, msg)
-                        self.slot_cancel_for_work_filed(name, action)
-                        self.appmgr.update_models(action, name)
 
                         if int(percent) == int(-9):
-                            buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                            self.slot_cancel_for_work_filed(name, action)
+                            self.appmgr.update_models(action, name)
+                            buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
                         elif int(percent) == int(-1):
-                            buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                            self.slot_cancel_for_work_filed(name, action)
+                            self.appmgr.update_models(action, name)
+                            buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
                         elif int(percent) == int(-11):
-                            buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                            self.slot_cancel_for_work_filed(name, action)
+                            self.appmgr.update_models(action, name)
+                            buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
                         elif int(percent) == int(-7):
+                            self.emit(Signals.apt_process_finish, name, action)
+                            self.emit(Signals.normalcard_progress_finish, name)
                             self.del_task_item(name, action, False, True)
+                        else:
+                            self.slot_cancel_for_work_filed(name, action)
+                            self.appmgr.update_models(action, name)
 
                     else:
                         app.percent = percent
@@ -2235,8 +2257,7 @@ class SoftwareCenter(QMainWindow):
 
             app = self.appmgr.get_application_by_name(pkgname)
             if app is not None:
-                print app.percent,"ooooooooooooooooooo"
-                if app.percent < 0:
+                if app.percent < 0 and app.percent != int(-7):
                     msg = AptActionMsg[action] + "失败"
                 else:
                     msg = AptActionMsg[action] + "完成"
