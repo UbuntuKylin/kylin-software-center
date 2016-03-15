@@ -468,6 +468,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.transDescriptionStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
+# Tow ways go to detailpage 1.from normalcard,recmmandcard,wincard,listitemwidget,they all have app.status 2.from transpage, homepage-rankitem,homepage-ad, then all don't have app.status
         if self.app.status == PkgStates.INSTALL:
             self.btns.stop_work()#zx 2015.01.23 for bug1402527
             self.ui.status.hide()
@@ -494,33 +495,41 @@ class DetailScrollWidget(QScrollArea):
             self.ui.status.show()
         else:
             # click the rank item or ad item on homepage
-            if(Globals.NOWPAGE == PageStates.HOMEPAGE):
+            if Globals.NOWPAGE == PageStates.HOMEPAGE:
+                self.btns.stop_work()
                 if app.pkg_status == PkgStates.INSTALLED:
-                    if(run.get_run_command(app.name) == ""):
+                    if run.get_run_command(app.name) == "":
+                        app.status = PkgStates.NORUN
                         self.btns.reset_btns(app, PkgStates.NORUN)
                     else:
+                        app.status = PkgStates.RUN
                         self.btns.reset_btns(app, PkgStates.RUN)
                     self.ui.status.show()
                 elif app.pkg_status == PkgStates.UNINSTALLED:
+                    app.status = PkgStates.INSTALL
                     self.btns.reset_btns(app, PkgStates.INSTALL)
                     self.ui.status.hide()
                 elif app.pkg_status == PkgStates.UPGRADABLE:
+                    app.status = PkgStates.UPDATE
                     self.btns.reset_btns(app, PkgStates.UPDATE)
                     self.ui.status.show()
-                print 'another status in detail page......'
-                print app.status
+            elif Globals.NOWPAGE == PageStates.TRANSPAGE:
+                self.btns.stop_work()
+                if app.is_installed is True:
+                    self.ui.status.show()
+                    if run.get_run_command(app.name) == "":
+                        app.status = PkgStates.NORUN
+                        self.btns.reset_btns(app, PkgStates.NORUN)
+                    else:
+                        app.status = PkgStates.RUN
+                        self.btns.reset_btns(app, PkgStates.RUN)
+                else:
+                    self.ui.status.hide()
+                    app.status = PkgStates.INSTALL
+                    self.btns.reset_btns(app, PkgStates.INSTALL)
 
         if Globals.NOWPAGE == PageStates.TRANSPAGE:
             self.ui.btn_change.setText("完善翻译")
-            self.ui.status.hide()
-            if app.is_installed is True:
-                if(run.get_run_command(app.name) == ""):
-                    self.btns.reset_btns(app, PkgStates.NORUN)
-                else:
-                    self.btns.reset_btns(app, PkgStates.RUN)
-            else:
-                self.btns.reset_btns(app, PkgStates.INSTALL)
-
             if hasattr(self.app,"transname"):
                 self.ui.name.setText(app.transname)
                 if self.app.transnamestatu is True:

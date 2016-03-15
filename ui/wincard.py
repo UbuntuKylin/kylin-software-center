@@ -362,21 +362,27 @@ class WinCard(QWidget):
                     self.app.status = PkgStates.INSTALL
                     self.ui.btn.setText("安装")
                     self.ui.btn.setEnabled(True)
-                elif action == AppActions.REMOVE:#can not appear on win page
+                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-install-btn-3.png');}")
+                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-install-border.png');}")
+                elif action in (AppActions.REMOVE, AppActions.UPGRADE):#can not appear on win page
                     if(run.get_run_command(self.app.name) == ""):
                         self.app.status = PkgStates.NORUN
                         self.ui.btn.setText("已安装")
                         self.ui.btn.setEnabled(False)
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-un-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-un-border.png');}")
                     else:
                         self.app.status = PkgStates.RUN
                         self.ui.btn.setText("启动")
                         self.ui.btn.setEnabled(True)
-                elif action == AppActions.UPGRADE:
-                    self.app.status = PkgStates.UPDATE
-                    self.ui.btn.setText("升级")
-                    self.ui.btn.setEnabled(True)
-                    self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-up-btn-3.png');}")
-                    self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-up-border.png');}")
+                        self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-run-btn-3.png');}")
+                        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
+                # elif action == AppActions.UPGRADE:
+                #     self.app.status = PkgStates.UPDATE
+                #     self.ui.btn.setText("升级")
+                #     self.ui.btn.setEnabled(True)
+                #     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-up-btn-3.png');}")
+                #     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-up-border.png');}")
 
 class WinGather(object):
     def __init__(self,app_name,display_name,windows_app_name,display_name_windows,description,category):

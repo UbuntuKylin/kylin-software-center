@@ -584,7 +584,7 @@ class SoftwareCenter(QMainWindow):
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
                     res = self.backend.update_source_first_os()
-                    if "False" == res:
+                    if "True" != res:
                         sys.exit(0)
                 # elif button_checkbox == button:
                 #     pass
@@ -606,7 +606,7 @@ class SoftwareCenter(QMainWindow):
                     LOG.info("update source when first start...")
                     self.updateSinglePB.show()
                     res = self.backend.update_source_first_os()
-                    if "False" == res:
+                    if "True" != res:
                         sys.exit(0)
                 elif MessageBox.button_notupdate == button:
                     self.appmgr.init_models()
