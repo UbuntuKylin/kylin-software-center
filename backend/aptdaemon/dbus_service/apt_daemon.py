@@ -152,10 +152,10 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(200),
                  "action":str(self.action),
                  }
-        if self.total_items > 0 and (self.current_items / self.total_items) < 1:
-            kwarg["download_percent"] = str(-15)
         if self.action == "update" or self.action == "update_first":
             self.dbus_service.set_uksc_not_working()
+            if self.total_items > 0 and (self.current_items / self.total_items) < 1:
+                kwarg["download_percent"] = str(-15)
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
