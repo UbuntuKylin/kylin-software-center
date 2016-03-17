@@ -152,6 +152,10 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(200),
                  "action":str(self.action),
                  }
+        if hasattr(self, "percent"):
+            kwarg["download_percent"] = str(self.percent)
+        else:
+            kwarg["download_percent"] = str(0)
         if self.action == "update" or self.action == "update_first":
             self.dbus_service.set_uksc_not_working()
             if self.total_items > 0 and (self.current_items / self.total_items) < 1:

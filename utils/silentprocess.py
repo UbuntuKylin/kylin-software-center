@@ -89,7 +89,7 @@ class SilentProcess(multiprocessing.Process):
                 elif item.funcname == "update_xapiandb":
                     self.update_xapiandb(item.kwargs)
             except Exception as e:
-                print "silent process error:", e.message
+                print "silent process exception:", e.message
             # elif item.funcname == "download_images":
             #     self.download_images()
 
@@ -399,6 +399,7 @@ class SilentProcess(multiprocessing.Process):
             doc = xapian.Document()
             doc.set_data(kwargs["pkgname"])
             doc.add_term(kwargs["pkgname"], 10)
+            print "debfile path:", kwargs["path"]
 
             deb = DebFile(kwargs["path"])
             terms = kwargs["pkgname"]

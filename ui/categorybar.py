@@ -110,7 +110,7 @@ class CategoryBar(QWidget):
         category = str(btn.category_name)
         self.categorytab.move(btn.x(), self.categorytab.y())
         self.categorytab.show()
-        self.emit(Signals.click_categoy, category)
+        self.emit(Signals.click_categoy, category, False)
 
     # add by kobe
     def reset_categorybar(self):

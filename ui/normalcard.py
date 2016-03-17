@@ -152,12 +152,8 @@ class NormalCard(QWidget):
             self.ui.progressBar.setVisible(True)
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
-            if self.app.percent < 0:
-                self.ui.progressBar.setValue(0)
-                self.ui.progresslabel.setText(str(0) + '%')
-            else:
-                self.ui.progressBar.setValue(self.app.percent)
-                self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
+            self.ui.progressBar.setValue(self.app.percent)
+            self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
 
             if self.app.status == PkgStates.INSTALLING:
                 self.ui.btn.setEnabled(False)
@@ -332,7 +328,8 @@ class NormalCard(QWidget):
         self.show()
 
     def enterEvent(self, event):
-        self.delayTimer.start(300)
+        if hasattr(self, "delayTimer"): #if there is app in install upgrade or uninstall in uksc starting there will be error
+            self.delayTimer.start(300)
         # self.switchDirection = 'down'
         # self.switch_animation()
 

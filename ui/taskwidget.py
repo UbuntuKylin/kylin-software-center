@@ -47,10 +47,10 @@ class Taskwidget(QWidget):
 
         self.tasktab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
 
-        btntask1 = TaskButton("正在下载", self.taskPanel)
+        btntask1 = TaskButton("正在处理", self.taskPanel)
         self.btnGroup.addButton(btntask1)
         btntask1.move(0, 0)
-        btntask2 = TaskButton("下载完成", self.taskPanel)
+        btntask2 = TaskButton("处理完成", self.taskPanel)
         self.btnGroup.addButton(btntask2)
         btntask2.move(self.itemwidth+self.spacing, 0)
 
@@ -75,7 +75,7 @@ class TaskButton(QPushButton):
     def __init__(self, displayname, parent=None):
         QPushButton.__init__(self, parent)
 
-        self.resize(100, 16)
+        self.resize(150, 16)
         self.setCheckable(True)
         self.setFocusPolicy(Qt.NoFocus)
 

@@ -528,6 +528,9 @@ class DetailScrollWidget(QScrollArea):
                     app.status = PkgStates.INSTALL
                     self.btns.reset_btns(app, PkgStates.INSTALL)
 
+        if self.app.percent > 0:
+            self.btns.start_work()
+
         if Globals.NOWPAGE == PageStates.TRANSPAGE:
             self.ui.btn_change.setText("完善翻译")
             if hasattr(self.app,"transname"):
@@ -897,7 +900,7 @@ class DetailScrollWidget(QScrollArea):
                     else:
                         self.app.status = PkgStates.RUN
                         self.btns.reset_btns(self.app, PkgStates.RUN)
-                    self.debfile = None
+                    # self.debfile = None
                 else:
                     if (Globals.NOWPAGE == PageStates.UNPAGE or Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
                         self.app.status = PkgStates.UNINSTALL
@@ -933,7 +936,9 @@ class DetailScrollWidget(QScrollArea):
             if action in (AppActions.INSTALL, AppActions.INSTALLDEBFILE):
                 if action == AppActions.INSTALL:
                     self.app.status = PkgStates.INSTALL
-                self.btns.reset_btns(self.app, PkgStates.INSTALL)#zx 2015.02.09
+                    self.btns.reset_btns(self.app, PkgStates.INSTALL)#zx 2015.02.09
+                else:
+                    self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
                 self.ui.status.hide()
                 # if self.debfile:
                 #     self.debfile = None
@@ -948,6 +953,11 @@ class DetailScrollWidget(QScrollArea):
                 self.btns.reset_btns(self.app, PkgStates.UPDATE)#zx 2015.02.09
                 self.ui.status.show()
         self.btns.stop_work()
+
+    def slot_proccess_change(self, pkgname, action):
+        if hasattr(self, "app") and self.app is not None:
+            if self.app.name == pkgname:
+                self.btns.start_work()
 
     def scrollToTop(self):#zx 2015.01.23 for bug1402930
         vsb = self.verticalScrollBar()

@@ -159,7 +159,10 @@ class TaskListItemWidget(QWidget):
                     #print percent
                     self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
-                    self.ui.status.setText("失败")
+                    if int(percent) == int(-7):
+                        self.ui.status.setText("完成")
+                    else:
+                        self.ui.status.setText("失败")
                     self.ui.status.show()
                     self.finish = True
                 elif percent >= 100:

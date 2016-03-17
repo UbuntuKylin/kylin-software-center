@@ -173,7 +173,7 @@ class ConfigWidget(QWidget):
 
     def slot_click_cancel(self):
         self.iscanceled = True
-        self.emit(Signals.task_cancel, "#update")
+        self.emit(Signals.task_cancel, "update", "update")
 
     def slot_click_update(self):
         self.iscanceled = False
