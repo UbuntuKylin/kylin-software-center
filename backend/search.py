@@ -416,6 +416,7 @@ class Search:
     def search_software(self, keyword):
         """search interface"""
         #------Filter out single word in search keyword (include chinese)------
+        self.db.reopen()
         try:
             tem_keyword = unicode(keyword, "utf-8")
         except:

@@ -1737,6 +1737,8 @@ class SoftwareCenter(QMainWindow):
 
     def set_taskwidget_visible_false(self):
         self.ui.taskWidget.setVisible(False)
+        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
 
     def slot_goto_winpage(self, bysignal=False):
         if bysignal is False:
@@ -2251,13 +2253,13 @@ class SoftwareCenter(QMainWindow):
                         self.appmgr.update_models(action, name)
                         buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
                     elif int(percent) == int(-7):
+                        self.messageBox.alert_msg(AptActionMsg[action] + "完成")
                         self.emit(Signals.apt_process_finish, name, action)
                         self.emit(Signals.normalcard_progress_finish, name)
-                        self.messageBox.alert_msg(AptActionMsg[action] + "完成")
                     else:
                         self.slot_cancel_for_work_filed(name, action)
-                        self.appmgr.update_models(action, name)
                         self.messageBox.alert_msg(AptActionMsg[action] + "失败")
+                        self.appmgr.update_models(action, name)
 
                 else:
                     if app is not None and app.package is not None:
@@ -2444,11 +2446,14 @@ class SoftwareCenter(QMainWindow):
             item.ui.cbSelect.setChecked(False)
         self.ui.cbSelectAll.setChecked(False)
 
-        # count = len(items)
-        if(count > 0):
-            self.messageBox.alert_msg("已添加" + str(count) + "个软件到安装队列")
-        else:
+        if 0 == count:
             self.messageBox.alert_msg("请先选取要安装的软件")
+
+        # count = len(items)
+        # if(count > 0):
+        #     self.messageBox.alert_msg("已添加" + str(count) + "个软件到安装队列")
+        # else:
+        #     self.messageBox.alert_msg("请先选取要安装的软件")
 
 
 def check_local_deb_file(url):
