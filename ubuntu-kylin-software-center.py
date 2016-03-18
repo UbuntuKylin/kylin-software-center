@@ -575,7 +575,7 @@ class SoftwareCenter(QMainWindow):
 
             MessageBox = Update_Source_Dialog()
             if Globals.LAUNCH_MODE == 'quiet':
-                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能，勾选不再提醒将不再弹出提示\n\n请选择:"))
+                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
                 MessageBox.exec_()
                 button = MessageBox.clickedButton()
                 # button = MessageBox.question(self,"软件源更新提示",
@@ -606,7 +606,7 @@ class SoftwareCenter(QMainWindow):
                 else:
                     sys.exit(0)
             else:
-                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"))
+                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
                 MessageBox.exec_()
                 button = MessageBox.clickedButton()
                 # button = MessageBox.question(self,"软件源更新提示",
@@ -2171,6 +2171,7 @@ class SoftwareCenter(QMainWindow):
                 self.configWidget.slot_update_status_change(99)
             elif int(percent) >= 200:
                 self.appmgr.update_models(AppActions.UPDATE,"")
+                self.messageBox.alert_msg("更新软件源完成")
             else:
                 self.configWidget.slot_update_status_change(percent)
         elif action == AppActions.UPDATE_FIRST:
