@@ -248,8 +248,6 @@ class AppManager(QObject):
             else:
                 app = Application(pkgname,displayname_cn, cat, self.apt_cache)
                 if app.package and app.package.candidate:
-                    apps[pkgname] = app
-                    Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
                     #if there has special information in db, get them
                     #get_category_apps_from_db: 0 0
                     #display_name, summary, description, rating_average,rating_total,review_total,download_total
@@ -280,6 +278,8 @@ class AppManager(QObject):
                         app.review_total = int(review_total)
                         # if rank is not None:
                         #     app.rank = int(rank)
+                    apps[pkgname] = app
+                    Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
         return apps
 
     def download_category_apps(self,cat,catdir=""):
@@ -672,9 +672,10 @@ class AppManager(QObject):
     def submit_review(self, app_name, content):
         distroseries = get_distro_info()[2]
         language = get_language()
-
-        res = self.premoterauth.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
-
+        try:
+            res = self.premoterauth.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
+        except:
+            res = "False"
         self.emit(Signals.submit_review_over, res)
 
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):
@@ -688,8 +689,10 @@ class AppManager(QObject):
 
 
     def submit_rating(self, app_name, rating):
-        res = self.premoterauth.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
-
+        try:
+            res = self.premoterauth.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
+        except:
+            res = "False"
         self.emit(Signals.submit_rating_over, res)
 
     # update app ratingavg in cache db after user do rating app

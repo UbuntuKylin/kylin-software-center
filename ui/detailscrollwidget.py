@@ -854,7 +854,7 @@ class DetailScrollWidget(QScrollArea):
             self.emit(Signals.show_login)
 
     def slot_submit_rating_over(self, res):
-        if(res != False):
+        if(res != "False"):
             ratingavg = res['rating_avg']
             ratingtotal = res['rating_total']
             self.mainwindow.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
