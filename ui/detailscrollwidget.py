@@ -937,7 +937,7 @@ class DetailScrollWidget(QScrollArea):
                     self.app.status = PkgStates.RUN
                     self.btns.reset_btns(self.app, PkgStates.RUN)
                 self.ui.status.show()
-        self.btns.stop_work()
+            self.btns.stop_work()
 
     def slot_work_cancel(self, pkgname, action):
         if self.app is None:
@@ -963,7 +963,7 @@ class DetailScrollWidget(QScrollArea):
                 self.app.status = PkgStates.UPDATE
                 self.btns.reset_btns(self.app, PkgStates.UPDATE)#zx 2015.02.09
                 self.ui.status.show()
-        self.btns.stop_work()
+            self.btns.stop_work()
 
     def slot_proccess_change(self, pkgname, action):
         if hasattr(self, "app") and self.app is not None:
