@@ -251,6 +251,7 @@ class AppManager(QObject):
                     #if there has special information in db, get them
                     #get_category_apps_from_db: 0 0
                     #display_name, summary, description, rating_average,rating_total,review_total,download_total
+                    app.from_ukscdb = True
                     app.orig_name = app.name#zx2015.01.26
                     app.orig_summary = app.summary
                     app.orig_description = app.description
@@ -346,6 +347,7 @@ class AppManager(QObject):
             app.displayname = app.name
             app.summary = app.summary
             app.description = app.description
+            app.from_uksc = False
 
             cat = self.cat_list["Accessories"]
             cat.apps[pkgname] = app
@@ -684,7 +686,7 @@ class AppManager(QObject):
         try:
             res = self.premoterauth.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
         except:
-             res = "网络出错"
+             res = "False"
         self.emit(Signals.submit_translate_appinfo_over, res)
 
 
@@ -692,7 +694,7 @@ class AppManager(QObject):
         try:
             res = self.premoterauth.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
         except:
-            res = "False"
+            res = False
         self.emit(Signals.submit_rating_over, res)
 
     # update app ratingavg in cache db after user do rating app
@@ -703,14 +705,14 @@ class AppManager(QObject):
         try:
             res = self.premoter.get_user_applist(Globals.USER)
         except:
-            res = "False"
+            res = False
         self.emit(Signals.get_user_applist_over, res)
 
     def get_user_transapplist(self):#zx 2015.01.30
         try:
             res = self.premoter.get_user_transapplist(Globals.USER)
         except:
-            res = "False"
+            res = False
         self.emit(Signals.get_user_transapplist_over, res)
 
 

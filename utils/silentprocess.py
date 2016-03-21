@@ -96,18 +96,20 @@ class SilentProcess(multiprocessing.Process):
     # update rating_avg and rating_total in cache db from server
     def get_all_ratings(self):
         reslist = self.premoter.get_all_ratings()
+        if False != reslist:
+            for rating in reslist:
+                app_name = rating['app_name']
+                rating_avg = str(rating['rating_avg'])
+                rating_total = str(rating['rating_total'])
 
-        for rating in reslist:
-            app_name = rating['app_name']
-            rating_avg = str(rating['rating_avg'])
-            rating_total = str(rating['rating_total'])
+                sql = "update application set rating_total=?,rating_avg=? where app_name=?"
+                self.cursor.execute(sql, (rating_total,rating_avg,app_name))
 
-            sql = "update application set rating_total=?,rating_avg=? where app_name=?"
-            self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+            self.connect.commit()
 
-        self.connect.commit()
-
-        print "all ratings and rating_total update over : ",len(reslist)
+            print "all ratings and rating_total update over : ",len(reslist)
+        else:
+            print "Failed to get all ratings and rating_total"
 
     # submit pingback-main to server
     def submit_pingback_main(self):
@@ -131,52 +133,56 @@ class SilentProcess(multiprocessing.Process):
     # get all categories data from server
     def get_all_categories(self):
         reslist = self.premoter.get_all_categories()
+        if False != reslist:
+            for category in reslist:
+                cid = category['id']
+                name = category['name']
+                display_name = category['display_name']
+                priority = category['priority']
 
-        for category in reslist:
-            cid = category['id']
-            name = category['name']
-            display_name = category['display_name']
-            priority = category['priority']
+                sql = "select count(*) from category where id=?"
+                self.cursor.execute(sql, (cid,))
+                res = self.cursor.fetchall()
+                isexist = ''
+                for item in res:
+                    isexist = item[0]
 
-            sql = "select count(*) from category where id=?"
-            self.cursor.execute(sql, (cid,))
-            res = self.cursor.fetchall()
-            isexist = ''
-            for item in res:
-                isexist = item[0]
+                if(isexist == 1):   # id exist, update
+                    sql = "update category set name=?,display_name=?,priority=? where id=?"
+                    self.cursor.execute(sql, (name,display_name,priority,cid))
+                else:               # id not exist, insert
+                    sql = "insert into category(id,name,display_name,priority,visible) values(?,?,?,?,1)"
+                    self.cursor.execute(sql, (cid,name,display_name,priority))
 
-            if(isexist == 1):   # id exist, update
-                sql = "update category set name=?,display_name=?,priority=? where id=?"
-                self.cursor.execute(sql, (name,display_name,priority,cid))
-            else:               # id not exist, insert
-                sql = "insert into category(id,name,display_name,priority,visible) values(?,?,?,?,1)"
-                self.cursor.execute(sql, (cid,name,display_name,priority))
+            self.connect.commit()
 
-        self.connect.commit()
-
-        print "all categories update over : ",len(reslist)
+            print "all categories update over : ",len(reslist)
+        else:
+            print "Failed to all categories"
 
     # get all rank and recommend data from server
     def get_all_rank_and_recommend(self):
         reslist = self.premoter.get_all_rank_and_recommend()
+        if False != reslist:
+            sql = "delete from rank"
+            self.cursor.execute(sql)
 
-        sql = "delete from rank"
-        self.cursor.execute(sql)
+            for rank in reslist:
+                rid = rank['id']
+                aid = rank['aid']['id']
+                rank_rating = rank['rank_rating']
+                rank_download = rank['rank_download']
+                rank_recommend = rank['rank_recommend']
+                rank_pointout = rank['rank_pointout']
 
-        for rank in reslist:
-            rid = rank['id']
-            aid = rank['aid']['id']
-            rank_rating = rank['rank_rating']
-            rank_download = rank['rank_download']
-            rank_recommend = rank['rank_recommend']
-            rank_pointout = rank['rank_pointout']
+                sql = "insert into rank(id,aid_id,rank_rating,rank_download,rank_recommend,rank_pointout) values(?,?,?,?,?,?)"
+                self.cursor.execute(sql, (rid,aid,rank_rating,rank_download,rank_recommend,rank_pointout))
 
-            sql = "insert into rank(id,aid_id,rank_rating,rank_download,rank_recommend,rank_pointout) values(?,?,?,?,?,?)"
-            self.cursor.execute(sql, (rid,aid,rank_rating,rank_download,rank_recommend,rank_pointout))
+            self.connect.commit()
 
-        self.connect.commit()
-
-        print "all rank and recommend update over : ",len(reslist)
+            print "all rank and recommend update over : ",len(reslist)
+        else:
+            print "Failed to all rank and recommend"
 
     # get newer application info from server
     def get_newer_application_info(self):
@@ -188,52 +194,54 @@ class SilentProcess(multiprocessing.Process):
             last_update_date = item[0]
 
         reslist = self.premoter.get_newer_application_info(last_update_date)
+        if False != reslist:
+            size = len(reslist)
 
-        size = len(reslist)
+            if(size > 0):
+                # update application info to cache db
+                for app in reslist:
+                    aid = app['id']
+                    app_name = app['app_name']
+                    display_name = app['display_name']
+                    display_name_cn = app['display_name_cn']
+                    categories = app['categories']
+                    summary = app['summary']
+                    description = app['description']
+                    command = app['command']
+                    rating_avg = app['rating_avg']
+                    rating_total = app['rating_total']
+                    review_total = app['review_total']
+                    download_total = app['download_total']
+                    # if summary == '':
+                    #     summary = None
+                    # if description == '':
+                    #     description = None
+                    # if command == '':
+                    #     command = None
 
-        if(size > 0):
-            # update application info to cache db
-            for app in reslist:
-                aid = app['id']
-                app_name = app['app_name']
-                display_name = app['display_name']
-                display_name_cn = app['display_name_cn']
-                categories = app['categories']
-                summary = app['summary']
-                description = app['description']
-                command = app['command']
-                rating_avg = app['rating_avg']
-                rating_total = app['rating_total']
-                review_total = app['review_total']
-                download_total = app['download_total']
-                # if summary == '':
-                #     summary = None
-                # if description == '':
-                #     description = None
-                # if command == '':
-                #     command = None
+                    sql = "select count(*) from application where id=?"
+                    self.cursor.execute(sql, (aid,))
+                    res = self.cursor.fetchall()
+                    isexist = ''
+                    for item in res:
+                        isexist = item[0]
 
-                sql = "select count(*) from application where id=?"
-                self.cursor.execute(sql, (aid,))
-                res = self.cursor.fetchall()
-                isexist = ''
-                for item in res:
-                    isexist = item[0]
+                    if(isexist == 1):   # id exist, update
+                        sql = "update application set app_name=?,display_name=?,display_name_cn=?,categories=?,summary=?,description=?,command=?,rating_avg=?,rating_total=?,review_total=?,download_total=? where id=?"
+                        self.cursor.execute(sql, (app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total,aid))
+                    else:               # id not exist, insert
+                        sql = "insert into application(id,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total) values(?,?,?,?,?,?,?,?,?,?,?,?)"
+                        self.cursor.execute(sql, (aid,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total))
 
-                if(isexist == 1):   # id exist, update
-                    sql = "update application set app_name=?,display_name=?,display_name_cn=?,categories=?,summary=?,description=?,command=?,rating_avg=?,rating_total=?,review_total=?,download_total=? where id=?"
-                    self.cursor.execute(sql, (app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total,aid))
-                else:               # id not exist, insert
-                    sql = "insert into application(id,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total) values(?,?,?,?,?,?,?,?,?,?,?,?)"
-                    self.cursor.execute(sql, (aid,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total))
+                # set application info last update date
+                updatetime = reslist[0]['modify_time']
+                self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
 
-            # set application info last update date
-            updatetime = reslist[0]['modify_time']
-            self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
+                self.connect.commit()
 
-            self.connect.commit()
-
-            print "all newer application info update over : ",len(reslist)
+                print "all newer application info update over : ",len(reslist)
+        else:
+            print "failed to get newer application info"
 
     # def download_images(self):
     #     requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
@@ -249,38 +257,40 @@ class SilentProcess(multiprocessing.Process):
             last_update_date = item[0]
 
         reslist = self.premoter.get_newer_application_icon(last_update_date)
+        if False != reslist:
+            size = len(reslist)
 
-        size = len(reslist)
+            if(size > 0):
+                # update application icon to cache icons/
+                for app in reslist:
+                    app_name = app['name']
+                    app_path = app['path']
+                    iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
+                    try:
+                        icon_rul = UK_APP_ICON_URL % {
+                            'pkgname': app_path,
+                        }
+                        urlFile = urllib2.urlopen(icon_rul)
+                        rawContent = urlFile.read()
+                        if rawContent:
+                            localFile = open(iconfile,"wb")
+                            localFile.write(rawContent)
+                            localFile.close()
 
-        if(size > 0):
-            # update application icon to cache icons/
-            for app in reslist:
-                app_name = app['name']
-                app_path = app['path']
-                iconfile = UBUNTUKYLIN_CACHE_ICON_PATH + app_name
-                try:
-                    icon_rul = UK_APP_ICON_URL % {
-                        'pkgname': app_path,
-                    }
-                    urlFile = urllib2.urlopen(icon_rul)
-                    rawContent = urlFile.read()
-                    if rawContent:
-                        localFile = open(iconfile,"wb")
-                        localFile.write(rawContent)
-                        localFile.close()
+                    except urllib2.HTTPError,e:
+                        print e.code
+                    except urllib2.URLError,e:
+                        print str(e)
 
-                except urllib2.HTTPError,e:
-                    print e.code
-                except urllib2.URLError,e:
-                    print str(e)
+                # set application info last update date
+                new_update_time = reslist[0]['modify_time']
+                self.cursor.execute("update dict set value=? where key=?", (new_update_time,'appicon_updatetime'))
 
-            # set application info last update date
-            new_update_time = reslist[0]['modify_time']
-            self.cursor.execute("update dict set value=? where key=?", (new_update_time,'appicon_updatetime'))
+                self.connect.commit()
 
-            self.connect.commit()
-
-            print "all newer application icon update over : ",len(reslist)
+                print "all newer application icon update over : ",len(reslist)
+        else:
+            print "Failed to get  newer application icon"
         
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self, kwargs):

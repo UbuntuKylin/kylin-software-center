@@ -803,7 +803,9 @@ class DetailScrollWidget(QScrollArea):
             self.mainwindow.messageBox.alert_msg("翻译已提交")
         elif(res == 1):
             self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")
-        elif(res == "网络出错"):
+        elif 3 == res:
+            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行翻译")
+        elif(res == "False"):
             self.messageBox.alert_msg("网络连接出错\n"
                                         "提交翻译失败")
         else:
@@ -811,6 +813,9 @@ class DetailScrollWidget(QScrollArea):
                                                  "或其它未知错误")
 
     def slot_submit_review(self):
+        if self.app.from_uksc is not True:
+            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行评论")
+            return
         if(Globals.USER != ''):
             content = str(self.ui.reviewText.toPlainText())
             if(content.strip() != ''):
@@ -843,10 +848,16 @@ class DetailScrollWidget(QScrollArea):
             self.mainwindow.messageBox.alert_msg("对本软件评论过于频繁")
         elif(res == 3):
             self.mainwindow.messageBox.alert_msg("对本软件评论次过多")
+        elif(res == 5):
+            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评论")
         else:
-            self.mainwindow.messageBox.alert_msg("未知错误")
+            self.mainwindow.messageBox.alert_msg("服务器连接失败")
 
     def slot_submit_rating(self, rating):
+        if self.app.from_uksc is not True:
+            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
+            print "ignore submit rating"
+            return
         if(Globals.USER != ''):
             self.submitratingload.start_loading()
             self.emit(Signals.submit_rating, self.app.name, rating)
@@ -854,7 +865,7 @@ class DetailScrollWidget(QScrollArea):
             self.emit(Signals.show_login)
 
     def slot_submit_rating_over(self, res):
-        if(res != "False"):
+        if(res != False):
             ratingavg = res['rating_avg']
             ratingtotal = res['rating_total']
             self.mainwindow.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)

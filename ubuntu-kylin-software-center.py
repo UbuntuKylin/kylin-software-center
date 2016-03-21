@@ -455,6 +455,7 @@ class SoftwareCenter(QMainWindow):
         self.upListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
         self.unListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
         self.searchListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
+        self.winListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
 
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
         self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
@@ -1744,6 +1745,7 @@ class SoftwareCenter(QMainWindow):
         if bysignal is False:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
+            self.winListWidget.scrollToTop()
         self.init_win_solution_widget()
         self.emit(Signals.count_application_update)
         Globals.NOWPAGE = PageStates.WINPAGE
@@ -1776,7 +1778,6 @@ class SoftwareCenter(QMainWindow):
         Globals.NOWPAGE = PageStates.UAPAGE
         # self.nowPage = 'uapage'
 
-        self.ui.btnCloseDetail.setVisible(False)
         self.categoryBar.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1846,7 +1847,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_get_user_applist_over(self, reslist):
         self.userAppListWidget.clear()
-        if reslist == "False":
+        if False == reslist:
             self.messageBox.alert_msg("网络连接出错\n"
                                       "从服务器获取信息失败")
         else:
@@ -1881,7 +1882,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_get_user_transapplist_over(self,reslist):#zx 2015.01.30
         self.userTransAppListWidget.clear()
-        if reslist != "False":
+        if False != reslist:
             if(len(reslist) > 0):
                 self.ui.NoTransItemText.hide()
                 self.ui.NoTransItemWidget.hide()

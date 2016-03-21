@@ -257,21 +257,22 @@ class Database:
             # empty cache, download page 1
             if(count == 0):
                 reviews = self.premoter.get_reviews(package_name, 0, 10)
-                review_total = -1
-                for review in reviews:
-                    id = str(review.id)
-                    review_total = review.aid['review_total']
-                    user_display = review.user_display
-                    content = review.content
-                    date = str(review.date)
-                    date = date.replace('T',' ')
-                    date = date.replace('Z','')
+                if False != reviews:
+                    review_total = -1
+                    for review in reviews:
+                        id = str(review.id)
+                        review_total = review.aid['review_total']
+                        user_display = review.user_display
+                        content = review.content
+                        date = str(review.date)
+                        date = date.replace('T',' ')
+                        date = date.replace('Z','')
 
-                    self.cursor.execute("insert into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
+                        self.cursor.execute("insert into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
 
-                if(review_total != ''):
-                    self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
-                self.connect.commit()
+                    if(review_total != ''):
+                        self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
+                    self.connect.commit()
 
             # normal init, check and download newest reviews
             else:
@@ -287,14 +288,57 @@ class Database:
                 loop = True
                 while loop:
                     reviews = self.premoter.get_reviews(package_name, startpage, 10)
-                    review_total = -1
+                    if False != reviews:
+                        review_total = -1
 
-                    # 0 review on server. break
-                    if(len(reviews) == 0):
-                        break
+                        # 0 review on server. break
+                        if(len(reviews) == 0):
+                            break
 
+                        for review in reviews:
+                            rid = review.id
+                            review_total = review.aid['review_total']
+                            user_display = review.user_display
+                            content = review.content
+                            date = str(review.date)
+                            date = date.replace('T',' ')
+                            date = date.replace('Z','')
+
+                            # download
+                            if(rid != id):
+                                self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (rid,aid,content,user_display,date))
+                            # end download
+                            else:
+                                # stop 'while'
+                                loop = False
+                                # break 'for'
+                                break
+
+                            # cannot find the local newest review from server, break
+                            if(startpage > (review_total / 10 + 1)):
+                                # stop 'while'
+                                loop = False
+                                # break 'for'
+                                break
+
+                        if(review_total != ''):
+                            self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
+
+                        startpage += 1
+
+                        self.connect.commit()
+                    else:
+                        loop = False
+
+        else:
+            # review not enough, download
+            if(count < page * 10):
+                start = (page - 1) * 10
+                reviews = self.premoter.get_reviews(package_name, start, 10)
+                if False != reviews:
+                    review_total = ''
                     for review in reviews:
-                        rid = review.id
+                        id = str(review.id)
                         review_total = review.aid['review_total']
                         user_display = review.user_display
                         content = review.content
@@ -302,51 +346,12 @@ class Database:
                         date = date.replace('T',' ')
                         date = date.replace('Z','')
 
-                        # download
-                        if(rid != id):
-                            self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (rid,aid,content,user_display,date))
-                        # end download
-                        else:
-                            # stop 'while'
-                            loop = False
-                            # break 'for'
-                            break
-
-                        # cannot find the local newest review from server, break
-                        if(startpage > (review_total / 10 + 1)):
-                            # stop 'while'
-                            loop = False
-                            # break 'for'
-                            break
+                        # ignore the same review by id
+                        self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
 
                     if(review_total != ''):
                         self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
-
-                    startpage += 1
-
-                self.connect.commit()
-
-        else:
-            # review not enough, download
-            if(count < page * 10):
-                start = (page - 1) * 10
-                reviews = self.premoter.get_reviews(package_name, start, 10)
-                review_total = ''
-                for review in reviews:
-                    id = str(review.id)
-                    review_total = review.aid['review_total']
-                    user_display = review.user_display
-                    content = review.content
-                    date = str(review.date)
-                    date = date.replace('T',' ')
-                    date = date.replace('Z','')
-
-                    # ignore the same review by id
-                    self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
-
-                if(review_total != ''):
-                    self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
-                self.connect.commit()
+                    self.connect.commit()
 
 
         # all download check over, return reviews to show
