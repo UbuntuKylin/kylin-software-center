@@ -1,3 +1,17 @@
+ubuntu-kylin-software-center (1.3.9) xenial; urgency=medium
+
+  * It supports the display and install, uninstall all the software
+    source software.
+  * Add a list of installed packages.
+  * xapian support all software source inside search.
+  * fixed bug LP: #1552647,Ubuntu Kylin Software Center has failed 
+    to start. 
+  * fixed bug LP: #1530337,The software sources update operation invalid.
+  * fixed bug LP: #1538153,The prompt box for source update still appeared
+    after the software sources update operation has been performed.
+
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 18 Mar 2016 14:21:25 +0800
+
 ubuntu-kylin-software-center (1.3.8) xenial; urgency=medium
 
   * fixed bug LP: #1550107,"Sudo apt-get update" command can not be 
