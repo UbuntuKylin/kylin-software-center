@@ -204,14 +204,14 @@ class Application:
         if not self.reviews.has_key(page):
             self.reviews[page] = reviewlist
 
-    def update_cache(self,apt_cache):
-        if not apt_cache:
+    def update_cache(self, apt_cache):
+        # if not apt_cache:
+        #     self.package = None
+        # else:
+        try:
+            self.package = apt_cache[self.pkgname]
+        except:
             self.package = None
-        else:
-            try:
-                self.package = apt_cache[self.pkgname]
-            except:
-                self.package = None
         self.cache = apt_cache #every app has its own cache, it will take up too much memory or not ?
 
     # def set_status(self, context):
