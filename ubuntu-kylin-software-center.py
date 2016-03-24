@@ -2168,11 +2168,7 @@ class SoftwareCenter(QMainWindow):
             if int(percent) < 0:
                 self.messageBox.alert_msg("软件源更新失败", "Failed")
                 self.configWidget.slot_update_finish()
-            elif int(percent) == 0:
-                self.configWidget.slot_update_status_change(0)
-            elif int(percent) == 100:
-                self.configWidget.slot_update_status_change(99)
-            elif int(percent) >= 200:
+            elif int(percent) >= 100:
                 self.appmgr.update_models(AppActions.UPDATE,"")
                 self.messageBox.alert_msg("更新软件源完成")
             else:
@@ -2180,7 +2176,7 @@ class SoftwareCenter(QMainWindow):
         elif action == AppActions.UPDATE_FIRST:
             print action, percent
             # print "--------------------",percent
-            if int(percent) >= 200:
+            if int(percent) >= 100:
                 self.updateSinglePB.value_change(100)
                 self.updateSinglePB.set_updatelabel_text("源更新完成")
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
