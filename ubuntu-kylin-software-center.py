@@ -625,13 +625,15 @@ class SoftwareCenter(QMainWindow):
                     if "False" == res:
                         self.updateSinglePB.hide()
                         self.messageBox.alert_msg("密码认证失败\n更新源失败", "Failed")
+                        self.appmgr.init_models()
                     elif res is None:
                         self.updateSinglePB.hide()
                         self.messageBox.alert_msg("输入密码超时\n更新源失败", "Failed")
+                        self.appmgr.init_models()
                     elif "True" != res:
                         self.updateSinglePB.hide()
                         self.messageBox.alert_msg("出现未知错误\n更新源失败", "Failed")
-                    self.appmgr.init_models()
+                        self.appmgr.init_models()
                 elif MessageBox.button_notupdate == button:
                     self.appmgr.init_models()
                 else:
@@ -2168,15 +2170,16 @@ class SoftwareCenter(QMainWindow):
             if int(percent) < 0:
                 self.messageBox.alert_msg("软件源更新失败", "Failed")
                 self.configWidget.slot_update_finish()
-            elif int(percent) >= 100:
+            elif int(percent) >= 100 and "下载停止" == msg:
+                self.configWidget.slot_update_status_change(percent)
+                self.configWidget.slot_update_finish()
                 self.appmgr.update_models(AppActions.UPDATE,"")
                 self.messageBox.alert_msg("更新软件源完成")
             else:
                 self.configWidget.slot_update_status_change(percent)
         elif action == AppActions.UPDATE_FIRST:
-            print action, percent
             # print "--------------------",percent
-            if int(percent) >= 100:
+            if int(percent) >= 100 and "下载停止" == msg:
                 self.updateSinglePB.value_change(100)
                 self.updateSinglePB.set_updatelabel_text("源更新完成")
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
@@ -2185,6 +2188,7 @@ class SoftwareCenter(QMainWindow):
                 self.updateSinglePB.set_updatelabel_text("更新源失败")
                 self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
+                self.messageBox.alert_msg("软件源更新失败", "Failed")
             else:
                 self.updateSinglePB.value_change(percent)
         else:
