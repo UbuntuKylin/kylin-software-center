@@ -2170,6 +2170,7 @@ class SoftwareCenter(QMainWindow):
             if int(percent) < 0:
                 self.messageBox.alert_msg("软件源更新失败", "Failed")
                 self.configWidget.slot_update_finish()
+                self.appmgr.update_models(AppActions.UPDATE,"")
             elif int(percent) >= 100 and "下载停止" == msg:
                 self.configWidget.slot_update_status_change(percent)
                 self.configWidget.slot_update_finish()

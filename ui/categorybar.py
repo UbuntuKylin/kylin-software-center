@@ -41,6 +41,8 @@ class CategoryBar(QWidget):
         self.setGeometry(20, 52, 740, 32)
         self.categorytab = QLabel(self)
 
+        self.visiblecategorycount = 0
+
         self.categorytab.setGeometry(0, 27, 53, 5)
         self.categorytab.hide()
         self.categoryPanel = QWidget(self)
@@ -67,6 +69,12 @@ class CategoryBar(QWidget):
         cat_list = sorted(cdata.iteritems(),
                         cmp_rating,
                         reverse=False)
+
+        for item in cat_list:
+            category = item[1]
+            if(category.visible == True):
+                self.visiblecategorycount = self.visiblecategorycount + 1
+
         for item in cat_list:
             category = item[1]
             if(category.visible == True):
@@ -81,9 +89,11 @@ class CategoryBar(QWidget):
 
         self.categorycount = self.categorycount + 1
 
+        if self.visiblecategorycount == self.categorycount:
+            return
         btnvline = CategoryLable(self.categoryPanel)
-        #btnvline.move(x+57, 7)
-        btnvline.move(x-5, 7)
+        btnvline.move(x+57, 7)
+#        btnvline.move(x-5, 7)
 
     def scrollToLeft(self):
         pass

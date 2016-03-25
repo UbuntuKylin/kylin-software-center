@@ -762,7 +762,7 @@ class DetailScrollWidget(QScrollArea):
                 self.type_description = 'True'
             else:
                 self.type_description = 'False'
-                description = "<1_1"
+                description = "<1_1>"
 
             if(self.appname == self.init_name  and self.summary == self.init_summary  and  self.description == self.init_description):
                 self.mainwindow.messageBox.alert_msg("您未翻译或修改任何部分")
@@ -806,14 +806,14 @@ class DetailScrollWidget(QScrollArea):
         elif 3 == res:
             self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行翻译")
         elif(res == "False"):
-            self.messageBox.alert_msg("网络连接出错\n"
+            self.messageBox.alert_msg("连接服务器出错\n"
                                         "提交翻译失败")
         else:
             self.mainwindow.messageBox.alert_msg("翻译的字数过多\n"
                                                  "或其它未知错误")
 
     def slot_submit_review(self):
-        if self.app.from_uksc is not True:
+        if self.app.from_ukscdb is not True:
             self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行评论")
             return
         if(Globals.USER != ''):
@@ -854,7 +854,7 @@ class DetailScrollWidget(QScrollArea):
             self.mainwindow.messageBox.alert_msg("服务器连接失败")
 
     def slot_submit_rating(self, rating):
-        if self.app.from_uksc is not True:
+        if self.app.from_ukscdb is not True:
             self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
             print "ignore submit rating"
             return

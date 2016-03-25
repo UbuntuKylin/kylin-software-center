@@ -347,7 +347,7 @@ class AppManager(QObject):
             app.displayname = app.name
             app.summary = app.summary
             app.description = app.description
-            app.from_uksc = False
+            app.from_ukscdb = False
 
             cat = self.cat_list["Accessories"]
             cat.apps[pkgname] = app
