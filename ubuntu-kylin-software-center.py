@@ -456,6 +456,8 @@ class SoftwareCenter(QMainWindow):
         self.unListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
         self.searchListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
         self.winListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
+        self.userAppListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
+        self.userTransAppListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
 
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
         self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
