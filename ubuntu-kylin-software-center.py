@@ -491,7 +491,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.headercw1.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
 
         self.connect(self, Signals.click_item, self.slot_show_app_detail)
-        self.connect(self, Signals.install_app, self.slot_click_install)
+        self.connect(self, Signals.upgrade_app, self.slot_click_upgrade)
         self.connect(self, Signals.update_source,self.slot_update_source)
         self.connect(self.categoryBar, Signals.click_categoy, self.slot_change_category)
         self.connect(self.Taskwidget, Signals.click_task, self.slot_change_task)

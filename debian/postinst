@@ -4,10 +4,10 @@ if [ "$1" = "configure" ] ; then
     PKILL=$(which pkill)
     PGREP=$(which pgrep)
     
-    FLAG=`$PGREP -f ubuntu-kylin-software-center.py`
-    if [ -n "$FLAG" ] ; then
-        $PKILL -f -9 ubuntu-kylin-software-center.py
-    fi
+#    FLAG=`$PGREP -f ubuntu-kylin-software-center.py`
+#    if [ -n "$FLAG" ] ; then
+#        $PKILL -f -9 ubuntu-kylin-software-center.py
+#    fi
     
     FLAG=`$PGREP -f ubuntu-kylin-software-center-daemon`
     if [ -n "$FLAG" ] ; then
