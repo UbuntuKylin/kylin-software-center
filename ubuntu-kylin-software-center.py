@@ -706,14 +706,13 @@ class SoftwareCenter(QMainWindow):
         self.rec_ready = False
         self.rank_ready = False
 
-        # check uksc upgradable
-        self.check_uksc_update()
-
         self.topratedload.start_loading()
 
         self.appmgr.get_advertisements(False)
         self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
+        # check uksc upgradable
+        self.check_uksc_update()
 
     # check base init
     def check_init_ready(self, bysignal=False):
@@ -1298,7 +1297,7 @@ class SoftwareCenter(QMainWindow):
         self.emit(Signals.cancel_uninstall_uksc, where)
 
     def update_uksc(self):
-        self.emit(Signals.install_app, self.uksc)
+        self.emit(Signals.upgrade_app, self.uksc)
 
     def restart_uksc(self):
         if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
