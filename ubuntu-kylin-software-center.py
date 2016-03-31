@@ -1820,7 +1820,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_user_transapplist()
 
     def slot_refresh_page(self):
-        if self.category != "" and self.category is not None:
+        if self.category != "" and self.category is not None and PageStates.ALLPAGE == Globals.NOWPAGE:
             self.slot_change_category(self.category, True)
 
         elif PageStates.HOMEPAGE == Globals.NOWPAGE:
