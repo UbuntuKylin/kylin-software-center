@@ -2234,7 +2234,7 @@ class SoftwareCenter(QMainWindow):
                     self.del_task_item(name, action, False, True)
                     if name == "ubuntu-kylin-software-center":
                         if action == AppActions.UPGRADE:
-                            cd = ConfirmDialog("软件中心升级完成，重启软件中心？", self)
+                            cd = ConfirmDialog("软件中心升级完成\n重启软件中心？", self)
                             self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
                             cd.exec_()
                         elif action == AppActions.REMOVE:
@@ -2242,7 +2242,7 @@ class SoftwareCenter(QMainWindow):
                             self.backend.exit_uksc_apt_daemon()
                             sys.exit(0)
                         else:
-                            cd = ConfirmDialog("软件中心安装完成，重启软件中心？", self)
+                            cd = ConfirmDialog("软件中心安装完成\n重启软件中心？", self)
                             self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
                             cd.exec_()
                     else:
