@@ -1551,6 +1551,8 @@ class SoftwareCenter(QMainWindow):
         Globals.NOWPAGE = PageStates.HOMEPAGE
         # self.prePage = "homepage"
         # self.nowPage = 'homepage'
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.hide()
         # self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
@@ -1712,7 +1714,8 @@ class SoftwareCenter(QMainWindow):
         # if self.nowPage != 'searchpage':
         #     self.hisPage = self.nowPage
         # self.nowPage = 'searchpage'
-
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(True)
         self.switch_to_category(self.category,True)
@@ -1755,6 +1758,8 @@ class SoftwareCenter(QMainWindow):
         # self.prePage = "winpage"
         # self.nowPage = 'winpage'
         # self.emit(Signals.count_application_update)
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.hide()
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
@@ -1781,6 +1786,8 @@ class SoftwareCenter(QMainWindow):
         Globals.NOWPAGE = PageStates.UAPAGE
         # self.nowPage = 'uapage'
 
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
@@ -1803,6 +1810,8 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnCloseDetail.setVisible(False)
         Globals.NOWPAGE = PageStates.TRANSPAGE
 
+        self.categoryBar.reset_categorybar()
+        self.category = ''
         self.categoryBar.hide()
         self.ui.homepageWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
