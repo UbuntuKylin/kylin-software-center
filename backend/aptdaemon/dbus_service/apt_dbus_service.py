@@ -615,6 +615,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def set_uksc_not_working(self):
         self.worker_thread.uksc_is_working = 0
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='')
+    def exit(self):
+        self.mainloop.quit()
     
 
 if __name__ == '__main__':

@@ -190,6 +190,9 @@ class InstallBackend(QObject):
     def set_uksc_not_working(self):
         return self.call_dbus_iface("set_uksc_not_working")
 
+    def exit_uksc_apt_daemon(self):
+        self.call_dbus_iface("exit")
+
     def get_sources(self,except_ubuntu):
         list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
         resList = []

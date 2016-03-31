@@ -954,7 +954,8 @@ class SoftwareCenter(QMainWindow):
                     self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
 
                     # ads widget
-                    self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
+                    if hasattr(self, "adw"):
+                        self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
 
                     # detail widget
                     self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
@@ -1309,6 +1310,7 @@ class SoftwareCenter(QMainWindow):
 
     def restart_uksc_now(self):
         self.backend.clear_dbus_worklist()
+        self.backend.exit_uksc_apt_daemon()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
 
@@ -2230,13 +2232,19 @@ class SoftwareCenter(QMainWindow):
                     self.emit(Signals.apt_process_finish, name, action)
                     self.emit(Signals.normalcard_progress_finish, name)
                     self.del_task_item(name, action, False, True)
-                    if name == "ubuntu-kylin-software-center" and action == AppActions.UPGRADE:
-                        cd = ConfirmDialog("软件商店升级完成，重启程序？", self)
-                        self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
-                        cd.exec_()
-                    elif name == "ubuntu-kylin-software-center" and action == AppActions.REMOVE:
-                        self.backend.clear_dbus_worklist()
-                        sys.exit(0)
+                    if name == "ubuntu-kylin-software-center":
+                        if action == AppActions.UPGRADE:
+                            cd = ConfirmDialog("软件中心升级完成，重启软件中心？", self)
+                            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+                            cd.exec_()
+                        elif action == AppActions.REMOVE:
+                            self.backend.clear_dbus_worklist()
+                            self.backend.exit_uksc_apt_daemon()
+                            sys.exit(0)
+                        else:
+                            cd = ConfirmDialog("软件中心安装完成，重启软件中心？", self)
+                            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+                            cd.exec_()
                     else:
                         self.messageBox.alert_msg(AptActionMsg[action] + "完成")
 

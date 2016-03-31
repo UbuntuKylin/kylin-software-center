@@ -328,6 +328,11 @@ class AptDaemon():
         if pkg.is_upgradable is False:
             raise WorkitemError(9, "Package %s can't be upgraded" % pkgName)
         pkg.mark_upgrade()
+        if "ubuntu-kylin-software-center" == pkgName:
+            try:
+                os.mknod("/usr/share/ubuntu-kylin-software-center/.uksc_self_upgrade")
+            except:
+                pass
 
         try:
             self.cache.commit(FetchProcess(self.dbus_service,pkgName,AppActions.UPGRADE), AptProcess(self.dbus_service,pkgName,AppActions.UPGRADE))

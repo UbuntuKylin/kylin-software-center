@@ -3,15 +3,21 @@
 if [ "$1" = "configure" ] ; then
     PKILL=$(which pkill)
     PGREP=$(which pgrep)
-    
-#    FLAG=`$PGREP -f ubuntu-kylin-software-center.py`
-#    if [ -n "$FLAG" ] ; then
-#        $PKILL -f -9 ubuntu-kylin-software-center.py
-#    fi
-    
-    FLAG=`$PGREP -f ubuntu-kylin-software-center-daemon`
-    if [ -n "$FLAG" ] ; then
-        $PKILL -f -9 ubuntu-kylin-software-center-daemon
+
+    if [ -f '/usr/share/ubuntu-kylin-software-center/.uksc_self_upgrade' ] ; then
+        echo 'install by uksc'
+        rm /usr/share/ubuntu-kylin-software-center/.uksc_self_upgrade
+    else
+        echo 'install by apt'
+        FLAG=`$PGREP -f ubuntu-kylin-software-center.py`
+        if [ -n "$FLAG" ] ; then
+            $PKILL -f -9 ubuntu-kylin-software-center.py
+        fi
+
+        FLAG=`$PGREP -f ubuntu-kylin-software-center-daemon`
+        if [ -n "$FLAG" ] ; then
+            $PKILL -f -9 ubuntu-kylin-software-center-daemon
+        fi
     fi
 fi
 
