@@ -711,6 +711,8 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_advertisements(False)
         self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
+
+        self.backend.check_dpkg_statu()
         # check uksc upgradable
         self.check_uksc_update()
 

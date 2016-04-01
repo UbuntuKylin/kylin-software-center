@@ -619,7 +619,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def exit(self):
         self.mainloop.quit()
-    
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='')
+    def check_dpkg_statu(self):
+        os.system("dpkg --configure -a")
 
 if __name__ == '__main__':
     os.environ["TERM"] = "xterm"
