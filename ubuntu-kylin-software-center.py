@@ -722,6 +722,8 @@ class SoftwareCenter(QMainWindow):
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
         if self.ads_ready and self.rec_ready and self.rank_ready:
+            (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
+            self.ui.homecount.setText(str(sum_all))
             # self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
@@ -1430,8 +1432,6 @@ class SoftwareCenter(QMainWindow):
         if adlist is not None:
             self.adw = ADWidget(adlist, self)
             self.adw.move(0, 44)
-            (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
-            self.ui.homecount.setText(str(sum_all))
 
         self.ads_ready = True
         self.check_init_ready(bysignal)
@@ -1893,8 +1893,8 @@ class SoftwareCenter(QMainWindow):
                 self.ui.uaNoItemText.show()
                 self.ui.uaNoItemWidget.show()
                 self.userAppListWidget.hide()
-
         self.loadingDiv.stop_loading()
+        self.slot_ua_select_all()
 
     def slot_get_user_transapplist_over(self,reslist):#zx 2015.01.30
         self.userTransAppListWidget.clear()
