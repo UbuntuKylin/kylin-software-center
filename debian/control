@@ -15,7 +15,11 @@ Vcs-Bzr: lp:ubuntu-kylin-software-center
 Package: ubuntu-kylin-software-center
 Architecture: all
 Depends: python-qt4,
+         python-apt,
+         python-gi,
          ubuntu-kylin-sso-client-qt,
+         python-pil,
+         python-imaging,
          python-xdg,
          python-xapian,
          python-piston-mini-client,
