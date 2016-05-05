@@ -1316,6 +1316,7 @@ class SoftwareCenter(QMainWindow):
     def restart_uksc_now(self):
         self.backend.clear_dbus_worklist()
         self.backend.exit_uksc_apt_daemon()
+        self.dbusControler.stop()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
 
@@ -1968,6 +1969,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_exit_uksc(self):
         self.backend.clear_dbus_worklist()
+        self.backend.exit_uksc_apt_daemon()
         self.dbusControler.stop()
         sys.exit(0)
 
@@ -2237,15 +2239,17 @@ class SoftwareCenter(QMainWindow):
                     self.del_task_item(name, action, False, True)
                     if name == "ubuntu-kylin-software-center":
                         if action == AppActions.UPGRADE:
-                            cd = ConfirmDialog("软件中心升级完成\n重启软件中心？", self)
+                            cd = ConfirmDialog("软件中心升级完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
                             self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+                            self.connect(cd, SIGNAL("confirmdialogno"), self.backend.set_uksc_not_working) #if uksc upgrade itself,  the uksc will keep working status untill using func set_uksc_not_working
                             cd.exec_()
                         elif action == AppActions.REMOVE:
                             self.backend.clear_dbus_worklist()
                             self.backend.exit_uksc_apt_daemon()
+                            self.dbusControler.stop()
                             sys.exit(0)
                         else:
-                            cd = ConfirmDialog("软件中心安装完成\n重启软件中心？", self)
+                            cd = ConfirmDialog("软件中心安装完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
                             self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
                             cd.exec_()
                     else:
