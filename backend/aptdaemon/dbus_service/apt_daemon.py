@@ -201,8 +201,11 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(200),
                  "action":str(self.action),
                  }
-        self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_apt_signal("apt_finish", kwarg)
+        if self.appname == "ubuntu-kylin-software-center" and self.action == "upgrade":
+            pass
+        else:
+            self.dbus_service.set_uksc_not_working()
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg

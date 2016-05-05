@@ -1305,12 +1305,13 @@ class SoftwareCenter(QMainWindow):
         self.emit(Signals.upgrade_app, self.uksc)
 
     def restart_uksc(self):
-        if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
-            cd = ConfirmDialog("正在安装或者卸载软件\n现在重启可能导致软件中心异常", self)
-            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc_now)
-            cd.exec_()
-        else:
-            self.restart_uksc_now()
+        self.restart_uksc_now()
+        # if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
+        #     cd = ConfirmDialog("正在安装或者卸载软件\n现在重启可能导致软件中心异常", self)
+        #     self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc_now)
+        #     cd.exec_()
+        # else:
+        #     self.restart_uksc_now()
 
     def restart_uksc_now(self):
         self.backend.clear_dbus_worklist()

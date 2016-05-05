@@ -87,7 +87,7 @@ class WorkThread(threading.Thread):
                 time.sleep(0.5)
                 continue
 
-            if is_file_locked("/var/lib/dpkg/lock") is True:
+            if is_file_locked("/var/lib/dpkg/lock") is True or 1 == self.uksc_is_working:
                 time.sleep(0.5)
                 continue
 
