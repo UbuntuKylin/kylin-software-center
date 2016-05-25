@@ -31,6 +31,8 @@ import os
 
 import locale
 
+import logging
+
 from PyQt4.QtCore import *
 from PyQt4 import QtDBus
 
@@ -49,7 +51,7 @@ mainloop = DBusGMainLoop(set_as_default=True)
 
 #from dbus.mainloop.qt import DBusQtMainLoop
 #mainloop = DBusQtMainLoop()
-
+LOG = logging.getLogger("uksc")
 
 
 class InstallBackend(QObject):
@@ -63,8 +65,9 @@ class InstallBackend(QObject):
     def init_dbus_ifaces(self):
         try:
             bus = dbus.SystemBus(mainloop)
-        except:
+        except Exception as e:
             print "could not initiate dbus"
+            LOG.error("dbus exception:%s" % str(e))
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
             return False
 
@@ -80,11 +83,12 @@ class InstallBackend(QObject):
             self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal)
             self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal)
             self.iface.connect_to_signal("software_auth_signal",self._on_software_auth_signal)
-        except dbus.DBusException:
+        except dbus.DBusException as e:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
-            print "dbus.DBusException error"
+            LOG.error("dbus exception:%s" % str(e))
+            print "dbus.DBusException error: ",str(e)
             return False
 
         return True
@@ -103,6 +107,7 @@ class InstallBackend(QObject):
             res = func(kwargs)
         except dbus.DBusException as e:
             print "DBusException from uksc dbus",e
+            LOG.error("apt-daemon dbus exception:%s" % str(e))
             return None
 
         return res
@@ -225,7 +230,7 @@ def main():
     instBackend = InstallBackend()
     instBackend.init_dbus_ifaces()
     res = instBackend.call_dbus_iface(AppActions.INSTALL,"abe")
-    print "res=",res
+    print "res=", res
 
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"bareftp")
@@ -239,7 +244,5 @@ def main():
 
 
 if __name__ == "__main__":
-
-
     main()
 

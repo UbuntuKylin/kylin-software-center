@@ -65,6 +65,7 @@ from models.http import HttpDownLoad, unzip_resource
 from apt.debfile import DebPackage
 
 from utils.commontools import *
+from utils import log
 
 import socket
 import sys
@@ -75,7 +76,9 @@ socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 
+log.init_logger()
 LOG = logging.getLogger("uksc")
+
 
 class SoftwareCenter(QMainWindow):
 
