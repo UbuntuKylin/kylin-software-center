@@ -277,7 +277,7 @@ class AptDaemon():
             raise WorkitemError(4, "%s is unreadable file" % path)
         except Exception as e:
             raise WorkitemError(5, e.message)
-
+        self.cache.open()
         pkgName = debfile._sections["Package"]
         debfile.check() #do debfile.check for the next to do debfile.missing_deps
         if 0 == len(debfile.missing_deps):
@@ -292,6 +292,7 @@ class AptDaemon():
     def install_deps(self, path, kwargs=None):
         debfile = DebPackage(path)
         pkgName = debfile._sections["Package"]
+        self.cache.open()
         debfile.check()
         deps = debfile.missing_deps
 
@@ -331,12 +332,6 @@ class AptDaemon():
         if pkg.is_upgradable is False:
             raise WorkitemError(9, "Package %s can't be upgraded" % pkgName)
         pkg.mark_upgrade()
-        if "ubuntu-kylin-software-center" == pkgName:
-            try:
-                os.mknod("/usr/share/ubuntu-kylin-software-center/.uksc_self_upgrade")
-            except:
-                pass
-
         try:
             self.cache.commit(FetchProcess(self.dbus_service,pkgName,AppActions.UPGRADE), AptProcess(self.dbus_service,pkgName,AppActions.UPGRADE))
         except apt.cache.FetchFailedException as error:
