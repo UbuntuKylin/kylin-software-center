@@ -1971,14 +1971,16 @@ class SoftwareCenter(QMainWindow):
                 cd.exec_()
         except Exception as e:
             print str(e)
-            self.dbusControler.stop()
-            sys.exit(0)
-        else:
             self.slot_exit_uksc()
 
     def slot_exit_uksc(self):
-        self.backend.clear_dbus_worklist()
-        self.backend.exit_uksc_apt_daemon()
+        # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
+        try:
+            self.backend.clear_dbus_worklist()
+            self.backend.exit_uksc_apt_daemon()
+        except Exception as e:
+            print str(e)
+            
         self.dbusControler.stop()
         sys.exit(0)
 
