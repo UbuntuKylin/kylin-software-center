@@ -1963,10 +1963,16 @@ class SoftwareCenter(QMainWindow):
         self.loadingDiv.stop_loading()
 
     def slot_close(self):
-        if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
-            cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
-            self.connect(cd, SIGNAL("confirmdialogok"), self.slot_exit_uksc)
-            cd.exec_()
+        # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
+        try:
+            if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
+                cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
+                self.connect(cd, SIGNAL("confirmdialogok"), self.slot_exit_uksc)
+                cd.exec_()
+        except Exception as e:
+            print str(e)
+            self.dbusControler.stop()
+            sys.exit(0)
         else:
             self.slot_exit_uksc()
 
