@@ -1317,8 +1317,11 @@ class SoftwareCenter(QMainWindow):
         #     self.restart_uksc_now()
 
     def restart_uksc_now(self):
-        self.backend.clear_dbus_worklist()
-        self.backend.exit_uksc_apt_daemon()
+        try:
+            self.backend.clear_dbus_worklist()
+            self.backend.exit_uksc_apt_daemon()
+        except Exception as e:
+            print str(e)
         self.dbusControler.stop()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
@@ -1969,6 +1972,8 @@ class SoftwareCenter(QMainWindow):
                 cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
                 self.connect(cd, SIGNAL("confirmdialogok"), self.slot_exit_uksc)
                 cd.exec_()
+            else:
+                self.slot_exit_uksc()
         except Exception as e:
             print str(e)
             self.slot_exit_uksc()
