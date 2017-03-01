@@ -1367,8 +1367,10 @@ class SoftwareCenter(QMainWindow):
 
     def show_mainwindow(self):
         self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
-        windowWidth = QApplication.desktop().width()
-        windowHeight = QApplication.desktop().height()
+        # windowWidth = QApplication.desktop().width()
+        # windowHeight = QApplication.desktop().height()
+        windowWidth = QApplication.desktop().screenGeometry(0).width()
+        windowHeight = QApplication.desktop().screenGeometry(0).height()
         if True == self.first_start:
             self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 

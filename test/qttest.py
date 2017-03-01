@@ -125,8 +125,10 @@ def main():
     app.setFont(globalfont)
 
     mw = SoftwareCenter()
-    windowWidth = QApplication.desktop().width()
-    windowHeight = QApplication.desktop().height()
+    # windowWidth = QApplication.desktop().width()
+    # windowHeight = QApplication.desktop().height()
+    windowWidth = QApplication.desktop().screenGeometry(0).width()
+    windowHeight = QApplication.desktop().screenGeometry(0).height()
     mw.move((windowWidth - mw.width()) / 2, (windowHeight - mw.height()) / 2)
     mw.show()
 

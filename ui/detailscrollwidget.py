@@ -1006,7 +1006,9 @@ class ScreenShotBig(QWidget):
         return True
 
     def move_to_center(self):
-        windowWidth = QApplication.desktop().width()
-        windowHeight = QApplication.desktop().height()
+        # windowWidth = QApplication.desktop().width()
+        # windowHeight = QApplication.desktop().height()
+        windowWidth = QApplication.desktop().screenGeometry(0).width()
+        windowHeight = QApplication.desktop().screenGeometry(0).height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 

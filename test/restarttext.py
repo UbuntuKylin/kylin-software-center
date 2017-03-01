@@ -25,8 +25,10 @@ def main():
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     mw = AAA()
-    windowWidth = QApplication.desktop().width()
-    windowHeight = QApplication.desktop().height()
+    # windowWidth = QApplication.desktop().width()
+    # windowHeight = QApplication.desktop().height()
+    windowWidth = QApplication.desktop().screenGeometry(0).width()
+    windowHeight = QApplication.desktop().screenGeometry(0).height()
     mw.move((windowWidth - mw.width()) / 2, (windowHeight - mw.height()) / 2)
     mw.show()
 
