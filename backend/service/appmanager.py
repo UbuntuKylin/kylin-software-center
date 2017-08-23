@@ -51,12 +51,132 @@ from models.enums import Signals,UnicodeToAscii
 
 from backend.remote.piston_remoter import PistonRemoterAuth
 
+import aptsources.sourceslist
+from urllib2 import urlopen, URLError, HTTPError
+from ftplib import FTP
+
 LOG = logging.getLogger("uksc")
 
 class WorkerItem:
      def __init__(self, funcname, kwargs):
         self.funcname = funcname
         self.kwargs = kwargs
+class ThreadWorker(threading.Thread):
+
+    def __init__(self,appmgr):
+        threading.Thread.__init__(self)
+        self.appmgr = appmgr
+	#self = appmgr
+        self.apt_cache = None
+	self.db = Database()
+	#self.appmgr.db = self.db 
+	self.cat_list = {}
+    def run(self):
+	fl = 1
+        while True:
+	    if(fl == 1):
+	        fl = 0
+		#self.appmgr.db = self.db
+	        self._init_models()
+
+    def open_cache(self):
+        locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
+        if not self.apt_cache:
+            self.apt_cache = apt.Cache()
+        self.apt_cache.open()
+        self.pkgcount = len(self.apt_cache)
+	#if (self.pkgcount < 2000):
+	#	self.appmgr.for_update = 1
+
+    def _init_models(self):
+        self.open_cache()
+        self.cat_list = self.get_category_list_from_db()
+	self.appmgr.cat_list = self.cat_list
+	self.appmgr.apt_cache = self.apt_cache
+	self.appmgr.db = self.db
+#	self.appmgr.get_recommend_apps(False)
+#	self.appmgr.get_ratingrank_apps(False)
+	sum_inst = 0
+        sum_up = 0
+        sum_all = len(self.apt_cache)
+	self.appmgr.get_recommend_apps(False)
+	self.appmgr.get_ratingrank_apps(False)
+	print "ok",sum_all
+	#QApplication.slot_recommend_apps_ready(applist, bysignal)	
+	exit()
+
+    def get_category_list_from_db(self):
+        list = self.db.query_categories()
+        cat_list = {}
+        for item in list:
+            c = UnicodeToAscii(item[2])
+            # c = item[2]
+            zhcnc = item[3]
+            index = item[4] 
+            visible = (item[0]==1)
+
+            icon = UBUNTUKYLIN_RES_PATH + c + ".png"
+            cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+            cat_list[c] = cat
+	    self.appmgr.cat_list = cat_list
+
+        Globals.ALL_APPS = {}
+        return cat_list
+
+    def get_category_list(self, reload=False, catdir=""):
+        if reload is False:
+            return self.cat_list
+
+        cat_list = self.get_category_list_from_db()
+
+        return cat_list
+
+    def get_category_apps_from_db(self,cat,catdir=""):
+        list = self.db.query_category_apps(cat)
+        apps = {}
+        for item in list:
+            pkgname = UnicodeToAscii(item[0])
+            displayname_cn = item[1]
+            if pkgname in Globals.ALL_APPS.keys():
+                apps[pkgname] = Globals.ALL_APPS[pkgname]
+            else:
+                app = Application(pkgname,displayname_cn, cat, self.apt_cache)
+                if app.package and app.package.candidate:
+                    #if there has special information in db, get them
+                    #get_category_apps_from_db: 0 0
+                    #display_name, summary, description, rating_average,rating_total,review_total,download_total
+                    app.from_ukscdb = True
+                    app.orig_name = app.name#zx2015.01.26
+                    app.orig_summary = app.summary
+                    app.orig_description = app.description
+
+                    appinfo = self.db.query_application(pkgname)
+                    app.displayname = appinfo[0]
+                    app.summary = appinfo[1]
+                    app.description = appinfo[2]
+                    rating_average = appinfo[3]
+                    rating_total = appinfo[4]
+                    review_total = appinfo[5]
+                    # rank = appinfo[6]
+
+                    # #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
+                    # if summary is not None and summary != 'None':
+                    #     app.summary = summary
+                    # #                if CheckChineseWords(app.description) is False and CheckChineseWordsForUnicode(description) is True:
+                    # if description is not None and summary != 'None':
+                    #     app.description = description
+                    if rating_average is not None:
+                        app.ratings_average = float(rating_average)
+                    if rating_total is not None:
+                        app.ratings_total = int(rating_total)
+                    if review_total is not None:
+                        app.review_total = int(review_total)
+                        # if rank is not None:
+                        #     app.rank = int(rank)
+                    apps[pkgname] = app
+                    Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
+        return apps
+
 
 
 class ThreadWorkerDaemon(threading.Thread):
@@ -85,46 +205,55 @@ class ThreadWorkerDaemon(threading.Thread):
             if item.funcname == "update_models":
                 self.appmgr._update_models(item.kwargs)
             elif item.funcname == "init_models":
-                try:
-                    self.appmgr._init_models()
-                except Exception as e:
-                    print "ThreadWorkerDaemon error", e.message
+                pass
+		#try:
+                #    self.appmgr._init_models()
+                #except Exception as e:
+                #    print "ThreadWorkerDaemon error", e.message
             elif item.funcname == "get_reviews":
                 try: #if no network the thread will be crashed, so add try except
                     reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
                 except Exception as e:
                     print "ThreadWorkerDaemon error", e.message
+            elif item.funcname == "check_source_useable":
+                self.appmgr.start_check_source_useable()
             # elif item.funcname == "get_images":
             #     pass
             else:
-                event = multiprocessing.Event()
-                queue = multiprocessing.Queue()
-                spawn_helper = SpawnProcess(item.funcname,item.kwargs, event, queue)
-                spawn_helper.daemon = True
-                spawn_helper.start()
-                event.wait()
+	##获取介绍
+                #event = multiprocessing.Event()
+                #queue = multiprocessing.Queue()
+                #spawn_helper = SpawnProcess(item.funcname,item.kwargs, event, queue)
+                #spawn_helper.daemon = True
+                #spawn_helper.start()
+                #event.wait()
+		#print "ccccccccccccccccccccccc", item.funcname,item.kwargs, event, queue
+		reslist = item.kwargs['thumbnailfile']
+		#print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",reslist
+                #resLen = queue.qsize()
+                #while resLen:
+                #    try:
+                #        count = 0
+                #        #print "@@@@@@@@@1111111111:",queue.qsize(),item
+                #        while queue.qsize():
+                #            #print "@@enter while"
+                #            resitem = queue.get_nowait()
+                #            #print "@@after get no wait"
+                #            reslist.append(resitem)
+                #            #print "&&&&&&get an item222222222:",count,resitem
+                #            count += 1
+                #        queue.close()
+                #    except Queue.Empty:
+                #        #print "&&&&&&&&&&get error33333333333333:",queue.qsize()
+                #        count += 1
+		
+                #    resLen = queue.qsize()
+                #print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),reslist
+            #LOG.debug("receive data from backend process, len=%d",len(reslist))
+            #self.appmgr.dispatchWorkerResult(item,reslist)
+	    LOG.debug("receive data from backend process, len=%d",len(reslist))
+	    self.appmgr.dispatchWorkerResult(item,reslist)
 
-                resLen = queue.qsize()
-                while resLen:
-                    try:
-                        count = 0
-#                        print "@@@@@@@@@:",queue.qsize(),item
-                        while queue.qsize():
-             #               print "@@enter while"
-                            resitem = queue.get_nowait()
-             #               print "@@after get no wait"
-                            reslist.append(resitem)
-#                            print "&&&&&&get an item:",count,resitem
-                            count += 1
-                        #queue.close()
-                    except Queue.Empty:
-#                        print "&&&&&&&&&&get error:",queue.qsize()
-                        count += 1
-
-                    resLen = queue.qsize()
-                print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),len(reslist)
-            LOG.debug("receive data from backend process, len=%d",len(reslist))
-            self.appmgr.dispatchWorkerResult(item,reslist)
 
 #This class is the abstraction of application management
 class AppManager(QObject):
@@ -143,7 +272,8 @@ class AppManager(QObject):
         self.language = 'zh_CN'      #'any' for all
         self.distroseries = 'any'  #'any' for all
         self.db = Database()
-
+	#self.db = ""
+	self.for_update = 0
         # silent process work queue
         self.squeue = multiprocessing.Queue()
         self.silent_process = SilentProcess(self.squeue)
@@ -155,6 +285,11 @@ class AppManager(QObject):
         self.worker_thread = ThreadWorkerDaemon(self)
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
+	
+	self.worker_thread1 = ThreadWorker(self)
+        self.worker_thread1.setDaemon(True)
+        self.worker_thread1.start()
+
 
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
@@ -165,6 +300,8 @@ class AppManager(QObject):
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
+	if(self.for_update == 1):
+		return True
         if(f.exists() == True):
             return False
         else:
@@ -180,11 +317,12 @@ class AppManager(QObject):
         self.apt_cache.open()
         self.pkgcount = len(self.apt_cache)
 
-    def _init_models(self):
-        self.open_cache()
-        self.cat_list = self.get_category_list_from_db()
+   # def _init_models(self):
+    #    self.open_cache()
+    #    self.cat_list = self.get_category_list_from_db()
 
     def init_models(self):
+	#print "self.appmgr.init_models()"
         item = WorkerItem("init_models",None)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -234,7 +372,6 @@ class AppManager(QObject):
             return self.cat_list
 
         cat_list = self.get_category_list_from_db()
-
         return cat_list
 
     def get_category_apps_from_db(self,cat,catdir=""):
@@ -376,9 +513,11 @@ class AppManager(QObject):
         return package
 
     def get_application_count(self,cat_name=""):
+	self.apt_cache = self.worker_thread1.apt_cache
         sum_inst = 0
         sum_up = 0
-        sum_all = len(self.apt_cache)
+        #sum_all = len(self.apt_cache)
+	sum_all = len(self.apt_cache)
 
         if len(cat_name)>0:
             cat = self.cat_list[cat_name]
@@ -491,6 +630,7 @@ class AppManager(QObject):
 
         if app.screenshots:
             self.dispatchWorkerResult(item,app.screenshots)
+	    #print "vvvvvvvvvvvvvvvvvv",app.screenshots
             return app.screenshots
 
         self.mutex.acquire()
@@ -500,6 +640,7 @@ class AppManager(QObject):
         return []
 
     def dispatchWorkerResult(self,item,reslist):
+	#print "item,===========,reslist",item,reslist
         if item.funcname == "get_reviews":
             # convert into our review objects
             LOG.debug("reviews ready:%s",len(reslist))
@@ -521,7 +662,6 @@ class AppManager(QObject):
                 app.screenshots = screenshots
             else:
                 print item.kwargs['packagename'], " not exist"
-
             self.emit(Signals.app_screenshots_ready,screenshots)
         elif item.funcname == "get_rating_review_stats":
             LOG.debug("rating review stats ready:%d",len(reslist))
@@ -554,7 +694,7 @@ class AppManager(QObject):
         elif item.funcname == "init_models":
             LOG.debug("init models ready")
             self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
-            print "init models ready"
+            print "init models后台运行中"
 
     def update_rating_reviews(self,rnrStats):
         print "update_rating_reviews:",len(rnrStats)
@@ -595,19 +735,21 @@ class AppManager(QObject):
         self.squeue.put_nowait(item)
 
     def submit_pingback_main(self):
-        kwargs = {}
-
-        item = SilentWorkerItem("submit_pingback_main", kwargs)
-        self.squeue.put_nowait(item)
+        pass
+        # kwargs = {}
+        #
+        # item = SilentWorkerItem("submit_pingback_main", kwargs)
+        # self.squeue.put_nowait(item)
 
     def submit_pingback_app(self, app_name, isrcm=False):
-        kwargs = {"app_name": app_name,
-                  "isrcm": isrcm,
-                  "user": Globals.USER,
-                  }
-
-        item = SilentWorkerItem("submit_pingback_app", kwargs)
-        self.squeue.put_nowait(item)
+        pass
+        # kwargs = {"app_name": app_name,
+        #           "isrcm": isrcm,
+        #           "user": Globals.USER,
+        #           }
+        #
+        # item = SilentWorkerItem("submit_pingback_app", kwargs)
+        # self.squeue.put_nowait(item)
 
     # update xapiandb add by zhangxin
     def update_xapiandb(self, pkgname):
@@ -725,6 +867,61 @@ class AppManager(QObject):
 
     def update_exists_data(self, exists, id):
         self.db.update_exists_data(exists, id)
+
+    def check_source_useable(self):
+        item  = WorkerItem("check_source_useable",None)
+        self.mutex.acquire()
+        self.worklist.append(item)
+        self.mutex.release()
+
+    def start_check_source_useable(self):
+        source_urllist = []
+        bad_source_urllist = []
+        source = aptsources.sourceslist.SourcesList()
+        for item in source.list:
+            if item.str()[0:8] == "deb http": #and item.str()[0:9] != "deb cdrom"
+                #print type(item.str()[4:].split()),item.str()[4:].split()
+                source_list = item.str()[4:].split()
+                if source_list[0].endswith("/") is True:
+                    str = source_list[0] + "dists"
+                else:
+                    str = source_list[0] + "/dists"
+                source_list[0] = str
+                if len(source_list) > 3:
+                    urlend = source_list[2:]
+                    for item in urlend:
+                        urlbegin = source_list[0:2]
+                        urlbegin.append(item)
+                        source_urllist.append(urlbegin)
+                        break
+                else:
+                    source_urllist.append(source_list)
+        #print source_urllist
+        for urllist in source_urllist:
+            # print urllist
+            source_url = '/'.join(urllist)
+            try:
+                num = source_url.index("@")
+            except:
+                pass
+            else:
+                source_url = "http://" + source_url[num+1:]
+            print source_url
+            #source_url = source_str[0]
+            try:
+                response = urllib2.urlopen(source_url, timeout=30)
+                #print response.info()
+            except HTTPError, e:
+                print e.code
+                if e.code != 401:
+                    bad_source_urllist.append(source_url)
+            except Exception, e:
+                print e
+                bad_source_urllist.append(source_url)
+        if bad_source_urllist != []:
+            print 'bad source urllist:',bad_source_urllist
+            self.emit(Signals.check_source_useable_over,bad_source_urllist)
+        #print "check source useable over"
 
     def sourcelist_need_update(self):
         res = self.db.need_do_sourcelist_update()

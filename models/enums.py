@@ -126,8 +126,9 @@ UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
 #UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
 UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 
-UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
-safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+#UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
+#safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join("/usr/share/ubuntu-kylin-software-center/data/", "screenshots/")
 
 UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
 safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
@@ -162,6 +163,9 @@ class Signals:
     countuover = SIGNAL("countuover")
     task_remove = SIGNAL("taskremove")
     task_cancel = SIGNAL("taskcancel")
+    #add
+    task_reinstall = SIGNAL("taskreinstall")
+    task_upgrade = SIGNAL("task_upgrade")
     ads_ready = SIGNAL("advertisements-ready")
     recommend_ready = SIGNAL("recommend-ready")
     ratingrank_ready = SIGNAL("ratingrank-ready")
@@ -181,6 +185,13 @@ class Signals:
     click_update_source = SIGNAL("click-update-source")
     update_source = SIGNAL("update-source")
     update_source_cancel = SIGNAL("update-source-cancel")
+
+    click_usecdrom = SIGNAL("click-usecdrom")
+    usecdrom = SIGNAL("usecdrom")
+    dbus_fail_to_usecdrom = SIGNAL("dbus-fail-to-usecdrom")
+    dbus_no_cdrom_mount = SIGNAL("apt-no-cdrom-mount")
+    dbus_usecdrom_success = SIGNAL("dbus_usecdrom_success")
+
     dbus_apt_process = SIGNAL("dbus-apt-process")
     apt_process_finish = SIGNAL("apt-process-finish")
     apt_process_cancel = SIGNAL("apt-process-cancel")
@@ -207,6 +218,11 @@ class Signals:
     uninstall_uksc = SIGNAL("uninstall_uksc")
     cancel_uninstall_uksc = SIGNAL("cancel_uninstall_uksc")
     refresh_page = SIGNAL("refresh-page")
+    check_source_useable_over = SIGNAL("check_source_useable_over")
+    click_find_up_server = SIGNAL("click_find_up_server")
+    dbus_find_up_server_result = SIGNAL("dbus_find_up_server_result")
+    restart_uksc_now = SIGNAL("restart_uksc_now")
+
 
 
     #wb 2015.06.26
@@ -230,6 +246,8 @@ class AppActions:
     ADD_SOURCE = "add_source"
     REMOVE_SOURCE = "remove_source"
     GET_SOURCES = "get_sources"
+    USECDROM = "usecdrom"
+    FIND_UP_SERVER = "find_up_server"
 
 
 AptActionMsg = {

@@ -29,7 +29,7 @@ import dbus.service
 import webbrowser
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-
+from xdg import BaseDirectory as xdg
 from ui.mainwindow import Ui_MainWindow
 from ui.categorybar import CategoryBar
 from ui.taskwidget import  Taskwidget
@@ -65,8 +65,8 @@ from models.http import HttpDownLoad, unzip_resource
 from apt.debfile import DebPackage
 
 from utils.commontools import *
-from utils import log
-
+#from utils import log
+import threading, time, signal
 import socket
 import sys
 reload(sys)
@@ -76,7 +76,12 @@ socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 
-log.init_logger()
+#log.init_logger()
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s:%(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+                    filename=os.path.join(xdg.xdg_cache_home, "uksc/.uksc.log"),
+                    filemode='w'
+                    )
 LOG = logging.getLogger("uksc")
 
 
@@ -103,7 +108,13 @@ class SoftwareCenter(QMainWindow):
     win_exists = 0
     ua_exists = 0
     task_number = 0
+    list_number = 0
     category = ""
+    add_list = ""
+    add_text = ""
+    #force_update = 0    
+    re_page = ""
+    re_cli = 0
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
@@ -192,6 +203,7 @@ class SoftwareCenter(QMainWindow):
         self.updateSinglePB = SingleProcessBar(self.launchLoadingDiv.loadinggif)
         # config widget
         self.configWidget = ConfigWidget(self)
+        self.configWidget.messageBox = MessageBox(self)
         self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
         self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
         # resize corner
@@ -268,6 +280,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
         self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
         self.ui.virtuallabel.setStyleSheet("QLabel{background-image:url('res/virtual-bg.png')}")
+
+        #add
+        self.ui.btnClosesearch.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnClosesearch.clicked.connect(self.slot_close_search)
+        self.ui.btnClosesearch.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
 
         # self.ui.headercw1.leSearch.stackUnder(self.ui.headercw1.lebg)
         self.ui.detailShellWidget.raise_()
@@ -433,6 +450,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskListWidget_complete.setSpacing(1)
         self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+	self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
         #self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         #self.ui.tasklabel.setText("任务列表")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
@@ -555,13 +573,19 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.submit_translate_appinfo_over, self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
         self.connect(self.appmgr, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self.appmgr, Signals.refresh_page, self.slot_refresh_page)
-
+	self.connect(self.appmgr, Signals.check_source_useable_over, self.slot_check_source_useable_over)
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
 
     def init_dbus(self):
         self.backend = InstallBackend()
         self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
+        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
+        #self.connect(self.backend, Signals.dbus_fail_to_usecdrom, self.slot_fail_to_usecdrom)
+        #self.connect(self.backend, Signals.dbus_no_cdrom_mount, self.slot_no_cdrom_mount)
+        #self.connect(self.backend, Signals.dbus_usecdrom_success, self.slot_usecdrom_success)
+        #self.connect(self.backend, Signals.dbus_find_up_server_result, self.slot_find_up_server_result)
+
         res = self.backend.init_dbus_ifaces()
         while res == False:
             button=QMessageBox.question(self,"初始化提示",
@@ -648,6 +672,18 @@ class SoftwareCenter(QMainWindow):
                 self.show()
             self.appmgr.init_models()
 
+    def slot_check_source_useable_over(self, bad_source_url_list):
+        bad_source_urlstr = '\n'.join(bad_source_url_list)
+        MSG = " 以下软件源访问过慢或者暂时无法访问:\n" + bad_source_urlstr
+        INFO = QMessageBox
+        btn = INFO.warning(self,"温馨提示",
+                                self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"),
+                                '详细','忽略','', 1, 1)
+        if btn == 0:
+            INFO.information(self,"温馨提示",
+                                self.tr(MSG),
+                                '知道了','','',0, 0)
+
     def check_singleton(self):
         try:
             bus = dbus.SessionBus()
@@ -691,7 +727,6 @@ class SoftwareCenter(QMainWindow):
     def init_last_data(self):
         # init category bar
         self.init_category_view()
-
         # init search
         self.searchDB = Search()
         self.searchList = {}
@@ -714,13 +749,13 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_advertisements(False)
         self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
-
         self.backend.check_dpkg_statu()
         # check uksc upgradable
         self.check_uksc_update()
-
     # check base init
     def check_init_ready(self, bysignal=False):
+        if ('self.ads_ready' in locals().keys() == False):
+            self.ads_ready = False
         LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
@@ -760,7 +795,8 @@ class SoftwareCenter(QMainWindow):
     def start_silent_work(self):
         # init pointout
         self.init_pointout()
-
+	# check source useable
+	self.appmgr.check_source_useable()
         # pingback_main
         self.appmgr.submit_pingback_main()
 
@@ -791,7 +827,7 @@ class SoftwareCenter(QMainWindow):
             self.init_last_data()
 
     def init_category_view(self):
-        cat_list_orgin = self.appmgr.get_category_list()
+        cat_list_orgin = self.appmgr.get_category_list(True)
         self.categoryBar.init_categories(cat_list_orgin)
         self.categoryBar.hide()
 
@@ -805,22 +841,23 @@ class SoftwareCenter(QMainWindow):
         for category in category_list:
             app_list = self.appmgr.search_app_display_info(category)
             for context in app_list:
-                if context[0] == 'wine-qq' or context[0] == 'ppstream':
-                    self.winnum += 1
-                    app = None
-                    winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
-                    card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
-                    self.winListWidget.add_card(card)
-                    self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-                    self.connect(card, Signals.install_app, self.slot_click_install)
-                    self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
-                    self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-                    self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-                    self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+		if 1:
+                #if context[0] == 'wine-qq' or context[0] == 'ppstream':
+                    #self.winnum += 1
+                    #app = None
+                    #winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
+                    #card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
+                    #self.winListWidget.add_card(card)
+                    #self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
+                    #self.connect(card, Signals.install_app, self.slot_click_install)
+                    #self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
+                    #self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
+                    #self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                    #self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
 
                     # kobe 1106
-                    self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
-                else:
+                    #self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+                #else:
                     app = self.appmgr.get_application_by_name(context[0])
                     if app is not None and app.package is not None:
                         self.winnum += 1
@@ -1186,20 +1223,25 @@ class SoftwareCenter(QMainWindow):
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self, isdeb=True)
             # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            i#self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
         else:
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self)
-            self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            #self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+            #self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
         self.stmap[app.name] = tliw
+        self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+        self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+        self.connect(tliw, Signals.task_upgrade, self.slot_click_upgrade)
+        self.connect(tliw, Signals.task_reinstall, self.slot_click_install)
         self.connect(self, Signals.apt_process_finish, tliw.slot_work_finished)
+
         self.ui.btnGoto.setVisible(False)
         self.ui.notaskImg.setVisible(False)
 
@@ -1501,8 +1543,17 @@ class SoftwareCenter(QMainWindow):
 
     def slot_close_detail(self):
         # self.detailScrollWidget.hide()
+        if Globals.NOWPAGE == 7 or Globals.NOWPAGE == 8 or Globals.NOWPAGE == 9 or Globals.NOWPAGE == 10 or Globals.NOWPAGE == 11:
+        #if self.re_cli == 1:
+            self.ui.btnClosesearch.setVisible(True)
         self.ui.detailShellWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
+	
+    def slot_close_search(self):
+        self.re_cli = 0
+        self.ui.btnClosesearch.setVisible(False)
+        Globals.NOWPAGE = self.re_page
+        self.slot_refresh_page()
 
     def slot_close_taskpage(self):
         self.ui.taskWidget.setVisible(False)
@@ -1559,6 +1610,7 @@ class SoftwareCenter(QMainWindow):
     def show_homepage(self, bysignal):
         if bysignal is False:
             self.ui.btnCloseDetail.setVisible(False)
+            self.ui.btnClosesearch.setVisible(False)
             self.ui.detailShellWidget.hide()
         # else:
         #     self.ui.detailShellWidget.btns.reset_btns.refresh_btn(self.ui.detailShellWidget.app)
@@ -1587,6 +1639,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnHomepage.setEnabled(False)
 
     def slot_goto_allpage(self, bysignal = False):
+        self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.ALLPAGE:
@@ -1627,6 +1680,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnAll.setEnabled(False)
 
     def slot_goto_uppage(self, bysignal=False):
+	self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.UPPAGE:
@@ -1666,6 +1720,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnUp.setEnabled(False)
 
     def slot_goto_unpage(self, bysignal=False):
+        self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.UNPAGE:
@@ -1708,7 +1763,10 @@ class SoftwareCenter(QMainWindow):
         if bysignal is False:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
-
+            self.ui.btnClosesearch.setVisible(True)
+	self.re_cli = 1
+        if Globals.NOWPAGE == 0 or Globals.NOWPAGE == 1 or Globals.NOWPAGE == 2 or Globals.NOWPAGE == 3 or Globals.NOWPAGE == 4 :
+	    self.re_page = Globals.NOWPAGE
         if Globals.NOWPAGE == PageStates.HOMEPAGE:
             Globals.NOWPAGE = PageStates.SEARCHHOMEPAGE
         elif Globals.NOWPAGE == PageStates.ALLPAGE:
@@ -1762,6 +1820,7 @@ class SoftwareCenter(QMainWindow):
 
 
     def slot_goto_winpage(self, bysignal=False):
+	self.ui.btnClosesearch.setVisible(False)
         if bysignal is False:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
@@ -2031,6 +2090,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
+	self.ui.btnClosesearch.setVisible(False)
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
         self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
@@ -2211,6 +2271,10 @@ class SoftwareCenter(QMainWindow):
                 self.configWidget.slot_update_finish()
                 self.appmgr.update_models(AppActions.UPDATE,"")
                 self.messageBox.alert_msg("更新软件源完成")
+            elif int(percent) == 0.0 and "下载停止" == msg:
+                self.appmgr.update_models(AppActions.UPDATE,"")
+                self.messageBox.alert_msg("软件源列表为空","Failed")
+                self.configWidget.slot_update_finish()
             else:
                 self.configWidget.slot_update_status_change(percent)
         elif action == AppActions.UPDATE_FIRST:
@@ -2504,6 +2568,9 @@ class SoftwareCenter(QMainWindow):
 def check_local_deb_file(url):
     return os.path.isfile(url)
 
+def quit(signum, frame):
+    print 'You choose to stop software-center.'
+    sys.exit()
 
 def main():
     app = QApplication(sys.argv)
@@ -2531,6 +2598,9 @@ def main():
     globalfont.setPixelSize(14)
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
+    trans = QTranslator()
+    trans.load('po/qt_zh_CN.qm')
+    QApplication.installTranslator(trans)
 
     # check show quiet
     argn = len(sys.argv)
@@ -2548,7 +2618,8 @@ def main():
                 sys.exit(0)
 
     mw = SoftwareCenter()
-
+    signal.signal(signal.SIGINT, quit)
+    signal.signal(signal.SIGTERM,quit)
     sys.exit(app.exec_())
 
 

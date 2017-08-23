@@ -42,8 +42,8 @@ class ConfigWidget(QWidget):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.ui.bg.lower()
-        self.move(173, 138)
-
+        self.move(183, 100)
+	#self.move(173, 138)
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 0))
         brush.setStyle(Qt.SolidPattern)
@@ -60,6 +60,21 @@ class ConfigWidget(QWidget):
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.cbhideubuntu.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
+#add
+	self.ui.groupBox.setFocusPolicy(Qt.NoFocus)	
+	self.ui.groupBox_2.setFocusPolicy(Qt.NoFocus)
+	self.ui.checkBox.setFocusPolicy(Qt.NoFocus)
+        self.ui.checkBox_2.setFocusPolicy(Qt.NoFocus)
+        self.ui.checkBox_3.setFocusPolicy(Qt.NoFocus)
+        self.ui.checkBox_4.setFocusPolicy(Qt.NoFocus)
+        self.ui.checkBox_5.setFocusPolicy(Qt.NoFocus)
+	self.ui.checkBox_6.setFocusPolicy(Qt.NoFocus)
+	self.ui.checkBox.setChecked(True)
+	self.ui.checkBox_2.setChecked(False)
+	self.ui.checkBox_3.setChecked(True)
+	self.ui.checkBox_4.setChecked(True)
+	self.ui.checkBox_5.setChecked(True)
+	self.ui.checkBox_6.setChecked(True)
 
         self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnUpdate.clicked.connect(self.slot_click_update)
@@ -70,8 +85,10 @@ class ConfigWidget(QWidget):
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.ui.pageListWidget.itemClicked.connect(self.slot_item_clicked)
 
-        self.ui.text1.setText("软件源列表")
+	#去掉软件源	
+        #self.ui.text1.setText("软件源列表")
         self.ui.cbhideubuntu.setText("    隐藏ubuntu源")
+
         self.ui.btnUpdate.setText("更新软件源")
         self.ui.btnAdd.setText("添加软件源")
         self.ui.btnReset.setText("   恢复默认设置")
@@ -90,18 +107,22 @@ class ConfigWidget(QWidget):
         # self.ui.pageListWidget.addItem(pointoutitem)
 
         self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
-        self.ui.text1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
-        self.ui.splitline.setStyleSheet("QLabel{background-color:#a5a5a5;}")
+        #self.ui.text1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
+       #去掉上横线
+	 #self.ui.splitline.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         self.ui.label.setStyleSheet("QLabel{background-color:#077ab1;}")
         # self.ui.label_2.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         # self.ui.label_3.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         # self.ui.label_4.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         self.ui.pageListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:32px;padding-left:5px;margin-top:0px;border:0px;background-image:url('res/pageList.png');color:#ffffff;}QListWidget::item:selected{background-image:url('res/pageListselected.png');color:#47ccf3;}")
-        self.ui.sourceWidget.setStyleSheet("QListWidget{border:0px;}")
+#add
+	#self.ui.groupBox.setStyleSheet("QGroupBox{border:1px;color:#0fa2e8;font-size:13px}")
+	#self.ui.checkBox.setStyleSheet("QCheckBox{border:0px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")         
         self.ui.sourceListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:25px;margin-top:0px;margin-left:1px;border:0px;}QListWidget::item:selected{background-color:#E4F1F8;;}")
-        self.ui.lesource.setStyleSheet("QLineEdit{border:1px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
+	self.ui.sourceWidget.setStyleSheet("QListWidget{border:1px;color::#0fa2e8;font-size:13px}")
+        self.ui.lesource.setStyleSheet("QLineEdit{border:0px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnupdate.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
-        self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
+        self.ui.btnAdd.setStyleSheet("QPushButton{border:1px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         self.ui.cbhideubuntu.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/cbhideubuntuon.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}QPushButton:Checked{background:url('res/cbhideubuntuoff.png') no-repeat center left;}")
@@ -140,7 +161,9 @@ class ConfigWidget(QWidget):
         self.ui = Ui_ConfigWidget()
         self.ui.setupUi(self)
         self.show()
-
+        self.ui.btnReset.setVisible(False)
+        self.ui.cbhideubuntu.setVisible(False)
+###see
     def fill_sourcelist(self):
         self.ui.sourceListWidget.clear()
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
@@ -165,15 +188,15 @@ class ConfigWidget(QWidget):
         else:
             self.ui.processwidget.setVisible(False)
             self.ui.btnUpdate.setVisible(True)
-            self.ui.btnReset.setVisible(True)
-            self.ui.cbhideubuntu.setVisible(True)
+            self.ui.btnReset.setVisible(False)
+            self.ui.cbhideubuntu.setVisible(False)
             # self.ui.label_2.setVisible(True)
             # self.ui.label_3.setVisible(True)
             # self.ui.label_4.setVisible(True)
 
     def slot_click_cancel(self):
         self.iscanceled = True
-        self.emit(Signals.task_cancel, "update", "update")
+        self.emit(Signals.task_cancel, "#update", "update")
 
     def slot_click_update(self):
         self.iscanceled = False
@@ -188,10 +211,56 @@ class ConfigWidget(QWidget):
         self.set_process_visiable(False)
 
     def slot_click_add(self):
-        sourcetext = str(self.ui.lesource.text().toUtf8())
-        self.backend.add_source(sourcetext)
+	sourcetext = str(self.ui.lesource.text().toUtf8())
+	#if (sourcetext.find('kylinos') == -1):
+	#	self.messageBox.alert_msg("非麒麟软件源")
+	if (sourcetext.find(':') == -1):
+		self.messageBox.alert_msg("无效的软件源")
+		return False
+	if (sourcetext.find('deb ') == 0):
+		sourcetext = self.slot_app_sou(sourcetext)
+		if self.ui.checkBox_2.isChecked():
+			#sourcetext = self.slot_app_sou(sourcetext)
+			self.backend.add_source(sourcetext)
+                        self.fill_sourcelist()
+			sourcetext = sourcetext.replace("deb ", "deb-src ")
+	elif (sourcetext.find('deb-src ') == 0):
+		sourcetext = self.slot_app_sou(sourcetext)
+		if self.ui.checkBox.isChecked():
+			#sourcetext = self.slot_app_sou(sourcetext)
+                        self.backend.add_source(sourcetext)
+                        self.fill_sourcelist()
+			sourcetext = sourcetext.replace("deb-src ", "deb ")
+	else:
+		if self.ui.checkBox.isChecked() and self.ui.checkBox_2.isChecked():
+			sourcetext = self.slot_app_sou(sourcetext)
+                        sourcetext_deb = '%s%s' % ('deb ',sourcetext)
+                        self.backend.add_source(sourcetext_deb)
+                        self.fill_sourcelist()
+			sourcetext = '%s%s' % ('deb-src ',sourcetext)
+		elif self.ui.checkBox.isChecked():
+			sourcetext = '%s%s' % ('deb ',sourcetext)
+			sourcetext = self.slot_app_sou(sourcetext)
+		elif self.ui.checkBox_2.isChecked():
+			sourcetext = '%s%s' % ('deb-src ',sourcetext)
+			sourcetext = self.slot_app_sou(sourcetext)
+	self.backend.add_source(sourcetext)
         self.fill_sourcelist()
+	if (sourcetext.find('kylinos') == -1):
+		self.messageBox.alert_msg("添加非麒麟软件源完成") 
+	else:
+		self.messageBox.alert_msg("添加麒麟软件源完成")
 
+    def slot_app_sou(self,sourcetext):
+	if self.ui.checkBox_3.isChecked() and (sourcetext.find(' main') == -1):
+		sourcetext = '%s%s' % (sourcetext,' main')
+	if self.ui.checkBox_4.isChecked() and (sourcetext.find(' restricted') == -1):
+		sourcetext = '%s%s' % (sourcetext,' restricted')
+	if self.ui.checkBox_5.isChecked() and (sourcetext.find(' universe') == -1):
+                sourcetext = '%s%s' % (sourcetext,' universe')
+        if self.ui.checkBox_6.isChecked() and (sourcetext.find(' multiverse') == -1):
+                sourcetext = '%s%s' % (sourcetext,' multiverse')
+	return sourcetext
     def slot_le_input(self, text):
         sourcetext = str(text.toUtf8())
         if(sourcetext.strip() == ""):
@@ -232,9 +301,9 @@ class SourceItemWidget(QWidget):
         self.sourcetype = QLabel(self)
         self.sourcetype.setGeometry(10, 4, 8, 17)
         self.sourcetext = QLabel(self)
-        self.sourcetext.setGeometry(25, 4, 345, 17)
+        self.sourcetext.setGeometry(25, 4, 330, 17)
         self.btnremove = QPushButton(self)
-        self.btnremove.setGeometry(377, 6, 13, 13)
+        self.btnremove.setGeometry(360, 6, 13, 13)
 
         self.btnremove.clicked.connect(self.slot_remove_source)
 
@@ -270,7 +339,6 @@ class SourceItemWidget(QWidget):
 def main():
     import sys
     app = QApplication(sys.argv)
-
     QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
