@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (1.3.12) xenial; urgency=medium
+
+  * fix:bug reinstall
+
+ -- wukaige <wukaige@kylinos.cn>  Wed, 30 Aug 2017 16:24:21 +0800
+
 ubuntu-kylin-software-center (1.3.11) xenial; urgency=medium
 
   *  improve and perfect

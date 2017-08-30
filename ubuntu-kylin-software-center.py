@@ -1223,23 +1223,23 @@ class SoftwareCenter(QMainWindow):
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self, isdeb=True)
             # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-            i#self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
         else:
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self)
-            #self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-            #self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
         self.stmap[app.name] = tliw
-        self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-        self.connect(tliw, Signals.task_remove, self.slot_remove_task)
-        self.connect(tliw, Signals.task_upgrade, self.slot_click_upgrade)
-        self.connect(tliw, Signals.task_reinstall, self.slot_click_install)
+        #self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
+        #self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+        #self.connect(tliw, Signals.task_upgrade, self.slot_click_upgrade)
+        #self.connect(tliw, Signals.task_reinstall, self.slot_click_install)
         self.connect(self, Signals.apt_process_finish, tliw.slot_work_finished)
 
         self.ui.btnGoto.setVisible(False)

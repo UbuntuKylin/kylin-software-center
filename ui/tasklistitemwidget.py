@@ -22,6 +22,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import os
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -31,15 +32,12 @@ from models.enums import UBUNTUKYLIN_RES_ICON_PATH
 from models.enums import setLongTextToElideFormat
 from utils import commontools
 from utils.debfile import DebFile
-from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
-#from ui.wincard import WinCard
-from backend.installbackend import InstallBackend
-from backend.service.appmanager import AppManager
+
 
 class TaskListItemWidget(QWidget):
     app = ''
     finish = False
-    in_num = 0
+
     def __init__(self, app, action, tasknumber, parent=None, isdeb=False):
         QWidget.__init__(self,parent)
         self.isdeb = isdeb
@@ -49,13 +47,9 @@ class TaskListItemWidget(QWidget):
         self.parent = parent
         self.action = action
         self.finish = False
-	self.in_num += 1       
-	self.backend = InstallBackend()
-	self.appmgr = AppManager()
 
         self.ui.size.setAlignment(Qt.AlignCenter)
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
-	self.ui.btnCancel_2.setFocusPolicy(Qt.NoFocus)
         self.ui.status.setAlignment(Qt.AlignTop)
         self.ui.status.setWordWrap(True)
         self.ui.progressBar.lower()
@@ -67,12 +61,11 @@ class TaskListItemWidget(QWidget):
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
         self.ui.status.setStyleSheet("QLabel{font-size:12px;font-weight:bold;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
-	self.ui.btnCancel_2.setStyleSheet("QPushButton{background-image:url('res/reinstall-normal.png');border:0px;}QPushButton:hover{background:url('res/reinstall-hover.png');}QPushButton:pressed{background:url('res/reinstall-normal.png');}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
-	self.ui.btnCancel_2.hide()
+
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
-	self.ui.btnCancel_2.clicked.connect(self.slot_click_reinstall)
+
         if app.status == PkgStates.INSTALLING:#"installing":
             #self.ui.name.setText("安装 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
@@ -103,7 +96,7 @@ class TaskListItemWidget(QWidget):
 
         # this is deb file task
         if(isdeb == True or isinstance(app,DebFile)):
-	
+
             sizek = app.installedsize
             if(sizek <= 1024):
                 self.ui.size.setText(str(sizek) + " KB")
@@ -140,8 +133,6 @@ class TaskListItemWidget(QWidget):
         self.show()
 
     def status_change(self, processtype, percent, msg):
-	self.ui.btnCancel.hide()
-	self.ui.btnCancel_2.hide()
         if(self.finish == False):
             text = ''
             if(processtype == 'fetch'):
@@ -170,11 +161,8 @@ class TaskListItemWidget(QWidget):
                     self.ui.progresslabel.hide()
                     if int(percent) == int(-7):
                         self.ui.status.setText("完成")
-			
                     else:
                         self.ui.status.setText("失败")
-			self.ui.btnCancel.show()
-			self.ui.btnCancel_2.show()
                     self.ui.status.show()
                     self.finish = True
                 elif percent >= 100:
@@ -186,14 +174,6 @@ class TaskListItemWidget(QWidget):
                     self.ui.progressBar.setValue(percent)
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
-		    #add
-		    #self.ui.progressBar.show()
-		    #self.ui.progressBar.setValue(100)
-		    #self.ui.progresslabel.setText("")
-		    #self.ui.progressBar.hide()
-		    #self.ui.progresslabel.hide()
-		    #self.ui.status.show()
-		    #self.ui.status.setText("完成")
                 else:
                     self.ui.progressBar.show()
                     self.ui.progresslabel.show()
@@ -202,9 +182,9 @@ class TaskListItemWidget(QWidget):
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
+
     def slot_work_finished(self, pkgname, action):
-	#print "mmmmmmmmmmmmmmmmmmmmmmmm",action,self.action
-        if self.app.name == pkgname and action == self.action and self.finish != True:
+        if self.app.name == pkgname and action == self.action:
             self.ui.progressBar.setValue(100)
             self.ui.progresslabel.setText("")
             self.ui.progressBar.hide()
@@ -212,10 +192,6 @@ class TaskListItemWidget(QWidget):
             self.ui.status.show()
             self.ui.status.setText("完成")
             self.finish = True
-	if self.app.name == pkgname and action == self.action:
-	    self.ui.btnCancel_2.hide()
-		
-	self.ui.btnCancel.show()
 
     def slot_click_cancel(self):
         if(self.isdeb == True or isinstance(self.app,DebFile)):
@@ -230,12 +206,3 @@ class TaskListItemWidget(QWidget):
             # elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
             #     appaction = "remove"
             self.emit(Signals.task_cancel, self.app, self.action)
-    def slot_click_reinstall(self):	
-	self.ui.btnCancel_2.hide()
-	#print "sssssssssssss",self.tasknumber,self.app,self.finish,self.app.name,self.action,self.isdeb
-	if self.action == "install":
-	    self.app.status = 4
-	    self.emit(Signals.task_reinstall, self.app)
-	if self.action == "upgrade":
-	    self.app.status = 6  
-	    self.emit(Signals.task_upgrade, self.app) 
