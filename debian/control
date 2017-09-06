@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 9),
                dh-python,
                python (>= 2.6.6-3~),
                python-distutils-extra
-Standards-Version: 3.9.5
+Standards-Version: 4.0.0
 Homepage: https://launchpad.net/ubuntu-kylin-software-center
 X-Python-Version: >= 2.7
 Vcs-Browser: https://code.launchpad.net/~ubuntukylin-members/ubuntu-kylin-software-center/trunk
