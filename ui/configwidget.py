@@ -303,7 +303,7 @@ class SourceItemWidget(QWidget):
         self.sourcetext = QLabel(self)
         self.sourcetext.setGeometry(25, 4, 330, 17)
         self.btnremove = QPushButton(self)
-        self.btnremove.setGeometry(360, 6, 13, 13)
+        self.btnremove.setGeometry(358, 6, 13, 13)
 
         self.btnremove.clicked.connect(self.slot_remove_source)
 

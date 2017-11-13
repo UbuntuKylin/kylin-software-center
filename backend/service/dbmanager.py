@@ -400,24 +400,114 @@ class Database:
         return pointouts
 
     def get_recommend_apps(self):
-        self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
-        res = self.cursor.fetchall()
+        #self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
+        #self.cursor.execute("select app_name,rank from application where application.rank!=0 order by rank")
+        #res = self.cursor.fetchall()
         recommends = []
-        for item in res:
-            app_name = item[0]
-            rank_recommend = item[1]
-            recommends.append((app_name, rank_recommend))
+        #for item in res:
+        #    app_name = item[0]
+        #    print "ddddddddddddddddd",app_name,item[1]
+        #    rank_recommend = item[1]
+        #    recommends.append((app_name, rank_recommend))
+        recommends.append(("youker-assistant","1"))
+        #recommends.append(("gimp","3"))
+        recommends.append(("sogoupinyin","4"))
+        recommends.append(("netease-cloud-music","3"))
+        recommends.append(("teamviewer","3"))
+        recommends.append(("youdao-dict","3"))
+        recommends.append(("virtualbox","6"))
+        recommends.append(("thunderbird","7"))
+        recommends.append(("chromium-browser","8"))
+        recommends.append(("firefox","11"))
+        recommends.append(("wireshark","9"))
+        recommends.append(("librecad","12"))
+        recommends.append(("flashplugin-installer","13"))
+        recommends.append(("brasero","13"))
+        recommends.append(("uget","5"))
+        recommends.append(("calibre","10"))
+        recommends.append(("gimp","3"))
+        recommends.append(("transgui","3"))
+        recommends.append(("gnome-calculator","3"))
+       	#recommends.append(("virtualbox","4"))
+# youker-assistant gimp sogoupinyin virtualbox wine playonlinux freecad
+        return recommends
+    def get_game_apps(self):
+        #self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
+        #self.cursor.execute("select app_name,rank from application where application.rank!=0 order by rank")
+        #res = self.cursor.fetchall()
+        recommends = []
+        #for item in res:
+        #    app_name = item[0]
+        #    print "ddddddddddddddddd",app_name,item[1]
+        #    rank_recommend = item[1]
+        #    recommends.append((app_name, rank_recommend))
+        recommends.append(("wine","1"))
+        recommends.append(("playonlinux","2"))
+        recommends.append(("steam","3"))
+        recommends.append(("redeclipse","3"))
+        recommends.append(("supertuxkart","4"))
+        recommends.append(("gnome-chess","7"))
+        recommends.append(("gnchess","11"))
+        recommends.append(("flightgear","10"))
+        recommends.append(("kmahjongg","6"))
+        recommends.append(("frozen-bubble","9"))
+        recommends.append(("gnome-hearts","8"))
+        recommends.append(("gnome-mines","13"))
+        recommends.append(("smplayer","14"))
+        #recommends.append(("empire","12"))
+        recommends.append(("openrocket","5"))
+        recommends.append(("gnome-mahjongg","12"))
+        recommends.append(("funnyboat","12"))
+	recommends.append(("kylin-video","12"))
+# youker-assistant gimp sogoupinyin virtualbox wine playonlinux freecad
+        return recommends
+
+    def get_necessary_apps(self):
+        recommends = []
+        recommends.append(("opera","2"))
+        recommends.append(("filezilla","2"))
+        recommends.append(("remmina","3"))
+        recommends.append(("freecad","4"))
+        recommends.append(("unetbootin","5"))
+        recommends.append(("codeblocks","6"))
+        recommends.append(("transmission","7"))
+        recommends.append(("deluge","8"))
+        recommends.append(("hardinfo","9"))
+        recommends.append(("nautilus","10"))
+        recommends.append(("bluefish","11"))
+        recommends.append(("gnome-screenshot","12"))
+        recommends.append(("blender","13"))
+        recommends.append(("vim","14"))
+        recommends.append(("midori","14"))
+        recommends.append(("gnome-disk-utility","14"))
+        recommends.append(("gparted","14"))
         return recommends
 
     def get_ratingrank_apps(self):
-        self.cursor.execute("select app_name,rank_rating from rank,application where rank_rating!=0 and rank.aid_id=application.id order by rank_rating")
-        res = self.cursor.fetchall()
-        ratingranks = []
-        for item in res:
-            app_name = item[0]
-            rank_rating = item[1]
-            ratingranks.append((app_name, rank_rating))
-        return ratingranks
+        #self.cursor.execute("select app_name,rank_rating from rank,application where rank_rating!=0 and rank.aid_id=application.id order by rank_rating")
+        #res = self.cursor.fetchall()
+        #ratingranks = []
+        #for item in res:
+        #    app_name = item[0]
+        #    rank_rating = item[1]
+        #    ratingranks.append((app_name, rank_rating))
+        #return ratingranks
+        recommends = []
+        recommends.append(("youker-assistant","1"))
+        recommends.append(("vlc","2"))
+        recommends.append(("synaptic","3"))
+        recommends.append(("gparted","3"))
+        recommends.append(("fcitx","3"))
+        recommends.append(("qtcreator","3"))
+        recommends.append(("rar","3"))
+        recommends.append(("shotwell","3"))
+        recommends.append(("stellarium","3"))
+        recommends.append(("ubuntu-restricted-extras","3"))
+        recommends.append(("stardict","3"))
+        recommends.append(("vim","14"))
+	recommends.append(("kylin-video","12"))
+        return recommends
+
 
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
         self.cursor.execute("update application set rating_avg=?,rating_total=? where app_name=?", (ratingavg, ratingtotal, app_name))

@@ -262,6 +262,10 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnUp_num.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnUp_num_long.setFocusPolicy(Qt.NoFocus)
+
+
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
@@ -304,6 +308,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnLogout.setText("退出")
 
         self.ui.hometext1.setText("推荐软件")
+        self.ui.hometext8.setText("必备软件")
+        self.ui.hometext9.setText("游戏娱乐")
+
         self.ui.hometext2.setText("评分排行")
 
         # self.ui.headercw1.leSearch.setPlaceholderText("请输入您要搜索的软件")
@@ -404,7 +411,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
         self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#EF9800;}")
         self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-        self.ui.hometext1.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
+        self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
+
         self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
         self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
@@ -413,6 +424,11 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
+#add
+        self.ui.btnUp_num.setStyleSheet("QLabel{background-color:red;color:white;font-size:13px;}")
+        self.ui.btnUp_num_long.setStyleSheet("QLabel{background-color:red;color:white;font-size:12px;}")
+
+
         self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
         self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
@@ -464,6 +480,9 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
         self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
+        self.ui.hometext1.clicked.connect(self.slot_rec_show_recommend)
+        self.ui.hometext8.clicked.connect(self.slot_rec_show_necessary)
+        self.ui.hometext9.clicked.connect(self.slot_rec_show_game)
 
         # signal / slot
         self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
@@ -750,6 +769,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
         self.backend.check_dpkg_statu()
+	self.slot_count_application_update()
         # check uksc upgradable
         self.check_uksc_update()
     # check base init
@@ -1417,6 +1437,28 @@ class SoftwareCenter(QMainWindow):
             self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
 
     #-------------------------------------------------slots-------------------------------------------------
+    def slot_rec_show_necessary(self):
+        self.appmgr.get_necessary_apps(False,True)
+        self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
+        self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
+
+    def slot_rec_show_game(self):
+        self.appmgr.get_game_apps(False,True)
+        self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
+        self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
+    def slot_rec_show_recommend(self):
+        self.appmgr.get_recommend_apps(False)
+        #self.slot_recommend_apps_ready(applist,False)
+
+        #self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
+        self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
 
     def slot_change_category(self, category, forcechange=False):
         if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE):
@@ -1434,7 +1476,6 @@ class SoftwareCenter(QMainWindow):
             self.ui.unWidget.setVisible(True)
         if(Globals.NOWPAGE == PageStates.WINPAGE and self.ui.winpageWidget.isVisible() == False):
             self.ui.winpageWidget.setVisible(True)
-
         # if(self.nowPage == "searchpage"):
         #     self.ui.searchWidget.setVisible(False)
         #     self.nowPage = self.hisPage
@@ -1597,16 +1638,33 @@ class SoftwareCenter(QMainWindow):
         self.ui.allcount.setText(str(all))
         self.ui.uncount.setText(str(inst))
         self.ui.upcount.setText(str(up))
+        self.up_num = str(up)
+        #add
+        #if up == 0:
+        #    self.ui.btnUp_num_long.hide()
+        #    self.ui.btnUp_num.hide()
+        #    #self.ui.btnUp_pic.hide()
+        if up < 10:
+            self.ui.btnUp_num_long.hide()
+            self.ui.btnUp_num.setText(str(up))
+        elif up < 100:
+            self.ui.btnUp_num.hide()
+            self.ui.btnUp_num_long.setText(str(up))
+        else:
+            self.ui.btnUp_num.hide()
+            self.ui.btnUp_num_long.setText(99)
+        #self.ui.btnUp_num.setText(str(up))
 
         self.ui.wincountlabel.setText(str(self.winnum))
 
+
     def slot_goto_homepage(self, bysignal = False):
         if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-            self.appmgr.get_recommend_apps(bysignal)
+            #self.appmgr.get_recommend_apps(bysignal)
             self.appmgr.get_ratingrank_apps(bysignal)
+	    self.slot_rec_show_recommend()
         else:
             self.show_homepage(bysignal)
-
     def show_homepage(self, bysignal):
         if bysignal is False:
             self.ui.btnCloseDetail.setVisible(False)
@@ -2503,6 +2561,7 @@ class SoftwareCenter(QMainWindow):
         user = result["username"]
         display_name = result["displayname"]
         preferred_email = result["preferred_email"]
+	#print "wwwwwwwwwwwwwww",user,display_name,preferred_email
         print 'Login success, username: %s' % display_name
 
         self.userload.stop_loading()

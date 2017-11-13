@@ -102,6 +102,9 @@ class ThreadWorker(threading.Thread):
 	self.appmgr.get_recommend_apps(False)
 	self.appmgr.get_ratingrank_apps(False)
 	print "ok",sum_all
+        self.appmgr.get_game_apps(False,False)
+        self.appmgr.get_necessary_apps(False,False)
+
 	#QApplication.slot_recommend_apps_ready(applist, bysignal)	
 	exit()
 
@@ -774,6 +777,32 @@ class AppManager(QObject):
                 applist.append(app)
 
         self.emit(Signals.recommend_ready, applist, bysignal)
+
+     # get game apps
+    def get_game_apps(self, bysignal=False,sig = False):
+        recommends = self.db.get_game_apps()
+        applist = []
+        for rec in recommends:
+            app = self.get_application_by_name(rec[0])
+            if(app is not None):
+                app.recommendrank = rec[1]
+                applist.append(app)
+        if sig == True:
+            self.emit(Signals.recommend_ready, applist, bysignal)
+
+     # get necessary apps
+    def get_necessary_apps(self, bysignal=False,sig = False):
+        recommends = self.db.get_necessary_apps()
+        applist = []
+        for rec in recommends:
+            app = self.get_application_by_name(rec[0])
+            if(app is not None):
+                app.recommendrank = rec[1]
+                applist.append(app)
+        if sig == True:
+            self.emit(Signals.recommend_ready, applist, bysignal)
+
+
 
     # get pointout apps
     def get_pointout_apps(self):

@@ -142,9 +142,12 @@ class PistonRemoter(PistonAPI):
     def get_user_applist(self, user):
         return self._get('getapplist/?user=%s' % user, scheme="http")
 
-    @returns_json#zx 2015.01.30
+    @returns_json
     def get_user_transapplist(self, user):
         return self._get('getusertranslation/?user=%s' % user, scheme="http")
+
+
+
 
 
 class PistonRemoterAuth(PistonAPI):
