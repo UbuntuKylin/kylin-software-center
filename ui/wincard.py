@@ -109,8 +109,10 @@ class WinCard(QWidget):
             self.ui.winicon.setStyleSheet(ITEM_LABEL_STYLE % (UBUNTUKYLIN_RES_WIN_PATH + "default.png"))
 
         # add by kobe
-        setLongTextToElideFormat(self.ui.winname, self.winstat.windows_app_name)
-        setLongTextToElideFormat(self.ui.wintext, self.winstat.display_name_windows)
+        #setLongTextToElideFormat(self.ui.winname, self.winstat.windows_app_name)
+        #setLongTextToElideFormat(self.ui.wintext, self.winstat.display_name_windows)
+	setLongTextToElideFormat(self.ui.winname, self.winstat.display_name_windows)
+	setLongTextToElideFormat(self.ui.wintext, self.winstat.windows_app_name)
         setLongTextToElideFormat(self.ui.winbake, self.winstat.category)
         # metrics = QFontMetrics(self.ui.winname.font())
         # elidedText = metrics.elidedText(self.winstat.windows_app_name, Qt.ElideRight, self.ui.winname.width())

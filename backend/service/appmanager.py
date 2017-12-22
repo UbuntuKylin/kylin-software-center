@@ -94,8 +94,9 @@ class ThreadWorker(threading.Thread):
 	self.appmgr.cat_list = self.cat_list
 	self.appmgr.apt_cache = self.apt_cache
 	self.appmgr.db = self.db
-#	self.appmgr.get_recommend_apps(False)
-#	self.appmgr.get_ratingrank_apps(False)
+	if Globals.UPDATE_HOM == 0:
+	    self.appmgr.get_recommend_apps(False)
+	    self.appmgr.get_ratingrank_apps(False)
 	sum_inst = 0
         sum_up = 0
         sum_all = len(self.apt_cache)
@@ -290,7 +291,7 @@ class AppManager(QObject):
         self.worker_thread.start()
 	
 	self.worker_thread1 = ThreadWorker(self)
-        self.worker_thread1.setDaemon(True)
+        #self.worker_thread1.setDaemon(True)
         self.worker_thread1.start()
 
 
@@ -560,12 +561,13 @@ class AppManager(QObject):
     def get_advertisements(self, bysignal=False):
         print "we need to get the advertisements"
         tmpads = []
-        tmpads.append(Advertisement("pchomewallpaper", "url", "ad0.png", "adbground0.png", "http://download.pchome.net/wallpaper/"))
-        tmpads.append(Advertisement("qq", "url", "ad1.png", "adbground1.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1"))
-        tmpads.append(Advertisement("wps", "pkg", "ad2.png", "adbground2.png", "wps-office"))
-        tmpads.append(Advertisement("dota2", "url", "ad3.png", "adbground3.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7687&extra=page%3D1"))
-        tmpads.append(Advertisement("pps", "url", "ad4.png", "adbground4.png", "http://dl.pps.tv/pps_linux_download.html"))
-        tmpads.append(Advertisement("pchomewallpaper", "url", "ad5.png", "adbground5.png", "http://download.pchome.net/wallpaper/"))
+	tmpads.append(Advertisement("wps-office", "pkg", "ad2.png", "adb2.png", "wps-office"))
+	tmpads.append(Advertisement("netease-cloud-music", "pkg", "ad0.png", "adb0.png", "netease-cloud-music"))
+        tmpads.append(Advertisement("teamviewer", "pkg", "ad1.png", "adb1.png", "teamviewer"))
+        tmpads.append(Advertisement("wps-office", "pkg", "ad2.png", "adb2.png", "wps-office"))
+        tmpads.append(Advertisement("redeclipse", "pkg", "ad3.png", "adb3.png", "redeclipse"))
+        tmpads.append(Advertisement("eclipse", "pkg", "ad4.png", "adb4.png", "eclipse"))
+
         self.emit(Signals.ads_ready, tmpads, bysignal)
 
     #get apps in ubuntukylin archives, this is now implemented with config file
@@ -775,8 +777,8 @@ class AppManager(QObject):
             if(app is not None):
                 app.recommendrank = rec[1]
                 applist.append(app)
-
-        self.emit(Signals.recommend_ready, applist, bysignal)
+	if Globals.UPDATE_HOM == 0:
+            self.emit(Signals.recommend_ready, applist, bysignal)
 
      # get game apps
     def get_game_apps(self, bysignal=False,sig = False):
@@ -839,8 +841,8 @@ class AppManager(QObject):
                     applist.index(app)
                 except:
                     applist.append(app)
-
-        self.emit(Signals.ratingrank_ready, applist, bysignal)
+	if Globals.UPDATE_HOM == 0:
+            self.emit(Signals.ratingrank_ready, applist, bysignal)
 
     def submit_review(self, app_name, content):
         distroseries = get_distro_info()[2]

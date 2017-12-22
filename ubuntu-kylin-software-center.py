@@ -29,6 +29,7 @@ import dbus.service
 import webbrowser
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from PyQt4 import QtGui
 from xdg import BaseDirectory as xdg
 from ui.mainwindow import Ui_MainWindow
 from ui.categorybar import CategoryBar
@@ -42,7 +43,7 @@ from ui.listitemwidget import ListItemWidget
 from ui.translistitemwidget import TransListItemWidget#ZX 2015.01.30
 from ui.tasklistitemwidget import TaskListItemWidget
 from ui.ranklistitemwidget import RankListItemWidget
-from ui.adwidget import *
+#from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
@@ -50,13 +51,12 @@ from ui.confirmdialog import ConfirmDialog, TipsDialog, Update_Source_Dialog
 from ui.configwidget import ConfigWidget
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
-
+from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
 from backend.search import *
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
 from backend.ubuntusso import get_ubuntu_sso_backend
-
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
 from models.enums import Signals, setLongTextToElideFormat
 from models.globals import Globals
@@ -115,7 +115,13 @@ class SoftwareCenter(QMainWindow):
     #force_update = 0    
     re_page = ""
     re_cli = 0
-
+    # movie timer
+    adlist = ["","",""]    
+    adi = 1 
+    adlabel = ["","",""]
+    lockads = True
+    adm = 0
+    bdm = 0
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
 
@@ -124,14 +130,13 @@ class SoftwareCenter(QMainWindow):
 
         # init dbus backend
         self.init_dbus()
-
         # init ui
         self.init_main_view()
 
         # init main service
         self.init_main_service()
-
-        # check ukid
+ 
+       # check ukid
         self.check_user()
 
         # check apt source and update it
@@ -149,6 +154,9 @@ class SoftwareCenter(QMainWindow):
 
         # init components
 
+	self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
+	#self.ui.adWidget.lower()
+	#self.ui.adWidget.raise_()
         # category bar
         self.categoryBar = CategoryBar(self.ui.rightWidget)
         self.Taskwidget = Taskwidget(self.ui.taskWidget)
@@ -311,8 +319,8 @@ class SoftwareCenter(QMainWindow):
         self.ui.hometext8.setText("必备软件")
         self.ui.hometext9.setText("游戏娱乐")
 
-        self.ui.hometext2.setText("评分排行")
-
+        #self.ui.hometext2.setText("评分排行")
+	self.ui.hometext2.setText("热门排行")
         # self.ui.headercw1.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
         # style by qss
@@ -720,6 +728,7 @@ class SoftwareCenter(QMainWindow):
             if(Globals.LOCAL_DEB_FILE != None):
                 iface.show_loading_div()
                 iface.show_deb_file(Globals.LOCAL_DEB_FILE)
+		Globals.UPDATE_HOM = 1
             sys.exit(0)
 
         # else startup one instance
@@ -1018,8 +1027,8 @@ class SoftwareCenter(QMainWindow):
                     self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
 
                     # ads widget
-                    if hasattr(self, "adw"):
-                        self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
+                    #if hasattr(self, "adw"):
+                    #    self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
 
                     # detail widget
                     self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
@@ -1520,17 +1529,283 @@ class SoftwareCenter(QMainWindow):
         if(now > (max - (max / 10))):
             self.show_more_software(listWidget)
 
+    def slot_change_bt(self,adw):
+	print "vvvvvvvvvvvvvvvvvv",adw
+	print "ddddddddddddddddd",self.bdm,self.adi
+	self.adtimer.stop()
+	i = 0
+	if adw > self.bdm:
+	    while(self.bdm != adw):
+		self.slot_change_l_ad()
+	elif adw < self.bdm:
+	    while(self.bdm != adw):
+		self.slot_change_l_ad()
+	print "ssssssssssssssssssss",self.bdm,self.adi
+	#self.adtimer.start(2000)
+
+
     def slot_advertisement_ready(self,adlist, bysignal=False):
         LOG.debug("receive ads ready, count is %d", len(adlist))
+	self.adlist = adlist
         if adlist is not None:
-            self.adw = ADWidget(adlist, self)
-            self.adw.move(0, 44)
+            #self.adw = lot_change_adDWidget(adlist, self)
+	    #self.adw = ADWidget(adlist)
+            #self.adw.move(0, 44)
+#set
+	    self.ui.bt1.hide()
+	    self.ui.bt2.hide()
+	    self.ui.bt3.hide()
+	    self.ui.bt4.hide()
+	    self.ui.bt5.hide()	
+	#    self.ui.bt1.setFocusPolicy(Qt.NoFocus)
+	#    self.ui.bt1.clicked.connect(lambda: self.slot_change_bt(1))
+
+        #    self.ui.bt2.setFocusPolicy(Qt.NoFocus)
+        #    self.ui.bt2.clicked.connect(lambda: self.slot_change_bt(2))
+
+        #    self.ui.bt3.setFocusPolicy(Qt.NoFocus)
+        #    self.ui.bt3.clicked.connect(lambda: self.slot_change_bt(3))
+
+        #    self.ui.bt4.setFocusPolicy(Qt.NoFocus)
+        #    self.ui.bt4.clicked.connect(lambda: self.slot_change_bt(4))
+
+        #    self.ui.bt5.setFocusPolicy(Qt.NoFocus)
+        #    self.ui.bt5.clicked.connect(lambda: self.slot_change_bt(5))
+
+	#左移
+	    self.ui.thu.setFocusPolicy(Qt.NoFocus) 
+	    self.ui.thu.resize(130, 160)
+	    self.ui.thu.move(0, 30)
+	    self.ui.thu.setStyleSheet("QPushButton{background:none;border:none;}")
+	    self.ui.thu.clicked.connect(self.slot_change_r_ad_before)
+	    self.ui.thu.setCursor(Qt.PointingHandCursor)
+	#右
+            self.ui.thur.setFocusPolicy(Qt.NoFocus)
+            self.ui.thur.resize(130,160)
+            self.ui.thur.move(730, 30)
+            self.ui.thur.setStyleSheet("QPushButton{background:none;border:none;}")
+            self.ui.thur.clicked.connect(self.slot_change_l_ad_before)
+	    self.ui.thur.setCursor(Qt.PointingHandCursor)
+	#中间
+            self.ui.thun.setFocusPolicy(Qt.NoFocus)
+            self.ui.thun.resize(600, 200)
+            self.ui.thun.move(130, 10)
+            self.ui.thun.setStyleSheet("QPushButton{background:none;border:none;}")
+            self.ui.thun.clicked.connect(self.slot_click_ad)
+	    self.ui.thun.setCursor(Qt.PointingHandCursor)
+
+	    #self.ui.buright.setFocusPolicy(Qt.NoFocus)
+	    #self.ui.buright.clicked.connect(self.slot_ad_show)
+
+
+            self.ui.label_12.setFocusPolicy(Qt.NoFocus)
+            image = QtGui.QImage()
+            image.load("data/ads/ad1.png")
+            self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_12.resize(600,200)
+            self.ui.label_12.move(130, 10)
+
+	    self.ui.label_11.setFocusPolicy(Qt.NoFocus)
+	    image.load("data/ads/ad0.png")
+	    self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+	    self.ui.label_11.resize(600*0.8,200*0.8)
+	    self.ui.label_11.move(0,(220-(200*0.8))*0.5)
+  
+            self.ui.label_13.setFocusPolicy(Qt.NoFocus)
+            image.load("data/ads/ad2.png") 
+	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_13.resize(600*0.8,200*0.8)
+            self.ui.label_13.move(860-(600*0.8), (220-(200*0.8))*0.5)
+
+            self.ui.label_14.setFocusPolicy(Qt.NoFocus)
+            image.load("data/ads/ad5.png")
+            self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_14.resize(600*0.8*0.8,200*0.8*0.8)
+            self.ui.label_14.move(238,46)
+	
+	    self.adtimer = QTimer(self)
+	    self.adtimer.timeout.connect(self.slot_change_r_ad)
+	    self.adtimer.start(2000)
 
         self.ads_ready = True
         self.check_init_ready(bysignal)
 
+    def slot_btn_set(self):
+	self.ui.thun.move(130 + self.adm, 10)
+	self.ui.thur.move(730 + self.adm, 30)
+	self.ui.thu.move(0 + self.adm, 30)
+	self.ui.bt1.setGeometry(335 + self.adm, 180, 10, 10)
+	self.ui.bt2.setGeometry(355 + self.adm, 180, 10, 10)
+	self.ui.bt3.setGeometry(375 + self.adm, 180, 10, 10)
+	self.ui.bt4.setGeometry(395 + self.adm, 180, 10, 10)
+	self.ui.bt5.setGeometry(415 + self.adm, 180, 10, 10)
+ 	self.ui.bt1.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	self.ui.bt2.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	self.ui.bt3.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	self.ui.bt4.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	self.ui.bt5.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")	
+	if self.adi == 1:
+	    self.ui.bt1.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")	
+	elif self.adi == 2:
+	    self.ui.bt2.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	elif self.adi == 3:
+	    self.ui.bt3.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	elif self.adi == 4:
+	    self.ui.bt4.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+	elif self.adi == 5:
+	    self.ui.bt5.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+
+    def slot_change_r_ad_before(self):
+	self.adtimer.stop()
+	self.slot_change_r_ad()
+	self.adtimer.start(2000)
+
+    def slot_change_l_ad_before(self):
+        self.adtimer.stop()
+	self.slot_change_l_ad()
+        self.adtimer.start(2000)
+
+    def slot_change_r_ad(self):
+	self.adm =(self.ui.homepageWidget.width() -880)*0.5
+	self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+        self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
+        self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
+        self.r3 = QRect(130 + self.adm,10,600,200)
+        self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+        self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+	self.bdm =self.adi
+	#print "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",self.adi
+	#print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",self.ui.homepageWidget.width(),self.adlist[self.adi].pic
+	image = QtGui.QImage()
+	image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
+	self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+	if self.adi == 5:
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)	   
+	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+	    self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))	    
+	else:
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic) 
+	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+	    if self.adi == 4:
+		image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+		self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+	    else:
+		image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
+		self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+	if self.adi == 1:
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[5].pic)		
+	else:
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi - 1].pic)
+	self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+
+	#self.slot_btn_set()
+	#adlist
+        self.animation2 = QPropertyAnimation(self.ui.label_12, "geometry")
+        self.animation2.setDuration(700)
+        self.animation2.setStartValue(self.r1)
+        self.animation2.setEndValue(self.r3)
+
+
+	self.animation = QPropertyAnimation(self.ui.label_13, "geometry")
+	self.animation.setDuration(700)
+        self.animation.setStartValue(self.r3)
+        self.animation.setEndValue(self.r2)
+
+        self.animation1 = QPropertyAnimation(self.ui.label_14, "geometry")
+        self.animation1.setDuration(700)
+        self.animation1.setStartValue(self.r2)
+        self.animation1.setEndValue(self.r4)
+
+        self.animation3 = QPropertyAnimation(self.ui.label_11, "geometry")
+        self.animation3.setDuration(1000)
+        self.animation3.setStartValue(self.r4)
+        self.animation3.setEndValue(self.r1)
+
+
+	self.animation.start()
+	self.animation1.start()
+        self.animation3.start()
+        self.animation2.start()
+	if self.adi == 1:
+	    self.adi = 5
+	else:
+	    self.adi -=1
+
+    def slot_change_l_ad(self):
+        self.adm =(self.ui.homepageWidget.width() -880)*0.5
+        self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+        self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
+        self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
+        self.r3 = QRect(130 + self.adm,10,600,200)
+        self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+        self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+	self.bdm =self.adi
+	image = QtGui.QImage()
+	image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
+	self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+        if self.adi == 5:
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+	    self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+	    self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[3].pic)
+	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+        else:
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic)
+	    self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+	    if self.adi == 4:
+	        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+	        self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+		image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+		self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+	    else:
+	        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
+	        self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+		if self.adi == 3:
+		    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+		    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+	        else:
+		    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 3].pic)	
+		    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+	#self.slot_btn_set()
+        self.animation2 = QPropertyAnimation(self.ui.label_12, "geometry")
+        self.animation2.setDuration(700)
+        self.animation2.setStartValue(self.r2)
+        self.animation2.setEndValue(self.r3)
+
+        self.animation = QPropertyAnimation(self.ui.label_11, "geometry")
+        self.animation.setDuration(700)
+        self.animation.setStartValue(self.r3)
+        self.animation.setEndValue(self.r1)
+
+        self.animation1 = QPropertyAnimation(self.ui.label_14, "geometry")
+        self.animation1.setDuration(700)
+        self.animation1.setStartValue(self.r1)
+        self.animation1.setEndValue(self.r4)
+
+        self.animation3 = QPropertyAnimation(self.ui.label_13, "geometry")
+        self.animation3.setDuration(1000)
+        self.animation3.setStartValue(self.r5)
+        self.animation3.setEndValue(self.r2)
+
+
+        self.animation.start()
+        self.animation1.start()
+        self.animation3.start()
+        self.animation2.start()
+	if self.adi == 5:
+	    self.adi = 1
+	else:
+	    self.adi +=1
+
+    def slot_lock_ads(self,flag):
+	self.lockads = flag
+
+
     def slot_recommend_apps_ready(self, applist, bysignal):
-        LOG.debug("receive recommend apps ready, count is %d", len(applist))
+        
+	LOG.debug("receive recommend apps ready, count is %d", len(applist))
         self.recommendListWidget.clear()
         for app in applist:
             if app is None or app.package is None:
@@ -2130,13 +2405,21 @@ class SoftwareCenter(QMainWindow):
         if(reason == QSystemTrayIcon.Trigger):
             self.slot_show_or_hide()
 
-    def slot_click_ad(self, ad):
-        if(ad.type == "pkg"):
-            app = self.appmgr.get_application_by_name(ad.urlorpkgid)
-            if app is not None and app.package is not None:
-                self.slot_show_app_detail(app)
-        elif(ad.type == "url"):
-            webbrowser.open_new_tab(ad.urlorpkgid)
+    def slot_click_ad(self):
+        #if(ad.type == "pkg"):
+	if self.adi == 5:
+	    num = 1
+	else:
+	    num = self.adi +1    
+        app = self.appmgr.get_application_by_name(self.adlist[num].name)
+        if app is not None and app.package is not None:
+            self.slot_show_app_detail(app)
+        else:
+	    MS = QMessageBox
+	    MS.information(self,"提示","软件源不完整或不包含该软件",'确定','','',0, 0)
+	    
+	    #print "sssssssssssssssssssssssssssssssss"
+            #webbrowser.open_new_tab(self.adlist[self.adi].urlorpkgid)
 
     def slot_click_rank_item(self, item):
         pkgname = item.whatsThis()
@@ -2630,6 +2913,15 @@ def check_local_deb_file(url):
 def quit(signum, frame):
     print 'You choose to stop software-center.'
     sys.exit()
+def windows():
+    window = QMainWindow()
+    window.show()
+    animation = QPropertyAnimation(window, b"geometry")
+    animation.setDuration(100000)
+    animation.setStartValue(QRect(0, 0, 100, 30))
+    animation.setEndValue(QRect(1250, 1250, 100, 30))
+    animation.start() 
+
 
 def main():
     app = QApplication(sys.argv)
@@ -2679,6 +2971,7 @@ def main():
     mw = SoftwareCenter()
     signal.signal(signal.SIGINT, quit)
     signal.signal(signal.SIGTERM,quit)
+    
     sys.exit(app.exec_())
 
 

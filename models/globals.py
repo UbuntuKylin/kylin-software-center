@@ -56,4 +56,6 @@ class Globals:
 
     NOWPAGE = -1
 
+    UPDATE_HOM = 0
+
     ALL_APPS = {}

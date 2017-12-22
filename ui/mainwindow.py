@@ -127,6 +127,117 @@ class Ui_MainWindow(object):
         self.homepageWidget = QtGui.QWidget(self.rightWidget)
         self.homepageWidget.setGeometry(QtCore.QRect(20, 36, 880, 572))
         self.homepageWidget.setObjectName(_fromUtf8("homepageWidget"))
+#add   MainWindow
+        #self.adWidget = QtGui.QWidget(self.rightWidget)
+	self.adWidget = QtGui.QGroupBox(self.homepageWidget)
+        self.adWidget.setGeometry(QtCore.QRect(0, 44, 860, 220))
+	self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+#	self.adWidget.setTitle(_fromUtf8(""))
+        self.adWidget.setObjectName(_fromUtf8("adWidget"))
+
+
+
+#        self.label_14 = QtGui.QPushButton(self.adWidget)
+#        self.label_14.setGeometry(QtCore.QRect(20, 20, 48, 48))
+#        self.label_14.setText(_fromUtf8(""))
+#        self.label_14.setObjectName(_fromUtf8("label_14"))
+
+
+#        self.label_11 = QtGui.QPushButton(self.adWidget)
+#        self.label_11.setGeometry(QtCore.QRect(20, 20, 48, 48))
+#        self.label_11.setText(_fromUtf8(""))
+#        self.label_11.setObjectName(_fromUtf8("label_11"))
+
+#        self.label_12 = QtGui.QPushButton(self.adWidget)
+#        self.label_12.setGeometry(QtCore.QRect(20, 20, 48, 48))
+#        self.label_12.setText(_fromUtf8(""))
+#        self.label_12.setObjectName(_fromUtf8("label_12"))
+
+#        self.buright = QtGui.QPushButton(self.adWidget)
+#        self.buright.setGeometry(QtCore.QRect(20, 20, 48, 48))
+#        self.buright.setText(_fromUtf8(""))
+#        self.buright.setObjectName(_fromUtf8("buright"))
+
+
+        self.label_14 = QtGui.QLabel(self.adWidget)
+        self.label_14.setGeometry(QtCore.QRect(20, 20, 48, 48))
+        self.label_14.setScaledContents(True)
+        self.label_14.setText(_fromUtf8(""))
+        self.label_14.setObjectName(_fromUtf8("label_14"))
+
+
+
+
+        self.label_11 = QtGui.QLabel(self.adWidget)
+        self.label_11.setGeometry(QtCore.QRect(20, 20, 48, 48))
+        self.label_11.setScaledContents(True)
+        self.label_11.setText(_fromUtf8(""))
+        self.label_11.setObjectName(_fromUtf8("label_11"))
+
+
+        self.label_13 = QtGui.QLabel(self.adWidget)
+        self.label_13.setGeometry(QtCore.QRect(20, 20, 48, 48))
+        self.label_13.setScaledContents(True)
+        self.label_13.setText(_fromUtf8(""))
+        self.label_13.setObjectName(_fromUtf8("label_13"))
+
+
+        self.label_12 = QtGui.QLabel(self.adWidget)
+        self.label_12.setGeometry(QtCore.QRect(20, 20, 48, 48))
+        self.label_12.setScaledContents(True)
+        self.label_12.setText(_fromUtf8(""))
+        self.label_12.setObjectName(_fromUtf8("label_12"))
+
+
+
+
+#        self.label_13 = QtGui.QPushButton(self.adWidget)
+#        self.label_13.setGeometry(QtCore.QRect(0, 30, 480, 160))
+#        self.label_13.setText(_fromUtf8(""))
+#        self.label_13.setObjectName(_fromUtf8("label_13"))
+
+
+
+        self.thu = QtGui.QPushButton(self.adWidget)
+        self.thu.setGeometry(QtCore.QRect(0, 30, 130, 160))
+        self.thu.setText(_fromUtf8(""))
+        self.thu.setObjectName(_fromUtf8("thu"))
+
+        self.thur = QtGui.QPushButton(self.adWidget)
+        self.thur.setGeometry(QtCore.QRect(760, 00, 130, 160))
+        self.thur.setText(_fromUtf8(""))
+        self.thur.setObjectName(_fromUtf8("thur"))
+
+        self.thun = QtGui.QPushButton(self.adWidget)
+        self.thun.setGeometry(QtCore.QRect(130, 10, 600, 200))
+        self.thun.setText(_fromUtf8(""))
+        self.thun.setObjectName(_fromUtf8("thun"))
+
+        self.bt1 = QtGui.QPushButton(self.adWidget)
+        self.bt1.setGeometry(QtCore.QRect(335, 180, 10, 10))
+        self.bt1.setText(_fromUtf8(""))
+        self.bt1.setObjectName(_fromUtf8("bt1"))
+
+        self.bt2 = QtGui.QPushButton(self.adWidget)
+        self.bt2.setGeometry(QtCore.QRect(355, 180, 10, 10))
+        self.bt2.setText(_fromUtf8(""))
+        self.bt2.setObjectName(_fromUtf8("bt2"))
+
+        self.bt3 = QtGui.QPushButton(self.adWidget)
+        self.bt3.setGeometry(QtCore.QRect(375, 180, 10, 10))
+        self.bt3.setText(_fromUtf8(""))
+        self.bt3.setObjectName(_fromUtf8("bt3"))
+
+        self.bt4 = QtGui.QPushButton(self.adWidget)
+        self.bt4.setGeometry(QtCore.QRect(395, 180, 10, 10))
+        self.bt4.setText(_fromUtf8(""))
+        self.bt4.setObjectName(_fromUtf8("bt4"))
+
+        self.bt5 = QtGui.QPushButton(self.adWidget)
+        self.bt5.setGeometry(QtCore.QRect(415, 180, 10, 10))
+        self.bt5.setText(_fromUtf8(""))
+        self.bt5.setObjectName(_fromUtf8("bt5"))
+
         self.recommendWidget = QtGui.QWidget(self.homepageWidget)
         self.recommendWidget.setGeometry(QtCore.QRect(0, 275, 640, 291))
         self.recommendWidget.setObjectName(_fromUtf8("recommendWidget"))

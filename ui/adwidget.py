@@ -23,13 +23,18 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+from PyQt4 import QtCore
+from PyQt4 import QtGui
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from models.advertisement import Advertisement
 from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
+#AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
+#UBUNTUKYLIN_RES_AD_PATH = data+ "ads/"
+import time
+import sys  
 
-class ADWidget(QWidget):
+class ADWidget(QMainWindow):
     # ad width
     adwidth = 860
     # ad height
@@ -51,7 +56,10 @@ class ADWidget(QWidget):
     adx = 0
     # distance to target
     distance = 0
-
+    wkg = 0
+    spe = 0
+    #r2 
+    #r3 
     def __init__(self, addata, parent=None):
         QWidget.__init__(self,parent.ui.homepageWidget)
 
@@ -63,34 +71,110 @@ class ADWidget(QWidget):
         self.adContentWidget.setObjectName("adContentWidget")
 
         self.adBtnWidget = QWidget(self)
-        self.adBtnWidget.setGeometry(760, 180, 100, 40)
-
-        self.adsshadow = QLabel(self)
+        #self.adBtnWidget.setGeometry(760, 180, 100, 40)
+	self.adBtnWidget.setGeometry(210, 180, 100, 40)
+#下边框渐隐
+        self.adsshadow = QLabel(self.adContentWidget)
         self.adsshadow.setGeometry(0, 202, self.adheight, 18)
-        self.adsshadow.setStyleSheet("QLabel{background-image:url('res/ads-shadow.png')}")
+        #self.adsshadow.setStyleSheet("QLabel{background-image:url('res/ads-shadow.png')}")
 
-        self.btnground = QLabel(self.adBtnWidget)
-        self.btnground.setGeometry(0, 0, 90, 40)
+        #self.btnground = QLabel(self)
+        #self.btnground.setGeometry(0, 0, 90, 40)
+	self.label3=QLabel(self.adContentWidget)
+	self.label3.setGeometry(200,0,500,200)
+	self.label3.setPixmap(QPixmap(QString("data/ads/ad0.png")))
+	self.label3.setScaledContents(True)
+	#self.label3.show()
+	#self.imageLabel=QLabel(self)
+	#self.imageLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+	#self.imageLabel.setScaledContents(True)
+	#self.setCentralWidget(self.imageLabel)
+	#self.image=QImage()
+	#if self.image.load("data/ads/ad0.png"):
+	#    self.imageLabel.setPixmap(QPixmap.fromImage(self.image))
+	#    self.imageLabel.setGeometry(QRect(0, 0,500, 200))
+	#one = addata[0]
+        #self.ad_button1 = QWidget(self)
+        #self.ad_button1.resize(300, 180)
+        #self.ad_button1.setFocusPolicy(Qt.NoFocus)
+	#self.ad_button1.setGeometry(QRect(0, 0, 500, 200))
+	#self.ad_button1.setObjectName("adbutton")
+        #self.ad_button1.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic_bground))
+        #self.ad_button1.show()
+	#self.r2.setRect(200,0,500,200)
+	#self.r3.setRect(500,0,500,200)
 
         self.adl = len(addata)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
+	if self.adl > 3:
+	     self.create_ads(addata, parent)
+	     #self.create_button(addata, parent)
+	     self.adtimer = QTimer(self)
+	     self.adtimer.timeout.connect(self.slot_adtimer_timeout)
+	     self.adtimer.start(3000)
+	     self.admtimer = QTimer(self)
+	     self.admtimer.timeout.connect(self.akg_move_right)
+	     self.admtimer.start(3000)
+	#     self.admtimer = QTimer(self)
+	#     self.admtimer.timeout.connect(self.slot_change_button)
+	#     self.admtimer.start(3000)
+	     self.slot_change_ad(self.adi)
+        #self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
 
-        if self.adl > 0:
-            self.create_ads(addata, parent)
+        #if self.adl > 0:
+        #    self.create_ads(addata, parent)
+      
+        #    self.adtimer = QTimer(self)
+        #    self.adtimer.timeout.connect(self.slot_adtimer_timeout)
+        #    self.adtimer.start(3000)
+ 
+        #    self.admtimer = QTimer(self)
+        #    self.admtimer.timeout.connect(self.slot_admtimer_update)
 
-            self.adtimer = QTimer(self)
-            self.adtimer.timeout.connect(self.slot_adtimer_timeout)
-            self.adtimer.start(3000)
-
-            self.admtimer = QTimer(self)
-            self.admtimer.timeout.connect(self.slot_admtimer_update)
-
-            self.slot_change_ad(self.adi)
-
+        #    self.slot_change_ad(self.adi)
+	#self.ui.label_3.raise_()
         self.adsshadow.raise_()
         self.show()
 
+    def akg_move_right(self):
+	animation = QPropertyAnimation(self.label3, "geometry")
+	animation.setDuration(3500)
+	animation.setStartValue(QRect(200, 0, 200, 200))
+	#animation.setKeyValueAt(0.5, QRect(240, 240, 100, 30));
+	animation.setEndValue(QRect(300, 20, 200, 200))
+	#animation.setEasingCurve(QEasingCurve.OutBounce)
+	animation.start()
+	print "xxxxxxxxxxxxxxxxxxxxxxxx"
+	#self.admtimer.start(3000)
+    def akg_move_left(self):
+	pass
+
+    def create_button(self, addata, parent):
+	pass
+
+    def slot_change_button(self):
+	try: 
+	#self.speed = self.move_speed()
+	    self.wkg = self.speed.next()
+	except:
+	    self.wkg = 0
+	print "cccccccccccccccccc",self.wkg
+	martix = QMatrix()
+	martix.scale(0.99,0.99)
+	#martix.scale((200+wkg)/400,(200+wkg)/400)
+	self.image=self.image.transformed(martix);
+	self.imageLabel.setPixmap(QPixmap.fromImage(self.image))
+	self.imageLabel.setGeometry(QRect(self.spe, 0,self.image.width(),self.image.height()))
+	#if 180 <= wkg < 680:
+	#if self.spe == 200:
+	#    spe = 0
+	#else:
+	#    self.imageLabel.setGeometry(QRect(610 - self.spe , 0,self.image.width(),self.image.height()))
+	#    self.spe += 10
+	self.admtimer.start(3000)
+	
+#调整大小
     def resize_(self, width, height):
+	print "ssssssssssssssssssssss"
         self.resize(width, height)
         self.adsshadow.resize(width, self.adsshadow.height())
         self.adContentWidget.resize(self.adl * width, height)
@@ -123,17 +207,17 @@ class ADWidget(QWidget):
         #    self.adBtnWidget.move(760, self.adBtnWidget.y())
         self.adBtnWidget.move(self.adwidth-self.adBtnWidget.width()-10, self.adBtnWidget.y())
 
-    def add_advertisements(self, addata):
-        self.adl = len(addata)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
-        self.create_ads(addata, self.parent)
-
-        self.adtimer.start(3000)
-
-        self.slot_change_ad(self.adi)
-
-        self.adsshadow.raise_()
-        self.show()
+#    def add_advertisements(self, addata):
+#        self.adl = len(addata)
+#        self.adContentWidget.setGeometry(QRect(0, 0, self.adl * self.adwidth, self.adheight))
+#        self.create_ads(addata, self.parent)
+#
+#        self.adtimer.start(3000)
+#
+#        self.slot_change_ad(self.adi)
+#
+#        self.adsshadow.raise_()
+#        self.show()
 
     def create_ads(self, addata, parent):
         i = 0
@@ -141,22 +225,23 @@ class ADWidget(QWidget):
         adbx = 10
         for one in addata:
 
-            ad_background = QPushButton(self.adContentWidget)
-            ad_background.resize(self.adwidth, self.adheight)
-            ad_background.move(adx, 0)
-            ad_background.setFocusPolicy(Qt.NoFocus)
-            ad_background.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic_bground))
-            self.ads_background.append(ad_background)
+            #ad_background = QPushButton(self.adContentWidget)
+            #ad_background.resize(self.adwidth, self.adheight)
+            #ad_background.move(adx, 0)
+            #ad_background.setFocusPolicy(Qt.NoFocus)
+#AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
+            #ad_background.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic_bground))
+            #self.ads_background.append(ad_background)
 
-            ad = ADButton(one, self.adContentWidget)
-            ad.resize(self.adwidth, self.adheight)
-            ad.move(adx, 0)
-            adx += self.adwidth
-            ad.setFocusPolicy(Qt.NoFocus)
-            ad.setCursor(Qt.PointingHandCursor)
-            ad.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic))
-            ad.connect(ad, SIGNAL("adsignal"), parent.slot_click_ad)
-            self.ads.append(ad)
+            #ad = ADButton(one, self.adContentWidget)
+            #ad.resize(self.adwidth, self.adheight)
+            #ad.move(adx, 0)
+            #adx += self.adwidth
+            #ad.setFocusPolicy(Qt.NoFocus)
+            #ad.setCursor(Qt.PointingHandCursor)
+            #ad.setStyleSheet(AD_BUTTON_STYLE % (UBUNTUKYLIN_RES_AD_PATH + one.pic))
+            #ad.connect(ad, SIGNAL("adsignal"), parent.slot_click_ad)
+            #self.ads.append(ad)
 
             if i < self.adl - 1:
                 adbtn = ADButton(i, self.adBtnWidget)
@@ -183,7 +268,7 @@ class ADWidget(QWidget):
         self.adtimer.start(3000)
 
     def slot_change_ad(self, i):
-        self.speed = self.move_speed()
+        #self.speed = self.move_speed()
         if(len(self.adbs) == 0):
             return
 
@@ -196,11 +281,13 @@ class ADWidget(QWidget):
             adb.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background-image:url('res/adbtn-2.png');border:0px;}")
         self.adbs[i].setStyleSheet("QPushButton{background-image:url('res/adbtn-2.png');border:0px;}")
 
-        # self.adContentWidget.move(i * self.adwidth * -1, 0)
-        self.distance = self.adi * self.adwidth - self.adContentWidget.x()
+        ## self.adContentWidget.move(i * self.adwidth * -1, 0)
+        #self.distance = self.adi * self.adwidth - self.adContentWidget.x()
         # self.adtimer.stop()
-        self.admtimer.stop()
-        self.admtimer.start(1)
+        #self.admtimer.stop()
+        #self.admtimer.start(1)
+
+	self.adtimer.start(3000)
 
     def slot_adtimer_timeout(self):
         if(self.adi == (self.adl - 1)):
@@ -234,14 +321,14 @@ class ADWidget(QWidget):
         for btn in self.adbs:
             btn.setEnabled(flag)
 
-    def update_total_count(self,count):
-        # self.softCount.setText(str(count))
-        pass
+#    def update_total_count(self,count):
+#        # self.softCount.setText(str(count))
+#        pass
     def move_speed(self):
         #for x in xrange(0, 200, 1):
         x = 0.5
         while(x < 200):
-            x = x + 0.15
+            x = x + 0.0015
             yield x
 
 class ADButton(QPushButton):
@@ -268,9 +355,16 @@ def main():
     QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
     QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
     tmpads = []
-    tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.baidu.com"))
-    tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps"))
-    tmpads.append(Advertisement("qt", "pkg", "ad3.png", "qtcreator"))
+    #tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.baidu.com"))
+    #tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps"))
+    #tmpads.append(Advertisement("qt", "pkg", "ad3.png", "qtcreator"))
+    tmpads.append(Advertisement("pchomewallpaper", "url", "ad0.png", "adbground0.png", "http://download.pchome.net/wallpaper/"))
+    tmpads.append(Advertisement("qq", "url", "ad1.png", "adbground1.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1"))
+    tmpads.append(Advertisement("wps", "pkg", "ad2.png", "adbground2.png", "wps-office"))
+    tmpads.append(Advertisement("dota2", "url", "ad3.png", "adbground3.png", "http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7687&extra=page%3D1"))
+        #tmpads.append(Advertisement("pps", "url", "ad4.png", "adbground4.png", "http://dl.pps.tv/pps_linux_download.html"))
+    tmpads.append(Advertisement("pchomewallpaper", "url", "ad5.png", "adbground5.png", "http://download.pchome.net/wallpaper/"))
+
     adw = ADWidget(tmpads)
     adw.show()
 

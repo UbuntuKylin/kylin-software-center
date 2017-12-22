@@ -412,12 +412,16 @@ class Database:
         recommends.append(("youker-assistant","1"))
         #recommends.append(("gimp","3"))
         recommends.append(("sogoupinyin","4"))
-        recommends.append(("netease-cloud-music","3"))
-        recommends.append(("teamviewer","3"))
+        #recommends.append(("netease-cloud-music","3"))
+        #recommends.append(("teamviewer","3"))
+	recommends.append(("lovewallpaper","3"))
         recommends.append(("youdao-dict","3"))
+	recommends.append(("notepadqq","8"))
+	recommends.append(("foxitreader","8"))
         recommends.append(("virtualbox","6"))
         recommends.append(("thunderbird","7"))
         recommends.append(("chromium-browser","8"))
+	recommends.append(("openshot","12"))
         recommends.append(("firefox","11"))
         recommends.append(("wireshark","9"))
         recommends.append(("librecad","12"))
@@ -426,6 +430,7 @@ class Database:
         recommends.append(("uget","5"))
         recommends.append(("calibre","10"))
         recommends.append(("gimp","3"))
+	recommends.append(("gtk-recordmydesktop","3"))
         recommends.append(("transgui","3"))
         recommends.append(("gnome-calculator","3"))
        	#recommends.append(("virtualbox","4"))
@@ -444,7 +449,7 @@ class Database:
         recommends.append(("wine","1"))
         recommends.append(("playonlinux","2"))
         recommends.append(("steam","3"))
-        recommends.append(("redeclipse","3"))
+        #recommends.append(("redeclipse","3"))
         recommends.append(("supertuxkart","4"))
         recommends.append(("gnome-chess","7"))
         recommends.append(("gnchess","11"))
@@ -472,6 +477,7 @@ class Database:
         recommends.append(("codeblocks","6"))
         recommends.append(("transmission","7"))
         recommends.append(("deluge","8"))
+	recommends.append(("eclipse","8"))
         recommends.append(("hardinfo","9"))
         recommends.append(("nautilus","10"))
         recommends.append(("bluefish","11"))
@@ -480,6 +486,7 @@ class Database:
         recommends.append(("vim","14"))
         recommends.append(("midori","14"))
         recommends.append(("gnome-disk-utility","14"))
+	recommends.append(("shotcut","14"))
         recommends.append(("gparted","14"))
         return recommends
 
@@ -493,7 +500,7 @@ class Database:
         #    ratingranks.append((app_name, rank_rating))
         #return ratingranks
         recommends = []
-        recommends.append(("youker-assistant","1"))
+        #recommends.append(("youker-assistant","1"))
         recommends.append(("vlc","2"))
         recommends.append(("synaptic","3"))
         recommends.append(("gparted","3"))
@@ -506,6 +513,8 @@ class Database:
         recommends.append(("stardict","3"))
         recommends.append(("vim","14"))
 	recommends.append(("kylin-video","12"))
+	recommends.append(("gnome-screenshot","12"))
+	recommends.append(("empire","12"))
         return recommends
 
 

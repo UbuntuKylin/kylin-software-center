@@ -40,6 +40,7 @@ from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         setLongTextToElideFormat,
                         PkgStates,
                         PageStates)
+from PyQt4 import QtGui
 from utils import run
 from utils import commontools
 from utils.debfile import DebFile
@@ -127,7 +128,6 @@ class DetailScrollWidget(QScrollArea):
         self.ui.pushButton_3.setFocusPolicy(Qt.NoFocus)
         self.ui.pushButton_4.setFocusPolicy(Qt.NoFocus)
         self.ui.pushButton_5.setFocusPolicy(Qt.NoFocus)
-
         self.ui.pushButton.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
         self.ui.pushButton_2.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
         self.ui.pushButton_3.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
@@ -146,7 +146,7 @@ class DetailScrollWidget(QScrollArea):
         # self.ui.btnInstall.clicked.connect(self.slot_click_install)
         # self.ui.btnUpdate.clicked.connect(self.slot_click_upgrade)
         # self.ui.btnUninstall.clicked.connect(self.slot_click_uninstall)
-        self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
+        #self.ui.thumbnail.clicked.connect(self.slot_show_sshot)
         self.ui.sshot.clicked.connect(self.ui.sshot.hide)
         self.ui.bntSubmit.clicked.connect(self.slot_submit_review)
 
@@ -294,34 +294,49 @@ class DetailScrollWidget(QScrollArea):
             self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.ntm))
         else:
             self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot - 1))
-        img = QPixmap(self.app.thumbnailfile)
-        img = img.scaled(160,112)
-        self.ui.thumbnail.resize(img.width(), img.height())
-        self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-        self.ui.thumbnail.move(350, 324)
-        self.ui.thumbnail.show()
-        self.app.thumbnailfile = a
+#        img = QPixmap(self.app.thumbnailfile)
+#        img = img.scaled(160,112)
+#        self.ui.thumbnail.resize(img.width(), img.height())
+#        self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+#        self.ui.thumbnail.move(350, 324)
+#        self.ui.thumbnail.show()
+	image = QtGui.QImage()
+	image.load(self.app.thumbnailfile)
+	self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
+	self.ui.thumbnail.resize(200,150)
+	self.ui.thumbnail.move(120, 315)
+	self.ui.thumbnail.show()
 
-        self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot))
-        img = QPixmap(self.app.thumbnailfile)
-        img = img.scaled(160,112)
-        self.ui.thumbnail_3.resize(img.width(), img.height())
-        self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-        self.ui.thumbnail_3.move(520, 324)
-        self.ui.thumbnail_3.show()
         self.app.thumbnailfile = a
-        if self.now_shot == 2:
-            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.ntm))
-        elif self.now_shot == 1:
-            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.ntm - 1))
+        self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot))
+        #img = QPixmap(self.app.thumbnailfile)
+        #img = img.scaled(160,112)
+        #self.ui.thumbnail_3.resize(img.width(), img.height())
+        #self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+        #self.ui.thumbnail_3.move(520, 324)
+        #self.ui.thumbnail_3.show()
+	image.load(self.app.thumbnailfile)
+	self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
+	self.ui.thumbnail_2.resize(200,150)
+	self.ui.thumbnail_2.move(336, 315)
+	self.ui.thumbnail_2.show()
+
+
+        self.app.thumbnailfile = a
+        if self.now_shot == self.ntm:
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(1))
         else:
-            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot - 2))
-        img = QPixmap(self.app.thumbnailfile)
-        img = img.scaled(160,112)
-        self.ui.thumbnail_2.resize(img.width(), img.height())
-        self.ui.thumbnail_2.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-        self.ui.thumbnail_2.move(180, 324)
-        self.ui.thumbnail_2.show()
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 1))
+        #img = QPixmap(self.app.thumbnailfile)
+        #img = img.scaled(160,112)
+        #self.ui.thumbnail_2.resize(img.width(), img.height())
+        #self.ui.thumbnail_2.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+        #self.ui.thumbnail_2.move(180, 324)
+        #self.ui.thumbnail_2.show()
+	image.load(self.app.thumbnailfile)
+	self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
+	self.ui.thumbnail_3.resize(200,150)
+	self.ui.thumbnail_3.move(552, 315)
         self.app.thumbnailfile = a
         if self.now_shot == 1:
             self.now_shot = self.ntm
@@ -351,40 +366,60 @@ class DetailScrollWidget(QScrollArea):
 
 
         if self.now_shot == self.ntm:
-            #self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.ntm))
-            pass
+	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(1))
         else:
             self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot +1))
-        img = QPixmap(self.app.thumbnailfile)
-        img = img.scaled(160,112)
-        self.ui.thumbnail.resize(img.width(), img.height())
-        self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-        self.ui.thumbnail.move(350, 324)
-        self.ui.thumbnail.show()
+        #img = QPixmap(self.app.thumbnailfile)
+        #img = img.scaled(160,112)
+        #self.ui.thumbnail.resize(img.width(), img.height())
+        #self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+        #self.ui.thumbnail.move(350, 324)
+        #self.ui.thumbnail.show()
+	image = QtGui.QImage()
+	image.load(self.app.thumbnailfile)
+	self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
+	self.ui.thumbnail.resize(200,150)
+	self.ui.thumbnail.move(120, 315)
+	self.ui.thumbnail.show()
         self.app.thumbnailfile = a
 
-        self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot))
-        img = QPixmap(self.app.thumbnailfile)
-        img = img.scaled(160,112)
-        self.ui.thumbnail_2.resize(img.width(), img.height())
-        self.ui.thumbnail_2.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-        self.ui.thumbnail_2.move(180, 324)
-        self.ui.thumbnail_2.show()
+	if self.now_shot + 2 > self.ntm :
+	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2 - self.ntm))
+	else:	
+	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2))
+
+        #img = QPixmap(self.app.thumbnailfile)
+        #img = img.scaled(160,112)
+        #self.ui.thumbnail_2.resize(img.width(), img.height())
+        #self.ui.thumbnail_2.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+        #self.ui.thumbnail_2.move(180, 324)
+        #self.ui.thumbnail_2.show()
         #self.ui.thumbnail_2.hide()
+	image.load(self.app.thumbnailfile)
+	self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
+	self.ui.thumbnail_2.resize(200,150)
+	self.ui.thumbnail_2.move(336, 315)
+	self.ui.thumbnail_2.show()
+
+
         self.app.thumbnailfile = a
-        if self.now_shot == self.ntm - 1:
-            #self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.ntm))
-            pass
-        elif self.now_shot == self.ntm:
-            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(2))
-        else:
-            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2))
-        img = QPixmap(self.app.thumbnailfile)
-        img = img.scaled(160,112)
-        self.ui.thumbnail_3.resize(img.width(), img.height())
-        self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-        self.ui.thumbnail_3.move(520, 324)
-        self.ui.thumbnail_3.show()
+	if self.now_shot + 3 > self.ntm :
+	   self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 3 - self.ntm))
+	else:
+	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 3))
+#        img = QPixmap(self.app.thumbnailfile)
+#        img = img.scaled(160,112)
+#        self.ui.thumbnail_3.resize(img.width(), img.height())
+#        self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
+#        self.ui.thumbnail_3.move(520, 324)
+#        self.ui.thumbnail_3.show()
+	image.load(self.app.thumbnailfile)
+	self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
+	self.ui.thumbnail_3.resize(200,150)
+	self.ui.thumbnail_3.move(552, 315)
+	self.ui.thumbnail_3.show()
+
+
         self.app.thumbnailfile = a
         if self.now_shot == self.ntm:
             self.now_shot = 1
@@ -830,7 +865,7 @@ class DetailScrollWidget(QScrollArea):
             else:
                 i = i - 1
                 break
-        #print "iiiiiiiiiiiiiiiiii",i
+        print "iiiiiiiiiiiiiiiiii",i
         self.ui.btnSshotBack.show()
         self.ui.btnSshotNext.show()
         self.ntm = i
@@ -840,70 +875,61 @@ class DetailScrollWidget(QScrollArea):
             if i == 0 :
                 #self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail','thumbnail1')
                 pass
-        else:
-            self.ui.pushButton.show()
-            self.ui.pushButton_2.show()
-            if i == 5:
-                self.ui.pushButton_3.show()
-                self.ui.pushButton_4.show()
-                self.ui.pushButton_5.show()
-            elif i == 4:
-                self.ui.pushButton_3.show()
-                self.ui.pushButton_4.show()
-            elif i == 3:
-                self.ui.pushButton_3.show()
+        #else:
+	 
+            #self.ui.pushButton.show()
+            #self.ui.pushButton_2.show()
+            #if i == 5:
+            #    self.ui.pushButton_3.show()
+            #    self.ui.pushButton_4.show()
+            #    self.ui.pushButton_5.show()
+            #elif i == 4:
+            #    self.ui.pushButton_3.show()
+            #    self.ui.pushButton_4.show()
+            #elif i == 3:
+            #    self.ui.pushButton_3.show()
         self.ui.pushButton.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot1.png')}")
-        #print "nnnnnnnnnnnnnnnnnnnn",self.sshotcount,self.app.thumbnailfile
-        #self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str((i/2)+1))
-        #print "nnnnnnnnnnnnnnnnnnnn",self.sshotcount,self.app.thumbnailfile
-        #print "cccccccc",self.app.thumbnailfile
         if(self.sshotcount > 0):
+            image = QtGui.QImage()
+            image.load(self.app.thumbnailfile)
+            #print "bbbbbbbbbbbbbbbbbbb",image.width(),image.height()
+            #self.ui.thumbnail.setScaledContents(True)
+            self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.thumbnail.resize(200,150)
+            self.ui.thumbnail.move(120, 315)
 
-            img = QPixmap(self.app.thumbnailfile)
-            img = img.scaled(160,112)
-            #img = img.scaled(200,160,Qt.KeepAspectRatio)
-            #print "bbbbbbbbbbbbbbbbbbb",img.width(),img.height()
-
-            self.ui.thumbnail.resize(img.width(), img.height())
-            #self.ui.thumbnail.resize(200, 160)
-            self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-            #self.ui.thumbnail.move(460 - 160 / 2, 420 - 112 / 2)
-            self.ui.thumbnail.move(350, 324)
             if self.ui.orig_summary_widget.isVisible() is True:
                 self.ui.thumbnail.hide()
             else:
                 self.ui.thumbnail.show()
-        if i >= 3 :
-            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(i))
-            img = QPixmap(self.app.thumbnailfile)
-            img = img.scaled(160,112)
-            self.ui.thumbnail_2.resize(img.width(), img.height())
-            #self.ui.thumbnail_3.resize(200, 150)
-            self.ui.thumbnail_2.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-            #self.ui.thumbnail.move(460 - img.width() / 2, 420 - img.height() / 2)
-            self.ui.thumbnail_2.move(180, 324)
+
+        if i >= 2:
+            ###3
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail2')
+            image = QtGui.QImage()
+            image.load(self.app.thumbnailfile)
+            self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.thumbnail_2.resize(200,150)
+            self.ui.thumbnail_2.move(336, 315)
+
             if self.ui.orig_summary_widget.isVisible() is True:
                 self.ui.thumbnail_2.hide()
             else:
                 self.ui.thumbnail_2.show()
-        if i >= 2:
-            ###3
-            if i == 2:
-                self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail2')
-            else:
-                self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail'+ str(i),'thumbnail2')
-            img = QPixmap(self.app.thumbnailfile)
-            img = img.scaled(160,112)
-            #print "bbbbbbbbbbbbbbbbbbb",self.app.thumbnailfile
-            self.ui.thumbnail_3.resize(img.width(), img.height())
-            #self.ui.thumbnail_3.resize(200, 150)
-            self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
-            #self.ui.thumbnail.move(460 - img.width() / 2, 420 - 112 / 2)
-            self.ui.thumbnail_3.move(520, 324)
+
+        if i >= 3 :
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail2','thumbnail3')
+            image = QtGui.QImage()
+            image.load(self.app.thumbnailfile)
+            self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.thumbnail_3.resize(200,150)
+            self.ui.thumbnail_3.move(552, 315)
             if self.ui.orig_summary_widget.isVisible() is True:
                 self.ui.thumbnail_3.hide()
             else:
                 self.ui.thumbnail_3.show()
+
+
         self.app.thumbnailfile = self.shsave
         #if(self.sshotcount > 1):
         #    img = QPixmap(self.app.screenshotfile)
@@ -984,11 +1010,11 @@ class DetailScrollWidget(QScrollArea):
             self.ui.thumbnail.show()
             self.ui.thumbnail_2.show()
             self.ui.thumbnail_3.show()
-            self.ui.pushButton.show()
-            self.ui.pushButton_2.show()
-            self.ui.pushButton_3.show()
-            self.ui.pushButton_4.show()
-            self.ui.pushButton_5.show()
+            #self.ui.pushButton.show()
+            #self.ui.pushButton_2.show()
+            #self.ui.pushButton_3.show()
+            #self.ui.pushButton_4.show()
+            #self.ui.pushButton_5.show()
 
         else:
             self.ui.thumbnail.hide()
