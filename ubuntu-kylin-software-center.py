@@ -309,7 +309,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         self.ui.btnLogin.setText("请登录")
-        self.ui.btnReg.setText("去注册")
+        #self.ui.btnReg.setText("去注册")
         self.ui.welcometext.setText("欢迎您")
         self.ui.btnAppList.setText("我的软件")
         self.ui.btnTransList.setText("我的翻译")#zx.2015.01.30
@@ -606,7 +606,6 @@ class SoftwareCenter(QMainWindow):
 
     def init_dbus(self):
         self.backend = InstallBackend()
-        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
         self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
         #self.connect(self.backend, Signals.dbus_fail_to_usecdrom, self.slot_fail_to_usecdrom)
         #self.connect(self.backend, Signals.dbus_no_cdrom_mount, self.slot_no_cdrom_mount)
@@ -1667,7 +1666,10 @@ class SoftwareCenter(QMainWindow):
 
     def slot_change_r_ad(self):
 	self.adm =(self.ui.homepageWidget.width() -880)*0.5
-	self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+        self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+        self.ui.thu.move(0 + self.adm, 30)
+        self.ui.thur.move(730 + self.adm, 30)
+        self.ui.thun.move(130 + self.adm, 10)
         self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
         self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
         self.r3 = QRect(130 + self.adm,10,600,200)
@@ -1735,6 +1737,10 @@ class SoftwareCenter(QMainWindow):
     def slot_change_l_ad(self):
         self.adm =(self.ui.homepageWidget.width() -880)*0.5
         self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+        self.ui.thu.move(0 + self.adm, 30)
+        self.ui.thur.move(730 + self.adm, 30)
+        self.ui.thun.move(130 + self.adm, 10)
+
         self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
         self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
         self.r3 = QRect(130 + self.adm,10,600,200)
@@ -2844,7 +2850,7 @@ class SoftwareCenter(QMainWindow):
         user = result["username"]
         display_name = result["displayname"]
         preferred_email = result["preferred_email"]
-	#print "wwwwwwwwwwwwwww",user,display_name,preferred_email
+	print "wwwwwwwwwwwwwww",user,display_name,preferred_email
         print 'Login success, username: %s' % display_name
 
         self.userload.stop_loading()

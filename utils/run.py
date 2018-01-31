@@ -97,6 +97,15 @@ def get_run_command(pkgname):
         pkgname = "virtualbox"
     elif pkgname == "lovewallpaper":
         pkgname = "love-wallpaper"
+    elif pkgname == "steam-launcher":
+        pkgname = "steam"
+    elif pkgname == "obs-studio":
+        pkgname = "obs"
+    elif pkgname == "google-chrome-stable":
+        pkgname = "google-chrome"
+#crossover:i386
+    elif pkgname == "crossover:i386":
+        pkgname = "/opt/cxoffice/bin/crossover"
 
     # fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
     # exc = fd.read()
