@@ -22,8 +22,8 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from urllib import quote_plus
+import urllib 
+from urllib.parse import quote_plus
 from piston_mini_client import (
     PistonAPI,
     PistonResponseObject,
@@ -38,8 +38,10 @@ from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
 import httplib2
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+import importlib
+importlib.reload(sys)
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 
 
 class ReviewUK(PistonResponseObject):
@@ -216,8 +218,8 @@ if __name__ == '__main__':
     authorizer = auth.OAuthAuthorizer(token["token"], token["token_secret"], token["consumer_key"], token["consumer_secret"])
     ss = PistonRemoterAuth(auth=authorizer)
     res = ss.submit_review('gimp', 'main', get_distro_info()[2], get_language(),'shine','shine')
-    print res
-    print type(res)
+    print (res)
+    print (type(res))
     # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
     # res = s.get_all_rank_and_recommend()

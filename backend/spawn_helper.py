@@ -25,7 +25,8 @@ except ImportError:
 import logging
 import os
 import json
-
+#import sys
+#from sys import stdout, stderr
 from models.enums import datadir
 from models.enums import PISTON_GENERIC_HELPER
 
@@ -108,8 +109,8 @@ class SpawnHelper(GObject.GObject):
             self._io_watch = GLib.io_add_watch(
                 stdout, GLib.PRIORITY_DEFAULT, GObject.IO_IN,
                 self._helper_io_ready, (stdout, ))
-
-    def _helper_finished(self, pid, status, (stdout, stderr)):
+    #def _helper_finished(self, pid, status,(stdout, stderr)):
+    def _helper_finished(self, pid, status,stdout, stderr):
         LOG.debug("helper_finished: '%s' '%s'" % (pid, status))
         # get status code
         res = os.WEXITSTATUS(status)
@@ -131,8 +132,9 @@ class SpawnHelper(GObject.GObject):
         if self._child_watch:
             GLib.source_remove(self._child_watch)
 
-    def _helper_io_ready(self, source, condition, (stdout,)):
-        # read the raw data
+#    def _helper_io_ready(self, source, condition, (stdout,)):
+    def _helper_io_ready(self, source, condition, stdout):
+# read the raw data
         data = ""
         while True:
             s = os.read(stdout, 1024)

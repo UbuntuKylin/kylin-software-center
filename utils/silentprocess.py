@@ -26,7 +26,7 @@
 import xapian
 #********************************************************************#
 import sqlite3
-import urllib2
+import urllib
 import os
 import time
 from PyQt4.QtGui import *
@@ -69,7 +69,7 @@ class SilentProcess(multiprocessing.Process):
 
             item = self.squeue.get_nowait()
 
-            print "silent process get one workitem : ", item.funcname
+            print ("silent process get one workitem : ", item.funcname)
 
             try: #if no network the process will be crashed
                 if item.funcname == "get_all_ratings":
@@ -89,7 +89,8 @@ class SilentProcess(multiprocessing.Process):
                 elif item.funcname == "update_xapiandb":
                     self.update_xapiandb(item.kwargs)
             except Exception as e:
-                print "silent process exception:", e.message
+                #print ("silent process exception:", e.message)
+                print ("silent process exception:")
             # elif item.funcname == "download_images":
             #     self.download_images()
 
@@ -107,9 +108,9 @@ class SilentProcess(multiprocessing.Process):
 
             self.connect.commit()
 
-            print "all ratings and rating_total update over : ",len(reslist)
+            print ("all ratings and rating_total update over : ",len(reslist))
         else:
-            print "Failed to get all ratings and rating_total"
+            print ("Failed to get all ratings and rating_total")
 
     # submit pingback-main to server
     def submit_pingback_main(self):
@@ -156,9 +157,9 @@ class SilentProcess(multiprocessing.Process):
 
             self.connect.commit()
 
-            print "all categories update over : ",len(reslist)
+            print ("all categories update over : ",len(reslist))
         else:
-            print "Failed to all categories"
+            print ("Failed to all categories")
 
     # get all rank and recommend data from server
     def get_all_rank_and_recommend(self):
@@ -180,9 +181,9 @@ class SilentProcess(multiprocessing.Process):
 
             self.connect.commit()
 
-            print "all rank and recommend update over : ",len(reslist)
+            print ("all rank and recommend update over : ",len(reslist))
         else:
-            print "Failed to all rank and recommend"
+            print ("Failed to all rank and recommend")
 
     # get newer application info from server
     def get_newer_application_info(self):
@@ -194,12 +195,18 @@ class SilentProcess(multiprocessing.Process):
             last_update_date = item[0]
 
         reslist = self.premoter.get_newer_application_info(last_update_date)
+        try:
+            reslist = reslist.decode('utf-8')
+        except:
+            pass
         if False != reslist:
             size = len(reslist)
 
             if(size > 0):
                 # update application info to cache db
                 for app in reslist:
+                    #reslist = int(reslist, encoding = "utf8")
+                    #reslist = str(reslist)
                     aid = app['id']
                     app_name = app['app_name']
                     display_name = app['display_name']
@@ -239,9 +246,9 @@ class SilentProcess(multiprocessing.Process):
 
                 self.connect.commit()
 
-                print "all newer application info update over : ",len(reslist)
+                print ("all newer application info update over : ",len(reslist))
         else:
-            print "failed to get newer application info"
+            print ("failed to get newer application info")
 
     # def download_images(self):
     #     requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
@@ -270,17 +277,18 @@ class SilentProcess(multiprocessing.Process):
                         icon_rul = UK_APP_ICON_URL % {
                             'pkgname': app_path,
                         }
-                        urlFile = urllib2.urlopen(icon_rul)
+                        #urlFile = urllib2.urlopen(icon_rul)
+                        urlFile = urllib.request.urlopen(icon_rul)
                         rawContent = urlFile.read()
                         if rawContent:
                             localFile = open(iconfile,"wb")
                             localFile.write(rawContent)
                             localFile.close()
 
-                    except urllib2.HTTPError,e:
-                        print e.code
-                    except urllib2.URLError,e:
-                        print str(e)
+                    except urllib.error.HTTPError as e:
+                        print (e.code)
+                    except urllib.error.URLError as e:
+                        print (str(e))
 
                 # set application info last update date
                 new_update_time = reslist[0]['modify_time']
@@ -288,9 +296,9 @@ class SilentProcess(multiprocessing.Process):
 
                 self.connect.commit()
 
-                print "all newer application icon update over : ",len(reslist)
+                print ("all newer application icon update over : ",len(reslist))
         else:
-            print "Failed to get  newer application icon"
+            print ("Failed to get  newer application icon")
         
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self, kwargs):
@@ -315,7 +323,7 @@ class SilentProcess(multiprocessing.Process):
                     the_latest_update_time = doc_for_xapiandb_version.get_value(2) #valueslot:2 xapiandb update time
                 else:
                     the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
-                    print "Failed to get the latest update time from client xapiandb,use default time.localtime()"
+                    print ("Failed to get the latest update time from client xapiandb,use default time.localtime()")
 
             reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
 
@@ -344,13 +352,13 @@ class SilentProcess(multiprocessing.Process):
 
                             try:
                                 from mmseg.search import seg_txt_search,seg_txt_2_dict
-                                for word, value in seg_txt_2_dict(keywords).iteritems():
+                                for word, value in seg_txt_2_dict(keywords).items():
                                     if word != "none":
                                         doc.add_term(word,10)
                                     else:
                                         pass
                             except:
-                                print "----No mmseg model---"
+                                print ("----No mmseg model---")
 
                             database.replace_document(docid,doc)
                             xapiandb_update = "Yes"
@@ -370,7 +378,7 @@ class SilentProcess(multiprocessing.Process):
                     indexer.index_text(keywords,10)
 
                     try:
-                        for word,value in seg_txt_2_dict(keywords).iteritems():
+                        for word,value in seg_txt_2_dict(keywords).items():
                             if word != "none":
                                 doc.add_term(word,10)
                             else:
@@ -379,11 +387,11 @@ class SilentProcess(multiprocessing.Process):
                         pass
                     database.add_document(doc)
                     add_num = add_num + 1
-                    print "App:",doc.get_data(),"  ","terms:",
+                    print ("App:",doc.get_data(),"  ","terms:",)
                     for itr in doc.termlist():
-                        print itr.term,
+                        print (itr.term,)
                     xapiandb_update = "Yes"
-                    print "  "
+                    print ("  ")
 
             try:
                 if xapiandb_update == "Yes":
@@ -391,10 +399,10 @@ class SilentProcess(multiprocessing.Process):
                     doc_for_xapiandb_version.add_value(2,now)
                     database.replace_document(docid_for_xapiandb_version, doc_for_xapiandb_version)
                     database.commit()
-                    print "Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist))
+                    print ("Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist)))
             except:
-                print "The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!"
-            print "update uksc xapiandb over"
+                print ("The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!")
+            print ("update uksc xapiandb over")
 
         else:
             appinfo_query = xapian.Query(kwargs["pkgname"])
@@ -409,22 +417,22 @@ class SilentProcess(multiprocessing.Process):
             doc = xapian.Document()
             doc.set_data(kwargs["pkgname"])
             doc.add_term(kwargs["pkgname"], 10)
-            print "debfile path:", kwargs["path"]
+            print ("debfile path:", kwargs["path"])
 
             deb = DebFile(kwargs["path"])
             terms = kwargs["pkgname"]
             try:
                 terms = terms + " " + deb.description
             except:
-                print "Failed to get app description"
+                print ("Failed to get app description")
             indexer.set_document(doc)
             indexer.index_text(terms)
             database.add_document(doc)
             database.commit()
-            print "update xapiandb over: ", kwargs["pkgname"], "terms:",
+            print ("update xapiandb over: ", kwargs["pkgname"], "terms:",)
             for itr in doc.termlist():
-                print itr.term,
-            print " "
+                print (itr.term,)
+            print (" ")
             
 class SilentWorkerItem:
 

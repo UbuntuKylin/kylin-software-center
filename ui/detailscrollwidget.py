@@ -300,12 +300,12 @@ class DetailScrollWidget(QScrollArea):
 #        self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
 #        self.ui.thumbnail.move(350, 324)
 #        self.ui.thumbnail.show()
-	image = QtGui.QImage()
-	image.load(self.app.thumbnailfile)
-	self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
-	self.ui.thumbnail.resize(200,150)
-	self.ui.thumbnail.move(120, 315)
-	self.ui.thumbnail.show()
+        image = QtGui.QImage()
+        image.load(self.app.thumbnailfile)
+        self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.ui.thumbnail.resize(200,150)
+        self.ui.thumbnail.move(120, 315)
+        self.ui.thumbnail.show()
 
         self.app.thumbnailfile = a
         self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot))
@@ -315,11 +315,11 @@ class DetailScrollWidget(QScrollArea):
         #self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
         #self.ui.thumbnail_3.move(520, 324)
         #self.ui.thumbnail_3.show()
-	image.load(self.app.thumbnailfile)
-	self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
-	self.ui.thumbnail_2.resize(200,150)
-	self.ui.thumbnail_2.move(336, 315)
-	self.ui.thumbnail_2.show()
+        image.load(self.app.thumbnailfile)
+        self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.ui.thumbnail_2.resize(200,150)
+        self.ui.thumbnail_2.move(336, 315)
+        self.ui.thumbnail_2.show()
 
 
         self.app.thumbnailfile = a
@@ -333,10 +333,10 @@ class DetailScrollWidget(QScrollArea):
         #self.ui.thumbnail_2.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
         #self.ui.thumbnail_2.move(180, 324)
         #self.ui.thumbnail_2.show()
-	image.load(self.app.thumbnailfile)
-	self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
-	self.ui.thumbnail_3.resize(200,150)
-	self.ui.thumbnail_3.move(552, 315)
+        image.load(self.app.thumbnailfile)
+        self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.ui.thumbnail_3.resize(200,150)
+        self.ui.thumbnail_3.move(552, 315)
         self.app.thumbnailfile = a
         if self.now_shot == 1:
             self.now_shot = self.ntm
@@ -366,7 +366,7 @@ class DetailScrollWidget(QScrollArea):
 
 
         if self.now_shot == self.ntm:
-	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(1))
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(1))
         else:
             self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot +1))
         #img = QPixmap(self.app.thumbnailfile)
@@ -375,18 +375,18 @@ class DetailScrollWidget(QScrollArea):
         #self.ui.thumbnail.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
         #self.ui.thumbnail.move(350, 324)
         #self.ui.thumbnail.show()
-	image = QtGui.QImage()
-	image.load(self.app.thumbnailfile)
-	self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
-	self.ui.thumbnail.resize(200,150)
-	self.ui.thumbnail.move(120, 315)
-	self.ui.thumbnail.show()
+        image = QtGui.QImage()
+        image.load(self.app.thumbnailfile)
+        self.ui.thumbnail.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.ui.thumbnail.resize(200,150)
+        self.ui.thumbnail.move(120, 315)
+        self.ui.thumbnail.show()
         self.app.thumbnailfile = a
 
-	if self.now_shot + 2 > self.ntm :
-	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2 - self.ntm))
-	else:	
-	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2))
+        if self.now_shot + 2 > self.ntm :
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2 - self.ntm))
+        else:	
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 2))
 
         #img = QPixmap(self.app.thumbnailfile)
         #img = img.scaled(160,112)
@@ -395,29 +395,29 @@ class DetailScrollWidget(QScrollArea):
         #self.ui.thumbnail_2.move(180, 324)
         #self.ui.thumbnail_2.show()
         #self.ui.thumbnail_2.hide()
-	image.load(self.app.thumbnailfile)
-	self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
-	self.ui.thumbnail_2.resize(200,150)
-	self.ui.thumbnail_2.move(336, 315)
-	self.ui.thumbnail_2.show()
+        image.load(self.app.thumbnailfile)
+        self.ui.thumbnail_2.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.ui.thumbnail_2.resize(200,150)
+        self.ui.thumbnail_2.move(336, 315)
+        self.ui.thumbnail_2.show()
 
 
         self.app.thumbnailfile = a
-	if self.now_shot + 3 > self.ntm :
-	   self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 3 - self.ntm))
-	else:
-	    self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 3))
+        if self.now_shot + 3 > self.ntm :
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 3 - self.ntm))
+        else:
+            self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.now_shot + 3))
 #        img = QPixmap(self.app.thumbnailfile)
 #        img = img.scaled(160,112)
 #        self.ui.thumbnail_3.resize(img.width(), img.height())
 #        self.ui.thumbnail_3.setStyleSheet("QPushButton{background-image:url('" + self.app.thumbnailfile + "');border:0px;}")
 #        self.ui.thumbnail_3.move(520, 324)
 #        self.ui.thumbnail_3.show()
-	image.load(self.app.thumbnailfile)
-	self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
-	self.ui.thumbnail_3.resize(200,150)
-	self.ui.thumbnail_3.move(552, 315)
-	self.ui.thumbnail_3.show()
+        image.load(self.app.thumbnailfile)
+        self.ui.thumbnail_3.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.ui.thumbnail_3.resize(200,150)
+        self.ui.thumbnail_3.move(552, 315)
+        self.ui.thumbnail_3.show()
 
 
         self.app.thumbnailfile = a
@@ -503,7 +503,8 @@ class DetailScrollWidget(QScrollArea):
 
         self.debfile = DebFile(path)
         self.app = self.debfile
-        self.ui.debname.setText("软件包名: " + self.debfile.name)
+        print ("yyyyyyyyyyyyyyyyyy",self.debfile.name,type(self.debfile.name))
+        self.ui.debname.setText("软件包名: " + str(self.debfile.name))
 
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
         # self.ui.name.setText(self.debfile.name)
@@ -530,7 +531,7 @@ class DetailScrollWidget(QScrollArea):
             self.debfile.is_installable = True
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
         else:
-            print "it can not be installed......"
+            print ("it can not be installed......")
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
             self.messageBox.alert_msg("无法安装该软件包")
             # self.ui.btnInstall.setText("无法安装")
@@ -612,7 +613,8 @@ class DetailScrollWidget(QScrollArea):
             self.ui.orig_description_widget.setText(app.description)
         else:
             self.ui.orig_description_widget.setText(app.orig_description)
-        self.ui.debname.setText("软件包名: " + app.name)
+        print ("xxxxxxxxxxxxxxxxxx",app.name,type(app.name))
+        self.ui.debname.setText("软件包名: " + str(app.name))
         self.ui.installedVersion.setText("当前版本: " + app.installed_version)
         self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
 
@@ -788,13 +790,14 @@ class DetailScrollWidget(QScrollArea):
                 self.ui.description.setText(app.description)
             else:
                 self.ui.description.setText(app.orig_description)
-
-            if str(self.ui.name.text().toUtf8()) == self.app.displayname and str(self.ui.summary.toPlainText()) == self.app.orig_summary and str(self.ui.description.toPlainText()) == self.app.orig_description:
+            if str(self.ui.name.text()) == self.app.displayname and str(self.ui.summary.toPlainText()) == self.app.orig_summary and str(self.ui.description.toPlainText()) == self.app.orig_description:
+            #if str(self.ui.name.text().toUtf8()) == self.app.displayname and str(self.ui.summary.toPlainText()) == self.app.orig_summary and str(self.ui.description.toPlainText()) == self.app.orig_description:
                 self.ui.btn_change.setText("翻译软件")
             else:
                 self.ui.btn_change.setText("完善翻译")
 
-        self.init_name = str(self.ui.name.text().toUtf8()).strip()
+        #self.init_name = str(self.ui.name.text().toUtf8()).strip()
+        self.init_name = str(self.ui.name.text()).strip()
         self.init_summary = str(self.ui.summary.toPlainText()).strip()
         self.init_description = str(self.ui.description.toPlainText()).strip()
 
@@ -843,7 +846,7 @@ class DetailScrollWidget(QScrollArea):
         self.ui.pushButton_5.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
         self.now_shot = 1
         self.shlist = sclist
-        #print "xxxxxxxxxxxxxxxxx",sclist
+        #print ("xxxxxxxxxxxxxxxxx",sclist,type(sclist))
         self.sshotcount = len(sclist)
         if self.app.thumbnailfile.find('thumbnail1') != -1 :
             #self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail1')
@@ -865,7 +868,7 @@ class DetailScrollWidget(QScrollArea):
             else:
                 i = i - 1
                 break
-        print "iiiiiiiiiiiiiiiiii",i
+        #print "iiiiiiiiiiiiiiiiii",i
         self.ui.btnSshotBack.show()
         self.ui.btnSshotNext.show()
         self.ntm = i
@@ -1033,7 +1036,8 @@ class DetailScrollWidget(QScrollArea):
             orig_description = self.app.description
         else:
             orig_description = self.app.orig_description
-        self.appname = str(self.ui.name.text().toUtf8()).strip()
+        #self.appname = str(self.ui.name.text().toUtf8()).strip()
+        self.appname = str(self.ui.name.text()).strip()
         self.summary = str(self.ui.summary.toPlainText()).strip()
         self.description = str(self.ui.description.toPlainText()).strip()
         if(self.appname == '' or self.summary == '' or self.description == ''):
@@ -1155,7 +1159,7 @@ class DetailScrollWidget(QScrollArea):
     def slot_submit_rating(self, rating):
         if self.app.from_ukscdb is not True:
             self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
-            print "ignore submit rating"
+            print ("ignore submit rating")
             return
         if(Globals.USER != ''):
             self.submitratingload.start_loading()

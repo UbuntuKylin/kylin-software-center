@@ -23,11 +23,11 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib2
+from urllib import request,error
 import json
 import apt
 
-from application import Application
+from models.application import Application
 
 #This class is the abstraction of a 
 class Category:
@@ -85,7 +85,7 @@ class Category:
         up = 0
         all = 0
         if(self.apps is not None):
-            for (appname, app) in self.apps.iteritems():
+            for (appname, app) in self.apps.items():
                 if app.package is None or app.package.candidate is None:
                     continue
                 all = all + 1
@@ -101,11 +101,11 @@ if __name__ == "__main__":
 
     cache = apt.Cache()
     cache.open()
-    print len(cache)
+    print (len(cache))
 
     cat1 = Category("devel","开发工具","",[])
-    print cat1.name
-    print cat1.apps
+    print (cat1.name)
+    print (cat1.apps)
 
      
 

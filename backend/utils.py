@@ -118,11 +118,11 @@ class TraceActiveObjectTypes(object):
             if not type(obj) in new_obj_types:
                 new_obj_types[type(obj)] = 0
             new_obj_types[type(obj)] += 1
-        print "+++ new types after '%s':" % self.info
+        print ("+++ new types after '%s':" % self.info)
         #print new_obj_types
         for v in sorted(new_obj_types, key=new_obj_types.get):
-            print v, new_obj_types[v]
-        print "/+++\n"
+            print (v, new_obj_types[v])
+        print ("/+++\n")
 
 
 class TraceMemoryUsage(object):
@@ -138,12 +138,12 @@ class TraceMemoryUsage(object):
     def __exit__(self, atype, value, stack):
         now_resident = self._get_mem_from_proc()["resident"] - self.resident
         now_data = self._get_mem_from_proc()["data"] - self.data
-        print "++++ MEMORY DELTA for '%s': res: %s data: %s (%s %s)\n" % (
+        print ("++++ MEMORY DELTA for '%s': res: %s data: %s (%s %s)\n" % (
             self.info,
             # assume page size of 4k here
             get_nice_size(now_resident * 4 * 1024),
             get_nice_size(now_data * 4 * 1024),
-            now_resident, now_data)
+            now_resident, now_data))
 
     def _get_mem_from_proc(self):
         with open("/proc/%i/statm" % os.getpid()) as f:

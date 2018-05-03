@@ -111,8 +111,8 @@ class WinCard(QWidget):
         # add by kobe
         #setLongTextToElideFormat(self.ui.winname, self.winstat.windows_app_name)
         #setLongTextToElideFormat(self.ui.wintext, self.winstat.display_name_windows)
-	setLongTextToElideFormat(self.ui.winname, self.winstat.display_name_windows)
-	setLongTextToElideFormat(self.ui.wintext, self.winstat.windows_app_name)
+        setLongTextToElideFormat(self.ui.winname, self.winstat.display_name_windows)
+        setLongTextToElideFormat(self.ui.wintext, self.winstat.windows_app_name)
         setLongTextToElideFormat(self.ui.winbake, self.winstat.category)
         # metrics = QFontMetrics(self.ui.winname.font())
         # elidedText = metrics.elidedText(self.winstat.windows_app_name, Qt.ElideRight, self.ui.winname.width())
@@ -314,7 +314,7 @@ class WinCard(QWidget):
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/wincard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/wincard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/wincard-up-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-up-border.png');}")
         else:
-            print "self.app is None in wincard"
+            print ("self.app is None in wincard")
 
 
     def slot_emit_detail(self):

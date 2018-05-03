@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-
+#encoding:utf-8
 ### BEGIN LICENSE
 
 # Copyright (C) 2013 National University of Defense Technology(NUDT) & Kylin Ltd
@@ -31,7 +31,7 @@ import time
 import logging
 import threading
 import multiprocessing
-import Queue
+from multiprocessing import Queue
 from piston_mini_client import auth
 
 from PyQt4.QtCore import *
@@ -52,7 +52,10 @@ from models.enums import Signals,UnicodeToAscii
 from backend.remote.piston_remoter import PistonRemoterAuth
 
 import aptsources.sourceslist
-from urllib2 import urlopen, URLError, HTTPError
+#from urllib2 import urlopen, URLError, HTTPError
+import urllib
+from urllib.request import urlopen
+from urllib.error import HTTPError,URLError
 from ftplib import FTP
 
 LOG = logging.getLogger("uksc")
@@ -68,16 +71,16 @@ class ThreadWorker(threading.Thread):
         self.appmgr = appmgr
 	#self = appmgr
         self.apt_cache = None
-	self.db = Database()
+        self.db = Database()
 	#self.appmgr.db = self.db 
-	self.cat_list = {}
+        self.cat_list = {}
     def run(self):
-	fl = 1
+        fl = 1
         while True:
-	    if(fl == 1):
-	        fl = 0
+            if(fl == 1):
+                fl = 0
 		#self.appmgr.db = self.db
-	        self._init_models()
+                self._init_models()
 
     def open_cache(self):
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
@@ -90,39 +93,40 @@ class ThreadWorker(threading.Thread):
 
     def _init_models(self):
         self.open_cache()
+        self.appmgr.apt_cache = self.apt_cache
         self.cat_list = self.get_category_list_from_db()
-	self.appmgr.cat_list = self.cat_list
-	self.appmgr.apt_cache = self.apt_cache
-	self.appmgr.db = self.db
-	if Globals.UPDATE_HOM == 0:
-	    self.appmgr.get_recommend_apps(False)
-	    self.appmgr.get_ratingrank_apps(False)
-	sum_inst = 0
+        self.appmgr.cat_list = self.cat_list
+        #self.appmgr.apt_cache = self.apt_cache
+        self.appmgr.db = self.db
+        if Globals.UPDATE_HOM == 0:
+            self.appmgr.get_recommend_apps(False)
+            self.appmgr.get_ratingrank_apps(False)
+        sum_inst = 0
         sum_up = 0
         sum_all = len(self.apt_cache)
-	self.appmgr.get_recommend_apps(False)
-	self.appmgr.get_ratingrank_apps(False)
-	print "ok",sum_all
+        self.appmgr.get_recommend_apps(False)
+        self.appmgr.get_ratingrank_apps(False)
+        print ("ok",sum_all)
         self.appmgr.get_game_apps(False,False)
         self.appmgr.get_necessary_apps(False,False)
 
 	#QApplication.slot_recommend_apps_ready(applist, bysignal)	
-	exit()
+        #exit()
 
     def get_category_list_from_db(self):
         list = self.db.query_categories()
         cat_list = {}
         for item in list:
-            c = UnicodeToAscii(item[2])
-            # c = item[2]
+            #c = UnicodeToAscii(item[2])
+            c = item[2]
             zhcnc = item[3]
             index = item[4] 
             visible = (item[0]==1)
-
+            #c = str(c, encoding = "utf8") 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
-	    self.appmgr.cat_list = cat_list
+            self.appmgr.cat_list = cat_list
 
         Globals.ALL_APPS = {}
         return cat_list
@@ -139,12 +143,13 @@ class ThreadWorker(threading.Thread):
         list = self.db.query_category_apps(cat)
         apps = {}
         for item in list:
-            pkgname = UnicodeToAscii(item[0])
+            #pkgname = UnicodeToAscii(item[0])
+            pkgname = item[0]
             displayname_cn = item[1]
             if pkgname in Globals.ALL_APPS.keys():
                 apps[pkgname] = Globals.ALL_APPS[pkgname]
             else:
-                app = Application(pkgname,displayname_cn, cat, self.apt_cache)
+                app = Application(pkgname,displayname_cn,cat, self.apt_cache)
                 if app.package and app.package.candidate:
                     #if there has special information in db, get them
                     #get_category_apps_from_db: 0 0
@@ -156,8 +161,13 @@ class ThreadWorker(threading.Thread):
 
                     appinfo = self.db.query_application(pkgname)
                     app.displayname = appinfo[0]
+                    #app.summary = appinfo[0]
                     app.summary = appinfo[1]
+                    #print ("eeeeeeeeeeeeeeeee",app.summary)
+                    #app.summary = "dddddddddd"
+                    #app.summary = app.summary._replace(appinfo[0])
                     app.description = appinfo[2]
+                    #app.summary_init = appinfo[2]
                     rating_average = appinfo[3]
                     rating_total = appinfo[4]
                     review_total = appinfo[5]
@@ -200,7 +210,7 @@ class ThreadWorkerDaemon(threading.Thread):
             item = self.appmgr.worklist.pop()
             self.appmgr.mutex.release()
 
-            print 'work thread get item : ',item.funcname
+            print ('work thread get item : ',item.funcname)
 
             if item is None:
                 continue
@@ -218,7 +228,9 @@ class ThreadWorkerDaemon(threading.Thread):
                 try: #if no network the thread will be crashed, so add try except
                     reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
                 except Exception as e:
-                    print "ThreadWorkerDaemon error", e.message
+                    #print ("ThreadWorkerDaemon error", e.message)
+                    #waiting
+                    print ("ThreadWorkerDaemon error 1")
             elif item.funcname == "check_source_useable":
                 self.appmgr.start_check_source_useable()
             # elif item.funcname == "get_images":
@@ -232,7 +244,7 @@ class ThreadWorkerDaemon(threading.Thread):
                 #spawn_helper.start()
                 #event.wait()
 		#print "ccccccccccccccccccccccc", item.funcname,item.kwargs, event, queue
-		reslist = item.kwargs['thumbnailfile']
+                reslist = item.kwargs['thumbnailfile']
 		#print "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv",reslist
                 #resLen = queue.qsize()
                 #while resLen:
@@ -255,8 +267,8 @@ class ThreadWorkerDaemon(threading.Thread):
                 #print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),reslist
             #LOG.debug("receive data from backend process, len=%d",len(reslist))
             #self.appmgr.dispatchWorkerResult(item,reslist)
-	    LOG.debug("receive data from backend process, len=%d",len(reslist))
-	    self.appmgr.dispatchWorkerResult(item,reslist)
+            LOG.debug("receive data from backend process, len=%d",len(reslist))
+            self.appmgr.dispatchWorkerResult(item,reslist)
 
 
 #This class is the abstraction of application management
@@ -277,7 +289,7 @@ class AppManager(QObject):
         self.distroseries = 'any'  #'any' for all
         self.db = Database()
 	#self.db = ""
-	self.for_update = 0
+        self.for_update = 0
         # silent process work queue
         self.squeue = multiprocessing.Queue()
         self.silent_process = SilentProcess(self.squeue)
@@ -290,8 +302,8 @@ class AppManager(QObject):
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
 	
-	self.worker_thread1 = ThreadWorker(self)
-        #self.worker_thread1.setDaemon(True)
+        self.worker_thread1 = ThreadWorker(self)
+        self.worker_thread1.setDaemon(True)
         self.worker_thread1.start()
 
 
@@ -304,8 +316,8 @@ class AppManager(QObject):
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
-	if(self.for_update == 1):
-		return True
+        if(self.for_update == 1):
+            return True
         if(f.exists() == True):
             return False
         else:
@@ -321,7 +333,7 @@ class AppManager(QObject):
         self.apt_cache.open()
         self.pkgcount = len(self.apt_cache)
 
-   # def _init_models(self):
+    #def _init_models(self):
     #    self.open_cache()
     #    self.cat_list = self.get_category_list_from_db()
 
@@ -334,9 +346,9 @@ class AppManager(QObject):
 
     def _update_models(self,kwargs):
         self.open_cache()
-        for cname,citem in self.cat_list.iteritems():
+        for cname,citem in self.cat_list.items():
             apps = citem.apps
-            for aname,app in apps.iteritems():
+            for aname,app in apps.items():
                 app.update_cache(self.apt_cache)
         if "update" == kwargs["action"]:
             self.emit(Signals.count_application_update)
@@ -357,12 +369,12 @@ class AppManager(QObject):
         list = self.db.query_categories()
         cat_list = {}
         for item in list:
-            c = UnicodeToAscii(item[2])
-            # c = item[2]
+            #c = UnicodeToAscii(item[2])
+            c = item[2]
             zhcnc = item[3]
             index = item[4]
             visible = (item[0]==1)
-
+            #c = str(c, encoding = "utf8") 
             icon = UBUNTUKYLIN_RES_PATH + c + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
@@ -382,12 +394,14 @@ class AppManager(QObject):
         list = self.db.query_category_apps(cat)
         apps = {}
         for item in list:
-            pkgname = UnicodeToAscii(item[0])
+            #pkgname = UnicodeToAscii(item[0])
+            pkgname = item[0]
             displayname_cn = item[1]
             if pkgname in Globals.ALL_APPS.keys():
+                #print ("aaaaaaaaaaaaaaaaaa",pkgname)
                 apps[pkgname] = Globals.ALL_APPS[pkgname]
             else:
-                app = Application(pkgname,displayname_cn, cat, self.apt_cache)
+                app = Application(pkgname,displayname_cn,cat,self.apt_cache)
                 if app.package and app.package.candidate:
                     #if there has special information in db, get them
                     #get_category_apps_from_db: 0 0
@@ -405,7 +419,7 @@ class AppManager(QObject):
                     rating_total = appinfo[4]
                     review_total = appinfo[5]
                     # rank = appinfo[6]
-
+                    #print ("zzzzzzzzzzzzzzzzzzzzzz",app.summary)
                     # #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
                     # if summary is not None and summary != 'None':
                     #     app.summary = summary
@@ -444,11 +458,14 @@ class AppManager(QObject):
     def get_category_apps(self, cat, load=False, catdir=""):
         apps = {}
         if not cat:
-            for catName,catItem in self.cat_list.iteritems():
+            for catName,catItem in self.cat_list.items():
                 if len(apps) == 0:
                     apps = dict(catItem.apps.items())
                 else:
-                    apps = dict(apps.items() + catItem.apps.items())
+                    #python3
+                    apps = apps.copy()
+                    apps.update(catItem.apps)
+                    #apps = dict(apps.items() + catItem.apps.items())
         else:
             #get the apps from category list
             if not load:
@@ -467,27 +484,42 @@ class AppManager(QObject):
 
     #get application object by appname
     def get_application_by_name(self,pkgname):
-        #print "get_application_by_name:", pkgname
+        #print ("ddddddddddddddddddd",pkgname,type(pkgname))
+        try:
+            pkgname = pkgname.decode('utf-8')
+        except:
+            pass
+        #print ("get_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaapplication_by_name:", pkgname,type(pkgname))
         if not pkgname:
             return None
         if self.cat_list is None:
             return None
         #
-        for (catname, cat) in self.cat_list.iteritems(): #get app in cat which init in uksc startup
+        #print ("2222222222")
+        #try:
+        #    pkgname = (pkgname.decode())
+        #except:
+        #    pass
+        for (catname, cat) in self.cat_list.items(): #get app in cat which init in uksc startup
+            #print ("333333333333333333333333",type(pkgname),pkgname)
+            #print ("tttttttttttttttttttttttt",type(cat),cat)
             app = cat.get_application_byname(pkgname)
             if app is not None and app.package is not None:
+                #print ("44444444444444444",app)
                 return app
 
         pkg = self.get_package_by_name(pkgname)
         if pkg is not None and pkg.candidate is not None: #get app from cache and add it to cat  when app not in cat
+            #print ("55555555555555555555")
             displayname_cn = pkgname
             app = Application(pkgname, displayname_cn, cat, self.apt_cache)
             app.orig_name = app.name
             app.orig_summary = app.summary
             app.orig_description = app.description
             app.displayname = app.name
-            app.summary = app.summary
-            app.description = app.description
+            #python3
+            #app.summary = app.summary
+            #app.description = app.description
             app.from_ukscdb = False
 
             cat = self.cat_list["Accessories"]
@@ -517,11 +549,11 @@ class AppManager(QObject):
         return package
 
     def get_application_count(self,cat_name=""):
-	self.apt_cache = self.worker_thread1.apt_cache
+        self.apt_cache = self.worker_thread1.apt_cache
         sum_inst = 0
         sum_up = 0
         #sum_all = len(self.apt_cache)
-	sum_all = len(self.apt_cache)
+        sum_all = len(self.apt_cache)
 
         if len(cat_name)>0:
             cat = self.cat_list[cat_name]
@@ -539,7 +571,7 @@ class AppManager(QObject):
                 if package.is_upgradable:
                     sum_up = sum_up + 1
 
-                #            for (catname, cat) in self.cat_list.iteritems():
+                #            for (catname, cat) in self.cat_list.items():
                 #                (inst,up, all) = cat.get_application_count()
                 #                sum_inst = sum_inst + inst
                 #                sum_up = sum_up + up
@@ -559,10 +591,10 @@ class AppManager(QObject):
 
     #get advertisements, this is now implemented locally
     def get_advertisements(self, bysignal=False):
-        print "we need to get the advertisements"
+        print ("we need to get the advertisements")
         tmpads = []
-	tmpads.append(Advertisement("wps-office", "pkg", "ad2.png", "adb2.png", "wps-office"))
-	tmpads.append(Advertisement("netease-cloud-music", "pkg", "ad0.png", "adb0.png", "netease-cloud-music"))
+        tmpads.append(Advertisement("wps-office", "pkg", "ad2.png", "adb2.png", "wps-office"))
+        tmpads.append(Advertisement("netease-cloud-music", "pkg", "ad0.png", "adb0.png", "netease-cloud-music"))
         tmpads.append(Advertisement("teamviewer", "pkg", "ad1.png", "adb1.png", "teamviewer"))
         tmpads.append(Advertisement("wps-office", "pkg", "ad2.png", "adb2.png", "wps-office"))
         tmpads.append(Advertisement("redeclipse", "pkg", "ad3.png", "adb3.png", "redeclipse"))
@@ -573,7 +605,7 @@ class AppManager(QObject):
     #get apps in ubuntukylin archives, this is now implemented with config file
     #then we can sync with the archive
     def get_ubuntukylin_apps(self):
-        print "we need to get the applications by condition recommend"
+        print ("we need to get the applications by condition recommend")
         apps = self.get_category_apps("ubuntukylin")
         for(pkgname, app) in apps:
             if app is None or app.package is None:
@@ -583,7 +615,7 @@ class AppManager(QObject):
 
     #get rating and review status
     def get_rating_review_stats(self,callback=None):
-        print "we need to get the ratings and reviews stat"
+        print ("we need to get the ratings and reviews stat")
         item  = WorkerItem("get_rating_review_stats",None)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -607,7 +639,7 @@ class AppManager(QObject):
 
         # force == True means need get review from server immediately
         if reviews is not None and force == False:
-            print "get_application_reviews in memory"
+            print ("get_application_reviews in memory")
             self.dispatchWorkerResult(item,reviews)
             return reviews
         else:
@@ -645,7 +677,7 @@ class AppManager(QObject):
         return []
 
     def dispatchWorkerResult(self,item,reslist):
-	#print "item,===========,reslist",item,reslist
+        #print ("item,===========,reslist",item,reslist)
         if item.funcname == "get_reviews":
             # convert into our review objects
             LOG.debug("reviews ready:%s",len(reslist))
@@ -656,7 +688,7 @@ class AppManager(QObject):
             if app is not None and app.package is not None:
                 app.add_reviews(page,reviews)
             else:
-                print item.kwargs['packagename'], " not exist"
+                print (item.kwargs['packagename'], " not exist")
 
             self.emit(Signals.app_reviews_ready,reviews)
         elif item.funcname == "get_screenshots":
@@ -666,7 +698,7 @@ class AppManager(QObject):
             if app is not None and app.package is not None:
                 app.screenshots = screenshots
             else:
-                print item.kwargs['packagename'], " not exist"
+                print (item.kwargs['packagename'], " not exist")
             self.emit(Signals.app_screenshots_ready,screenshots)
         elif item.funcname == "get_rating_review_stats":
             LOG.debug("rating review stats ready:%d",len(reslist))
@@ -680,7 +712,7 @@ class AppManager(QObject):
                     app.ratings_average = rnrStat.ratings_average
                     app.ratings_total = rnrStat.ratings_total
                 if(str(rnrStat.pkgname) == "gparted"):
-                    print "######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app
+                    print ("######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app)
 
 
             self.emit(Signals.rating_reviews_ready,rnrStats)
@@ -693,16 +725,16 @@ class AppManager(QObject):
             LOG.debug("update apt cache ready")
             pkgname = item.kwargs["packagename"]
             action = item.kwargs["action"]
-            print "update apt cache ready:",len(reslist),pkgname
+            print ("update apt cache ready:",len(reslist),pkgname)
 
             self.emit(Signals.apt_cache_update_ready, action, pkgname)
         elif item.funcname == "init_models":
             LOG.debug("init models ready")
             self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
-            print "init models后台运行中"
+            print ("init models后台运行中")
 
     def update_rating_reviews(self,rnrStats):
-        print "update_rating_reviews:",len(rnrStats)
+        print ("update_rating_reviews:",len(rnrStats))
 
         for rnrStat in rnrStats:
             self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
@@ -777,7 +809,7 @@ class AppManager(QObject):
             if(app is not None):
                 app.recommendrank = rec[1]
                 applist.append(app)
-	if Globals.UPDATE_HOM == 0:
+        if Globals.UPDATE_HOM == 0:
             self.emit(Signals.recommend_ready, applist, bysignal)
 
      # get game apps
@@ -841,7 +873,7 @@ class AppManager(QObject):
                     applist.index(app)
                 except:
                     applist.append(app)
-	if Globals.UPDATE_HOM == 0:
+        if Globals.UPDATE_HOM == 0:
             self.emit(Signals.ratingrank_ready, applist, bysignal)
 
     def submit_review(self, app_name, content):
@@ -937,20 +969,20 @@ class AppManager(QObject):
                 pass
             else:
                 source_url = "http://" + source_url[num+1:]
-            print source_url
+            print (source_url)
             #source_url = source_str[0]
             try:
-                response = urllib2.urlopen(source_url, timeout=30)
+                response = urllib.request.urlopen(source_url, timeout=30)
                 #print response.info()
-            except HTTPError, e:
-                print e.code
+            except HTTPError as e:
+                print (e.code)
                 if e.code != 401:
                     bad_source_urllist.append(source_url)
-            except Exception, e:
-                print e
+            except Exception as e:
+                print (e)
                 bad_source_urllist.append(source_url)
         if bad_source_urllist != []:
-            print 'bad source urllist:',bad_source_urllist
+            print ('bad source urllist:',bad_source_urllist)
             self.emit(Signals.check_source_useable_over,bad_source_urllist)
         #print "check source useable over"
 
@@ -967,15 +999,15 @@ class AppManager(QObject):
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
                         action=None, single_review=None):
-    print "\n***Enter _reviews_ready_callback..."
-    print str_pkgname
+    print ("\n***Enter _reviews_ready_callback...")
+    print (str_pkgname)
     for review in reviews_data:
-      print "rating: %s  user=%s" % (review.rating,
-          review.reviewer_username)
-      print review.summary
-      print review.review_text
-      print "\n"
-    print "\n\n"
+      print ("rating: %s  user=%s" % (review.rating,
+          review.reviewer_username))
+      print (review.summary)
+      print (review.review_text)
+      print ("\n")
+    print ("\n\n")
 
 
 if __name__ == "__main__":
@@ -983,7 +1015,7 @@ if __name__ == "__main__":
     #初始化打开cache
     appManager = AppManager()
     appManager.open_cache()
-    print appManager.name
+    #print appManager.name
     #加载软件分类
     cat_list = appManager.get_category_list(True,"../data/category/")
 #    print appManager.cat_list
@@ -991,11 +1023,11 @@ if __name__ == "__main__":
  #   print appManager.get_category_apps('')
     app = appManager.get_application_by_name("abe")
     ver = app.package.candidate
-    print ver.record
-    print ver.uri
+    #print ver.record
+    #print ver.uri
 #    print app
 #    apps = appManager.get_recommend_apps()
-    print app
+    #print app
 #    print app.thumbnail
 #    print app.screenshot
 #    appManager.get_application_screenshots("gimp","/home/maclin/test/")
@@ -1004,7 +1036,7 @@ if __name__ == "__main__":
 #    appManager.get_application_reviews("gimp",_reviews_ready_callback)
 #    appManager.get_rating_review_stats()
 #    appManager.get_toprated_stats()
-    print "waiting..........\n\n"
+    #print "waiting..........\n\n"
     while True:
-        print "***"
+        #print "***"
         time.sleep(2)

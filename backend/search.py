@@ -60,7 +60,8 @@ def parse_axi_values_file(filename="/var/lib/apt-xapian-index/values"):
     if not os.path.exists(filename):
         return axi_values
     for raw_line in open(filename):
-        line = string.split(raw_line, "#", 1)[0]
+        #line = string.split(raw_line, "#", 1)[0]
+        line = str.split(raw_line, "#", 1)[0]
         if line.strip() == "":
             continue
         (key, value) = line.split()
@@ -167,7 +168,7 @@ class StoreDatabase(GObject.GObject):
                 xapiandb.add_database(axi)
             except Exception as e:
                 logging.warn("failed to add apt-xapian-index db %s" % e)
-                print "Failed to add apt-xapian-index,some software may not be searched"
+                print ("Failed to add apt-xapian-index,some software may not be searched")
         if (self._use_agent and
                 os.path.exists(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)):
             try:
@@ -409,7 +410,7 @@ class Search:
         try:
             self.db.xapiandb
         except:
-            print "Failed to add db"
+            print ("Failed to add db")
             #LOG.exception("failed to add db")
         self.db.open()
         
@@ -418,7 +419,8 @@ class Search:
         #------Filter out single word in search keyword (include chinese)------
         self.db.reopen()
         try:
-            tem_keyword = unicode(keyword, "utf-8")
+            #tem_keyword = unicode(keyword, "utf-8")
+            tem_keyword = keyword
         except:
             keyword = keyword
         else:
@@ -427,18 +429,19 @@ class Search:
             else:
                 return []
 
-
+        #print ("11111111111111111111111")
         query_string = self.db.get_query_list_from_search_entry(str(keyword))
+        #print ("222222222222222222222222222",query_string)
         enquire = xapian.Enquire(self.db.xapiandb)
         query = query_string[1]
         enquire.set_query(query)
         matches = enquire.get_mset(0, 100)
-#        print "res len=",len(self.db),len(matches)
+        print ("res len=",len(self.db),len(matches))
         pkgnamelist = []
         for m in matches:
             doc = m.document
-#            print m.docid
-#            print '************************************'
+            print (m.docid)
+            print ('************************************')
             pkgname = doc.get_value(XapianValues.PKGNAME)
 
             if not pkgname:
@@ -453,7 +456,7 @@ class Search:
                     pkgnamelist.append(pkgname)
         
                     
-#        print pkgnamelist        
+        print (pkgnamelist)        
         return pkgnamelist
 
 

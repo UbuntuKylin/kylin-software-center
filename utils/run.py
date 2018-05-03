@@ -31,7 +31,8 @@ import subprocess
 import xdg.DesktopEntry
 from models.enums import Specials
 
-import commands
+#import commands
+import subprocess
 
 def RemoveArgs(Execline):
     NewExecline = []
@@ -39,7 +40,7 @@ def RemoveArgs(Execline):
         elem = elem.replace("'","")
         elem = elem.replace("\"", "")
         if elem not in Specials:
-            print elem
+            print (elem)
             NewExecline.append(elem)
     return NewExecline
 
@@ -48,12 +49,12 @@ def RemoveArgs(Execline):
 def Execute(cmd):
     if isinstance( cmd, str ) or isinstance( cmd, unicode):
         if (cmd.find("/home/") >= 0) or (cmd.find("su-to-root") >= 0) or (cmd.find("\"") >= 0):
-            print "running manually..."
+            print ("running manually...")
             try:
                 os.system(cmd + " &")
                 return True
-            except Exception, detail:
-                print detail
+            except Exception as detail:
+                print (detail)
                 return False
     cmd = cmd.split()
     cmd = RemoveArgs(cmd)
@@ -64,8 +65,8 @@ def Execute(cmd):
         #subprocess.Popen( cmd ) // use os.system instead of popen so children don't end up in zombie waiting for us to wait() for them
         os.system(string)
         return True
-    except Exception, detail:
-        print detail
+    except Exception as detail:
+        print (detail)
         return False
 
 
@@ -111,6 +112,7 @@ def get_run_command(pkgname):
     # exc = fd.read()
     # fd.close()
     fullcmd = ""
+    pkgname = str(pkgname)
     desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
     if not os.path.exists(desktopfile):
         if pkgname == "gnome-screenshot":

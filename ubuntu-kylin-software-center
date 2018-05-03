@@ -2,20 +2,20 @@
 if [ $# = 0 ]; then
 	echo "normal start"
 	cd /usr/share/ubuntu-kylin-software-center
-	python ubuntu-kylin-software-center.py
+	python3 ubuntu-kylin-software-center.py
 elif [ $1 = "restart" ]; then
         echo "restart"
         ps -ef|grep ubuntu-kylin-software-center.py|grep -v grep|cut -c 9-15|xargs kill -9
         sleep 1
         cd /usr/share/ubuntu-kylin-software-center
-        python ubuntu-kylin-software-center.py
+        python3 ubuntu-kylin-software-center.py
 else
 	if [ $1 = "-quiet" ]; then
 		echo "quiet start"
 		cd /usr/share/ubuntu-kylin-software-center
-		python ubuntu-kylin-software-center.py -quiet
+		python3 ubuntu-kylin-software-center.py -quiet
 	else
 		cd /usr/share/ubuntu-kylin-software-center
-		python ubuntu-kylin-software-center.py $1
+		python3 ubuntu-kylin-software-center.py $1
 	fi
 fi

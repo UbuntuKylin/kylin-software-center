@@ -66,9 +66,11 @@ class CategoryBar(QWidget):
     def init_categories(self, cdata):
         cmp_rating = lambda x, y: \
             cmp(x[1].index,y[1].index)
-        cat_list = sorted(cdata.iteritems(),
-                        cmp_rating,
-                        reverse=False)
+        cat_list = sorted(cdata.items(),
+                        #cmp_rating,
+                        #python3 取消了 cmp 参数
+                        #reverse=False)
+                        reverse=True)
 
         for item in cat_list:
             category = item[1]

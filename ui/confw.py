@@ -38,7 +38,7 @@ class Ui_ConfigWidget(object):
         self.userWidget.setObjectName(_fromUtf8("userWidget"))
         self.groupBox_user = QtGui.QGroupBox(self.userWidget)
         self.groupBox_user.setGeometry(QtCore.QRect(10, 90, 472, 185))
-	self.text2 = QtGui.QLabel(self.groupBox_user)
+        self.text2 = QtGui.QLabel(self.groupBox_user)
         self.text2.setGeometry(QtCore.QRect(140, 100, 100, 20))
         self.text2.setText(_fromUtf8(""))
         self.text2.setObjectName(_fromUtf8("text2"))

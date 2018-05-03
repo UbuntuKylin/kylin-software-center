@@ -3,7 +3,7 @@
 if which pyclean >/dev/null 2>&1; then
 	pyclean -p ubuntu-kylin-software-center 
 else
-	dpkg -L ubuntu-kylin-software-center | grep \.py$ | while read file
+	dpkg -L ubuntu-kylin-software-center | grep '\.py$' | while read file
 	do
 		rm -f "${file}"[co] >/dev/null
   	done

@@ -129,9 +129,9 @@ class Ui_MainWindow(object):
         self.homepageWidget.setObjectName(_fromUtf8("homepageWidget"))
 #add   MainWindow
         #self.adWidget = QtGui.QWidget(self.rightWidget)
-	self.adWidget = QtGui.QGroupBox(self.homepageWidget)
+        self.adWidget = QtGui.QGroupBox(self.homepageWidget)
         self.adWidget.setGeometry(QtCore.QRect(0, 44, 860, 220))
-	self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 #	self.adWidget.setTitle(_fromUtf8(""))
         self.adWidget.setObjectName(_fromUtf8("adWidget"))
 
@@ -470,7 +470,7 @@ class Ui_MainWindow(object):
         self.btnCloseDetail.setText(_fromUtf8(""))
         self.btnCloseDetail.setObjectName(_fromUtf8("btnCloseDetail"))
 	#add
-	self.btnClosesearch = QtGui.QPushButton(self.headercw1)
+        self.btnClosesearch = QtGui.QPushButton(self.headercw1)
         self.btnClosesearch.setGeometry(QtCore.QRect(0, 14, 15, 19))
         self.btnClosesearch.setText(_fromUtf8(""))
         self.btnClosesearch.setObjectName(_fromUtf8("btnCloseDetail"))
@@ -584,7 +584,6 @@ class Ui_MainWindow(object):
         self.cbSelectAll.setText(_translate("MainWindow", "全选/取消全选", None))
 
 class Searchcw1(QWidget):
-
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.leSearch = QLineEdit(self)

@@ -69,8 +69,10 @@ from utils.commontools import *
 import threading, time, signal
 import socket
 import sys
-reload(sys)
-sys.setdefaultencoding('utf8')
+#reload(sys)
+import importlib
+importlib.reload(sys)
+#sys.setdefaultencoding('utf8')
 
 socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
@@ -124,7 +126,6 @@ class SoftwareCenter(QMainWindow):
     bdm = 0
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
-
         # singleton check
         self.check_singleton()
 
@@ -145,17 +146,15 @@ class SoftwareCenter(QMainWindow):
     def init_main_view(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         # do not cover the launch loading div
         self.resize(0,0)
-
         self.setWindowTitle("Ubuntu Kylin 软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         # init components
 
-	self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
-	#self.ui.adWidget.lower()
+        self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
+        #self.ui.adWidget.lower()
 	#self.ui.adWidget.raise_()
         # category bar
         self.categoryBar = CategoryBar(self.ui.rightWidget)
@@ -320,7 +319,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.hometext9.setText("游戏娱乐")
 
         #self.ui.hometext2.setText("评分排行")
-	self.ui.hometext2.setText("热门排行")
+        self.ui.hometext2.setText("热门排行")
         # self.ui.headercw1.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
         # style by qss
@@ -474,7 +473,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.taskListWidget_complete.setSpacing(1)
         self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
         self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-	self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
+        self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
         #self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         #self.ui.tasklabel.setText("任务列表")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
@@ -600,7 +599,7 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.appmgr, Signals.submit_translate_appinfo_over, self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
         self.connect(self.appmgr, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self.appmgr, Signals.refresh_page, self.slot_refresh_page)
-	self.connect(self.appmgr, Signals.check_source_useable_over, self.slot_check_source_useable_over)
+        self.connect(self.appmgr, Signals.check_source_useable_over, self.slot_check_source_useable_over)
         self.connect(self, Signals.count_application_update,self.slot_count_application_update)
         self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
 
@@ -727,7 +726,7 @@ class SoftwareCenter(QMainWindow):
             if(Globals.LOCAL_DEB_FILE != None):
                 iface.show_loading_div()
                 iface.show_deb_file(Globals.LOCAL_DEB_FILE)
-		Globals.UPDATE_HOM = 1
+                Globals.UPDATE_HOM = 1
             sys.exit(0)
 
         # else startup one instance
@@ -777,13 +776,20 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
         self.backend.check_dpkg_statu()
-	self.slot_count_application_update()
+        self.slot_count_application_update()
         # check uksc upgradable
         self.check_uksc_update()
     # check base init
     def check_init_ready(self, bysignal=False):
         if ('self.ads_ready' in locals().keys() == False):
             self.ads_ready = False
+        #try:
+        #    if self.ads_ready == False or self.ads_ready == True:
+        #        pass
+        #except:
+        #    self.ads_ready = False
+        #else:
+        #    self.ads_ready = False
         LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
@@ -824,7 +830,7 @@ class SoftwareCenter(QMainWindow):
         # init pointout
         self.init_pointout()
 	# check source useable
-	self.appmgr.check_source_useable()
+        self.appmgr.check_source_useable()
         # pingback_main
         self.appmgr.submit_pingback_main()
 
@@ -869,7 +875,7 @@ class SoftwareCenter(QMainWindow):
         for category in category_list:
             app_list = self.appmgr.search_app_display_info(category)
             for context in app_list:
-		if 1:
+                if 1:
                 #if context[0] == 'wine-qq' or context[0] == 'ppstream':
                     #self.winnum += 1
                     #app = None
@@ -927,6 +933,7 @@ class SoftwareCenter(QMainWindow):
             self.clickx = event.globalPos().x()
             self.clicky = event.globalPos().y()
             self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+            self.setWindowOpacity(0.91)
             event.accept()
 
     def mouseMoveEvent(self, event):
@@ -955,6 +962,7 @@ class SoftwareCenter(QMainWindow):
                     event.accept()
 
     def mouseReleaseEvent(self, event):
+        self.setWindowOpacity(1)
         if(self.dragPosition != -1):
             # close task page while click anywhere except task page self
             if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
@@ -1163,7 +1171,7 @@ class SoftwareCenter(QMainWindow):
             apps = self.appmgr.get_category_apps(self.category)
 
             count = 0
-            for pkgname, app in apps.iteritems():
+            for pkgname, app in apps.items():
                 if app is None or app.package is None:
                     continue
                 if Globals.NOWPAGE == PageStates.UPPAGE:
@@ -1277,14 +1285,14 @@ class SoftwareCenter(QMainWindow):
         i = 0
         if iscancel is False and isfinish is True:
             count = self.ui.taskListWidget.count()
-            print "del_task_item:",count
+            print ("del_task_item:",count)
             #for i in range(count):
             while(i < count):
-                print "i: ",i,"   count: ",count
+                print ("i: ",i,"   count: ",count)
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
                 if taskitem.app.name == pkgname and taskitem.action == action:
-                    print "del_task_item: found an item",i,pkgname
+                    print ("del_task_item: found an item",i,pkgname)
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
 
@@ -1300,14 +1308,14 @@ class SoftwareCenter(QMainWindow):
 
         elif iscancel is True and isfinish is False:
             count = self.ui.taskListWidget.count()
-            print "del_task_item:",count
+            print ("del_task_item:",count)
             # for i in range(count):
             while(i < count):
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
 
                 if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
-                    print "del_task_item: found an item",i,pkgname
+                    print ("del_task_item: found an item",i,pkgname)
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
                     i -= 1
@@ -1391,7 +1399,7 @@ class SoftwareCenter(QMainWindow):
             self.backend.clear_dbus_worklist()
             self.backend.exit_uksc_apt_daemon()
         except Exception as e:
-            print str(e)
+            print (str(e))
         self.dbusControler.stop()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
@@ -1529,33 +1537,33 @@ class SoftwareCenter(QMainWindow):
             self.show_more_software(listWidget)
 
     def slot_change_bt(self,adw):
-	print "vvvvvvvvvvvvvvvvvv",adw
-	print "ddddddddddddddddd",self.bdm,self.adi
-	self.adtimer.stop()
-	i = 0
-	if adw > self.bdm:
-	    while(self.bdm != adw):
-		self.slot_change_l_ad()
-	elif adw < self.bdm:
-	    while(self.bdm != adw):
-		self.slot_change_l_ad()
-	print "ssssssssssssssssssss",self.bdm,self.adi
+	#print "vvvvvvvvvvvvvvvvvv",adw
+	#print "ddddddddddddddddd",self.bdm,self.adi
+        self.adtimer.stop()
+        i = 0
+        if adw > self.bdm:
+            while(self.bdm != adw):
+                self.slot_change_l_ad()
+        elif adw < self.bdm:
+            while(self.bdm != adw):
+                self.slot_change_l_ad()
+	#print "ssssssssssssssssssss",self.bdm,self.adi
 	#self.adtimer.start(2000)
 
 
     def slot_advertisement_ready(self,adlist, bysignal=False):
         LOG.debug("receive ads ready, count is %d", len(adlist))
-	self.adlist = adlist
+        self.adlist = adlist
         if adlist is not None:
             #self.adw = lot_change_adDWidget(adlist, self)
 	    #self.adw = ADWidget(adlist)
             #self.adw.move(0, 44)
 #set
-	    self.ui.bt1.hide()
-	    self.ui.bt2.hide()
-	    self.ui.bt3.hide()
-	    self.ui.bt4.hide()
-	    self.ui.bt5.hide()	
+            self.ui.bt1.hide()
+            self.ui.bt2.hide()
+            self.ui.bt3.hide()
+            self.ui.bt4.hide()
+            self.ui.bt5.hide()	
 	#    self.ui.bt1.setFocusPolicy(Qt.NoFocus)
 	#    self.ui.bt1.clicked.connect(lambda: self.slot_change_bt(1))
 
@@ -1572,26 +1580,26 @@ class SoftwareCenter(QMainWindow):
         #    self.ui.bt5.clicked.connect(lambda: self.slot_change_bt(5))
 
 	#左移
-	    self.ui.thu.setFocusPolicy(Qt.NoFocus) 
-	    self.ui.thu.resize(130, 160)
-	    self.ui.thu.move(0, 30)
-	    self.ui.thu.setStyleSheet("QPushButton{background:none;border:none;}")
-	    self.ui.thu.clicked.connect(self.slot_change_r_ad_before)
-	    self.ui.thu.setCursor(Qt.PointingHandCursor)
+            self.ui.thu.setFocusPolicy(Qt.NoFocus) 
+            self.ui.thu.resize(130, 160)
+            self.ui.thu.move(0, 30)
+            self.ui.thu.setStyleSheet("QPushButton{background:none;border:none;}")
+            self.ui.thu.clicked.connect(self.slot_change_r_ad_before)
+            self.ui.thu.setCursor(Qt.PointingHandCursor)
 	#右
             self.ui.thur.setFocusPolicy(Qt.NoFocus)
             self.ui.thur.resize(130,160)
             self.ui.thur.move(730, 30)
             self.ui.thur.setStyleSheet("QPushButton{background:none;border:none;}")
             self.ui.thur.clicked.connect(self.slot_change_l_ad_before)
-	    self.ui.thur.setCursor(Qt.PointingHandCursor)
+            self.ui.thur.setCursor(Qt.PointingHandCursor)
 	#中间
             self.ui.thun.setFocusPolicy(Qt.NoFocus)
             self.ui.thun.resize(600, 200)
             self.ui.thun.move(130, 10)
             self.ui.thun.setStyleSheet("QPushButton{background:none;border:none;}")
             self.ui.thun.clicked.connect(self.slot_click_ad)
-	    self.ui.thun.setCursor(Qt.PointingHandCursor)
+            self.ui.thun.setCursor(Qt.PointingHandCursor)
 
 	    #self.ui.buright.setFocusPolicy(Qt.NoFocus)
 	    #self.ui.buright.clicked.connect(self.slot_ad_show)
@@ -1604,15 +1612,15 @@ class SoftwareCenter(QMainWindow):
             self.ui.label_12.resize(600,200)
             self.ui.label_12.move(130, 10)
 
-	    self.ui.label_11.setFocusPolicy(Qt.NoFocus)
-	    image.load("data/ads/ad0.png")
-	    self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
-	    self.ui.label_11.resize(600*0.8,200*0.8)
-	    self.ui.label_11.move(0,(220-(200*0.8))*0.5)
+            self.ui.label_11.setFocusPolicy(Qt.NoFocus)
+            image.load("data/ads/ad0.png")
+            self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_11.resize(600*0.8,200*0.8)
+            self.ui.label_11.move(0,(220-(200*0.8))*0.5)
   
             self.ui.label_13.setFocusPolicy(Qt.NoFocus)
             image.load("data/ads/ad2.png") 
-	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
             self.ui.label_13.resize(600*0.8,200*0.8)
             self.ui.label_13.move(860-(600*0.8), (220-(200*0.8))*0.5)
 
@@ -1622,50 +1630,50 @@ class SoftwareCenter(QMainWindow):
             self.ui.label_14.resize(600*0.8*0.8,200*0.8*0.8)
             self.ui.label_14.move(238,46)
 	
-	    self.adtimer = QTimer(self)
-	    self.adtimer.timeout.connect(self.slot_change_r_ad)
-	    self.adtimer.start(2000)
+            self.adtimer = QTimer(self)
+            self.adtimer.timeout.connect(self.slot_change_r_ad)
+            self.adtimer.start(2000)
 
         self.ads_ready = True
         self.check_init_ready(bysignal)
 
     def slot_btn_set(self):
-	self.ui.thun.move(130 + self.adm, 10)
-	self.ui.thur.move(730 + self.adm, 30)
-	self.ui.thu.move(0 + self.adm, 30)
-	self.ui.bt1.setGeometry(335 + self.adm, 180, 10, 10)
-	self.ui.bt2.setGeometry(355 + self.adm, 180, 10, 10)
-	self.ui.bt3.setGeometry(375 + self.adm, 180, 10, 10)
-	self.ui.bt4.setGeometry(395 + self.adm, 180, 10, 10)
-	self.ui.bt5.setGeometry(415 + self.adm, 180, 10, 10)
- 	self.ui.bt1.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	self.ui.bt2.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	self.ui.bt3.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	self.ui.bt4.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	self.ui.bt5.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")	
-	if self.adi == 1:
-	    self.ui.bt1.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")	
-	elif self.adi == 2:
-	    self.ui.bt2.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	elif self.adi == 3:
-	    self.ui.bt3.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	elif self.adi == 4:
-	    self.ui.bt4.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-	elif self.adi == 5:
-	    self.ui.bt5.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        self.ui.thun.move(130 + self.adm, 10)
+        self.ui.thur.move(730 + self.adm, 30)
+        self.ui.thu.move(0 + self.adm, 30)
+        self.ui.bt1.setGeometry(335 + self.adm, 180, 10, 10)
+        self.ui.bt2.setGeometry(355 + self.adm, 180, 10, 10)
+        self.ui.bt3.setGeometry(375 + self.adm, 180, 10, 10)
+        self.ui.bt4.setGeometry(395 + self.adm, 180, 10, 10)
+        self.ui.bt5.setGeometry(415 + self.adm, 180, 10, 10)
+        self.ui.bt1.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        self.ui.bt2.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        self.ui.bt3.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        self.ui.bt4.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        self.ui.bt5.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")	
+        if self.adi == 1:
+            self.ui.bt1.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")	
+        elif self.adi == 2:
+            self.ui.bt2.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        elif self.adi == 3:
+            self.ui.bt3.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        elif self.adi == 4:
+            self.ui.bt4.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+        elif self.adi == 5:
+            self.ui.bt5.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
 
     def slot_change_r_ad_before(self):
-	self.adtimer.stop()
-	self.slot_change_r_ad()
-	self.adtimer.start(2000)
+        self.adtimer.stop()
+        self.slot_change_r_ad()
+        self.adtimer.start(2000)
 
     def slot_change_l_ad_before(self):
         self.adtimer.stop()
-	self.slot_change_l_ad()
+        self.slot_change_l_ad()
         self.adtimer.start(2000)
 
     def slot_change_r_ad(self):
-	self.adm =(self.ui.homepageWidget.width() -880)*0.5
+        self.adm =(self.ui.homepageWidget.width() -880)*0.5
         self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
         self.ui.thu.move(0 + self.adm, 30)
         self.ui.thur.move(730 + self.adm, 30)
@@ -1675,31 +1683,31 @@ class SoftwareCenter(QMainWindow):
         self.r3 = QRect(130 + self.adm,10,600,200)
         self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
         self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
-	self.bdm =self.adi
+        self.bdm =self.adi
 	#print "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",self.adi
 	#print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",self.ui.homepageWidget.width(),self.adlist[self.adi].pic
-	image = QtGui.QImage()
-	image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
-	self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-	if self.adi == 5:
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)	   
-	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
-	    self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))	    
-	else:
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic) 
-	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-	    if self.adi == 4:
-		image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-		self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
-	    else:
-		image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
-		self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
-	if self.adi == 1:
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[5].pic)		
-	else:
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi - 1].pic)
-	self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+        image = QtGui.QImage()
+        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
+        self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+        if self.adi == 5:
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)	   
+            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+            self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))	    
+        else:
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic) 
+            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            if self.adi == 4:
+                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+                self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+            else:
+                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
+                self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+        if self.adi == 1:
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[5].pic)		
+        else:
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi - 1].pic)
+        self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
 
 	#self.slot_btn_set()
 	#adlist
@@ -1709,8 +1717,8 @@ class SoftwareCenter(QMainWindow):
         self.animation2.setEndValue(self.r3)
 
 
-	self.animation = QPropertyAnimation(self.ui.label_13, "geometry")
-	self.animation.setDuration(700)
+        self.animation = QPropertyAnimation(self.ui.label_13, "geometry")
+        self.animation.setDuration(700)
         self.animation.setStartValue(self.r3)
         self.animation.setEndValue(self.r2)
 
@@ -1725,14 +1733,14 @@ class SoftwareCenter(QMainWindow):
         self.animation3.setEndValue(self.r1)
 
 
-	self.animation.start()
-	self.animation1.start()
+        self.animation.start()
+        self.animation1.start()
         self.animation3.start()
         self.animation2.start()
-	if self.adi == 1:
-	    self.adi = 5
-	else:
-	    self.adi -=1
+        if self.adi == 1:
+            self.adi = 5
+        else:
+            self.adi -=1
 
     def slot_change_l_ad(self):
         self.adm =(self.ui.homepageWidget.width() -880)*0.5
@@ -1746,34 +1754,34 @@ class SoftwareCenter(QMainWindow):
         self.r3 = QRect(130 + self.adm,10,600,200)
         self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
         self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
-	self.bdm =self.adi
-	image = QtGui.QImage()
-	image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
-	self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+        self.bdm =self.adi
+        image = QtGui.QImage()
+        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
+        self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
         if self.adi == 5:
             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-	    self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
-	    self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-	    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[3].pic)
-	    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+            self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[3].pic)
+            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
         else:
             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic)
-	    self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
-	    if self.adi == 4:
-	        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-	        self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-		image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
-		self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-	    else:
-	        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
-	        self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-		if self.adi == 3:
-		    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-		    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-	        else:
-		    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 3].pic)	
-		    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+            if self.adi == 4:
+                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+                self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+                self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+            else:
+                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
+                self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+                if self.adi == 3:
+                    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+                    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+                else:
+                    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 3].pic)	
+                    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
 	#self.slot_btn_set()
         self.animation2 = QPropertyAnimation(self.ui.label_12, "geometry")
         self.animation2.setDuration(700)
@@ -1800,18 +1808,18 @@ class SoftwareCenter(QMainWindow):
         self.animation1.start()
         self.animation3.start()
         self.animation2.start()
-	if self.adi == 5:
-	    self.adi = 1
-	else:
-	    self.adi +=1
+        if self.adi == 5:
+            self.adi = 1
+        else:
+            self.adi +=1
 
     def slot_lock_ads(self,flag):
-	self.lockads = flag
+        self.lockads = flag
 
 
     def slot_recommend_apps_ready(self, applist, bysignal):
         
-	LOG.debug("receive recommend apps ready, count is %d", len(applist))
+        LOG.debug("receive recommend apps ready, count is %d", len(applist))
         self.recommendListWidget.clear()
         for app in applist:
             if app is None or app.package is None:
@@ -1850,7 +1858,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print "receive ratings and reviews ready, count is:",len(rnrlist)
+        print ("receive ratings and reviews ready, count is:",len(rnrlist))
         self.rnr_ready = True
 
     def slot_app_reviews_ready(self,reviewlist):
@@ -1883,7 +1891,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_clear_all_task_list(self):
         count = self.ui.taskListWidget_complete.count()
-        print "del_task_item:",count
+        print ("del_task_item:",count)
 
         truecount = 0
         top = 0 #Add by zhangxin
@@ -1893,7 +1901,7 @@ class SoftwareCenter(QMainWindow):
                 break
             item = self.ui.taskListWidget_complete.item(top)
             taskitem = self.ui.taskListWidget_complete.itemWidget(item)
-            print "del_task_item: found an item",truecount,taskitem.app.name
+            print ("del_task_item: found an item",truecount,taskitem.app.name)
             delitem = self.ui.taskListWidget_complete.takeItem(top)
             self.ui.taskListWidget_complete.removeItemWidget(delitem)
             del delitem
@@ -1943,7 +1951,7 @@ class SoftwareCenter(QMainWindow):
         if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
             #self.appmgr.get_recommend_apps(bysignal)
             self.appmgr.get_ratingrank_apps(bysignal)
-	    self.slot_rec_show_recommend()
+            self.slot_rec_show_recommend()
         else:
             self.show_homepage(bysignal)
     def show_homepage(self, bysignal):
@@ -2019,7 +2027,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnAll.setEnabled(False)
 
     def slot_goto_uppage(self, bysignal=False):
-	self.ui.btnClosesearch.setVisible(False)
+        self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
         elif Globals.NOWPAGE != PageStates.UPPAGE:
@@ -2103,9 +2111,9 @@ class SoftwareCenter(QMainWindow):
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
             self.ui.btnClosesearch.setVisible(True)
-	self.re_cli = 1
+        self.re_cli = 1
         if Globals.NOWPAGE == 0 or Globals.NOWPAGE == 1 or Globals.NOWPAGE == 2 or Globals.NOWPAGE == 3 or Globals.NOWPAGE == 4 :
-	    self.re_page = Globals.NOWPAGE
+            self.re_page = Globals.NOWPAGE
         if Globals.NOWPAGE == PageStates.HOMEPAGE:
             Globals.NOWPAGE = PageStates.SEARCHHOMEPAGE
         elif Globals.NOWPAGE == PageStates.ALLPAGE:
@@ -2159,7 +2167,7 @@ class SoftwareCenter(QMainWindow):
 
 
     def slot_goto_winpage(self, bysignal=False):
-	self.ui.btnClosesearch.setVisible(False)
+        self.ui.btnClosesearch.setVisible(False)
         if bysignal is False:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
@@ -2375,7 +2383,7 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.slot_exit_uksc()
         except Exception as e:
-            print str(e)
+            print (str(e))
             self.slot_exit_uksc()
 
     def slot_exit_uksc(self):
@@ -2384,7 +2392,7 @@ class SoftwareCenter(QMainWindow):
             self.backend.clear_dbus_worklist()
             self.backend.exit_uksc_apt_daemon()
         except Exception as e:
-            print str(e)
+            print (str(e))
             
         self.dbusControler.stop()
         sys.exit(0)
@@ -2413,18 +2421,17 @@ class SoftwareCenter(QMainWindow):
 
     def slot_click_ad(self):
         #if(ad.type == "pkg"):
-	if self.adi == 5:
-	    num = 1
-	else:
-	    num = self.adi +1    
+        if self.adi == 5:
+            num = 1
+        else:
+            num = self.adi +1    
         app = self.appmgr.get_application_by_name(self.adlist[num].name)
         if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
         else:
-	    MS = QMessageBox
-	    MS.information(self,"提示","软件源不完整或不包含该软件",'确定','','',0, 0)
+            MS = QMessageBox
+            MS.information(self,"提示","软件源不完整或不包含该软件",'确定','','',0, 0)
 	    
-	    #print "sssssssssssssssssssssssssssssssss"
             #webbrowser.open_new_tab(self.adlist[self.adi].urlorpkgid)
 
     def slot_click_rank_item(self, item):
@@ -2437,7 +2444,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
-	self.ui.btnClosesearch.setVisible(False)
+        self.ui.btnClosesearch.setVisible(False)
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
         self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
@@ -2558,12 +2565,12 @@ class SoftwareCenter(QMainWindow):
 
     def slot_remove_task(self, tasknumber, app):
         count = self.ui.taskListWidget_complete.count()
-        print "del_task_item:",count
+        print ("del_task_item:",count)
         for i in range(count):
             item = self.ui.taskListWidget_complete.item(i)
             taskitem = self.ui.taskListWidget_complete.itemWidget(item)
             if taskitem.tasknumber == tasknumber:
-                print "del_task_item: found an item",i,app.name
+                print ("del_task_item: found an item",i,app.name)
                 delitem = self.ui.taskListWidget_complete.takeItem(i)
                 self.ui.taskListWidget_complete.removeItemWidget(delitem)
                 del delitem
@@ -2573,16 +2580,21 @@ class SoftwareCenter(QMainWindow):
     def slot_searchDTimer_timeout(self, bysignal=False):
         self.searchDTimer.stop()
         if self.ui.headercw1.leSearch.text():
-            s = self.ui.headercw1.leSearch.text().toUtf8()
+#py3 search
+            #print ("ccccccccc",type(self.ui.headercw1.leSearch.text()),self.ui.headercw1.leSearch.text())
+            #s = self.ui.headercw1.leSearch.text().toUtf8()
+            s = self.ui.headercw1.leSearch.text()
             if len(s) < 2:
                 return
 
             reslist = self.searchDB.search_software(s)
 
             LOG.debug("search result:%d",len(reslist))
+            #self.searchList = reslist
             self.searchList = reslist
             count = 0
             for appname in self.searchList:
+                appname = str(appname)
                 app = self.appmgr.get_application_by_name(appname)
                 if app is None or app.package is None:
                     continue
@@ -2600,7 +2612,7 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
-        print "########### ", msg," ",name," ",action," ",percent
+        print ("########### ", msg," ",name," ",action," ",percent)
         # if "安装本地包失败!" == msg:
         #     self.messageBox.alert_msg("安装本地包失败!")
         if action == AppActions.INSTALLDEBFILE and ".deb" == name[-4:]:
@@ -2850,8 +2862,7 @@ class SoftwareCenter(QMainWindow):
         user = result["username"]
         display_name = result["displayname"]
         preferred_email = result["preferred_email"]
-	print "wwwwwwwwwwwwwww",user,display_name,preferred_email
-        print 'Login success, username: %s' % display_name
+        print ('Login success, username: %s' % display_name)
 
         self.userload.stop_loading()
         self.ui.beforeLoginWidget.hide()
@@ -2917,7 +2928,7 @@ def check_local_deb_file(url):
     return os.path.isfile(url)
 
 def quit(signum, frame):
-    print 'You choose to stop software-center.'
+    print ('You choose to stop software-center.')
     sys.exit()
 def windows():
     window = QMainWindow()

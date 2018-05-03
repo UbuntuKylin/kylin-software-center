@@ -6,6 +6,7 @@ dh_prep
 dh_auto_install
 dh_installdocs
 dh_installchangelogs
+dh_installman
 dh_perl
 dh_link
 dh_strip_nondeterminism

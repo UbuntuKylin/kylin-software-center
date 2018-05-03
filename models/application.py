@@ -43,16 +43,34 @@ class Application:
         self.pkgname = pkgname
         self.displayname_cn = displayname_cn
         self.category_name = category_name
+        #print ("lllllllllllllllllllll",pkgname,type(pkgname))
+        if not isinstance(pkgname,str):
+            try:
+                pkgname = str(pkgname, encoding='utf-8')
+            except:
+                pass
         if not apt_cache:
             self.package = None
         else:
             try:
+                #pkgname = pkgname.decode('utf-8')
+                #print ("lllllllllllllllllllll",pkgname,type(pkgname))
+                #pkgname = str(pkgname, encoding='utf-8')
+                #print ("nnnnnnnnnnnnnnnnnnnnnnn",pkgname,type(pkgname))
                 self.package = apt_cache[pkgname]
+                self.summary_init = self.package.candidate.summary
+                self.description_init = self.package.candidate.description
             except:
                 self.package = None
+        #print ("mmmmmmmmmmmmmmmmmmmmmmmm",type(self.package),self.package)
+        #print ("ttttttttttttttttttttttttttt",self.package,apt_cache)
         self.cache = apt_cache
         self.thumbnail_url = None
         self.screenshot_url = None
+        #print ("fffffffffffffffffffff",type(pkgname))
+        if isinstance(pkgname,bytes): 
+            pkgname = str(pkgname, encoding = "utf8") 
+        #pkgname = bytes.decode(pkgname)
         self.thumbnailfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
         self.screenshotfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
         self.iconfile = UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
@@ -69,7 +87,12 @@ class Application:
         self.ratingrank = 32767
         self.pointoutrank = 32767
         self.recommendrank = 32767
-
+#
+        #try:
+        #self.summary_init = self.package.candidate.summary
+        #    self.description_init = self.package.candidate.description
+        #except:
+        #    pass
         self.install_date = ''  # the date first install this app, get from server
 
         self.status = PkgStates.NOTHING
@@ -83,7 +106,7 @@ class Application:
 
     @property
     def name(self):
-        return self.pkgname
+        return str(self.pkgname)
 
     @property
     def thumbnail(self):
@@ -92,7 +115,7 @@ class Application:
             'version': self.version or 0,
         }
 
-        return self.thumbnail_url
+        return str(self.thumbnail_url)
 
     @property
     def screenshot(self):
@@ -101,16 +124,24 @@ class Application:
             'version': self.version or 0,
         }
 
-        return self.screenshot_url
+        return str(self.screenshot_url)
 
     @property
     def description(self):
-        return self.package.candidate.description
-
+        #return self.package.candidate.description
+        return str(self.description_init)
+    @description.setter
+    def description(self,description_set):
+        #self.package.candidate.description = description_set
+        self.description_init = description_set
     @property
     def summary(self):
-       return self.package.candidate.summary
-
+        #return self.package.candidate.summary
+        return str(self.summary_init)
+    @summary.setter
+    def summary(self,summary):
+        #self.package.candidate.summary = summary
+        self.summary_init = summary
     @property
     def packageSize(self):
         try:
@@ -128,7 +159,7 @@ class Application:
     @property
     def version(self):
         try:
-            return self.package.candidate.version
+            return str(self.package.candidate.version)
         except:
             return " "
 
@@ -153,14 +184,14 @@ class Application:
     @property
     def installed_version(self):
         if(self.package.installed is not None):
-            return self.package.installed.version
+            return str(self.package.installed.version)
         else:
             return " "
 
     @property
     def candidate_version(self):
         try:
-            return self.package.candidate.version
+            return str(self.package.candidate.version)
         except:
             return " "
 
@@ -194,14 +225,17 @@ class Application:
 
     #get the reviews object list of this application
     def get_reviews(self,page):
-        if self.reviews.has_key(page):
+        #if self.reviews.has_key(page):
+        #python3
+        if page in self.reviews:
             return self.reviews[page]
         else:
             return None
 
 
     def add_reviews(self,page,reviewlist):
-        if not self.reviews.has_key(page):
+        #if not self.reviews.has_key(page):
+        if not page in self.reviews:
             self.reviews[page] = reviewlist
 
     def update_cache(self, apt_cache):
@@ -220,24 +254,24 @@ class Application:
 if __name__ == "__main__":
 
     app = Application("gimp",None)
-    print app.name
+    print (app.name)
 #    print Application.get_screenshot_list_sync("gimp")
 
 
     cache = apt.Cache()
     cache.open()
-    print len(cache)
+    print (len(cache))
 #   print cache
     for item in cache:
-        print "\n************************"
-        print "fullname:"+item.fullname
+        print ("\n************************")
+        print ("fullname:"+item.fullname)
 #        print "section:" +item.section
         if not item.candidate:
             continue
-        print item.candidate.section
+        print (item.candidate.section)
         if "Icon" in item.candidate.record:
-            print "fullname:"+item.fullname
-            print item.candidate.record
+            print ("fullname:"+item.fullname)
+            print (item.candidate.record)
 #        print item.candidate.uri
      
 

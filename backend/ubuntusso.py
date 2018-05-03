@@ -52,7 +52,7 @@ from models.enums import (
     SOFTWARE_CENTER_SSO_DESCRIPTION,
 )
 
-from utils import clear_token_from_ubuntu_sso_sync
+from backend.utils import clear_token_from_ubuntu_sso_sync
 
 LOG = logging.getLogger(__name__)
 
@@ -250,11 +250,11 @@ def get_ubuntu_sso_backend(): #get_ubuntu_sso_backend(xid):
 
 # test code
 def _login_success(lp, token):
-    print "success", lp, token
+    print ("success", lp, token)
 
 
 def _login_failed(lp):
-    print "fail", lp
+    print ("fail", lp)
 
 
 def _login_need_user_and_password(sso):
@@ -271,15 +271,15 @@ def _login_need_user_and_password(sso):
 # interactive test code
 if __name__ == "__main__":
     def _whoami(sso, result):
-        print "res: ", result
+        print ("res: ", result)
         Gtk.main_quit()
 
     def _error(sso, result):
-        print "err: ", result
+        print ("err: ", result)
         Gtk.main_quit()
 
     def _dbus_maybe_login_successful(ssologin, oauth_result):
-        print "got token, verify it now"
+        print ("got token, verify it now")
         sso = UbuntuSSO()
         sso.connect("whoami", _whoami)
         sso.connect("error", _error)

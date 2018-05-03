@@ -153,7 +153,7 @@ class Ui_DetailWidget(object):
         self.pushButton_5.setObjectName(_fromUtf8("pushButton_5"))
 
 
-	self.splitText2 = QtGui.QLabel(DetailWidget)
+        self.splitText2 = QtGui.QLabel(DetailWidget)
         self.splitText2.setGeometry(QtCore.QRect(25, 490, 66, 17))
         self.splitText2.setObjectName(_fromUtf8("splitText2"))
         self.btnUpdate = QtGui.QPushButton(DetailWidget)

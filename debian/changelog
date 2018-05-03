@@ -1,4 +1,10 @@
-ubuntu-kylin-software-center (1.4kord1) artful; urgency=medium
+ubuntu-kylin-software-center (1.4.2) bionic; urgency=medium
+
+  * python2 to python3 
+
+ -- wukaige <wukaige@kylinos.cn>  Thu, 03 May 2018 16:12:50 +0800
+
+ubuntu-kylin-software-center (1.4.1) bionic; urgency=medium
 
   * fix up: max advertising button,update uksc,add icons,screenshop
 
@@ -6,8 +12,7 @@ ubuntu-kylin-software-center (1.4kord1) artful; urgency=medium
 
 ubuntu-kylin-software-center (1.4) artful; urgency=medium
 
-  * update  advertising interface 
-  * update win interface
+  * update  UI interface 
   * fix up: install local software goto home interface
   * update uksc and add screenshots and icons 
   * adjustment screenshot display 

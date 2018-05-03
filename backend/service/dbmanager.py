@@ -56,7 +56,7 @@ class Database:
         # no cache file, copy
         if not os.path.exists(destFile):
             if not os.path.exists(srcFile):
-                print "error with db file"
+                print ("error with db file")
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
@@ -79,16 +79,16 @@ class Database:
         # no cache file, copy
         if not os.path.exists(xapian_destFile):
             if not os.path.exists(xapian_srcFile):
-                print "No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it"
+                print ("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
                 return
             copytree(xapian_srcFile,xapian_destFile)
-            print "Xapiandb has been copy to cache"
+            print ("Xapiandb has been copy to cache")
 
         # cache xapiandb need update, copy
         if self.is_xapiancachedb_need_update():
             rmtree(xapian_destFile)
             copytree(xapian_srcFile,xapian_destFile)
-            print "cache xapiandb versin updated"
+            print ("cache xapiandb versin updated")
 
 
     def query_categories(self):
@@ -115,9 +115,11 @@ class Database:
             cstring = i[1]
             cs = cstring.split(',')
             for c in cs:
+                #python3不再需要
                 #将unicode中的非数字的部分去掉,数据库被不正确修改后的错误
-                if c.isdigit():
-                    c = filter(str.isdigit, c.encode("utf-8"))
+                #if c.isdigit():
+                #    c = filter(str.isdigit, c.encode("utf-8"))
+                #c = str(c, encoding = "utf8")  
                 if(int(cateid) == int(c)):
                     al += str(aid)
                     al += ','
@@ -128,13 +130,19 @@ class Database:
         self.cursor.execute(sql % al)
         res = self.cursor.fetchall()
 
-        # for a in res:
-        #     print a[0],"    ",a[1]
+        #for a in res:
+        #    print (a[0],"    ",a[1])
 
         return res
 
     #return as (display_name, summary, description, rating_average,rating_total,review_total,download_total)
     def query_application(self,pkgname):
+        if not isinstance(pkgname,str):
+            try:
+                pkgname = str(pkgname, encoding='utf-8')
+            except:
+                pass
+
         self.cursor.execute(QUERY_APP % (pkgname))
         res = self.cursor.fetchall()
 #        print "query_application:",pkgname,len(res),res
@@ -154,7 +162,7 @@ class Database:
             return res
 
     def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
-        print "update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total
+        print ("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total)
         self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
         self.connect.commit()
         #res = self.cursor.fetchall()
@@ -224,7 +232,7 @@ class Database:
                     for old_item in old_matches:
                         old_doc = old_item.document
                         old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
-            print "old xapiandb  version:",old_version," new xapiandb version:",new_version
+            print ("old xapiandb  version:",old_version," new xapiandb version:",new_version)
         except:
             return True
         else:
@@ -238,8 +246,15 @@ class Database:
         self.cursor.execute("select review_total from application where app_name=?", (package_name,))
         res = self.cursor.fetchall()
         for item in res:
-            review_total = item[0]
-            return review_total / 10 + 1
+            print ("nnnnnnnnnnnnnnn",item[0],type(item[0]))
+            #review_total = str(item[0])
+            #return int(review_total) / 10 + 1
+            try:
+                print ("ffffffffffffffff",item[0] // 10 + 1)
+                return item[0] // 10 + 1
+            except:
+                print ("eeeeeeeeeeeeeeeeeee")
+                return 0
 
     def get_review_by_pkgname(self, package_name, page):
         # get application id
@@ -419,12 +434,13 @@ class Database:
         recommends.append(("skypeforlinux","6"))
         recommends.append(("lovewallpaper","3"))
         recommends.append(("franz","3"))
-        recommends.append(("youdao-dict","3"))
-	recommends.append(("foxitreader","8"))
+        #youdao-dict only in 1604
+        #recommends.append(("youdao-dict","3"))
+        recommends.append(("foxitreader","8"))
         recommends.append(("ppsspp","3"))
         recommends.append(("virtualbox","6"))
         recommends.append(("thunderbird","7"))
-	recommends.append(("openshot","12"))
+        recommends.append(("openshot","12"))
         recommends.append(("firefox","11"))
         recommends.append(("wireshark","9"))
         recommends.append(("librecad","12"))
@@ -433,7 +449,7 @@ class Database:
         recommends.append(("uget","5"))
         recommends.append(("calibre","10"))
         recommends.append(("gimp","3"))
-	recommends.append(("gtk-recordmydesktop","3"))
+        recommends.append(("gtk-recordmydesktop","3"))
         recommends.append(("transgui","3"))
         recommends.append(("pluma","3"))
         recommends.append(("gnome-calculator","3"))
@@ -470,7 +486,7 @@ class Database:
         recommends.append(("openrocket","5"))
         recommends.append(("gnome-mahjongg","12"))
         recommends.append(("funnyboat","12"))
-	recommends.append(("kylin-video","12"))
+        recommends.append(("kylin-video","12"))
 # youker-assistant gimp sogoupinyin virtualbox wine playonlinux freecad
         return recommends
 
@@ -496,7 +512,7 @@ class Database:
         recommends.append(("midori","14"))
         recommends.append(("notepadqq","8"))
         recommends.append(("gnome-disk-utility","14"))
-	recommends.append(("shotcut","14"))
+        recommends.append(("shotcut","14"))
         recommends.append(("gparted","14"))
         return recommends
 
@@ -522,9 +538,9 @@ class Database:
         recommends.append(("ubuntu-restricted-extras","3"))
         recommends.append(("stardict","3"))
         recommends.append(("vim","14"))
-	recommends.append(("kylin-video","12"))
-	recommends.append(("gnome-screenshot","12"))
-	recommends.append(("empire","12"))
+        recommends.append(("kylin-video","12"))
+        recommends.append(("gnome-screenshot","12"))
+        recommends.append(("empire","12"))
         return recommends
 
 
@@ -570,7 +586,7 @@ if __name__ == "__main__":
     db = Database()
 
     # print db.get_pagecount_by_pkgname('gimp')
-    print db.is_cachedb_need_update()
+    print (db.is_cachedb_need_update())
 
     # res = db.get_review_by_pkgname('gedit',2)
     # for item in res:
