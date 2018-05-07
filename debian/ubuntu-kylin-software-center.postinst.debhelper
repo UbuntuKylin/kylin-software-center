@@ -1,7 +1,7 @@
 
-# Automatically added by dh_python2:
-if which pycompile >/dev/null 2>&1; then
-	pycompile -p ubuntu-kylin-software-center /usr/share/ubuntu-kylin-software-center -V 2.7-
+# Automatically added by dh_python3:
+if which py3compile >/dev/null 2>&1; then
+	py3compile -p ubuntu-kylin-software-center /usr/share/ubuntu-kylin-software-center
 fi
 
 # End automatically added section

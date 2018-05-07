@@ -1,0 +1,23 @@
+Package: ubuntu-kylin-software-center
+Version: 1.4.3
+Architecture: all
+Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
+Installed-Size: 89175
+Depends: python3, python3-pyqt4, python3-apt, python3-gi, ubuntu-kylin-sso-client-qt, python3-pil, python3-xdg, python3-xapian, python3-piston-mini-client, apt-xapian-index, ubuntukylin-keyring, python3:any (>= 3.3.2-2~)
+Recommends: language-pack-zh-hans
+Breaks: ubuntu-kylin-software-center-common
+Replaces: ubuntu-kylin-software-center-common
+Section: misc
+Priority: optional
+Homepage: https://launchpad.net/ubuntu-kylin-software-center
+Description: Software maintenance management tools
+ Ubuntu Kylin Software Center is a newly built software center client
+ for Ubuntu Kylin. The aim is to improve localization experience. The
+ applications and related data come from both Ubuntu and Ubuntu Kylin
+ repositories.
+ .
+ Features:
+  * Categorized and selected applications for users
+  * Newly designed user interface
+  * Work with Ubuntu software center and hold special packages from
+    Ubuntu Kylin archive

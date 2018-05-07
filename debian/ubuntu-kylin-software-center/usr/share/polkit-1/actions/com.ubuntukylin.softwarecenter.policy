@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<policyconfig>
+
+  <vendor>Ubuntu Kylin Software Center</vendor>
+  <vendor_url>http://ubuntukylin.com</vendor_url>
+  <icon_name>uksoftwarecenter</icon_name>
+
+  <action id="com.ubuntukylin.softwarecenter.action">
+    <_description>
+      authorization for package management
+    </_description>
+    <_message>
+      To install/uninstall/update/... the pakcages, you need to authenticate.
+    </_message>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+</policyconfig>

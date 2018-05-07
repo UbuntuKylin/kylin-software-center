@@ -1,0 +1,7 @@
+#! /bin/sh
+set -e
+
+if [ "$1" = rtupdate ]; then
+	py3clean -p ubuntu-kylin-software-center /usr/share/ubuntu-kylin-software-center
+	py3compile -p ubuntu-kylin-software-center  /usr/share/ubuntu-kylin-software-center
+fi
