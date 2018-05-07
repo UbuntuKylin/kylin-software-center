@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
 Build-Depends: debhelper (>= 9),
                dh-python,
-               python (>= 2.6.6-3~),
+               python3,
                python-distutils-extra
 Standards-Version: 4.0.0
 Homepage: https://launchpad.net/ubuntu-kylin-software-center
@@ -27,7 +27,7 @@ Depends:
          apt-xapian-index,
          ubuntukylin-keyring,
          ${misc:Depends},
-         ${python:Depends}
+         ${python3:Depends}
 Recommends: language-pack-zh-hans
 Breaks: ubuntu-kylin-software-center-common
 Replaces: ubuntu-kylin-software-center-common
