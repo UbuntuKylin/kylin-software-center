@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -22,7 +22,9 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import urllib 
+
+#from urllib.parse import quote_plus
+import urllib
 from urllib.parse import quote_plus
 from piston_mini_client import (
     PistonAPI,
@@ -38,10 +40,7 @@ from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
 import httplib2
 import sys
-import importlib
-importlib.reload(sys)
-#reload(sys)
-#sys.setdefaultencoding('utf8')
+
 
 
 class ReviewUK(PistonResponseObject):
@@ -90,7 +89,10 @@ class PistonRemoter(PistonAPI):
 
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
-        return self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
+        getreviews = self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
+        if (isinstance(getreviews,bytes)):
+            getreviews = getreviews.decode(encoding='utf-8')
+        return getreviews
 
     @returns_list_of(ReviewUK)
     def get_newest_review(self, app):
@@ -218,8 +220,8 @@ if __name__ == '__main__':
     authorizer = auth.OAuthAuthorizer(token["token"], token["token_secret"], token["consumer_key"], token["consumer_secret"])
     ss = PistonRemoterAuth(auth=authorizer)
     res = ss.submit_review('gimp', 'main', get_distro_info()[2], get_language(),'shine','shine')
-    print (res)
-    print (type(res))
+    print(res)
+    print(type(res))
     # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
     # res = s.get_all_rank_and_recommend()

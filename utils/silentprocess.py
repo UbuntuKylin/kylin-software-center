@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -26,7 +26,7 @@
 import xapian
 #********************************************************************#
 import sqlite3
-import urllib
+import urllib.request, urllib.error, urllib.parse
 import os
 import time
 from PyQt4.QtGui import *
@@ -40,6 +40,9 @@ from utils.debfile import DebFile
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
 # from models.http import HttpDownLoad
+
+import threading
+lock = threading.Lock()
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
 
@@ -69,7 +72,7 @@ class SilentProcess(multiprocessing.Process):
 
             item = self.squeue.get_nowait()
 
-            print ("silent process get one workitem : ", item.funcname)
+            print("silent process get one workitem : ", item.funcname)
 
             try: #if no network the process will be crashed
                 if item.funcname == "get_all_ratings":
@@ -89,8 +92,7 @@ class SilentProcess(multiprocessing.Process):
                 elif item.funcname == "update_xapiandb":
                     self.update_xapiandb(item.kwargs)
             except Exception as e:
-                #print ("silent process exception:", e.message)
-                print ("silent process exception:")
+                print("silent process exception:", e)
             # elif item.funcname == "download_images":
             #     self.download_images()
 
@@ -104,13 +106,18 @@ class SilentProcess(multiprocessing.Process):
                 rating_total = str(rating['rating_total'])
 
                 sql = "update application set rating_total=?,rating_avg=? where app_name=?"
-                self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+                    self.connect.commit()
+                finally:
+                    lock.release()
 
-            self.connect.commit()
+            #self.connect.commit()
 
-            print ("all ratings and rating_total update over : ",len(reslist))
+            print("all ratings and rating_total update over : ",len(reslist))
         else:
-            print ("Failed to get all ratings and rating_total")
+            print("Failed to get all ratings and rating_total")
 
     # submit pingback-main to server
     def submit_pingback_main(self):
@@ -150,23 +157,38 @@ class SilentProcess(multiprocessing.Process):
 
                 if(isexist == 1):   # id exist, update
                     sql = "update category set name=?,display_name=?,priority=? where id=?"
-                    self.cursor.execute(sql, (name,display_name,priority,cid))
+                    try:
+                        lock.acquire(True)
+                        self.cursor.execute(sql, (name,display_name,priority,cid))
+                        self.connect.commit()
+                    finally:
+                        lock.release()
                 else:               # id not exist, insert
                     sql = "insert into category(id,name,display_name,priority,visible) values(?,?,?,?,1)"
-                    self.cursor.execute(sql, (cid,name,display_name,priority))
+                    try:
+                        lock.acquire(True)
+                        self.cursor.execute(sql, (cid,name,display_name,priority))
+                        self.connect.commit()
+                    finally:
+                        lock.release()
 
             self.connect.commit()
 
-            print ("all categories update over : ",len(reslist))
+            print("all categories update over : ",len(reslist))
         else:
-            print ("Failed to all categories")
+            print("Failed to all categories")
 
     # get all rank and recommend data from server
     def get_all_rank_and_recommend(self):
         reslist = self.premoter.get_all_rank_and_recommend()
         if False != reslist:
             sql = "delete from rank"
-            self.cursor.execute(sql)
+            try:
+                lock.acquire(True)
+                self.cursor.execute(sql)
+                self.connect.commit()
+            finally:
+                lock.release()
 
             for rank in reslist:
                 rid = rank['id']
@@ -177,13 +199,17 @@ class SilentProcess(multiprocessing.Process):
                 rank_pointout = rank['rank_pointout']
 
                 sql = "insert into rank(id,aid_id,rank_rating,rank_download,rank_recommend,rank_pointout) values(?,?,?,?,?,?)"
-                self.cursor.execute(sql, (rid,aid,rank_rating,rank_download,rank_recommend,rank_pointout))
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute(sql, (rid,aid,rank_rating,rank_download,rank_recommend,rank_pointout))
+                    self.connect.commit()
+                finally:
+                    lock.release()
 
-            self.connect.commit()
 
-            print ("all rank and recommend update over : ",len(reslist))
+            print("all rank and recommend update over : ",len(reslist))
         else:
-            print ("Failed to all rank and recommend")
+            print("Failed to all rank and recommend")
 
     # get newer application info from server
     def get_newer_application_info(self):
@@ -195,18 +221,13 @@ class SilentProcess(multiprocessing.Process):
             last_update_date = item[0]
 
         reslist = self.premoter.get_newer_application_info(last_update_date)
-        try:
-            reslist = reslist.decode('utf-8')
-        except:
-            pass
         if False != reslist:
             size = len(reslist)
 
             if(size > 0):
                 # update application info to cache db
                 for app in reslist:
-                    #reslist = int(reslist, encoding = "utf8")
-                    #reslist = str(reslist)
+                    print("####wb1111",app['id'])
                     aid = app['id']
                     app_name = app['app_name']
                     display_name = app['display_name']
@@ -235,20 +256,35 @@ class SilentProcess(multiprocessing.Process):
 
                     if(isexist == 1):   # id exist, update
                         sql = "update application set app_name=?,display_name=?,display_name_cn=?,categories=?,summary=?,description=?,command=?,rating_avg=?,rating_total=?,review_total=?,download_total=? where id=?"
-                        self.cursor.execute(sql, (app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total,aid))
+                        try:
+                            lock.acquire(True)
+                            self.cursor.execute(sql, (app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total,aid))
+                            self.connect.commit()
+                        finally:
+                            lock.release()
                     else:               # id not exist, insert
                         sql = "insert into application(id,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total) values(?,?,?,?,?,?,?,?,?,?,?,?)"
-                        self.cursor.execute(sql, (aid,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total))
+                        try:
+                            lock.acquire(True)
+                            self.cursor.execute(sql, (aid,app_name,display_name,display_name_cn,categories,summary,description,command,rating_avg,rating_total,review_total,download_total))
+                            self.connect.commit()
+                        finally:
+                            lock.release()
 
                 # set application info last update date
                 updatetime = reslist[0]['modify_time']
-                self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
+                    self.connect.commit()
+                finally:
+                    lock.release()
 
-                self.connect.commit()
+                #self.connect.commit()
 
-                print ("all newer application info update over : ",len(reslist))
+                print("all newer application info update over : ",len(reslist))
         else:
-            print ("failed to get newer application info")
+            print("failed to get newer application info")
 
     # def download_images(self):
     #     requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
@@ -277,7 +313,6 @@ class SilentProcess(multiprocessing.Process):
                         icon_rul = UK_APP_ICON_URL % {
                             'pkgname': app_path,
                         }
-                        #urlFile = urllib2.urlopen(icon_rul)
                         urlFile = urllib.request.urlopen(icon_rul)
                         rawContent = urlFile.read()
                         if rawContent:
@@ -286,19 +321,21 @@ class SilentProcess(multiprocessing.Process):
                             localFile.close()
 
                     except urllib.error.HTTPError as e:
-                        print (e.code)
+                        print(e.code)
                     except urllib.error.URLError as e:
-                        print (str(e))
+                        print(str(e))
 
                 # set application info last update date
                 new_update_time = reslist[0]['modify_time']
-                self.cursor.execute("update dict set value=? where key=?", (new_update_time,'appicon_updatetime'))
-
-                self.connect.commit()
-
-                print ("all newer application icon update over : ",len(reslist))
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute("update dict set value=? where key=?", (new_update_time,'appicon_updatetime'))
+                    self.connect.commit()
+                finally:
+                    lock.release()
+                print("all newer application icon update over : ",len(reslist))
         else:
-            print ("Failed to get  newer application icon")
+            print("Failed to get  newer application icon")
         
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self, kwargs):
@@ -323,7 +360,7 @@ class SilentProcess(multiprocessing.Process):
                     the_latest_update_time = doc_for_xapiandb_version.get_value(2) #valueslot:2 xapiandb update time
                 else:
                     the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
-                    print ("Failed to get the latest update time from client xapiandb,use default time.localtime()")
+                    print("Failed to get the latest update time from client xapiandb,use default time.localtime()")
 
             reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
 
@@ -358,7 +395,7 @@ class SilentProcess(multiprocessing.Process):
                                     else:
                                         pass
                             except:
-                                print ("----No mmseg model---")
+                                print("----No mmseg model---")
 
                             database.replace_document(docid,doc)
                             xapiandb_update = "Yes"
@@ -387,11 +424,11 @@ class SilentProcess(multiprocessing.Process):
                         pass
                     database.add_document(doc)
                     add_num = add_num + 1
-                    print ("App:",doc.get_data(),"  ","terms:",)
+                    print("App:",doc.get_data(),"  ","terms:", end=' ')
                     for itr in doc.termlist():
-                        print (itr.term,)
+                        print(itr.term, end=' ')
                     xapiandb_update = "Yes"
-                    print ("  ")
+                    print("  ")
 
             try:
                 if xapiandb_update == "Yes":
@@ -399,10 +436,10 @@ class SilentProcess(multiprocessing.Process):
                     doc_for_xapiandb_version.add_value(2,now)
                     database.replace_document(docid_for_xapiandb_version, doc_for_xapiandb_version)
                     database.commit()
-                    print ("Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist)))
+                    print("Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist)))
             except:
-                print ("The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!")
-            print ("update uksc xapiandb over")
+                print("The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!")
+            print("update uksc xapiandb over")
 
         else:
             appinfo_query = xapian.Query(kwargs["pkgname"])
@@ -417,22 +454,22 @@ class SilentProcess(multiprocessing.Process):
             doc = xapian.Document()
             doc.set_data(kwargs["pkgname"])
             doc.add_term(kwargs["pkgname"], 10)
-            print ("debfile path:", kwargs["path"])
+            print("debfile path:", kwargs["path"])
 
             deb = DebFile(kwargs["path"])
             terms = kwargs["pkgname"]
             try:
                 terms = terms + " " + deb.description
             except:
-                print ("Failed to get app description")
+                print("Failed to get app description")
             indexer.set_document(doc)
             indexer.index_text(terms)
             database.add_document(doc)
             database.commit()
-            print ("update xapiandb over: ", kwargs["pkgname"], "terms:",)
+            print("update xapiandb over: ", kwargs["pkgname"], "terms:", end=' ')
             for itr in doc.termlist():
-                print (itr.term,)
-            print (" ")
+                print(itr.term, end=' ')
+            print(" ")
             
 class SilentWorkerItem:
 

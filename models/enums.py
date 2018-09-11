@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -84,7 +84,7 @@ class PkgStates:
     UNINSTALL,
     NORUN,
     NOTHING,
-    ) = range(23)
+    ) = list(range(23))
 
 class PageStates:
     (
@@ -102,7 +102,7 @@ class PageStates:
      SEARCHWINPAGE,
      SEARCHUAPAGE,
      SEARCHTRANSPAGE,
-     ) = range(14)
+     ) = list(range(14))
 
 # transaction types
 class TransactionTypes:
@@ -286,7 +286,7 @@ class ErrorCode:
         ERROR_PACKAGE_INSTALLED,
         ERROR_PACKAGE_NOT_INSTALLED,
 
-    ) = range(9)
+    ) = list(range(9))
 
 
 def UnicodeToAscii(src):
@@ -306,7 +306,7 @@ def CheckChineseWords(src):
     except Exception:
         return False
 
-    zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
+    zhPattern = re.compile('[\u4e00-\u9fa5]+')
     match = zhPattern.search(uniSrc)
     if match:
         return True
@@ -317,7 +317,7 @@ def CheckChineseWordsForUnicode(uniSrc):
     if uniSrc is None:
         return False
 
-    zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
+    zhPattern = re.compile('[\u4e00-\u9fa5]+')
     match = zhPattern.search(uniSrc)
     if match:
         return True

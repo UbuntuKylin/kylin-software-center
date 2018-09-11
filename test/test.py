@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import dbus
 import gobject
@@ -15,7 +15,7 @@ loop = gobject.MainLoop()
 
 def on_finished(trans, exit):
     loop.quit()
-    print (exit)
+    print(exit)
 
 @inline_callbacks
 def main():
@@ -30,8 +30,10 @@ def main():
         action = policykit1.PK_ACTION_INSTALL_PURCHASED_PACKAGES
         flags = policykit1.CHECK_AUTH_ALLOW_USER_INTERACTION
         yield policykit1.check_authorization_by_name(name, action, flags=flags)
+        print("111111")
         action = policykit1.PK_ACTION_INSTALL_FILE
         yield policykit1.check_authorization_by_name(name, action, flags=flags)
+        print("222222")
         # Setting up transactions
         trans_add = yield aptclient.add_repository(*repo)
         trans_inst = yield aptclient.install_packages(["gimp"])
@@ -42,7 +44,7 @@ def main():
         yield trans_inst.run_after(trans_add)
         yield trans_add.run()
     except Exception as error:
-        print (error)
+        print(error)
         loop.quit()
 
 if __name__ == "__main__":
@@ -77,9 +79,9 @@ if __name__ == "__main__":
 
     db = QFontDatabase()
     for fm in db.families():
-        print (fm)
+        print(fm)
 
     # for f in fm:
     #     print f
 
-    print (1/10)
+    print(1/10)

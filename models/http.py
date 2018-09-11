@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -46,10 +46,10 @@ def unzip_resource(package_file):
     subprocess.call(["unzip", package_file, "-d", unziped_dir])
     dest_dir = unziped_dir + "uk-win/"
     if not os.path.exists(dest_dir):
-        print("unzip '%s' to '%s' failed" % (package_file , unziped_dir))
+        print(("unzip '%s' to '%s' failed" % (package_file , unziped_dir)))
         return False
     else:
-        print ("unzip ok....")
+        print("unzip ok....")
         return True
 
 class HttpDownLoad(QObject):
@@ -61,11 +61,7 @@ class HttpDownLoad(QObject):
     def sendDownLoadRequest(self, url):
         info = QFileInfo(url.path())
         fileName = info.fileName()
-        #print ("llllllllllllll",len(fileName))
-        #print ("ccccccccccccccc",fileName.isEmpty())
-        #if fileName.isEmpty():
-            #print ("ccccccccccccccc")
-        if len(fileName) == 0:
+        if fileName == '':
             fileName = "/tmp/uk-win.zip"
         self.file = QFile(fileName)
         if not self.file.open(QIODevice.WriteOnly):

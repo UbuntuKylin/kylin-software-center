@@ -1,6 +1,7 @@
 """This module provides the RatingsAndReviewsAPI class for talking to the
 ratings and reviews API, plus a few helper classes.
 """
+
 import urllib
 from urllib.parse import quote_plus
 from piston_mini_client import (

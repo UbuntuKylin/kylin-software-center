@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -78,15 +78,15 @@ def main():
     sl = SourceList()
     l = sl.get_sources()
     one = l[4]
-    print (one.uri)
-    print (one.invalid)
-    print (one.disabled)
-    print (one.type)
-    print (one.dist)
-    print (one.comps)
-    print (one.comment)
-    print (one.line)
-    print (one.str())
+    print(one.uri)
+    print(one.invalid)
+    print(one.disabled)
+    print(one.type)
+    print(one.dist)
+    print(one.comps)
+    print(one.comment)
+    print(one.line)
+    print(one.str())
 
 if __name__ == "__main__":
     main()

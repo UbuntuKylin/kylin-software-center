@@ -73,7 +73,7 @@ class SortMethods:
      BY_SEARCH_RANKING,
      BY_CATALOGED_TIME,
      BY_TOP_RATED,
-    ) = range(5)
+    ) = list(range(5))
 
 
 class ReviewSortMethods:
@@ -125,7 +125,7 @@ class Review(object):
         """
         pkgname = other.package_name
         review = cls(pkgname)
-        for (attr, value) in other.__dict__.items():
+        for (attr, value) in list(other.__dict__.items()):
             if not attr.startswith("_"):
                 setattr(review, attr, value)
         return review

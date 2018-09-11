@@ -38,7 +38,7 @@ try:
     from urllib.parse import urlsplit
     urlsplit  # pyflakes
 except ImportError:
-    from urlparse import urlsplit
+    from urllib.parse import urlsplit
 
 # from enums import Icons, APP_INSTALL_PATH_DELIMITER
 # from paths import (
@@ -118,11 +118,11 @@ class TraceActiveObjectTypes(object):
             if not type(obj) in new_obj_types:
                 new_obj_types[type(obj)] = 0
             new_obj_types[type(obj)] += 1
-        print ("+++ new types after '%s':" % self.info)
+        print("+++ new types after '%s':" % self.info)
         #print new_obj_types
         for v in sorted(new_obj_types, key=new_obj_types.get):
-            print (v, new_obj_types[v])
-        print ("/+++\n")
+            print(v, new_obj_types[v])
+        print("/+++\n")
 
 
 class TraceMemoryUsage(object):
@@ -138,7 +138,7 @@ class TraceMemoryUsage(object):
     def __exit__(self, atype, value, stack):
         now_resident = self._get_mem_from_proc()["resident"] - self.resident
         now_data = self._get_mem_from_proc()["data"] - self.data
-        print ("++++ MEMORY DELTA for '%s': res: %s data: %s (%s %s)\n" % (
+        print("++++ MEMORY DELTA for '%s': res: %s data: %s (%s %s)\n" % (
             self.info,
             # assume page size of 4k here
             get_nice_size(now_resident * 4 * 1024),
@@ -160,9 +160,9 @@ def utf8(s):
     """
     if s is None:
         return None
-    if isinstance(s, unicode):
+    if isinstance(s, str):
         return s.encode("utf-8", "ignore")
-    return unicode(s, "utf8", "ignore").encode("utf8")
+    return str(s, "utf8", "ignore").encode("utf8")
 
 
 def log_traceback(info):
@@ -471,7 +471,7 @@ def is_unity_running():
 #     except Exception as e:
 #         LOG.warning(
 #             utf8("could not load icon '%s', displaying missing "
-#                  "icon instead: %s ") % (utf8(iconname), utf8(e.message)))
+#                  "icon instead: %s ") % (utf8(iconname), utf8(e)))
 #         icon = icons.load_icon(missingicon, iconsize, 0)
 #     return icon
 #
@@ -620,12 +620,12 @@ def get_nice_date_string(cur_t):
 
 
 def _get_from_desktop_file(desktop_file, key):
-    import ConfigParser
-    config = ConfigParser.ConfigParser()
+    import configparser
+    config = configparser.ConfigParser()
     config.read(desktop_file)
     try:
         return config.get("Desktop Entry", key)
-    except ConfigParser.NoOptionError:
+    except configparser.NoOptionError:
         return None
 
 
@@ -1041,5 +1041,5 @@ def get_parent_xid(widget):
 if __name__ == "__main__":
     s = decode_xml_char_reference('Search&#x2026;')
     print(s)
-    print(type(s))
-    print(unicode(s))
+    print((type(s)))
+    print((str(s)))

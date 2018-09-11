@@ -20,5 +20,6 @@
 #        fi
 #    fi
 #fi
+chmod 775 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/start_systemdbus.py
 
 #DEBHELPER#

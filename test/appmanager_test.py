@@ -26,7 +26,7 @@ if __name__ == "__main__":
     #初始化打开cache
     appManager = AppManager()
     appManager.open_cache()
-    print (appManager.name)
+    print(appManager.name)
     #加载软件分类
     appManager.load_categories()
-    print (appManager.cat_list)
+    print(appManager.cat_list)

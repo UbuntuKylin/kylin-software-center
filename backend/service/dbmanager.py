@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -25,6 +25,7 @@
 import xapian
 import sqlite3
 import os
+import re
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
 from backend.remote.piston_remoter import PistonRemoter
@@ -46,6 +47,9 @@ QUERY_NAME_CATEGORIES = "select id,app_name,categories,windows_app_name from xp 
 QUERY_APP_ACCORD_CATEGORIES = "select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
 UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
 
+import threading
+lock = threading.Lock()
+
 class Database:
 
     def __init__(self):
@@ -56,7 +60,7 @@ class Database:
         # no cache file, copy
         if not os.path.exists(destFile):
             if not os.path.exists(srcFile):
-                print ("error with db file")
+                print("error with db file")
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
@@ -79,16 +83,16 @@ class Database:
         # no cache file, copy
         if not os.path.exists(xapian_destFile):
             if not os.path.exists(xapian_srcFile):
-                print ("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
+                print("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
                 return
             copytree(xapian_srcFile,xapian_destFile)
-            print ("Xapiandb has been copy to cache")
+            print("Xapiandb has been copy to cache")
 
         # cache xapiandb need update, copy
         if self.is_xapiancachedb_need_update():
             rmtree(xapian_destFile)
             copytree(xapian_srcFile,xapian_destFile)
-            print ("cache xapiandb versin updated")
+            print("cache xapiandb versin updated")
 
 
     def query_categories(self):
@@ -101,6 +105,7 @@ class Database:
         al = ''
 
         sql = "select id from category where name='%s'"
+
         self.cursor.execute(sql % cate_name)
         res = self.cursor.fetchall()
         cateid = ''
@@ -115,11 +120,11 @@ class Database:
             cstring = i[1]
             cs = cstring.split(',')
             for c in cs:
-                #python3不再需要
                 #将unicode中的非数字的部分去掉,数据库被不正确修改后的错误
-                #if c.isdigit():
-                #    c = filter(str.isdigit, c.encode("utf-8"))
-                #c = str(c, encoding = "utf8")  
+                if c.isdigit():
+                    #c = list(filter(str.isdigit, c.encode("utf-8")))
+                    c = re.sub("\D","",c)
+                    c = c.encode("utf-8")
                 if(int(cateid) == int(c)):
                     al += str(aid)
                     al += ','
@@ -130,19 +135,13 @@ class Database:
         self.cursor.execute(sql % al)
         res = self.cursor.fetchall()
 
-        #for a in res:
-        #    print (a[0],"    ",a[1])
+        # for a in res:
+        #     print a[0],"    ",a[1]
 
         return res
 
     #return as (display_name, summary, description, rating_average,rating_total,review_total,download_total)
     def query_application(self,pkgname):
-        if not isinstance(pkgname,str):
-            try:
-                pkgname = str(pkgname, encoding='utf-8')
-            except:
-                pass
-
         self.cursor.execute(QUERY_APP % (pkgname))
         res = self.cursor.fetchall()
 #        print "query_application:",pkgname,len(res),res
@@ -162,9 +161,13 @@ class Database:
             return res
 
     def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
-        print ("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total)
-        self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
-        self.connect.commit()
+        print("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total)
+        try:
+            lock.acquire(True)
+            self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
+            self.connect.commit()
+        finally:
+            lock.release()
         #res = self.cursor.fetchall()
         #print "update_app_rnr:",len(res),res
         self.updatecount += 1
@@ -232,7 +235,7 @@ class Database:
                     for old_item in old_matches:
                         old_doc = old_item.document
                         old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
-            print ("old xapiandb  version:",old_version," new xapiandb version:",new_version)
+            print("old xapiandb  version:",old_version," new xapiandb version:",new_version)
         except:
             return True
         else:
@@ -246,15 +249,9 @@ class Database:
         self.cursor.execute("select review_total from application where app_name=?", (package_name,))
         res = self.cursor.fetchall()
         for item in res:
-            print ("nnnnnnnnnnnnnnn",item[0],type(item[0]))
-            #review_total = str(item[0])
-            #return int(review_total) / 10 + 1
-            try:
-                print ("ffffffffffffffff",item[0] // 10 + 1)
-                return item[0] // 10 + 1
-            except:
-                print ("eeeeeeeeeeeeeeeeeee")
-                return 0
+            review_total = item[0]
+            print("####wb44444",type(review_total),review_total)
+            return review_total / 10 + 1
 
     def get_review_by_pkgname(self, package_name, page):
         # get application id
@@ -285,12 +282,21 @@ class Database:
                         date = str(review.date)
                         date = date.replace('T',' ')
                         date = date.replace('Z','')
-
-                        self.cursor.execute("insert into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
+                        print("####wb222222",review_total,"111",content,"222")
+                        try:
+                            lock.acquire(True)
+                            self.cursor.execute("insert into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
+                            self.connect.commit()
+                        finally:
+                            lock.release()
 
                     if(review_total != ''):
-                        self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
-                    self.connect.commit()
+                        try:
+                            lock.acquire(True)
+                            self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
+                            self.connect.commit()
+                        finally:
+                            lock.release()
 
             # normal init, check and download newest reviews
             else:
@@ -321,10 +327,17 @@ class Database:
                             date = str(review.date)
                             date = date.replace('T',' ')
                             date = date.replace('Z','')
+                            print("####wb222223",review_total,"111",content,"222")
 
                             # download
                             if(rid != id):
-                                self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (rid,aid,content,user_display,date))
+                                try:
+                                    lock.acquire(True)
+                                    self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (rid,aid,content,user_display,date))
+                                    self.connect.commit()
+                                finally:
+                                    lock.release()
+
                             # end download
                             else:
                                 # stop 'while'
@@ -340,7 +353,12 @@ class Database:
                                 break
 
                         if(review_total != ''):
-                            self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
+                            try:
+                                lock.acquire(True)
+                                self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
+                                self.connect.commit()
+                            finally:
+                                lock.release()
 
                         startpage += 1
 
@@ -363,13 +381,23 @@ class Database:
                         date = str(review.date)
                         date = date.replace('T',' ')
                         date = date.replace('Z','')
+                        print("####wb222224",review_total,"111",content,"222")
 
                         # ignore the same review by id
-                        self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
+                        try:
+                            lock.acquire(True)
+                            self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
+                            self.connect.commit()
+                        finally:
+                            lock.release()
 
                     if(review_total != ''):
-                        self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
-                    self.connect.commit()
+                        try:
+                            lock.acquire(True)
+                            self.cursor.execute("update application set review_total=? where id=?", (review_total,aid))
+                            self.connect.commit()
+                        finally:
+                            lock.release()
 
 
         # all download check over, return reviews to show
@@ -388,6 +416,7 @@ class Database:
             review.up_total = item[6]
             review.down_total = item[7]
             reviews.append(review)
+            print("####wb333333",review.id,review.content)
 
         return reviews
 
@@ -404,8 +433,12 @@ class Database:
             value = 'True'
         else:
             value = 'False'
-        self.cursor.execute("update dict set value=? where key='pointout'", (value,))
-        self.connect.commit()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("update dict set value=? where key='pointout'", (value,))
+            self.connect.commit()
+        finally:
+            lock.release()
 
     def get_pointout_apps(self):
         self.cursor.execute("select app_name,rank_pointout from rank,application where rank_pointout!=0 and rank.aid_id=application.id order by rank_pointout")
@@ -434,8 +467,7 @@ class Database:
         recommends.append(("skypeforlinux","6"))
         recommends.append(("lovewallpaper","3"))
         recommends.append(("franz","3"))
-        #youdao-dict only in 1604
-        #recommends.append(("youdao-dict","3"))
+        recommends.append(("youdao-dict","3"))
         recommends.append(("foxitreader","8"))
         recommends.append(("ppsspp","3"))
         recommends.append(("virtualbox","6"))
@@ -545,8 +577,12 @@ class Database:
 
 
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
-        self.cursor.execute("update application set rating_avg=?,rating_total=? where app_name=?", (ratingavg, ratingtotal, app_name))
-        self.connect.commit()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("update application set rating_avg=?,rating_total=? where app_name=?", (ratingavg, ratingtotal, app_name))
+            self.connect.commit()
+        finally:
+            lock.release()
 
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):
@@ -568,8 +604,12 @@ class Database:
 
     #------------add by kobe for windows replace------------
     def update_exists_data(self, exists, id):
-        self.cursor.execute(UPDATE_EXISTS % (exists, id))
-        self.connect.commit()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(UPDATE_EXISTS % (exists, id))
+            self.connect.commit()
+        finally:
+            lock.release()
 
     def need_do_sourcelist_update(self):
         self.cursor.execute("select value from dict where key=?", ('sourcelist_need_update',))
@@ -579,14 +619,18 @@ class Database:
             return re
 
     def set_update_sourcelist_false(self):
-        self.cursor.execute("update dict set value=? where key='sourcelist_need_update'", ("False",))
-        self.connect.commit()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("update dict set value=? where key='sourcelist_need_update'", ("False",))
+            self.connect.commit()
+        finally:
+            lock.release()
 
 if __name__ == "__main__":
     db = Database()
 
     # print db.get_pagecount_by_pkgname('gimp')
-    print (db.is_cachedb_need_update())
+    print(db.is_cachedb_need_update())
 
     # res = db.get_review_by_pkgname('gedit',2)
     # for item in res:

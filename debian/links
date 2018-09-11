@@ -1,1 +1,1 @@
-/usr/share/ubuntu-kylin-software-center-daemon/start_systemdbus.py  /usr/bin/ubuntu-kylin-software-center-daemon
+/usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/start_systemdbus.py  /usr/bin/ubuntu-kylin-software-center-daemon

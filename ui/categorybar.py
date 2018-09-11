@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -64,13 +64,9 @@ class CategoryBar(QWidget):
         pass
 
     def init_categories(self, cdata):
-        cmp_rating = lambda x, y: \
-            cmp(x[1].index,y[1].index)
-        cat_list = sorted(cdata.items(),
-                        #cmp_rating,
-                        #python3 取消了 cmp 参数
-                        #reverse=False)
-                        reverse=True)
+        cat_list = sorted(iter(cdata.items()),
+                        key=lambda x: x[1].index,
+                        reverse=False)
 
         for item in cat_list:
             category = item[1]

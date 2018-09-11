@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # Copyright (C) 2011 Canonical
 #
 # Authors:
@@ -187,7 +187,7 @@ if __name__ == "__main__":
 
     # and output it
     try:
-        print (res)
+        print(res)
     except IOError:
         # this can happen if the parent gets killed, no need to trigger
         # apport for this

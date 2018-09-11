@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*
 
 ### BEGIN LICENSE
@@ -33,25 +33,22 @@ import pdb
 import time
 import logging
 
-#from string import join
 LOG = logging.getLogger("uksc")
 
 from piston_mini_client import APIError
 import httplib2
-import urllib
-from urllib import request,error
-from urllib.request import urlopen
 import pickle
 
+import urllib.request, urllib.error, urllib.parse
 import json
 
 from backend.ubuntu_sw import SCREENSHOT_JSON_URL
 from models.enums import UBUNTUKYLIN_RES_SCREENSHOT_PATH
 
-from backend.ubuntu_sw import SortMethods, ReviewSortMethods, Review
-from backend.ubuntu_sw import (REVIEWS_SERVER, REVIEWS_URL)
+from .ubuntu_sw import SortMethods, ReviewSortMethods, Review
+from .ubuntu_sw import (REVIEWS_SERVER, REVIEWS_URL)
 
-from backend.piston.rnrclient_pristine import RatingsAndReviewsAPI
+from .piston.rnrclient_pristine import RatingsAndReviewsAPI
 RatingsAndReviewsAPI.default_service_root = REVIEWS_SERVER
 #"http://reviews.ubuntu.com/reviews/api/1.0"
 
@@ -62,13 +59,12 @@ class RatingSortMethods:
     (INTEGRATE,
      SCORE_FIRST,
      FREQ_FIRST,
-     ) = range(3)
+     ) = list(range(3))
 
 
 from gi.repository import GObject
 import multiprocessing
-#import Queue
-from multiprocessing import Queue
+import queue
 import threading
 
 #a class to describe the total rating and review info
@@ -124,7 +120,7 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
         try:
             func_method(self.kwargs,self.queue)
         except Exception as e:
-            print ("SpawnProcess error: ",e.message)
+            print("SpawnProcess error: ",e)
 
         self.event.set()
 
@@ -196,33 +192,32 @@ class RatingsAndReviwsMethod:
 
             try:
                 if not os.path.exists(thumbnailfile):
-                    #urlFile = urllib2.urlopen(thumbnail)
-                    urlFile = urlopen(thumbnail)
+                    urlFile = urllib.request.urlopen(thumbnail)
                     rawContent = urlFile.read()
                     if rawContent:
                         localFile = open(thumbnailfile,"wb")
                         localFile.write(rawContent)
                         localFile.close()
                 else:
-                    print ("get_screenshots,exists:",thumbnailfile)
+                    print("get_screenshots,exists:",thumbnailfile)
 
                 screenshot_path_list.append(thumbnailfile)
                 queue.put_nowait(thumbnailfile)
                 if not os.path.exists(screenshotfile):
-                    urlFile = urlopen(screenshot)
+                    urlFile = urllib.request.urlopen(screenshot)
                     rawContent = urlFile.read()
                     if rawContent:
                         localFile = open(screenshotfile,"wb")
                         localFile.write(rawContent)
                         localFile.close()
                 else:
-                    print ("get_screenshots,exists:",screenshotfile)
+                    print("get_screenshots,exists:",screenshotfile)
                 screenshot_path_list.append(screenshotfile)
                 queue.put_nowait(screenshotfile)
             except urllib.error.HTTPError as e:
-                print (e.code)
+                print(e.code)
             except urllib.error.URLError as e:
-                print (str(e))
+                print(str(e))
 
             return screenshot_path_list
         else:
@@ -231,14 +226,14 @@ class RatingsAndReviwsMethod:
 
             rawContent = None
             try:
-                urlFile = urlopen(screenshotURL)
+                urlFile = urllib.request.urlopen(screenshotURL)
                 rawContent = urlFile.read()
                 if not rawContent:
                     return []
             except urllib.error.HTTPError as e:
-                print (e.code)
+                print(e.code)
             except urllib.error.URLError as e:
-                print (str(e))
+                print(str(e))
 
             if rawContent is None:
                 return []
@@ -246,7 +241,7 @@ class RatingsAndReviwsMethod:
             try:
                 jsonContent = json.loads(rawContent)
             except ValueError as e:
-                print ("can not decode: '%s' (%s)" % (rawContent, e))
+                print("can not decode: '%s' (%s)" % (rawContent, e))
                 jsonContent = None
                 return []
 
@@ -268,7 +263,7 @@ class RatingsAndReviwsMethod:
                     destfile = cachedir + pkgname + item['version'] + "_" + filename
 
                     if not os.path.exists(destfile):
-                        urlFile = urlopen(item['small_image_url'])
+                        urlFile = urllib.request.urlopen(item['small_image_url'])
                         rawContent = urlFile.read()
                         if not rawContent:
                             continue
@@ -280,9 +275,9 @@ class RatingsAndReviwsMethod:
                     queue.put_nowait(destfile)
 
             except urllib.error.HTTPError as e:
-                print (e.code)
+                print(e.code)
             except urllib.error.URLError as e:
-                print (str(e))
+                print(str(e))
 
         return screenshot_path_list
 
@@ -310,15 +305,15 @@ class RatingsAndReviwsMethod:
                 index += 1
                 try:
                     queue.put_nowait(rnrStat)
-                except Queue.Full:
-                    print ("queue put exception")
+                except queue.Full:
+                    print("queue put exception")
             LOG.debug("got the rating and review list count:%d",len(rnrArray))
 
             return rnrArray
 
         except Exception as e:
             LOG.error("exception when getting rating and review stat...")
-            print (e.args)
+            print(e.args)
             return {}
 
 

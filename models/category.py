@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -23,11 +23,11 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from urllib import request,error
+import urllib.request, urllib.error, urllib.parse
 import json
 import apt
 
-from models.application import Application
+from .application import Application
 
 #This class is the abstraction of a 
 class Category:
@@ -101,11 +101,11 @@ if __name__ == "__main__":
 
     cache = apt.Cache()
     cache.open()
-    print (len(cache))
+    print(len(cache))
 
     cat1 = Category("devel","开发工具","",[])
-    print (cat1.name)
-    print (cat1.apps)
+    print(cat1.name)
+    print(cat1.apps)
 
      
 

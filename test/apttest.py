@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 __author__ = 'Shine Huang'
 
@@ -22,7 +22,7 @@ class BackendApt(QObject):
     def __init__(self):
         QObject.__init__(self)
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
-        print (locale.getlocale())
+        print(locale.getlocale())
         self.ca = apt.Cache()
         self.ca.open()
 
@@ -62,8 +62,8 @@ class BackendApt(QObject):
         try:
             self.ca.commit(FetchProcess("deps","DEPS"), AptProcess("deps","DEPS"))
         except Exception as e:
-            print (e)
-            print ("install err")
+            print(e)
+            print("install err")
 
 
 class FetchProcess(apb.AcquireProgress):
@@ -81,7 +81,7 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print ("done  ",item,"   ",str(self.percent))
+        print("done  ",item,"   ",str(self.percent))
 
 
     def fail(self, item):
@@ -100,7 +100,7 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print ("fetch  ",item,"   ",str(self.percent))
+        print("fetch  ",item,"   ",str(self.percent))
 
     def ims_hit(self, item):
 #        print 'ims_hit'
@@ -120,7 +120,7 @@ class FetchProcess(apb.AcquireProgress):
                  "total_items":str(self.total_items),
                  "action":str(self.action),
                  }
-        print ("pulse  ",owner,"   ",str(self.percent))
+        print("pulse  ",owner,"   ",str(self.percent))
 
         #kwarg = "download_appname:"+ self.appname + ",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items)
 #        print "FetchProcess, pulse: ", str(self.percent)
@@ -143,7 +143,7 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print ("######start")
+        print("######start")
 
     def stop(self):
 #        print 'fetch progress stop ...'
@@ -151,7 +151,7 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(200),
                  "action":str(self.action),
                  }
-        print ("########stop:")
+        print("########stop:")
 
 
 class AptProcess(apb.InstallProgress):
@@ -179,7 +179,7 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print ("@@@@start")
+        print("@@@@start")
 
     def finish_update(self):
 #        print 'apt process finished', self.appname
@@ -187,11 +187,11 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(200),
                  "action":str(self.action),
                  }
-        print ("@@@@finish")
+        print("@@@@finish")
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg
-        print (str(int(percent)) + "%  status : " + status)
+        print(str(int(percent)) + "%  status : " + status)
 #        self.percent = percent
 #        if percent != self.percent:
 #            print "&&&&&&&&&&&&&&&&&&&:",self.percent
@@ -201,7 +201,7 @@ class AptProcess(apb.InstallProgress):
                  "status":str(status),
                  "action":str(self.action),
                  }
-        print ("status change   ",pkg,"   ",str(percent))
+        print("status change   ",pkg,"   ",str(percent))
 #        print "####status_change:", kwarg
 
 

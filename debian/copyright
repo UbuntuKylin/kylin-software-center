@@ -7,7 +7,7 @@ Files: *
 Copyright: 2013-2014, National University of Defense Technology(NUDT) & Kylin Ltd.
 License: GPL-3
 
-Files: backend/aptdaemon/dbus_service/*
+Files: ubuntu-kylin-software-center-daemon/*
 Copyright: Copyright (C) 2013-2014 National University of Defense Technology(NUDT) & Kylin Ltd.
 License: GPL-3
 

@@ -1,25 +1,42 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import os
 import sys
 import glob
-from distutils.core import setup
+from setuptools import setup
+import DistUtilsExtra.command.build_extra
+import DistUtilsExtra.command.build_i18n
+import DistUtilsExtra.command.clean_i18n
+
 #from DistUtilsExtra.command import build_extra
 #import build_i18n_ext as build_i18n
 
+cmdclass ={
+            "build" : DistUtilsExtra.command.build_extra.build_extra,
+            "build_i18n" :  DistUtilsExtra.command.build_i18n.build_i18n,
+            "clean": DistUtilsExtra.command.clean_i18n.clean_i18n,
+}
+
 setup(name="ubuntu-kylin-software-center",
-      version="1.3.10",
-      author="Ubuntu Kylin Team",
-      author_email="ubuntukylin-members@list.launchpad.net",
-      url="https://launchpad.net/ubuntu-kylin-software-center",
-      license="GNU General Public License (GPL)",
-      data_files=[
+    version="1.3.10",
+    author="Ubuntu Kylin Team",
+    author_email="ubuntukylin-members@list.launchpad.net",
+    url="https://launchpad.net/ubuntu-kylin-software-center",
+    license="GNU General Public License (GPL)",
+    packages = [ 'ubuntu_kylin_software_center_daemon',],
+    package_dir = {
+        '': '.',
+    },
+    data_files=[
     ('bin/', ['ubuntu-kylin-software-center']),
     ('../etc/dbus-1/system.d/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.conf']),
     ('share/dbus-1/system-services/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.service']),
     ('share/polkit-1/actions/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.policy']),
-#    ('lib/python2.7/dist-packages/ubuntu-kylin-software-center-daemon/', ['backend/aptdaemon/dbus_service/start_systemdbus.py']),
+#    ('lib/python3/dist-packages/ubuntu-kylin-software-center-daemon/', glob.glob('backend/aptdaemon/dbus_service')),
     ('share/applications/',['ubuntu-kylin-software-center.desktop']),
     ('share/pixmaps/',['ubuntu-kylin-software-center.svg']),
-    ('share/ubuntu-kylin-software-center-daemon/', glob.glob('backend/aptdaemon/dbus_service/*.py')),
+#    ('share/ubuntu-kylin-software-center-daemon/', glob.glob('backend/aptdaemon/dbus_service/*.py')),
     ('share/ubuntu-kylin-software-center/backend/piston/', glob.glob('backend/piston/*.py')),
     ('share/ubuntu-kylin-software-center/backend/remote/', glob.glob('backend/remote/*.py')),
     ('share/ubuntu-kylin-software-center/backend/service/', glob.glob('backend/service/*.py')),
@@ -42,7 +59,10 @@ setup(name="ubuntu-kylin-software-center",
     ('share/ubuntu-kylin-software-center/ui/', glob.glob('ui/*')),
     ('share/ubuntu-kylin-software-center/utils/', glob.glob('utils/*')),
     ('share/ubuntu-kylin-software-center/po/', glob.glob('po/*')),
-    ('share/man/man1/', glob.glob('man/*')),
     ('share/ubuntu-kylin-software-center/',['ReadMe','ubuntu-kylin-software-center.py']),
     ('../etc/xdg/autostart/',['ubuntu-kylin-software-center-autostart.desktop']),
-    ])
+    ],
+    install_requires = [ 'setuptools', ],
+    cmdclass = cmdclass,    
+)
+

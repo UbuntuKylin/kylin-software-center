@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*
 
 ### BEGIN LICENSE
@@ -66,7 +66,7 @@ class InstallBackend(QObject):
         try:
             bus = dbus.SystemBus(mainloop)
         except Exception as e:
-            print ("could not initiate dbus")
+            print("could not initiate dbus")
             LOG.error("dbus exception:%s" % str(e))
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
             return False
@@ -88,7 +88,7 @@ class InstallBackend(QObject):
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
             self.emit(Signals.init_models_ready,"fail","初始化失败!")
             LOG.error("dbus exception:%s" % str(e))
-            print ("dbus.DBusException error: ",str(e))
+            print("dbus.DBusException error: ",str(e))
             return False
 
         return True
@@ -106,7 +106,7 @@ class InstallBackend(QObject):
         try:
             res = func(kwargs)
         except dbus.DBusException as e:
-            print ("DBusException from uksc dbus",e)
+            print("DBusException from uksc dbus",e)
             LOG.error("apt-daemon dbus exception:%s" % str(e))
             return None
 
@@ -128,7 +128,7 @@ class InstallBackend(QObject):
 # #            sendMsg = "操作取消"
 #             percent = -1
         if type == "down_fetch":
-            print ("正在下载：",kwarg["uri"])
+            print("正在下载：",kwarg["uri"])
 
         self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
 
@@ -230,7 +230,7 @@ def main():
     instBackend = InstallBackend()
     instBackend.init_dbus_ifaces()
     res = instBackend.call_dbus_iface(AppActions.INSTALL,"abe")
-    print ("res=", res)
+    print("res=", res)
 
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"bareftp")

@@ -1,9 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import json
 import os
-from urllib import quote_plus
+from urllib.parse import quote_plus
 from piston_mini_client import (
     PistonAPI,
     PistonResponseObject,
@@ -46,6 +46,6 @@ if __name__ == '__main__':
     rdata.version_uksc = '0.3.33'
 
     res = wb.submit_review(review=rdata)
-    print (res)
+    print(res)
     # decoded = json.loads(res)
     # print decoded

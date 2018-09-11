@@ -20,7 +20,7 @@
 
 import dbus
 import logging
-from urlparse import urlparse
+from urllib.parse import urlparse
 from dbus.mainloop.glib import DBusGMainLoop
 
 from gi.repository import GObject, GLib

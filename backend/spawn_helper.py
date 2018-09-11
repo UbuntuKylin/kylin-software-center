@@ -17,7 +17,7 @@
 
 # py3 compat
 try:
-    import cPickle as pickle
+    import pickle as pickle
     pickle  # pyflakes
 except ImportError:
     import pickle
@@ -25,8 +25,7 @@ except ImportError:
 import logging
 import os
 import json
-#import sys
-#from sys import stdout, stderr
+
 from models.enums import datadir
 from models.enums import PISTON_GENERIC_HELPER
 
@@ -109,8 +108,9 @@ class SpawnHelper(GObject.GObject):
             self._io_watch = GLib.io_add_watch(
                 stdout, GLib.PRIORITY_DEFAULT, GObject.IO_IN,
                 self._helper_io_ready, (stdout, ))
-    #def _helper_finished(self, pid, status,(stdout, stderr)):
-    def _helper_finished(self, pid, status,stdout, stderr):
+
+    def _helper_finished(self, pid, status, xxx_todo_changeme):
+        (stdout, stderr) = xxx_todo_changeme
         LOG.debug("helper_finished: '%s' '%s'" % (pid, status))
         # get status code
         res = os.WEXITSTATUS(status)
@@ -132,9 +132,9 @@ class SpawnHelper(GObject.GObject):
         if self._child_watch:
             GLib.source_remove(self._child_watch)
 
-#    def _helper_io_ready(self, source, condition, (stdout,)):
-    def _helper_io_ready(self, source, condition, stdout):
-# read the raw data
+    def _helper_io_ready(self, source, condition, xxx_todo_changeme1):
+        # read the raw data
+        (stdout,) = xxx_todo_changeme1
         data = ""
         while True:
             s = os.read(stdout, 1024)

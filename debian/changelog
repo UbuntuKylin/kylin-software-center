@@ -1,16 +1,10 @@
-ubuntu-kylin-software-center (1.4.3) bionic; urgency=medium
+ubuntu-kylin-software-center (1.5.0) cosmic; urgency=medium
 
-  * build with python3 
+  * Migrate python3 from pyhton2.
 
- -- wukaige <wukaige@kylinos.cn>  Mon, 07 May 2018 08:32:11 +0800
+ -- wenbo <wenbo@ubuntukylin.com>  Tue, 11 Sep 2018 09:22:28 +0800
 
-ubuntu-kylin-software-center (1.4.2) bionic; urgency=medium
-
-  * python2 to python3 
-
- -- wukaige <wukaige@kylinos.cn>  Thu, 03 May 2018 16:12:50 +0800
-
-ubuntu-kylin-software-center (1.4.1) bionic; urgency=medium
+ubuntu-kylin-software-center (1.4kord1) artful; urgency=medium
 
   * fix up: max advertising button,update uksc,add icons,screenshop
 
@@ -18,7 +12,8 @@ ubuntu-kylin-software-center (1.4.1) bionic; urgency=medium
 
 ubuntu-kylin-software-center (1.4) artful; urgency=medium
 
-  * update  UI interface 
+  * update  advertising interface 
+  * update win interface
   * fix up: install local software goto home interface
   * update uksc and add screenshots and icons 
   * adjustment screenshot display 

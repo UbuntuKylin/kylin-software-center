@@ -96,11 +96,11 @@ class Ui_DetailWidget(object):
 #        self.thumbnail.setGeometry(QtCore.QRect(350, 380, 1, 1))
 #        self.thumbnail.setText(_fromUtf8(""))
 #        self.thumbnail.setObjectName(_fromUtf8("thumbnail"))
-#	self.thumbnail_2 = QtGui.QPushButton(DetailWidget)
+#        self.thumbnail_2 = QtGui.QPushButton(DetailWidget)
 #        self.thumbnail_2.setGeometry(QtCore.QRect(310, 380, 1, 1))
 #        self.thumbnail_2.setText(_fromUtf8(""))
 #        self.thumbnail_2.setObjectName(_fromUtf8("thumbnail_2"))
-#	self.thumbnail_3 = QtGui.QPushButton(DetailWidget)
+#        self.thumbnail_3 = QtGui.QPushButton(DetailWidget)
 #        self.thumbnail_3.setGeometry(QtCore.QRect(330, 380, 1, 1))
 #        self.thumbnail_3.setText(_fromUtf8(""))
 #        self.thumbnail_3.setObjectName(_fromUtf8("thumbnail_3"))
@@ -122,7 +122,7 @@ class Ui_DetailWidget(object):
         self.thumbnail_3.setText(_fromUtf8(""))
         self.thumbnail_3.setObjectName(_fromUtf8("thumbnail_3"))
 
-	
+        
 
         self.sshot = QtGui.QPushButton(DetailWidget)
         self.sshot.setGeometry(QtCore.QRect(350, 410, 1, 1))
@@ -170,7 +170,7 @@ class Ui_DetailWidget(object):
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
         self.gradeBG = QtGui.QWidget(DetailWidget)
         self.gradeBG.setGeometry(QtCore.QRect(40, 580, 810, 70))
-	#self.gradeBG.setGeometry(QtCore.QRect(40, 516, 810, 132))
+        #self.gradeBG.setGeometry(QtCore.QRect(40, 516, 810, 132))
         self.gradeBG.setObjectName(_fromUtf8("gradeBG"))
         self.gradeText2 = QtGui.QLabel(self.gradeBG)
         self.gradeText2.setGeometry(QtCore.QRect(30, 53, 151, 17))

@@ -1,0 +1,5 @@
+[encoding: UTF-8]
+ubuntu_kylin_software_center_daemon/apt_daemon.py
+ubuntu_kylin_software_center_daemon/apt_dbus_service.py
+ubuntu_kylin_software_center_daemon/__init__.py
+ubuntu_kylin_software_center_daemon/start_systemdbus.py

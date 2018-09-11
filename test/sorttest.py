@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 class App:
     name = ''
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     applist_orig.append(App('c',2))
 
     cmp_func_by_rank = lambda a, b: cmp(a.rank,b.rank)
-    applist_sorted = sorted(applist_orig, cmp_func_by_rank, reverse=False)
+    applist_sorted = sorted(applist_orig, key = lambda applist_orig: applist_orig["rank"], reverse=False)
 
     for app in applist_sorted:
-        print (app.name, "   ", app.rank)
+        print(app.name, "   ", app.rank)
