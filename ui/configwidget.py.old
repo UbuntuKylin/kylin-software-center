@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 ### BEGIN LICENSE
@@ -27,14 +27,12 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from ui.confw import Ui_ConfigWidget
 from models.enums import Signals
-from models.globals import Globals
+
 
 class ConfigWidget(QWidget):
     mainw = ''
     iscanceled = ''
-    listset = ["",""]
-    listrec = ["","",""]
-    listuser = ""
+
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
@@ -53,8 +51,7 @@ class ConfigWidget(QWidget):
         self.ui.pageListWidget.setPalette(palette)
         self.ui.sourceWidget.setPalette(palette)
         self.ui.sourceListWidget.setPalette(palette)
-        self.ui.userWidget.setPalette(palette)
-        self.ui.passwordWidget.setPalette(palette)
+
         self.ui.pageListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.sourceListWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUpdate.setFocusPolicy(Qt.NoFocus)
@@ -65,7 +62,6 @@ class ConfigWidget(QWidget):
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
 #add
         self.ui.groupBox.setFocusPolicy(Qt.NoFocus)        
-        self.ui.groupBox_user.setFocusPolicy(Qt.NoFocus)
         self.ui.groupBox_2.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox_2.setFocusPolicy(Qt.NoFocus)
@@ -73,9 +69,6 @@ class ConfigWidget(QWidget):
         self.ui.checkBox_4.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox_5.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox_6.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnAdd_2.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnAdd_3.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnAdd_4.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox.setChecked(True)
         self.ui.checkBox_2.setChecked(False)
         self.ui.checkBox_3.setChecked(True)
@@ -83,34 +76,6 @@ class ConfigWidget(QWidget):
         self.ui.checkBox_5.setChecked(True)
         self.ui.checkBox_6.setChecked(True)
 
-        self.ui.lesource8.textChanged.connect(self.slot_le_input8)
-        self.ui.lesource9.textChanged.connect(self.slot_le_input9)
-        self.ui.lesource11.textChanged.connect(self.slot_le_input11)
-        self.ui.lesource12.textChanged.connect(self.slot_le_input12)
-        self.ui.lesource13.textChanged.connect(self.slot_le_input13)
-        self.ui.lesource14.textChanged.connect(self.slot_le_input14)#change identity        
-#        self.ui.lesource15.textChanged.connect(self.slot_le_input15)#change identity
-
-        self.ui.btnAdd_2.clicked.connect(self.slot_click_rsetpassword)
-        self.ui.btnAdd_3.clicked.connect(self.slot_click_recoverpassword)
-        self.ui.btnAdd_4.clicked.connect(self.slot_click_changeidentity)
-        self.ui.lesource8.setMaxLength(16)
-        self.ui.lesource9.setMaxLength(16)
-        self.ui.lesource11.setMaxLength(16)
-        self.ui.lesource12.setMaxLength(16)
-        self.ui.lesource13.setMaxLength(16)
-        self.ui.lesource14.setMaxLength(16)
-#        self.ui.lesource15.setMaxLength(16)
-        self.ui.lesource8.setPlaceholderText("请输入用户名")
-        self.ui.lesource9.setPlaceholderText("请输入新密码")
-        self.ui.lesource11.setPlaceholderText("请输入用户名")
-        self.ui.lesource12.setPlaceholderText("请输入邮箱")
-        self.ui.lesource13.setPlaceholderText("请输入新密码")
-        self.ui.lesource14.setPlaceholderText("请输入用户名")
-#        self.ui.lesource15.setPlaceholderText("请输入密码")
-        self.ui.btnAdd_2.setText("修改密码")
-        self.ui.btnAdd_3.setText("找回密码")
-        self.ui.btnAdd_4.setText("确定")        
         self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnUpdate.clicked.connect(self.slot_click_update)
         self.ui.btnAdd.clicked.connect(self.slot_click_add)
@@ -120,8 +85,7 @@ class ConfigWidget(QWidget):
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.ui.pageListWidget.itemClicked.connect(self.slot_item_clicked)
 
-        #去掉软件源
-        #self.ui.text2.setText("用户登录信息:")        
+        #去掉软件源        
         #self.ui.text1.setText("软件源列表")
         self.ui.cbhideubuntu.setText("    隐藏ubuntu源")
 
@@ -130,16 +94,11 @@ class ConfigWidget(QWidget):
         self.ui.btnReset.setText("   恢复默认设置")
 
         sourceitem = QListWidgetItem("软件源设置")
-        sourceitem1 = QListWidgetItem("用户设置")
-        sourceitem2 = QListWidgetItem("密码修改找回")
-        #sourceitem3 = QListWidgetItem("应用设置")
-        #icon = QIcon()
+        icon = QIcon()
         #icon.addFile("res/pageList.png", QSize(), QIcon.Normal, QIcon.Off)
-        #sourceitem.setIcon(icon)
+        sourceitem.setIcon(icon)
         self.ui.pageListWidget.addItem(sourceitem)
-        self.ui.pageListWidget.addItem(sourceitem1)
-        self.ui.pageListWidget.addItem(sourceitem2)
-        #self.ui.pageListWidget.addItem(sourceitem3)
+
         # pointoutitem = QListWidgetItem("软件推荐页")
         # pointoutitem.setWhatsThis('pointout')
         # icon = QIcon()
@@ -148,7 +107,6 @@ class ConfigWidget(QWidget):
         # self.ui.pageListWidget.addItem(pointoutitem)
 
         self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
-        #self.ui.text2.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
         #self.ui.text1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
        #去掉上横线
          #self.ui.splitline.setStyleSheet("QLabel{background-color:#a5a5a5;}")
@@ -161,8 +119,6 @@ class ConfigWidget(QWidget):
         #self.ui.groupBox.setStyleSheet("QGroupBox{border:1px;color:#0fa2e8;font-size:13px}")
         #self.ui.checkBox.setStyleSheet("QCheckBox{border:0px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")         
         self.ui.sourceListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:25px;margin-top:0px;margin-left:1px;border:0px;}QListWidget::item:selected{background-color:#E4F1F8;;}")
-        self.ui.userWidget.setStyleSheet("QListWidget{border:0px solid #c0d3dd;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
-        self.ui.passwordWidget.setStyleSheet("QListWidget{border:0px solid #c0d3dd;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
         self.ui.sourceWidget.setStyleSheet("QListWidget{border:1px;color::#0fa2e8;font-size:13px}")
         self.ui.lesource.setStyleSheet("QLineEdit{border:0px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnupdate.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
@@ -177,17 +133,6 @@ class ConfigWidget(QWidget):
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
-        self.ui.lesource8.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
-        self.ui.lesource9.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
-        self.ui.lesource11.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
-        self.ui.lesource12.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
-        self.ui.lesource13.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
-        self.ui.btnAdd_3.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
-        self.ui.btnAdd_2.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
-        self.ui.btnAdd_4.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
-
-
-
         self.ui.pageListWidget.setItemSelected(self.ui.pageListWidget.item(0), True)
         self.ui.btnAdd.setEnabled(False)
         self.ui.btnReset.setEnabled(False)
@@ -195,8 +140,7 @@ class ConfigWidget(QWidget):
         self.set_process_visiable(False)
 
         self.ui.sourceListWidget.clear()
-        self.ui.userWidget.hide()
-        self.ui.passwordWidget.hide()
+
         # add by kobe
         self.ui.sourceListWidget.setSpacing(4)
 
@@ -219,144 +163,7 @@ class ConfigWidget(QWidget):
         self.show()
         self.ui.btnReset.setVisible(False)
         self.ui.cbhideubuntu.setVisible(False)
-
-    def slot_le_input8(self,text):
-        sourcetext = str(text)
-        self.listset[0] = sourcetext
-
-    def slot_le_input9(self,text):
-        sourcetext = str(text)
-        self.listset[1] = sourcetext
-
-    def slot_le_input11(self,text):
-        sourcetext = str(text)
-        self.listrec[0] = sourcetext
-    def slot_le_input12(self,text):
-        sourcetext = str(text)
-        self.listrec[1] = sourcetext
-    def slot_le_input13(self,text):
-        sourcetext = str(text)
-        self.listrec[2] = sourcetext
-
-#for change identuty
-    def slot_le_input14(self,text):
-        sourcetext = str(text)
-        self.listuser = sourcetext
-
-    def slot_click_changeidentity(self):
-        BC = QMessageBox
-        if self.listuser == Globals.USER :
-            try:
-                self.emit(Signals.change_identity)
-            except:
-                print("error")
-                BC.information(self,"提示","服务器异常",'确定','','',0, 0)
-        elif self.listuser == "":
-            print("########:请输入用户名")
-            BC.information(self,"提示","请输入用户名",'确定','','',0, 0)
-        elif Globals.USER == "":
-            print("########:用户名错误")
-            BC.information(self,"提示","用户未登录软件中心",'确定','','',0, 0)
-        elif self.listuser != Globals.USER :
-            BC.information(self,"提示","改变身份的用户未登录",'确定','','',0, 0)
-        else:
-            BC.information(self,"提示","服务器异常",'确定','','',0, 0)
-
-    def slot_change_user_identity_over(self,res):
-        AC =QMessageBox
-        if res == 0:
-            print("######","修改成功")
-            AC.information(self,"提示","修改成功",'确定','','',0, 0)
-            if Globals.USER_IDEN == "general_user":
-                Globals.USER_IDEN = "identity"
-            elif Globals.USER_IDEN == "identity":
-                Globals.USER_IDEN = "general_user"
-
-        elif res == 1 or res == None:
-            #数据异常
-            print("######","用户不存在")
-            AC.information(self,"提示","用户不存在",'确定','','',0, 0)
-        elif res == 2:
-            #用户验证失败
-            print("######","服务器异常")
-            AC.information(self,"提示","服务器异常",'确定','','',0, 0)
-        elif res == 3:
-            #服务器异常
-            print("######","身份异常")
-            AC.information(self,"提示","身份异常",'确定','','',0, 0)
-        else:
-            print("######","服务器异常")
-            AC.information(self,"提示","服务器异常",'确定','','',0, 0)
-
-#    def slot_le_input15(self,text):
-#        sourcetext = str(text.toUtf8())
-#        print "for change identuty",sourcetext
-
-#for rset password 
-    def slot_click_rsetpassword(self):
-        BR =QMessageBox
-        if self.listset[0] == Globals.USER and self.listset[0] != "" and self.listset[1] != "":
-            try:
-                self.emit(Signals.rset_password,self.listset[1])
-            except:
-                print("######","修改失败")
-                BR.information(self,"提示","修改失败",'确定','','',0, 0)
-        elif self.listset[0] == "":
-            BR.information(self,"提示","请输入用户名",'确定','','',0, 0)
-        elif self.listset[1] == "":
-            BR.information(self,"提示","请输入新密码",'确定','','',0, 0)
-        elif Globals.USER == "":
-            BR.information(self,"提示","用户未登录软件中心",'确定','','',0, 0)
-        else:
-            BR.information(self,"提示","服务器异常",'确定','','',0, 0)
-
-    def slot_rset_password_over(self,res):
-        AR = QMessageBox
-        if res == 0:
-            print("######","修改成功")
-            AR.information(self,"提示","修改成功",'确定','','',0, 0)
-        elif res == 1 or res == None:
-            #数据异常
-            print("######","用户不存在")
-            AR.information(self,"提示","用户不存在",'确定','','',0, 0)
-        elif res == 2:
-            #用户验证失败
-            AR.information(self,"提示","用户验证失败",'确定','','',0, 0)
-        else:
-            AR.information(self,"提示","服务器异常",'确定','','',0, 0)  
- 
-#for recover password
-    def slot_click_recoverpassword(self):
-        BC = QMessageBox
-        if self.listrec[0] != "" and self.listrec[1] != "" and self.listrec[2] != "":
-            try:
-                self.emit(Signals.recover_password,self.listrec[0],self.listrec[1],self.listrec[2])
-            except:
-                print("######","修改失败")
-                BC.information(self,"提示","服务器异常",'确定','','',0, 0)
-        elif self.listrec[0] == "":
-            BC.information(self,"提示","用户名为空",'确定','','',0, 0)
-        elif self.listrec[1] == "":
-            BC.information(self,"提示","邮箱为空",'确定','','',0, 0)
-        elif self.listrec[2] == "":
-            BC.information(self,"提示","新密码为空",'确定','','',0, 0)
-        else:
-            BC.information(self,"提示","服务器异常",'确定','','',0, 0)
-    def slot_recover_password_over(self,res):
-        AC = QMessageBox
-        if res == 0:
-            print("######","找回成功")
-            AC.information(self,"提示","找回成功",'确定','','',0, 0)
-        elif res == 1 or res == None:
-            #数据异常
-            print("######","用户名不存在或密码为空")
-            AC.information(self,"提示","用户名不存在或密码为空",'确定','','',0, 0)
-        else:
-            print("######xxxxxx","服务器异常")
-            AC.information(self,"提示","服务器异常",'确定','','',0, 0)
-
-
-
+###see
     def fill_sourcelist(self):
         self.ui.sourceListWidget.clear()
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
@@ -467,56 +274,13 @@ class ConfigWidget(QWidget):
         self.fill_sourcelist()
 
     def slot_item_clicked(self, item):
-        itis  = str(item.text())
-        #print "ccccccccccccccc",itis
-        if itis == "用户设置":
-            self.ui.sourceWidget.hide()
-            self.ui.userWidget.show()
-            self.ui.passwordWidget.hide()
-            self.ui.text14.setText("改变身份(请先登录软件中心):")
-            self.ui.text14.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")        
-            self.ui.text15.setText("用户名:")
-            if Globals.USER_IDEN == 'developer':
-                self.ui.text2.setText("用户登录信息:")
-                self.ui.text3.setText("用户为:  开发者")        
-                self.ui.text4.setText("用户上次登录时间为:   " + str(Globals.LAST_LOGIN))
-                self.ui.text13.setText("用户名:   " + str(Globals.USER))
-                self.ui.text21.setText("邮   箱:   " + str(Globals.EMAIL))
-            elif Globals.USER_IDEN == 'general_user':
-                self.ui.text2.setText("用户登录信息:")
-                self.ui.text3.setText("用户级别为:  " + str(Globals.USER_LEVEL))
-                self.ui.text4.setText("用户上次登录时间为:   " + str(Globals.LAST_LOGIN))
-                self.ui.text13.setText("用户名:   " + str(Globals.USER))
-                self.ui.text21.setText("邮   箱:   " + str(Globals.EMAIL))
-        elif itis == "密码修改找回":
-            self.ui.sourceWidget.hide()
-            self.ui.userWidget.hide()
-            self.ui.passwordWidget.show()
-            self.ui.text8.setText("修改密码(请先登录软件中心):")
-            self.ui.text8.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
-            self.ui.text9.setText("密码找回:")
-            self.ui.text9.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
-            self.ui.text16.setText("用户名:")
-            self.ui.text17.setText("新密码:")
-            self.ui.text18.setText("用户名:")
-            self.ui.text19.setText("邮  箱:")
-            self.ui.text20.setText("新密码:")
-        #elif itis == "应用设置":
-        #    self.ui.sourceWidget.hide()
-        #    self.ui.userWidget.hide()
-        #    self.ui.passwordWidget.hide()
-        elif itis == "软件源设置":
-            self.ui.userWidget.hide()
-            self.ui.passwordWidget.hide()
-            self.ui.sourceWidget.show()
-        
-        #if(item.whatsThis() == 'pointout'):
+        if(item.whatsThis() == 'pointout'):
             # add by kobe
-            #if (self.mainw.get_pointout_apps_num()) == 0:
-            #    pass
-            #    # self.mainw.pointout.show_animation(False)
-            #else:
-            #    self.mainw.pointout.show_animation(True)
+            if (self.mainw.get_pointout_apps_num()) == 0:
+                pass
+                # self.mainw.pointout.show_animation(False)
+            else:
+                self.mainw.pointout.show_animation(True)
 
 
 class SourceItemWidget(QWidget):

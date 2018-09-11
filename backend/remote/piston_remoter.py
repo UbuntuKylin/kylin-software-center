@@ -24,7 +24,7 @@
 
 
 #from urllib.parse import quote_plus
-import urllib
+import urllib.request, urllib.parse, urllib.error
 from urllib.parse import quote_plus
 from piston_mini_client import (
     PistonAPI,
@@ -39,6 +39,7 @@ from models.enums import UBUNTUKYLIN_SERVER
 from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
 import httplib2
+import json
 import sys
 
 
@@ -77,15 +78,34 @@ class AppTransinfoUKRequest(PistonSerializable):
     _atts = ('app_name','type_appname', 'type_summary', 'type_description', 'original_appname', 'original_summary', 'original_description', 'transl_appname', 'transl_summary', 'transl_description', 'user', 'user_display')
 
 
+class ADDUSERRequest(PistonSerializable):
+    _atts = ('username','password','email','identity')
+
+class Applogin(PistonSerializable):
+    _atts = ('username','password')
+
+class Rsetpassword(PistonSerializable):
+    _atts = ('username','password')
+
+class Recoverpassword(PistonSerializable):
+    _atts = ('username','email')
+class Changeidentity(PistonSerializable):
+    _atts = ('username','identity')
+
 class PistonRemoter(PistonAPI):
 
     default_service_observe = 'observe'
     default_service_forecast3d = 'forecast3d'
     default_content_type = 'application/x-www-form-urlencoded'
+    default_service_root = UBUNTUKYLIN_SERVER
 
     @returns_json
     def get_all_ratings(self):
-        return self._get("getallratings", scheme="http")
+        gets = self._get("getallratings", scheme="http")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        print("get_all_ratings")
+        return gets
 
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
@@ -98,7 +118,11 @@ class PistonRemoter(PistonAPI):
     def get_newest_review(self, app):
         start = 0
         range_ = 1
-        return self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
+        gets = self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
+        print("get_newest_review")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def submit_pingback_main(self, machine, distro, version_os, version_uksc):
@@ -107,7 +131,11 @@ class PistonRemoter(PistonAPI):
         postdata.distro = distro
         postdata.version_os = version_os
         postdata.version_uksc = version_uksc
-        return self._post('pingbackmain/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('pingbackmain/', data=postdata, scheme='http', content_type='application/json')
+        print("submit_pingback_main")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def submit_pingback_app(self, app_name, machine, isrcm, user):
@@ -116,50 +144,142 @@ class PistonRemoter(PistonAPI):
         postdata.machine = machine
         postdata.isrcm = isrcm
         postdata.user = user
-        return self._post('pingbackapp20141014/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('pingbackapp20141014/', data=postdata, scheme='http', content_type='application/json')
+        print("submit_pingback_app")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def get_all_categories(self):
-        return self._get("getallcategories", scheme="http")
+        gets = self._get("getallcategories", scheme="http")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        print("get_all_categories")
+        return gets
 
     @returns_json
     def get_all_rank_and_recommend(self):
-        return self._get("getallrankandrecommend", scheme='http')
+        gets = self._get("getallrankandrecommend", scheme='http')
+        print("get_all_rank_and_recommend")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def get_newer_application_info(self, last_update_date):
-        return self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
+        gets = self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        print("get_newer_application_info")
+        return gets
 
     @returns_json
     def get_newer_application_icon(self, last_update_date):
-        return self._get('getnewericon/?modify_time=%s' % last_update_date, scheme="http")
+        gets = self._get('getnewericon/?modify_time=%s' % last_update_date, scheme="http")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        print("get_newer_application_icon")
+        return gets
         
     @returns_json
     def allapp_forxapianupdate(self):
-        return self._get('allappforxapianupdate/?', scheme="http")
+        gets = self._get('allappforxapianupdate/?', scheme="http")
+        print("allapp_forxapianupdate")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
     
     @returns_json
     def newerapp_for_xapianupdate(self, the_latest_update_time):
-        return self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
+        gets = self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
+        print("newerapp_for_xapianupdate")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def get_user_applist(self, user):
-        return self._get('getapplist/?user=%s' % user, scheme="http")
+        gets = self._get('getapplist/?user=%s' % user, scheme="http")
+        print("get_user_applist")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def get_user_transapplist(self, user):
-        return self._get('getusertranslation/?user=%s' % user, scheme="http")
+        gets = self._get('getusertranslation/?user=%s' % user, scheme="http")
+        print("get_user_transapplist")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
+
+    @returns_json
+    def submit_add_user(self,username,password,email,identity):
+        postdata = ADDUSERRequest()
+        postdata.username = username
+        postdata.password = password
+        postdata.email = email
+        postdata.identity = identity
+        gets = self._post('register/', data=postdata, scheme='http', content_type='application/json')
+        print("submit_add_user")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
+
+    @returns_json
+    def rset_user_password(self, username ,newpwd):
+        #postdata = Rsetpassword()
+        #postdata.username = username
+        #postdata.password = password
+        gets = self._get('changepwd/?username=%s;newpwd=%s;' % (username ,newpwd), scheme='http')
+        print("rset_user_password")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
+
+    @returns_json
+    def recover_user_password(self, username ,email):
+        #postdata = Reecoverpassword()
+        #postdata.username = username
+        #postdata.email = email
+        gets = self._get('retrievepwd/?username=%s;email=%s;' % (username ,email), scheme="http")
+        print("recover_user_password")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
+
+    @returns_json
+    def change_user_identity(self, username ,identity):
+        #postdata = Changeidentity()
+        #postdata.username = username
+        #postdata.identity = identity
+        gets = self._get('changeidentity/?username=%s;identity=%s;' % (username ,identity), scheme="http")
+        print("change_user_identity")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
+ 
+ 
+    @returns_json
+    def log_in_appinfo(self,username,password):
+        postdata = Applogin()
+        postdata.username = username
+        postdata.password = password
+        gets = self._post('login/', data=postdata, scheme='http', content_type='application/json')
+        print("log_in_appinfo")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
 
 
+#class PistonRemoterAuth(PistonAPI):
 
-
-class PistonRemoterAuth(PistonAPI):
-
-    default_service_observe = 'observe'
-    default_service_forecast3d = 'forecast3d'
-    default_content_type = 'application/x-www-form-urlencoded'
-    default_service_root = UBUNTUKYLIN_SERVER
+#    default_service_observe = 'observe'
+#    default_service_forecast3d = 'forecast3d'
+#    default_content_type = 'application/x-www-form-urlencoded'
+#    default_service_root = UBUNTUKYLIN_SERVER
 
     @returns_json
     def submit_review(self, app_name, content, distroseries, language, user, user_display):
@@ -170,7 +290,11 @@ class PistonRemoterAuth(PistonAPI):
         postdata.language = language
         postdata.user = user
         postdata.user_display = user_display
-        return self._post('submitreview20141124/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('submitreview1810/', data=postdata, scheme='http', content_type='application/json')
+        print("submit_review")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, user, user_display):
@@ -199,7 +323,11 @@ class PistonRemoterAuth(PistonAPI):
         #print postdata.user
         postdata.user_display = user_display
         #print postdata.user_display
-        return self._post('submittranslation/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('submittranslation1810/', data=postdata, scheme='http', content_type='application/json')
+        print("submit_translate_appinfo")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
     @returns_json
     def submit_rating(self, app_name, rating, user, user_display):
@@ -208,7 +336,11 @@ class PistonRemoterAuth(PistonAPI):
         postdata.rating = rating
         postdata.user = user
         postdata.user_display = user_display
-        return self._post('submitrating0923/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('submitrating1810/', data=postdata, scheme='http', content_type='application/json')
+        print("submit_rating")
+        if (isinstance(gets,bytes)):
+            gets = gets.decode(encoding='utf-8')
+        return gets
 
 
 if __name__ == '__main__':
@@ -221,7 +353,7 @@ if __name__ == '__main__':
     ss = PistonRemoterAuth(auth=authorizer)
     res = ss.submit_review('gimp', 'main', get_distro_info()[2], get_language(),'shine','shine')
     print(res)
-    print(type(res))
+    print((type(res)))
     # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
     # res = s.get_all_rank_and_recommend()

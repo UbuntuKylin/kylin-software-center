@@ -52,6 +52,14 @@ class Globals:
     # user name
     USER = ''
     USER_DISPLAY = ''
+    PASSWORD = ''
+    EMAIL = ''
+    LAST_LOGIN = ''
+    USER_IDEN = ''
+    USER_LEVEL = ''
+    SET_REM = ''
+    AUTO_LOGIN = ''
+    SHOW_LOGIN = 0
     TOKEN = ''
 
     NOWPAGE = -1

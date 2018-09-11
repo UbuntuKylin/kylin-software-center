@@ -49,7 +49,7 @@ from models.globals import Globals
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import Signals,UnicodeToAscii
 
-from backend.remote.piston_remoter import PistonRemoterAuth
+#from backend.remote.piston_remoter import PistonRemoterAuth
 
 import aptsources.sourceslist
 from urllib.request import urlopen
@@ -103,7 +103,7 @@ class ThreadWorker(threading.Thread):
         sum_all = len(self.apt_cache)
         self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
-        print("ok",sum_all)
+        print(("ok",sum_all))
         self.appmgr.get_game_apps(False,False)
         self.appmgr.get_necessary_apps(False,False)
 
@@ -201,7 +201,7 @@ class ThreadWorkerDaemon(threading.Thread):
             item = self.appmgr.worklist.pop()
             self.appmgr.mutex.release()
 
-            print('work thread get item : ',item.funcname)
+            print(('work thread get item : ',item.funcname))
 
             if item is None:
                 continue
@@ -217,12 +217,9 @@ class ThreadWorkerDaemon(threading.Thread):
                 #    print "ThreadWorkerDaemon error", e
             elif item.funcname == "get_reviews":
                 try: #if no network the thread will be crashed, so add try except
-                    print("####wb55511")
                     reslist = self.appmgr.db.get_review_by_pkgname(item.kwargs['packagename'],item.kwargs['page'])
-                    print("####wb55522",reslist)
                 except Exception as e:
-                    print("####wb55533")
-                    print("ThreadWorkerDaemon error", e)
+                    print(("ThreadWorkerDaemon error", e))
             elif item.funcname == "check_source_useable":
                 self.appmgr.start_check_source_useable()
             # elif item.funcname == "get_images":
@@ -273,6 +270,8 @@ class AppManager(QObject):
     def __init__(self):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
+        self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+        self.login_in()
         self.name = "Ubuntu Kylin Software Center"
         self.apt_cache = None
         self.cat_list = {}
@@ -299,12 +298,23 @@ class AppManager(QObject):
         self.worker_thread1.start()
 
 
-        self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+        #self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+
+    def login_in(self):
+        if Globals.AUTO_LOGIN == "1":
+            res = self.apprui_first_login(Globals.USER,Globals.PASSWORD)
+            #try:
+            #    res = self.apprui_first_login(Globals.USER,Globals.PASSWORD)
+            #except:
+            #    res = False
+            #print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",res
+            if res != False and res != None and res not in list(range(1,4)) :
+                Globals.SHOW_LOGIN = 1
 
     # re new piston remoter auth by current login token
-    def reinit_premoter_auth(self):
-        authorizer = auth.OAuthAuthorizer(Globals.TOKEN["token"], Globals.TOKEN["token_secret"], Globals.TOKEN["consumer_key"], Globals.TOKEN["consumer_secret"])
-        self.premoterauth = PistonRemoterAuth(auth=authorizer)
+#    def reinit_premoter_auth(self):
+#        authorizer = auth.OAuthAuthorizer(Globals.TOKEN["token"], Globals.TOKEN["token_secret"], Globals.TOKEN["consumer_key"], Globals.TOKEN["consumer_secret"])
+#        self.premoterauth = PistonRemoterAuth(auth=authorizer)
 
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
@@ -338,9 +348,9 @@ class AppManager(QObject):
 
     def _update_models(self,kwargs):
         self.open_cache()
-        for cname,citem in self.cat_list.items():
+        for cname,citem in list(self.cat_list.items()):
             apps = citem.apps
-            for aname,app in apps.items():
+            for aname,app in list(apps.items()):
                 app.update_cache(self.apt_cache)
         if "update" == kwargs["action"]:
             self.emit(Signals.count_application_update)
@@ -449,7 +459,7 @@ class AppManager(QObject):
     def get_category_apps(self, cat, load=False, catdir=""):
         apps = {}
         if not cat:
-            for catName,catItem in self.cat_list.items():
+            for catName,catItem in list(self.cat_list.items()):
                 if len(apps) == 0:
                     apps = dict(list(catItem.apps.items()))
                 else:
@@ -478,7 +488,7 @@ class AppManager(QObject):
         if self.cat_list is None:
             return None
         #
-        for (catname, cat) in self.cat_list.items(): #get app in cat which init in uksc startup
+        for (catname, cat) in list(self.cat_list.items()): #get app in cat which init in uksc startup
             app = cat.get_application_byname(pkgname)
             if app is not None and app.package is not None:
                 return app
@@ -662,7 +672,7 @@ class AppManager(QObject):
             if app is not None and app.package is not None:
                 app.add_reviews(page,reviews)
             else:
-                print(item.kwargs['packagename'], " not exist")
+                print((item.kwargs['packagename'], " not exist"))
 
             self.emit(Signals.app_reviews_ready,reviews)
         elif item.funcname == "get_screenshots":
@@ -672,7 +682,7 @@ class AppManager(QObject):
             if app is not None and app.package is not None:
                 app.screenshots = screenshots
             else:
-                print(item.kwargs['packagename'], " not exist")
+                print((item.kwargs['packagename'], " not exist"))
             self.emit(Signals.app_screenshots_ready,screenshots)
         elif item.funcname == "get_rating_review_stats":
             LOG.debug("rating review stats ready:%d",len(reslist))
@@ -686,7 +696,7 @@ class AppManager(QObject):
                     app.ratings_average = rnrStat.ratings_average
                     app.ratings_total = rnrStat.ratings_total
                 if(str(rnrStat.pkgname) == "gparted"):
-                    print("######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app)
+                    print(("######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app))
 
 
             self.emit(Signals.rating_reviews_ready,rnrStats)
@@ -699,7 +709,7 @@ class AppManager(QObject):
             LOG.debug("update apt cache ready")
             pkgname = item.kwargs["packagename"]
             action = item.kwargs["action"]
-            print("update apt cache ready:",len(reslist),pkgname)
+            print(("update apt cache ready:",len(reslist),pkgname))
 
             self.emit(Signals.apt_cache_update_ready, action, pkgname)
         elif item.funcname == "init_models":
@@ -708,7 +718,7 @@ class AppManager(QObject):
             print("init models后台运行中")
 
     def update_rating_reviews(self,rnrStats):
-        print("update_rating_reviews:",len(rnrStats))
+        print(("update_rating_reviews:",len(rnrStats)))
 
         for rnrStat in rnrStats:
             self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
@@ -854,7 +864,7 @@ class AppManager(QObject):
         distroseries = get_distro_info()[2]
         language = get_language()
         try:
-            res = self.premoterauth.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
+            res = self.premoter.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
         except:
             res = "False"
         self.emit(Signals.submit_review_over, res)
@@ -863,7 +873,7 @@ class AppManager(QObject):
         # distroseries = get_distro_info()[2]
         # language = get_language()
         try:
-            res = self.premoterauth.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
+            res = self.premoter.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
         except:
              res = "False"
         self.emit(Signals.submit_translate_appinfo_over, res)
@@ -871,7 +881,7 @@ class AppManager(QObject):
 
     def submit_rating(self, app_name, rating):
         try:
-            res = self.premoterauth.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
+            res = self.premoter.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
         except:
             res = False
         self.emit(Signals.submit_rating_over, res)
@@ -894,6 +904,96 @@ class AppManager(QObject):
             res = False
         self.emit(Signals.get_user_transapplist_over, res)
 
+    def apprui_first_login(self,ui_username,ui_password):
+        #print "eeeeeeeeeeeeee",ui_username,ui_password
+        res = self.premoter.log_in_appinfo(ui_username,ui_password)
+        #print "ccccccccccccccccccccccccc",res
+        try:
+            if res == 1 or res == None:
+                #数据异常
+                print(("$$$$$$$$","自动登录数据异常"))
+            elif res == 2:
+                #用户验证失败
+                print(("$$$$$$$$","自动用户验证失败"))
+            elif res == 3:
+                #服务器异常
+                print(("$$$$$$$$","自动服务器异常"))
+            else :
+                print(("$$$$$$$$","自动登录成功"))
+                data = res[0]
+                rem = res[1]
+                rem = rem[0]
+                res = data[0]
+                Globals.USER = res["username"]
+                Globals.USER_DISPLAY = res["username"]
+                Globals.EMAIL = res["email"]
+                #print "dddddddddddddd",Globals.USER,Globals.USER_DISPLAY
+                Globals.USER_DISPLAY = Globals.USER = res["username"]
+                Globals.USER_IDEN = rem["identity"]
+                Globals.LAST_LOGIN = res["last_login"]
+                Globals.USER_LEVEL = rem["level"]
+                Globals.PASSWORD = self.listlogin[1]
+                print(("$$$$$$$$",Globals.USER_IDEN,Globals.USER_LEVEL))
+
+        except:
+            print(("$$$$$$$$","自动服务器异常"))
+
+
+    def ui_first_login(self,ui_username,ui_password):
+        #print "eeeeeeeeeeeeee",ui_username,ui_password
+        res = self.premoter.log_in_appinfo(ui_username,ui_password)
+        #print "res============",res
+        self.emit(Signals.get_ui_first_login_over, res)
+
+    def ui_login(self,ui_username,ui_password):
+        #print "eeeeeeeeeeeeee",ui_username,ui_password
+        try:
+            res = self.premoter.log_in_appinfo(ui_username,ui_password)
+        except:
+            res = False
+        #print "res============",res
+        self.emit(Signals.get_ui_login_over, res)
+
+    def ui_adduser(self,ui_username,ui_password,ui_email,ui_iden):
+        #print "ffffffffffffffff",ui_username,ui_password,ui_email,ui_iden
+        try:
+            res = self.premoter.submit_add_user(ui_username,ui_password,ui_email,ui_iden)
+        except:
+            res = False
+        #print "res============",res
+        self.emit(Signals.get_ui_adduser_over, res)
+
+    def rset_password(self,new_password):
+        try:
+            res = self.premoter.rset_user_password(Globals.USER,new_password)
+        except:
+            res = False
+        self.emit(Signals.rset_password_over, res)
+
+    def recover_password(self,old_username,old_email,new_password):
+        try:
+            res = self.premoter.rset_user_password(old_username,old_email)
+        except:
+            res = False
+        if res == 0:
+            try:
+                rer = self.premoter.rset_user_password(old_username,new_password)
+            except:
+                rer = False
+        else:
+            rer = res
+        self.emit(Signals.recover_password_over, rer)        
+
+    def change_identity(self):
+        if Globals.USER_IDEN == "general_user":
+            us_iden = "developer"
+        elif Globals.USER_IDEN == "developer":
+            us_iden = "general_user"
+        try:
+            res = self.premoter.change_user_identity(Globals.USER,us_iden)
+        except:
+            res = False
+        self.emit(Signals.change_user_identity_over, res)
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):
@@ -949,14 +1049,14 @@ class AppManager(QObject):
                 response = urllib.request.urlopen(source_url, timeout=30)
                 #print response.info()
             except HTTPError as e:
-                print(e.code)
+                print((e.code))
                 if e.code != 401:
                     bad_source_urllist.append(source_url)
             except Exception as e:
                 print(e)
                 bad_source_urllist.append(source_url)
         if bad_source_urllist != []:
-            print('bad source urllist:',bad_source_urllist)
+            print(('bad source urllist:',bad_source_urllist))
             self.emit(Signals.check_source_useable_over,bad_source_urllist)
         #print "check source useable over"
 
@@ -976,10 +1076,10 @@ def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,
     print("\n***Enter _reviews_ready_callback...")
     print(str_pkgname)
     for review in reviews_data:
-      print("rating: %s  user=%s" % (review.rating,
-          review.reviewer_username))
-      print(review.summary)
-      print(review.review_text)
+      print(("rating: %s  user=%s" % (review.rating,
+          review.reviewer_username)))
+      print((review.summary))
+      print((review.review_text))
       print("\n")
     print("\n\n")
 
@@ -989,7 +1089,7 @@ if __name__ == "__main__":
     #初始化打开cache
     appManager = AppManager()
     appManager.open_cache()
-    print(appManager.name)
+    print((appManager.name))
     #加载软件分类
     cat_list = appManager.get_category_list(True,"../data/category/")
 #    print appManager.cat_list
@@ -997,8 +1097,8 @@ if __name__ == "__main__":
  #   print appManager.get_category_apps('')
     app = appManager.get_application_by_name("abe")
     ver = app.package.candidate
-    print(ver.record)
-    print(ver.uri)
+    print((ver.record))
+    print((ver.uri))
 #    print app
 #    apps = appManager.get_recommend_apps()
     print(app)

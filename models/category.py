@@ -85,7 +85,7 @@ class Category:
         up = 0
         all = 0
         if(self.apps is not None):
-            for (appname, app) in self.apps.items():
+            for (appname, app) in list(self.apps.items()):
                 if app.package is None or app.package.candidate is None:
                     continue
                 all = all + 1
@@ -101,11 +101,11 @@ if __name__ == "__main__":
 
     cache = apt.Cache()
     cache.open()
-    print(len(cache))
+    print((len(cache)))
 
     cat1 = Category("devel","开发工具","",[])
-    print(cat1.name)
-    print(cat1.apps)
+    print((cat1.name))
+    print((cat1.apps))
 
      
 

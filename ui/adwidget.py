@@ -157,7 +157,7 @@ class ADWidget(QMainWindow):
             self.wkg = next(self.speed)
         except:
             self.wkg = 0
-        print("cccccccccccccccccc",self.wkg)
+        print(("cccccccccccccccccc",self.wkg))
         martix = QMatrix()
         martix.scale(0.99,0.99)
         #martix.scale((200+wkg)/400,(200+wkg)/400)

@@ -36,7 +36,7 @@ from backend.ubuntu_sw import safe_makedirs
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-#UBUNTUKYLIN_SERVER = "http://192.168.30.12/uksc/"
+#UBUNTUKYLIN_SERVER = "http://192.168.70.129/uksc/"
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
 Specials=["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
@@ -163,6 +163,7 @@ class Signals:
     countuover = SIGNAL("countuover")
     task_remove = SIGNAL("taskremove")
     task_cancel = SIGNAL("taskcancel")
+    task_stop = SIGNAL("taskstop")
     #add
     task_reinstall = SIGNAL("taskreinstall")
     task_upgrade = SIGNAL("task_upgrade")
@@ -199,6 +200,21 @@ class Signals:
     get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
     get_user_applist_over = SIGNAL("get-user-applist-over")
     get_user_transapplist_over = SIGNAL("get-user-transapplist-over")#zx 2015.01.30
+#add
+    recover_password_over = SIGNAL("recover_password_over")
+    recover_password = SIGNAL("recover_password")
+    rset_password = SIGNAL("rset_password")	
+    rset_password_over = SIGNAL("rset_password_over")
+    change_user_identity_over = SIGNAL("change_user_identity_over")
+    change_identity = SIGNAL("change_identity")
+    get_ui_first_login_over = SIGNAL("get_ui_first_login_over")
+    get_ui_login_over = SIGNAL("get_ui_login_over")
+    ui_login_success = SIGNAL("ui_login_success")
+    ui_uksc_update = SIGNAL("ui_uksc_update")
+    get_ui_adduser_over = SIGNAL("get_ui_adduser_over")
+    ui_adduser = SIGNAL("ui_adduser")
+    ui_login = SIGNAL("ui_login")
+
     submit_review = SIGNAL("submit-review")
     submit_review_over = SIGNAL("submit-review-over")
     submit_rating = SIGNAL("submit-rating")

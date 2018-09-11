@@ -49,6 +49,7 @@ from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 from ui.confirmdialog import ConfirmDialog, TipsDialog, Update_Source_Dialog
 from ui.configwidget import ConfigWidget
+from ui.login import Login
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
 from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
@@ -56,7 +57,8 @@ from backend.search import *
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
 from backend.utildbus import UtilDbus
-from backend.ubuntusso import get_ubuntu_sso_backend
+#from backend.ubuntusso import get_ubuntu_sso_backend
+from backend.service.save_password import password_write, password_read
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
 from models.enums import Signals, setLongTextToElideFormat
 from models.globals import Globals
@@ -113,6 +115,7 @@ class SoftwareCenter(QMainWindow):
     #force_update = 0    
     re_page = ""
     re_cli = 0
+    up_num = ""
     # movie timer
     adlist = ["","",""]    
     adi = 1 
@@ -123,11 +126,13 @@ class SoftwareCenter(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
 
+        self.auto_l = False
         # singleton check
         self.check_singleton()
 
         # init dbus backend
         self.init_dbus()
+        password_read()
         # init ui
         self.init_main_view()
 
@@ -210,6 +215,11 @@ class SoftwareCenter(QMainWindow):
         self.detailScrollWidget.setGeometry(0, 0, self.ui.detailShellWidget.width(), self.ui.detailShellWidget.height())
         # first update process bar
         self.updateSinglePB = SingleProcessBar(self.launchLoadingDiv.loadinggif)
+        #login
+        self.login = Login(self)
+        self.connect(self.login, Signals.task_stop, self.slot_click_stop)
+        #log in/out
+        self.login.messageBox = MessageBox(self)
         # config widget
         self.configWidget = ConfigWidget(self)
         self.configWidget.messageBox = MessageBox(self)
@@ -296,6 +306,9 @@ class SoftwareCenter(QMainWindow):
 
         #add
         self.ui.btnClosesearch.setFocusPolicy(Qt.NoFocus)
+        self.ui.hometext1.setFocusPolicy(Qt.NoFocus)
+        self.ui.hometext8.setFocusPolicy(Qt.NoFocus)
+        self.ui.hometext9.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClosesearch.clicked.connect(self.slot_close_search)
         self.ui.btnClosesearch.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
 
@@ -309,7 +322,7 @@ class SoftwareCenter(QMainWindow):
         self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.ui.btnLogin.setText("请登录")
+        self.ui.btnLogin.setText("登录/注册")
         #self.ui.btnReg.setText("去注册")
         self.ui.welcometext.setText("欢迎您")
         self.ui.btnAppList.setText("我的软件")
@@ -525,15 +538,16 @@ class SoftwareCenter(QMainWindow):
         self.ui.btnGoto.pressed.connect(self.slot_goto_allpage)
 
         # user account
-        self.sso = get_ubuntu_sso_backend()
-        self.ui.btnLogin.clicked.connect(self.slot_do_login_account)
-        self.ui.btnReg.clicked.connect(self.slot_do_register)
+        #self.sso = get_ubuntu_sso_backend()
+        #self.ui.btnLogin.clicked.connect(self.slot_do_login_account)
+        #self.ui.btnReg.clicked.connect(self.slot_do_register)
+        self.ui.btnLogin.clicked.connect(self.slot_do_login_ui)
         self.ui.btnLogout.clicked.connect(self.slot_do_logout)
         self.ui.btnAppList.clicked.connect(self.slot_goto_uapage)
 
         self.ui.btnTransList.clicked.connect(self.slot_goto_translatepage)
 
-        self.sso.connect("whoami", self.slot_whoami_done)
+        #self.sso.connect("whoami", self.slot_whoami_done)
 
         # add by kobe
         self.ui.headercw1.lebg.clicked.connect(self.slot_searchDTimer_timeout)
@@ -550,12 +564,22 @@ class SoftwareCenter(QMainWindow):
         self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
         self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
         self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
-        self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
+        #change login
+        self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_ui)
+        #self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
         self.connect(self.detailScrollWidget, Signals.submit_translate_appinfo, self.slot_submit_translate_appinfo)#zx2015.01.26
         self.connect(self.detailScrollWidget.btns, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
         self.connect(self, Signals.uninstall_uksc, self.detailScrollWidget.btns.uninstall_uksc)
         self.connect(self, Signals.cancel_uninstall_uksc, self.detailScrollWidget.btns.cancel_uninstall_uksc)
         self.connect(self, Signals.normalcard_progress_change, self.detailScrollWidget.slot_proccess_change)
+        self.connect(self.login, Signals.ui_adduser, self.slot_ui_adduser)
+        self.connect(self.login, Signals.ui_login, self.slot_ui_login)
+        self.connect(self.login, Signals.ui_login_success, self.slot_ui_login_success)
+        self.connect(self.login, Signals.ui_uksc_update, self.slot_uksc_update)
+        self.connect(self.configWidget, Signals.change_identity, self.slot_change_identity)
+        self.connect(self.configWidget, Signals.rset_password, self.slot_rset_password)
+        self.connect(self.configWidget, Signals.recover_password, self.slot_recover_password)
+
 
         # widget status
         self.ui.btnUp.setEnabled(False)
@@ -585,6 +609,13 @@ class SoftwareCenter(QMainWindow):
         # self.win_exists = 0
         self.winnum = 0
         self.win_model = DataModel(self.appmgr)
+
+        self.connect(self.appmgr, Signals.get_ui_first_login_over, self.login.slot_get_ui_first_login_over)
+        self.connect(self.appmgr, Signals.rset_password_over, self.configWidget.slot_rset_password_over)
+        self.connect(self.appmgr, Signals.recover_password_over, self.configWidget.slot_recover_password_over)
+        self.connect(self.appmgr, Signals.change_user_identity_over, self.configWidget.slot_change_user_identity_over)
+        self.connect(self.appmgr, Signals.get_ui_login_over, self.login.slot_get_ui_login_over)
+        self.connect(self.appmgr, Signals.get_ui_adduser_over, self.login.slot_get_ui_adduser_over)
 
         self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
         self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
@@ -741,15 +772,23 @@ class SoftwareCenter(QMainWindow):
         self.ui.beforeLoginWidget.show()
         self.ui.afterLoginWidget.hide()
 
-        try:
+        #try:
             # try backend login
-            self.token = self.sso.find_oauth_token_and_verify_sync()
-            if self.token:
-                self.sso.whoami()
-        except ImportError:
-            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
-        except:
-            LOG.exception('Check user failed.')
+        #    self.token = self.sso.find_oauth_token_and_verify_sync()
+        #    if self.token:
+        #        self.sso.whoami()
+        #except ImportError:
+        #    LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+        #except:
+        #    LOG.exception('Check user failed.')
+        if Globals.AUTO_LOGIN == "1":
+            try:
+                res = self.appmgr.ui_first_login(Globals.USER,Globals.PASSWORD)
+            except:
+                res = False
+            if res != False and res != None and res not in list(range(1,4)):
+                self.ui.beforeLoginWidget.hide()
+                self.ui.afterLoginWidget.show()
 
 
     def init_last_data(self):
@@ -768,9 +807,9 @@ class SoftwareCenter(QMainWindow):
         # self.nowPage = "homepage"
 
         # init data flags
-        self.ads_ready = False
-        self.rec_ready = False
-        self.rank_ready = False
+        #self.ads_ready = False
+        #self.rec_ready = False
+        #self.rank_ready = False
 
         self.topratedload.start_loading()
 
@@ -779,6 +818,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.get_ratingrank_apps(False)
         self.backend.check_dpkg_statu()
         self.slot_count_application_update()
+        self.login.hide()
         # check uksc upgradable
         self.check_uksc_update()
     # check base init
@@ -856,8 +896,11 @@ class SoftwareCenter(QMainWindow):
             self.init_last_data()
 
     def init_category_view(self):
+        print("init_category_view11111")
         cat_list_orgin = self.appmgr.get_category_list(True)
+        print("init_category_view22222")
         self.categoryBar.init_categories(cat_list_orgin)
+        print("init_category_view33333")
         self.categoryBar.hide()
 
     # add by kobe
@@ -910,6 +953,9 @@ class SoftwareCenter(QMainWindow):
 
     def slot_show_loading_div(self):
         self.loadingDiv.start_loading("")
+
+    def slot_uksc_update(self):
+        self.init_category_view()
 
     def eventFilter(self, obj, event):
         if obj == self.resizeCorner:
@@ -1164,7 +1210,7 @@ class SoftwareCenter(QMainWindow):
             apps = self.appmgr.get_category_apps(self.category)
 
             count = 0
-            for pkgname, app in apps.items():
+            for pkgname, app in list(apps.items()):
                 if app is None or app.package is None:
                     continue
                 if Globals.NOWPAGE == PageStates.UPPAGE:
@@ -1278,14 +1324,14 @@ class SoftwareCenter(QMainWindow):
         i = 0
         if iscancel is False and isfinish is True:
             count = self.ui.taskListWidget.count()
-            print("del_task_item:",count)
+            print(("del_task_item:",count))
             #for i in range(count):
             while(i < count):
-                print("i: ",i,"   count: ",count)
+                print(("i: ",i,"   count: ",count))
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
                 if taskitem.app.name == pkgname and taskitem.action == action:
-                    print("del_task_item: found an item",i,pkgname)
+                    print(("del_task_item: found an item",i,pkgname))
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
 
@@ -1301,14 +1347,14 @@ class SoftwareCenter(QMainWindow):
 
         elif iscancel is True and isfinish is False:
             count = self.ui.taskListWidget.count()
-            print("del_task_item:",count)
+            print(("del_task_item:",count))
             # for i in range(count):
             while(i < count):
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
 
                 if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
-                    print("del_task_item: found an item",i,pkgname)
+                    print(("del_task_item: found an item",i,pkgname))
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
                     i -= 1
@@ -1392,7 +1438,7 @@ class SoftwareCenter(QMainWindow):
             self.backend.clear_dbus_worklist()
             self.backend.exit_uksc_apt_daemon()
         except Exception as e:
-            print(str(e))
+            print((str(e)))
         self.dbusControler.stop()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
@@ -1530,8 +1576,8 @@ class SoftwareCenter(QMainWindow):
             self.show_more_software(listWidget)
 
     def slot_change_bt(self,adw):
-        print("vvvvvvvvvvvvvvvvvv",adw)
-        print("ddddddddddddddddd",self.bdm,self.adi)
+        print(("vvvvvvvvvvvvvvvvvv",adw))
+        print(("ddddddddddddddddd",self.bdm,self.adi))
         self.adtimer.stop()
         i = 0
         if adw > self.bdm:
@@ -1540,7 +1586,7 @@ class SoftwareCenter(QMainWindow):
         elif adw < self.bdm:
             while(self.bdm != adw):
                 self.slot_change_l_ad()
-        print("ssssssssssssssssssss",self.bdm,self.adi)
+        print(("ssssssssssssssssssss",self.bdm,self.adi))
         #self.adtimer.start(2000)
 
 
@@ -1851,7 +1897,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_rating_reviews_ready(self,rnrlist):
         LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print("receive ratings and reviews ready, count is:",len(rnrlist))
+        print(("receive ratings and reviews ready, count is:",len(rnrlist)))
         self.rnr_ready = True
 
     def slot_app_reviews_ready(self,reviewlist):
@@ -1884,7 +1930,7 @@ class SoftwareCenter(QMainWindow):
 
     def slot_clear_all_task_list(self):
         count = self.ui.taskListWidget_complete.count()
-        print("del_task_item:",count)
+        print(("del_task_item:",count))
 
         truecount = 0
         top = 0 #Add by zhangxin
@@ -1894,7 +1940,7 @@ class SoftwareCenter(QMainWindow):
                 break
             item = self.ui.taskListWidget_complete.item(top)
             taskitem = self.ui.taskListWidget_complete.itemWidget(item)
-            print("del_task_item: found an item",truecount,taskitem.app.name)
+            print(("del_task_item: found an item",truecount,taskitem.app.name))
             delitem = self.ui.taskListWidget_complete.takeItem(top)
             self.ui.taskListWidget_complete.removeItemWidget(delitem)
             del delitem
@@ -2282,6 +2328,7 @@ class SoftwareCenter(QMainWindow):
                 self.userAppListWidget.show()
 
                 for res in reslist:
+                    print("wb88888",res,reslist)
                     app_name = res['aid']['app_name']
                     install_date = res['date']
                     app = self.appmgr.get_application_by_name(app_name)
@@ -2376,7 +2423,7 @@ class SoftwareCenter(QMainWindow):
             else:
                 self.slot_exit_uksc()
         except Exception as e:
-            print(str(e))
+            print((str(e)))
             self.slot_exit_uksc()
 
     def slot_exit_uksc(self):
@@ -2385,7 +2432,7 @@ class SoftwareCenter(QMainWindow):
             self.backend.clear_dbus_worklist()
             self.backend.exit_uksc_apt_daemon()
         except Exception as e:
-            print(str(e))
+            print((str(e)))
             
         self.dbusControler.stop()
         sys.exit(0)
@@ -2515,6 +2562,27 @@ class SoftwareCenter(QMainWindow):
         res = self.backend.remove_package(app.name)
         if res:
             self.add_task_item(app, AppActions.REMOVE)
+    
+    def slot_ui_login(self,ui_username,ui_password):
+        self.appmgr.ui_login(ui_username,ui_password)
+
+    def slot_ui_login_success(self):
+        self.ui.afterLoginWidget.show()
+        self.ui.beforeLoginWidget.hide()
+        self.userload.stop_loading()
+        self.ui.username.setText(Globals.USER)
+
+    def slot_rset_password(self,new_password):
+        self.appmgr.rset_password(new_password)
+
+    def slot_recover_password(self,old_username,old_email,new_password):
+        self.appmgr.recover_password(old_username,old_email,new_password)
+    
+    def slot_change_identity(self):
+        self.appmgr.change_identity()
+
+    def slot_ui_adduser(self,ui_username,ui_password,ui_email,ui_iden):
+        self.appmgr.ui_adduser(ui_username,ui_password,ui_email,ui_iden)
 
     def slot_submit_review(self, app_name, content):
         LOG.info("submit one review:%s", content)
@@ -2559,12 +2627,12 @@ class SoftwareCenter(QMainWindow):
 
     def slot_remove_task(self, tasknumber, app):
         count = self.ui.taskListWidget_complete.count()
-        print("del_task_item:",count)
+        print(("del_task_item:",count))
         for i in range(count):
             item = self.ui.taskListWidget_complete.item(i)
             taskitem = self.ui.taskListWidget_complete.itemWidget(item)
             if taskitem.tasknumber == tasknumber:
-                print("del_task_item: found an item",i,app.name)
+                print(("del_task_item: found an item",i,app.name))
                 delitem = self.ui.taskListWidget_complete.takeItem(i)
                 self.ui.taskListWidget_complete.removeItemWidget(delitem)
                 del delitem
@@ -2602,7 +2670,7 @@ class SoftwareCenter(QMainWindow):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
-        print("########### ", msg," ",name," ",action," ",percent)
+        print(("########### ", msg," ",name," ",action," ",percent))
         # if "安装本地包失败!" == msg:
         #     self.messageBox.alert_msg("安装本地包失败!")
         if action == AppActions.INSTALLDEBFILE and ".deb" == name[-4:]:
@@ -2784,93 +2852,114 @@ class SoftwareCenter(QMainWindow):
         # # else:
         # #     self.slot_update_listwidge(pkgname, action)
 
-    # user login
-    def slot_do_login_account(self):
-        try:
-            self.userload.start_loading()
-            self.ui.beforeLoginWidget.hide()
-            self.ui.afterLoginWidget.hide()
+    def slot_click_stop(self):
+        self.ui.btnLogin.show()
+        self.userload.stop_loading()
 
-            self.sso.setShowRegister(False)
-            self.token = self.sso.get_oauth_token_and_verify_sync()
-
-            if self.token:
-                self.sso.whoami()
-            else:
-                self.userload.stop_loading()
-                self.ui.beforeLoginWidget.show()
-
-        except ImportError:
-            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
-            self.userload.stop_loading()
-            self.ui.beforeLoginWidget.show()
-        except:
-            LOG.exception('User login failed.')
-            self.userload.stop_loading()
-            self.ui.beforeLoginWidget.show()
-
-    # user register
-    def slot_do_register(self):
-        try:
-            self.sso.setShowRegister(True)
-            self.token = self.sso.get_oauth_token_and_verify_sync()
-            if self.token:
-                self.sso.whoami()
-
-        except ImportError:
-            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
-        except:
-            LOG.exception('User register failed.')
+    def slot_do_login_ui(self):
+        self.userload.start_loading()
+        self.ui.btnLogin.hide()
+        self.login.show()
 
     def slot_do_logout(self):
-        try:
-            self.userload.start_loading()
-            self.ui.beforeLoginWidget.hide()
-            self.ui.afterLoginWidget.hide()
+        self.ui.beforeLoginWidget.hide()
+        self.ui.afterLoginWidget.hide()
+        self.ui.beforeLoginWidget.show()
+        self.ui.btnLogin.show()
+        Globals.EMAIL = ''
+        Globals.USER = ''
+        Globals.USER_DISPLAY = ''
+        Globals.LAST_LOGIN = ''
+        Globals.USER_IDEN = ''
+        Globals.USER_LEVEL = ''
 
-            self.sso.clear_token()
-            self.token = ""
+    # user login
+    #def slot_do_login_account(self):
+    #    try:
+    #        self.userload.start_loading()
+    #        self.ui.beforeLoginWidget.hide()
+    #        self.ui.afterLoginWidget.hide()
 
-            self.userload.stop_loading()
-            self.ui.beforeLoginWidget.show()
+    #        self.sso.setShowRegister(False)
+    #        self.token = self.sso.get_oauth_token_and_verify_sync()
 
-            Globals.USER = ''
-            Globals.USER_DISPLAY = ''
-            Globals.TOKEN = ''
+    #        if self.token:
+    #            self.sso.whoami()
+    #        else:
+    #            self.userload.stop_loading()
+    #            self.ui.beforeLoginWidget.show()
 
-        except ImportError:
-            LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
-            self.userload.stop_loading()
-            self.ui.afterLoginWidget.show()
-        except:
-            LOG.exception('User logout failed.')
-            self.userload.stop_loading()
-            self.ui.afterLoginWidget.show()
+    #    except ImportError:
+    #        LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+    #        self.userload.stop_loading()
+    #        self.ui.beforeLoginWidget.show()
+    #    except:
+    #        LOG.exception('User login failed.')
+    #        self.userload.stop_loading()
+    #        self.ui.beforeLoginWidget.show()
+
+    # user register
+    #def slot_do_register(self):
+    #    try:
+    #        self.sso.setShowRegister(True)
+    #        self.token = self.sso.get_oauth_token_and_verify_sync()
+    #        if self.token:
+    #            self.sso.whoami()
+
+    #    except ImportError:
+    #        LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+    #    except:
+    #        LOG.exception('User register failed.')
+
+    #def slot_do_logout(self):
+    #    try:
+    #        self.userload.start_loading()
+    #        self.ui.beforeLoginWidget.hide()
+    #        self.ui.afterLoginWidget.hide()
+
+    #        self.sso.clear_token()
+    #        self.token = ""
+
+    #        self.userload.stop_loading()
+    #        self.ui.beforeLoginWidget.show()
+
+    #        Globals.USER = ''
+    #        Globals.USER_DISPLAY = ''
+    #        Globals.TOKEN = ''
+
+    #    except ImportError:
+    #        LOG.exception('Initial ubuntu-kylin-sso-client failed, seem it is not installed.')
+    #        self.userload.stop_loading()
+    #        self.ui.afterLoginWidget.show()
+    #    except:
+    #        LOG.exception('User logout failed.')
+    #        self.userload.stop_loading()
+    #        self.ui.afterLoginWidget.show()
 
     # update user login status
-    def slot_whoami_done(self, sso, result):
-        user = result["username"]
-        display_name = result["displayname"]
-        preferred_email = result["preferred_email"]
-        print("wwwwwwwwwwwwwww",user,display_name,preferred_email)
-        print('Login success, username: %s' % display_name)
+    #def slot_whoami_done(self, sso, result):
+    #    user = result["username"]
+    #    display_name = result["displayname"]
+    #    preferred_email = result["preferred_email"]
+    #    print("wwwwwwwwwwwwwww",user,display_name,preferred_email)
+    #    print('Login success, username: %s' % display_name)
 
-        self.userload.stop_loading()
-        self.ui.beforeLoginWidget.hide()
-        self.ui.afterLoginWidget.show()
+    #    self.userload.stop_loading()
+    #    self.ui.beforeLoginWidget.hide()
+    #    self.ui.afterLoginWidget.show()
         #self.ui.username.setText(display_name)
-        username = setLongTextToElideFormat(self.ui.username, display_name)
-        if str(username).endswith("…") is True:
-            self.ui.username.setToolTip(display_name)
-        else:
-            self.ui.username.setToolTip("")
+    #    username = setLongTextToElideFormat(self.ui.username, display_name)
+    #    if str(username).endswith("…") is True:
+    #        self.ui.username.setToolTip(display_name)
+    #    else:
+    #        self.ui.username.setToolTip("")
 
-        Globals.USER = user
-        Globals.USER_DISPLAY = display_name
+     #   Globals.USER = user
+     #   Globals.USER_DISPLAY = display_name
         # Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
-        Globals.TOKEN = self.token
+     #   Globals.TOKEN = self.token
 
-        self.appmgr.reinit_premoter_auth()
+     #   self.appmgr.reinit_premoter_auth()
 
     # user app list page, select all / un select all
     def slot_ua_select_all(self):

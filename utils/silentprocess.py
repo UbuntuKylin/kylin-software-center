@@ -106,12 +106,12 @@ class SilentProcess(multiprocessing.Process):
                 rating_total = str(rating['rating_total'])
 
                 sql = "update application set rating_total=?,rating_avg=? where app_name=?"
-                try:
-                    lock.acquire(True)
-                    self.cursor.execute(sql, (rating_total,rating_avg,app_name))
-                    self.connect.commit()
-                finally:
-                    lock.release()
+                self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+            try:
+                lock.acquire(True)
+                self.connect.commit()
+            finally:
+                lock.release()
 
             #self.connect.commit()
 
@@ -227,7 +227,6 @@ class SilentProcess(multiprocessing.Process):
             if(size > 0):
                 # update application info to cache db
                 for app in reslist:
-                    print("####wb1111",app['id'])
                     aid = app['id']
                     app_name = app['app_name']
                     display_name = app['display_name']

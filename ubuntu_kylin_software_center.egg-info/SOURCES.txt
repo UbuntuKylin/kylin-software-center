@@ -33,6 +33,7 @@ backend/remote/piston_remoter.py
 backend/service/__init__.py
 backend/service/appmanager.py
 backend/service/dbmanager.py
+backend/service/save_password.py
 data/uksc.db
 data/ads/ad0.png
 data/ads/ad1.png
@@ -5125,15 +5126,21 @@ ui/adwidget.py
 ui/cardwidget.py
 ui/categorybar.py
 ui/configwidget.py
+ui/configwidget.py.old
 ui/confirmdialog.py
 ui/confw.py
+ui/confw.py.old
 ui/confw.ui
 ui/detailscrollwidget.py
 ui/detailw.py
 ui/detailw.ui
 ui/dynamicstarwidget.py
 ui/listitemwidget.py
+ui/listupdatwidget.py
 ui/loadingdiv.py
+ui/login.py
+ui/login_ui.py
+ui/login_ui.ui
 ui/mainwindow.py
 ui/mainwindow.ui
 ui/messagebox.py
@@ -5176,6 +5183,7 @@ ui/uksw.ui
 ui/uktliw.py
 ui/uktliw.ui
 ui/uktransliw.py
+ui/ukup.py
 ui/ukwincard.py
 ui/ukwincard.ui
 ui/ukxp.py

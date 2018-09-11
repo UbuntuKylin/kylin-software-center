@@ -161,7 +161,7 @@ class Database:
             return res
 
     def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
-        print("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total)
+        print(("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total))
         try:
             lock.acquire(True)
             self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
@@ -235,7 +235,7 @@ class Database:
                     for old_item in old_matches:
                         old_doc = old_item.document
                         old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
-            print("old xapiandb  version:",old_version," new xapiandb version:",new_version)
+            print(("old xapiandb  version:",old_version," new xapiandb version:",new_version))
         except:
             return True
         else:
@@ -250,7 +250,6 @@ class Database:
         res = self.cursor.fetchall()
         for item in res:
             review_total = item[0]
-            print("####wb44444",type(review_total),review_total)
             return review_total / 10 + 1
 
     def get_review_by_pkgname(self, package_name, page):
@@ -282,7 +281,6 @@ class Database:
                         date = str(review.date)
                         date = date.replace('T',' ')
                         date = date.replace('Z','')
-                        print("####wb222222",review_total,"111",content,"222")
                         try:
                             lock.acquire(True)
                             self.cursor.execute("insert into review values(?,?,'',?,?,?,'zh_CN','',0,0)", (id,aid,content,user_display,date))
@@ -327,7 +325,6 @@ class Database:
                             date = str(review.date)
                             date = date.replace('T',' ')
                             date = date.replace('Z','')
-                            print("####wb222223",review_total,"111",content,"222")
 
                             # download
                             if(rid != id):
@@ -381,7 +378,6 @@ class Database:
                         date = str(review.date)
                         date = date.replace('T',' ')
                         date = date.replace('Z','')
-                        print("####wb222224",review_total,"111",content,"222")
 
                         # ignore the same review by id
                         try:
@@ -416,7 +412,6 @@ class Database:
             review.up_total = item[6]
             review.down_total = item[7]
             reviews.append(review)
-            print("####wb333333",review.id,review.content)
 
         return reviews
 
@@ -630,7 +625,7 @@ if __name__ == "__main__":
     db = Database()
 
     # print db.get_pagecount_by_pkgname('gimp')
-    print(db.is_cachedb_need_update())
+    print((db.is_cachedb_need_update()))
 
     # res = db.get_review_by_pkgname('gedit',2)
     # for item in res:

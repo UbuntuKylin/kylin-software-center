@@ -100,7 +100,7 @@ def __init_network_state():
         'SOFTWARE_CENTER_NET_DISCONNECTED': NetState.NM_STATE_DISCONNECTED,
         'SOFTWARE_CENTER_NET_CONNECTED': NetState.NM_STATE_CONNECTED_GLOBAL,
     }
-    for envkey, state in env_map.items():
+    for envkey, state in list(env_map.items()):
         if envkey in os.environ:
             NETWORK_STATE = state
             return

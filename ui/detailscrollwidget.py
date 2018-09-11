@@ -1179,7 +1179,7 @@ class DetailScrollWidget(QScrollArea):
         self.app.ratings_average = ratingavg
         self.app.ratings_total = ratingtotal
 
-        ratingavg = str('%.1f' % ratingavg)
+        ratingavg = float('%.1f' % ratingavg)
         self.smallstar.changeGrade(ratingavg)
         self.star.changeGrade(ratingavg)
         self.ui.scorelabel.setText(str(ratingavg))
