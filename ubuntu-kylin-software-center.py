@@ -1037,7 +1037,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     self.ui.rightWidget.resize(Globals.MAIN_WIDTH - 80, Globals.MAIN_HEIGHT)
 
                     self.ui.headerWidget.resize(Globals.MAIN_WIDTH - 80 - 20 * 2, self.ui.headerWidget.height())
-                    self.ui.headercw1.move(self.ui.headerWidget.width() - self.ui.headercw1.width(), 0)
+                    self.ui.headercl1.move(self.ui.headerWidget.width() - self.ui.headercl1.width(), 0)
 
                     self.ui.homepageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
                     self.ui.allWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)

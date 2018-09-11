@@ -214,7 +214,7 @@ class Signals:
     ui_login_success = pyqtSignal()
     ui_uksc_update = pyqtSignal()
     get_ui_adduser_over = pyqtSignal(list)
-    ui_adduser = pyqtSignal(str,str,str,str,str)
+    ui_adduser = pyqtSignal(str,str,str,str)
     ui_login = pyqtSignal(str,str)
 
     submit_review = pyqtSignal(str,str)

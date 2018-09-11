@@ -836,45 +836,6 @@
        <height>36</height>
       </rect>
      </property>
-     <widget class="QPushButton" name="btnClose">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>28</width>
-        <height>36</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnMin">
-      <property name="geometry">
-       <rect>
-        <x>28</x>
-        <y>0</y>
-        <width>28</width>
-        <height>36</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnConf">
-      <property name="geometry">
-       <rect>
-        <x>84</x>
-        <y>0</y>
-        <width>28</width>
-        <height>36</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QLineEdit" name="firstFocus">
       <property name="geometry">
        <rect>
@@ -885,36 +846,10 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnMax">
-      <property name="geometry">
-       <rect>
-        <x>56</x>
-        <y>0</y>
-        <width>28</width>
-        <height>36</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnNormal">
-      <property name="geometry">
-       <rect>
-        <x>56</x>
-        <y>0</y>
-        <width>28</width>
-        <height>36</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-     </widget>
      <widget class="QWidget" name="headercw1" native="true">
       <property name="geometry">
        <rect>
-        <x>575</x>
+        <x>0</x>
         <y>0</y>
         <width>285</width>
         <height>36</height>
@@ -950,6 +885,81 @@
          <y>16</y>
          <width>16</width>
          <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="headercl1" native="true">
+      <property name="geometry">
+       <rect>
+        <x>710</x>
+        <y>0</y>
+        <width>120</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <widget class="QPushButton" name="btnConf">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>28</width>
+         <height>36</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnMax">
+       <property name="geometry">
+        <rect>
+         <x>56</x>
+         <y>0</y>
+         <width>28</width>
+         <height>36</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnMin">
+       <property name="geometry">
+        <rect>
+         <x>28</x>
+         <y>0</y>
+         <width>28</width>
+         <height>36</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnClose">
+       <property name="geometry">
+        <rect>
+         <x>84</x>
+         <y>0</y>
+         <width>28</width>
+         <height>36</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnNormal">
+       <property name="geometry">
+        <rect>
+         <x>56</x>
+         <y>0</y>
+         <width>28</width>
+         <height>36</height>
         </rect>
        </property>
        <property name="text">
@@ -1065,7 +1075,6 @@
        <height>558</height>
       </rect>
      </property>
-     <zorder>userAppListWidget</zorder>
     </widget>
     <widget class="QWidget" name="userAppListWidget" native="true">
      <property name="geometry">
@@ -1161,13 +1170,6 @@
        <string/>
       </property>
      </widget>
-     <zorder>ualine</zorder>
-     <zorder>uacw1</zorder>
-     <zorder>uatitle</zorder>
-     <zorder>btnInstallAll</zorder>
-     <zorder>uaNoItemWidget</zorder>
-     <zorder>uaNoItemText</zorder>
-     <zorder>pushButton</zorder>
     </widget>
    </widget>
    <zorder>rightWidget</zorder>

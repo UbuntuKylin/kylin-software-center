@@ -137,7 +137,7 @@ class ConfigWidget(QWidget,Signals):
         #icon.addFile("res/pageList.png", QSize(), QIcon.Normal, QIcon.Off)
         #sourceitem.setIcon(icon)
         self.ui.pageListWidget.addItem(sourceitem)
-        self.ui.pageListWidget.addItem(sourceitem1)
+        #self.ui.pageListWidget.addItem(sourceitem1)
         self.ui.pageListWidget.addItem(sourceitem2)
         #self.ui.pageListWidget.addItem(sourceitem3)
         # pointoutitem = QListWidgetItem("软件推荐页")

@@ -129,9 +129,9 @@ class Login(QWidget,Signals):
         self.ui.text1.setStyleSheet("color:1997FAB;")
         self.ui.bg.setStyleSheet("QLabel{border:0px solid #c0d3dd;border-radius:2px;color:#026c9e;background:#ebf2f9;}")
         #self.ui.bg.setStyleSheet("QLabel{border:0px solid #026c9e;border-radius:1px;color:#ebf2f9;font-size:13px;background-image:url('res/1.png');}")
-        #self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        #self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-pressed.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
+
+        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        #self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-pressed.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
         
         #self.ui.lesource.setStyleSheet("QLineEdit{border:0px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
         self.ui.btnAdd.setStyleSheet("QPushButton{border:1px;color:#0fa2e8;font-size:14px;no-repeat center left}")
@@ -322,6 +322,10 @@ class Login(QWidget,Signals):
             #用户名已存在
             print ("######","用户名已存在")
             INO.information(self,"提示","用户名已存在",QMessageBox.Yes)
+        elif res == 4:
+            #用户名已存在
+            print ("######","邮箱已存在")
+            INO.information(self,"提示","邮箱已被注册",QMessageBox.Yes)
         elif res == 3:
             #服务器异常
             print ("######1","服务器异常")

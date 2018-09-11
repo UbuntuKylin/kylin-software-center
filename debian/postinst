@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 #if [ "$1" = "configure" ] ; then
 #    PKILL=$(which pkill)
 #    PGREP=$(which pgrep)
@@ -23,3 +25,5 @@
 chmod 775 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/start_systemdbus.py
 
 #DEBHELPER#
+
+exit 0

@@ -344,7 +344,7 @@ class Ui_ConfigWidget(object):
         self.bg.setText(_fromUtf8(""))
         self.bg.setObjectName(_fromUtf8("bg"))
         self.btnClose = QPushButton(ConfigWidget)
-        self.btnClose.setGeometry(QtCore.QRect(130, 17, 28, 35))
+        self.btnClose.setGeometry(QtCore.QRect(510, 17, 28, 35))
         self.btnClose.setText(_fromUtf8(""))
         self.btnClose.setObjectName(_fromUtf8("btnClose"))
         self.label = QLabel(ConfigWidget)

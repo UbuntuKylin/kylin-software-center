@@ -187,7 +187,7 @@ class Ui_Login_ui(object):
         self.bg.setText(_fromUtf8(""))
         self.bg.setObjectName(_fromUtf8("bg"))
         self.btnClose = QPushButton(self.sourceWidget)
-        self.btnClose.setGeometry(QtCore.QRect(425, 4, 13, 13))
+        self.btnClose.setGeometry(QtCore.QRect(400, 4, 28, 36))
         self.btnClose.setText(_fromUtf8(""))
 
         #self.label = QLabel(Login_ui)

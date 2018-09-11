@@ -442,10 +442,13 @@ class Search:
 #            print '************************************'
             pkgname = doc.get_value(XapianValues.PKGNAME)
 
+
             if not pkgname:
                 pkgname = doc.get_data()
 
             if pkgname:
+                if (isinstance(pkgname,bytes)):
+                    pkgname = pkgname.decode(encoding='utf-8')
                 #check the pkgname exist in the list or not
                 try:
                     index = pkgnamelist.index(pkgname)
