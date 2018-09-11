@@ -25,8 +25,8 @@
 import os
 import subprocess
 import shutil
-from PyQt4.QtCore import *
-from PyQt4.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PyQt5.QtCore import *
+from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from models.enums import Signals
 
 HOME_PATH = os.path.expandvars('$HOME')
@@ -52,7 +52,7 @@ def unzip_resource(package_file):
         print("unzip ok....")
         return True
 
-class HttpDownLoad(QObject):
+class HttpDownLoad(QObject,Signals):
 
     def __init__(self, parent=None):
         QObject.__init__(self)
@@ -89,4 +89,4 @@ class HttpDownLoad(QObject):
         self.reply = None
         self.file = None
         # unzip_resource("/tmp/uk-win.zip")
-        self.emit(Signals.unzip_img)
+        self.unzip_img.emit()

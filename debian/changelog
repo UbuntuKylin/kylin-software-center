@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (1.5.2) cosmic; urgency=medium
+
+  * Migrate pyqt5 from pyqt4.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Tue, 11 Sep 2018 11:37:57 +0800 
+
 ubuntu-kylin-software-center (1.5.1) cosmic; urgency=medium
 
   * Rewrite user login and registration.

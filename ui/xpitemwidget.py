@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.ukxp import Ui_Ukxp
 from utils import run
 import webbrowser
@@ -15,7 +16,7 @@ from models.enums import (ITEM_LABEL_STYLE,
                           AppActions,
                           Signals)
 
-class XpItemWidget(QWidget):
+class XpItemWidget(QWidget,Signals):
     app = ''
 
     def __init__(self, appname, app, backend, parent=None):
@@ -45,8 +46,8 @@ class XpItemWidget(QWidget):
                 self.ui.btn.setText("安装")
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
-        self.connect(self.parent,Signals.apt_process_finish,self.slot_work_finished)
-        self.connect(self.parent,Signals.apt_process_cancel,self.slot_work_cancel)
+        self.parent.apt_process_finish.connect(self.slot_work_finished)
+        self.parent.apt_process_cancel.connect(self.slot_work_cancel)
 
     def ui_init(self):
         self.ui = Ui_Ukxp()
@@ -65,7 +66,7 @@ class XpItemWidget(QWidget):
             else:
                 self.ui.btn.setEnabled(False)
                 self.ui.btn.setText("请稍候")
-                self.emit(Signals.install_app, self.app)
+                self.install_app.emit(self.app)
 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:

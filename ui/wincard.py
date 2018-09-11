@@ -23,8 +23,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.ukwincard import Ui_WinCard
 from ui.starwidget import StarWidget
 from utils import run
@@ -34,7 +35,7 @@ from models.enums import (UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
 from models.globals import Globals
 
-class WinCard(QWidget):
+class WinCard(QWidget,Signals):
 
     def __init__(self, winstat, app, messageBox, parent=None):
         QWidget.__init__(self, parent)
@@ -280,18 +281,18 @@ class WinCard(QWidget):
                 if(self.ui.btn.text() == '安装'):
                     self.app.status = PkgStates.INSTALLING
                     self.ui.btn.setText("正在安装")
-                    self.emit(Signals.install_app, self.app)
-                    self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
+                    self.install_app.emit(self.app)
+                    self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
                 elif(self.ui.btn.text() == '升级'):
                     self.app.status = PkgStates.UPGRADING
                     self.ui.btn.setText("正在升级")
-                    self.emit(Signals.upgrade_app, self.app)
-                    self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
+                    self.upgrade_app.emit(self.app)
+                    self.get_card_status.emit(self.app.name, PkgStates.UPGRADING)
                 elif(self.ui.btn.text() == '卸载'):
                     self.app.status = PkgStates.REMOVING
                     self.ui.btn.setText("正在卸载")
-                    self.emit(Signals.remove_app, self.app)
-                    self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+                    self.remove_app.emit(self.app)
+                    self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
 
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
@@ -319,7 +320,7 @@ class WinCard(QWidget):
 
     def slot_emit_detail(self):
         if(self.app != None):
-            self.emit(Signals.show_app_detail, self.app)
+            self.show_app_detail.emit(self.app)
 
     def slot_work_finished(self, pkgname, action):
         if self.app is not None:

@@ -24,12 +24,13 @@
 
 
 import sip
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from models.enums import Signals
 
 
-class CategoryBar(QWidget):
+class CategoryBar(QWidget,Signals):
 
     categorycount = 0
     itemwidth = 60
@@ -118,7 +119,7 @@ class CategoryBar(QWidget):
         category = str(btn.category_name)
         self.categorytab.move(btn.x(), self.categorytab.y())
         self.categorytab.show()
-        self.emit(Signals.click_categoy, category, False)
+        self.click_categoy.emit(category, False)
 
     # add by kobe
     def reset_categorybar(self):

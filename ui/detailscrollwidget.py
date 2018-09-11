@@ -24,8 +24,9 @@
 
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.detailw import Ui_DetailWidget
 from ui.starwidget import StarWidget
 from ui.dynamicstarwidget import DynamicStarWidget
@@ -40,13 +41,13 @@ from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         setLongTextToElideFormat,
                         PkgStates,
                         PageStates)
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 from utils import run
 from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
 
-class DetailScrollWidget(QScrollArea):
+class DetailScrollWidget(QScrollArea,Signals):
     mainwindow = ''
     app = None
     debfile = ''
@@ -73,13 +74,13 @@ class DetailScrollWidget(QScrollArea):
         self.btns = MultiFunctionBtn(self.messageBox,self.detailWidget)
         self.btns.move(700, 24)
 
-        self.connect(self.btns,Signals.mfb_click_install,parent.slot_click_install)
-        self.connect(self.btns,Signals.mfb_click_uninstall,parent.slot_click_remove)
-        self.connect(self.btns,Signals.mfb_click_update,parent.slot_click_upgrade)
-        self.connect(self.btns, Signals.install_debfile, parent.slot_click_install_debfile)
+        self.btns.mfb_click_install.connect(parent.slot_click_install)
+        self.btns.mfb_click_uninstall.connect(parent.slot_click_remove)
+        self.btns.mfb_click_update.connect(parent.slot_click_upgrade)
+        self.btns.install_debfile.connect(parent.slot_click_install_debfile)
 
         # kobe 1106
-        self.connect(self.btns,Signals.get_card_status,parent.slot_get_normal_card_status)
+        self.btns.get_card_status.connect(parent.slot_get_normal_card_status)
 
         self.setWidget(self.detailWidget)
         self.bigsshot = ScreenShotBig()
@@ -282,8 +283,8 @@ class DetailScrollWidget(QScrollArea):
         self.submitreviewload = MiniLoadingDiv(self.ui.reviewText, self.detailWidget)
         #self.submitchangedappinfoload = MiniLoadingDiv(self.ui.change_submit, self.detailWidget)
 
-        self.connect(self.mainwindow,Signals.apt_process_finish,self.slot_work_finished)
-        self.connect(self.mainwindow,Signals.apt_process_cancel,self.slot_work_cancel)
+        self.mainwindow.apt_process_finish.connect(self.slot_work_finished)
+        self.mainwindow.apt_process_cancel.connect(self.slot_work_cancel)
 
 #previous picture
     def slot_click_back(self):
@@ -649,7 +650,7 @@ class DetailScrollWidget(QScrollArea):
         #我的评分
         self.ratingstar = DynamicStarWidget(self.detailWidget)
         self.ratingstar.move(630, 540)
-        self.connect(self.ratingstar, Signals.get_user_rating,self.slot_submit_rating)
+        self.ratingstar.get_user_rating.connect(self.slot_submit_rating)
 
         self.ui.transNameStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
         self.ui.transSummaryStatus.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
@@ -984,7 +985,7 @@ class DetailScrollWidget(QScrollArea):
             self.ui.pushButton_5.hide()
 
         else:
-            self.emit(Signals.show_login)
+            self.show_login.emit()
 
     def change_cancel(self):
         self.ui.name.setText(self.init_name)
@@ -1066,10 +1067,11 @@ class DetailScrollWidget(QScrollArea):
             if(self.appname == self.init_name  and self.summary == self.init_summary  and  self.description == self.init_description):
                 self.mainwindow.messageBox.alert_msg("您未翻译或修改任何部分")
             else:
-                self.emit(Signals.submit_translate_appinfo, self.app.name, self.type_appname, self.type_summary, self.type_description, self.app.displayname, self.app.orig_summary, orig_description, appname, summary, description)
+                self.submit_translate_appinfo.emit(self.app.name, self.type_appname, self.type_summary, self.type_description, self.app.displayname, self.app.orig_summary, orig_description, appname, summary, description)
 
 
     def slot_submit_translate_appinfo_over(self, res):
+        res = res[0]['res']
         #print "************",res
         if(res == 0):
             if self.type_appname == 'True':
@@ -1102,7 +1104,7 @@ class DetailScrollWidget(QScrollArea):
             self.mainwindow.messageBox.alert_msg("翻译已提交")
         elif(res == 1):
             self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")
-        elif 3 == res:
+        elif(res == 3):
             self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行翻译")
         elif(res == "False"):
             self.messageBox.alert_msg("连接服务器出错\n"
@@ -1120,14 +1122,15 @@ class DetailScrollWidget(QScrollArea):
             if(content.strip() != ''):
                 self.submitreviewload.start_loading()
                 self.ui.bntSubmit.setEnabled(False)
-                self.emit(Signals.submit_review, self.app.name, content)
+                self.submit_review.emit(self.app.name, content)
             else:
                 self.mainwindow.messageBox.alert_msg("不能发表空评论")
         else:
-            self.emit(Signals.show_login)
+            self.show_login.emit()
 
 
     def slot_submit_review_over(self, res):
+        res = res[0]['res']
         self.submitreviewload.stop_loading()
         self.ui.bntSubmit.setEnabled(True)
 
@@ -1159,11 +1162,12 @@ class DetailScrollWidget(QScrollArea):
             return
         if(Globals.USER != ''):
             self.submitratingload.start_loading()
-            self.emit(Signals.submit_rating, self.app.name, rating)
+            self.submit_rating.emit(self.app.name, rating)
         else:
-            self.emit(Signals.show_login)
+            self.show_login.emit()
 
     def slot_submit_rating_over(self, res):
+        res = res = res[0]['res']
         if(res != False):
             ratingavg = res['rating_avg']
             ratingtotal = res['rating_total']

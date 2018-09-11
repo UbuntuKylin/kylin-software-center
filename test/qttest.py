@@ -3,8 +3,8 @@
 __author__ = 'shine'
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 
 import sys
 reload(sys)
@@ -117,8 +117,8 @@ class Appp:
 def main():
     app = QApplication(sys.argv)
 
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
     globalfont.setFamily("文泉驿微米黑")

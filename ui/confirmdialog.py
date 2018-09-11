@@ -22,12 +22,13 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from models.enums import UBUNTUKYLIN_RES_PATH
+from models.enums import Signals
 
-class ConfirmDialog(QDialog):
+class ConfirmDialog(QDialog,Signals):
 
     def __init__(self, text, parent=None, where=None):
         QDialog.__init__(self,parent)
@@ -65,11 +66,11 @@ class ConfirmDialog(QDialog):
         self.raise_()
 
     def slot_ok(self):
-        self.emit(SIGNAL("confirmdialogok"), self.where)
+        self.confirmdialog_ok.emit(self.where)
         self.close()
 
     def slot_cancel(self):
-        self.emit(SIGNAL("confirmdialogno"), self.where)
+        self.confirmdialog_no.emit(self.where)
         self.close()
 
 class TipsDialog(QDialog):

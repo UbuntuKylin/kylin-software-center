@@ -3,12 +3,12 @@
 # Form implementation generated from reading ui file 'ui/multifuncbtn.ui'
 #
 # Created: Thu Oct 30 17:17:30 2014
-#      by: PyQt4 UI code generator 4.11.2
+#      by: PyQt5 UI code generator 4.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
-
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import *
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -16,27 +16,27 @@ except AttributeError:
         return s
 
 try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QApplication.translate(context, text, disambig)
 
 class Ui_MultiFuncBtn(object):
     def setupUi(self, MultiFuncBtn):
         MultiFuncBtn.setObjectName(_fromUtf8("MultiFuncBtn"))
         MultiFuncBtn.resize(148, 40)
-        self.btnRun = QtGui.QPushButton(MultiFuncBtn)
+        self.btnRun = QPushButton(MultiFuncBtn)
         self.btnRun.setGeometry(QtCore.QRect(0, 0, 148, 40))
         self.btnRun.setObjectName(_fromUtf8("btnRun"))
-        self.btnInstall = QtGui.QPushButton(MultiFuncBtn)
+        self.btnInstall = QPushButton(MultiFuncBtn)
         self.btnInstall.setGeometry(QtCore.QRect(0, 41, 148, 40))
         self.btnInstall.setObjectName(_fromUtf8("btnInstall"))
-        self.btnUpdate = QtGui.QPushButton(MultiFuncBtn)
+        self.btnUpdate = QPushButton(MultiFuncBtn)
         self.btnUpdate.setGeometry(QtCore.QRect(0, 82, 148, 40))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
-        self.btnUninstall = QtGui.QPushButton(MultiFuncBtn)
+        self.btnUninstall = QPushButton(MultiFuncBtn)
         self.btnUninstall.setGeometry(QtCore.QRect(0, 123, 148, 40))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
 

@@ -23,16 +23,18 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5 import QtCore
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from models.advertisement import Advertisement
 from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
 #AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 #UBUNTUKYLIN_RES_AD_PATH = data+ "ads/"
 import time
 import sys  
+from models.enums import Signals
 
 class ADWidget(QMainWindow):
     # ad width
@@ -136,7 +138,7 @@ class ADWidget(QMainWindow):
         self.show()
 
     def akg_move_right(self):
-        animation = QPropertyAnimation(self.label3, "geometry")
+        animation = QPropertyAnimation(self.label3, b"geometry")
         animation.setDuration(3500)
         animation.setStartValue(QRect(200, 0, 200, 200))
         #animation.setKeyValueAt(0.5, QRect(240, 240, 100, 30));
@@ -250,7 +252,7 @@ class ADWidget(QMainWindow):
                 adbx += 16
                 adbtn.setFocusPolicy(Qt.NoFocus)
                 adbtn.setStyleSheet("QPushButton{background-image:url('res/adbtn-1.png');border:0px;}QPushButton:pressed{background:url('res/adbtn-2.png');}")
-                adbtn.connect(adbtn, SIGNAL("adsignal"), self.slot_change_ad_immediately)
+                adbtn.ad_signal.connect(self.slot_change_ad_immediately)
                 self.adbs.append(adbtn)
 
             i += 1
@@ -331,7 +333,7 @@ class ADWidget(QMainWindow):
             x = x + 0.0015
             yield x
 
-class ADButton(QPushButton):
+class ADButton(QPushButton,Signals):
     obj = ''
 
     def __init__(self, obj, parent):
@@ -341,7 +343,7 @@ class ADButton(QPushButton):
         self.pressed.connect(self.adclicked)
 
     def adclicked(self):
-        self.emit(SIGNAL("adsignal"),self.obj)
+        self.ad_signal.emit(self.obj)
 
 class ADButton_Background(QPushButton):
 
@@ -352,8 +354,8 @@ class ADButton_Background(QPushButton):
 def main():
     import sys
     app = QApplication(sys.argv)
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
     tmpads = []
     #tmpads.append(Advertisement("qq", "url", "ad1.png", "http://www.baidu.com"))
     #tmpads.append(Advertisement("wps", "pkg", "ad2.png", "wps"))

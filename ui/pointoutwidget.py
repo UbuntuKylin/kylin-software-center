@@ -22,9 +22,9 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.pointoutw import Ui_PointWidget
 from models.globals import Globals
 from ui.cardwidget import CardWidget
@@ -148,8 +148,8 @@ def main():
     import sys
     app = QApplication(sys.argv)
 
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
     globalfont.setFamily("文泉驿微米黑")

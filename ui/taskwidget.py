@@ -24,12 +24,13 @@
 
 
 import sip
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from models.enums import Signals
 
 
-class Taskwidget(QWidget):
+class Taskwidget(QWidget,Signals):
 
     itemwidth = 146
     spacing = 6
@@ -63,7 +64,7 @@ class Taskwidget(QWidget):
         category = str(btn.display_name)
         self.tasktab.move(btn.x(), self.tasktab.y())
         self.tasktab.show()
-        self.emit(Signals.click_task, category)
+        self.click_task.emit(category)
 
 
 

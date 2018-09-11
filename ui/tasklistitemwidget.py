@@ -24,19 +24,22 @@
 
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
 from models.enums import Signals,AptActionMsg,PkgStates
 from models.enums import UBUNTUKYLIN_RES_ICON_PATH
 from models.enums import setLongTextToElideFormat
 from utils import commontools
 from utils.debfile import DebFile
+from models.application import Application
 
 
-class TaskListItemWidget(QWidget):
+class TaskListItemWidget(QWidget,Signals):
     app = ''
     finish = False
+    task_remove = pyqtSignal(int,Application)
 
     def __init__(self, app, action, tasknumber, parent=None, isdeb=False):
         QWidget.__init__(self,parent)
@@ -197,7 +200,7 @@ class TaskListItemWidget(QWidget):
         if(self.isdeb == True or isinstance(self.app,DebFile)):
             return
         if(self.finish == True):
-            self.emit(Signals.task_remove, self.tasknumber, self.app)
+            self.task_remove.emit(self.tasknumber, self.app)
         else:
             # if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
             #     appaction = "install"
@@ -205,4 +208,4 @@ class TaskListItemWidget(QWidget):
             #     appaction = "upgrade"
             # elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
             #     appaction = "remove"
-            self.emit(Signals.task_cancel, self.app, self.action)
+            self.task_cancel_tliw.emit(self.app, self.action)

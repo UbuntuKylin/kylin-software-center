@@ -27,9 +27,10 @@
 import dbus
 import dbus.service
 import webbrowser
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4 import QtGui
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5 import QtGui
 from xdg import BaseDirectory as xdg
 from ui.mainwindow import Ui_MainWindow
 from ui.categorybar import CategoryBar
@@ -85,7 +86,7 @@ logging.basicConfig(level=logging.DEBUG,
 LOG = logging.getLogger("uksc")
 
 
-class SoftwareCenter(QMainWindow):
+class SoftwareCenter(QMainWindow,Signals):
 
     # recommend number in function "fill"
     recommendNumber = 0
@@ -217,14 +218,14 @@ class SoftwareCenter(QMainWindow):
         self.updateSinglePB = SingleProcessBar(self.launchLoadingDiv.loadinggif)
         #login
         self.login = Login(self)
-        self.connect(self.login, Signals.task_stop, self.slot_click_stop)
+        self.login.task_stop.connect(self.slot_click_stop)
         #log in/out
         self.login.messageBox = MessageBox(self)
         # config widget
         self.configWidget = ConfigWidget(self)
         self.configWidget.messageBox = MessageBox(self)
-        self.connect(self.configWidget, Signals.click_update_source, self.slot_click_update_source)
-        self.connect(self.configWidget, Signals.task_cancel, self.slot_click_cancel)
+        self.configWidget.click_update_source.connect(self.slot_click_update_source)
+        self.configWidget.task_cancel.connect(self.slot_click_cancel)
         # resize corner
         self.resizeCorner = QPushButton(self.ui.centralwidget)
         self.resizeCorner.resize(15, 15)
@@ -553,32 +554,32 @@ class SoftwareCenter(QMainWindow):
         self.ui.headercw1.lebg.clicked.connect(self.slot_searchDTimer_timeout)
         self.ui.headercw1.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
 
-        self.connect(self, Signals.click_item, self.slot_show_app_detail)
-        self.connect(self, Signals.upgrade_app, self.slot_click_upgrade)
-        self.connect(self, Signals.update_source,self.slot_update_source)
-        self.connect(self.categoryBar, Signals.click_categoy, self.slot_change_category)
-        self.connect(self.Taskwidget, Signals.click_task, self.slot_change_task)
-        self.connect(self.detailScrollWidget, Signals.install_debfile, self.slot_click_install_debfile)
-        self.connect(self.detailScrollWidget, Signals.install_app, self.slot_click_install)
-        self.connect(self.detailScrollWidget, Signals.upgrade_app, self.slot_click_upgrade)
-        self.connect(self.detailScrollWidget, Signals.remove_app, self.slot_click_remove)
-        self.connect(self.detailScrollWidget, Signals.submit_review, self.slot_submit_review)
-        self.connect(self.detailScrollWidget, Signals.submit_rating, self.slot_submit_rating)
+        self.click_item.connect(self.slot_show_app_detail)
+        self.upgrade_app.connect(self.slot_click_upgrade)
+        self.update_source.connect(self.slot_update_source)
+        self.categoryBar.click_categoy.connect(self.slot_change_category)
+        self.Taskwidget.click_task.connect(self.slot_change_task)
+        self.detailScrollWidget.install_debfile.connect(self.slot_click_install_debfile)
+        self.detailScrollWidget.install_app.connect(self.slot_click_install)
+        self.detailScrollWidget.upgrade_app.connect(self.slot_click_upgrade)
+        self.detailScrollWidget.remove_app.connect(self.slot_click_remove)
+        self.detailScrollWidget.submit_review.connect(self.slot_submit_review)
+        self.detailScrollWidget.submit_rating.connect(self.slot_submit_rating)
         #change login
-        self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_ui)
-        #self.connect(self.detailScrollWidget, Signals.show_login, self.slot_do_login_account)
-        self.connect(self.detailScrollWidget, Signals.submit_translate_appinfo, self.slot_submit_translate_appinfo)#zx2015.01.26
-        self.connect(self.detailScrollWidget.btns, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
-        self.connect(self, Signals.uninstall_uksc, self.detailScrollWidget.btns.uninstall_uksc)
-        self.connect(self, Signals.cancel_uninstall_uksc, self.detailScrollWidget.btns.cancel_uninstall_uksc)
-        self.connect(self, Signals.normalcard_progress_change, self.detailScrollWidget.slot_proccess_change)
-        self.connect(self.login, Signals.ui_adduser, self.slot_ui_adduser)
-        self.connect(self.login, Signals.ui_login, self.slot_ui_login)
-        self.connect(self.login, Signals.ui_login_success, self.slot_ui_login_success)
-        self.connect(self.login, Signals.ui_uksc_update, self.slot_uksc_update)
-        self.connect(self.configWidget, Signals.change_identity, self.slot_change_identity)
-        self.connect(self.configWidget, Signals.rset_password, self.slot_rset_password)
-        self.connect(self.configWidget, Signals.recover_password, self.slot_recover_password)
+        self.detailScrollWidget.show_login.connect(self.slot_do_login_ui)
+        #self.connect(self.detailScrollWidget, show_login, self.slot_do_login_account)
+        self.detailScrollWidget.submit_translate_appinfo.connect(self.slot_submit_translate_appinfo)#zx2015.01.26
+        self.detailScrollWidget.btns.uninstall_uksc_or_not.connect(self.slot_uninstall_uksc_or_not)
+        self.uninstall_uksc.connect(self.detailScrollWidget.btns.uninstall_uksc)
+        self.cancel_uninstall_uksc.connect(self.detailScrollWidget.btns.cancel_uninstall_uksc)
+        self.normalcard_progress_change.connect(self.detailScrollWidget.slot_proccess_change)
+        self.login.ui_adduser.connect(self.slot_ui_adduser)
+        self.login.ui_login.connect(self.slot_ui_login)
+        self.login.ui_login_success.connect(self.slot_ui_login_success)
+        #self.connect(self.login, ui_uksc_update, self.slot_uksc_update)
+        self.configWidget.change_identity.connect(self.slot_change_identity)
+        self.configWidget.rset_password.connect(self.slot_rset_password)
+        self.configWidget.recover_password.connect(self.slot_recover_password)
 
 
         # widget status
@@ -610,39 +611,39 @@ class SoftwareCenter(QMainWindow):
         self.winnum = 0
         self.win_model = DataModel(self.appmgr)
 
-        self.connect(self.appmgr, Signals.get_ui_first_login_over, self.login.slot_get_ui_first_login_over)
-        self.connect(self.appmgr, Signals.rset_password_over, self.configWidget.slot_rset_password_over)
-        self.connect(self.appmgr, Signals.recover_password_over, self.configWidget.slot_recover_password_over)
-        self.connect(self.appmgr, Signals.change_user_identity_over, self.configWidget.slot_change_user_identity_over)
-        self.connect(self.appmgr, Signals.get_ui_login_over, self.login.slot_get_ui_login_over)
-        self.connect(self.appmgr, Signals.get_ui_adduser_over, self.login.slot_get_ui_adduser_over)
+        self.appmgr.get_ui_first_login_over.connect(self.login.slot_get_ui_first_login_over)
+        self.appmgr.rset_password_over.connect(self.configWidget.slot_rset_password_over)
+        self.appmgr.recover_password_over.connect(self.configWidget.slot_recover_password_over)
+        self.appmgr.change_user_identity_over.connect(self.configWidget.slot_change_user_identity_over)
+        self.appmgr.get_ui_login_over.connect(self.login.slot_get_ui_login_over)
+        self.appmgr.get_ui_adduser_over.connect(self.login.slot_get_ui_adduser_over)
 
-        self.connect(self.appmgr, Signals.init_models_ready,self.slot_init_models_ready)
-        self.connect(self.appmgr, Signals.ads_ready, self.slot_advertisement_ready)
-        self.connect(self.appmgr, Signals.recommend_ready, self.slot_recommend_apps_ready)
-        self.connect(self.appmgr, Signals.ratingrank_ready, self.slot_ratingrank_apps_ready)
-        self.connect(self.appmgr, Signals.rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.connect(self.appmgr, Signals.app_reviews_ready, self.slot_app_reviews_ready)
-        self.connect(self.appmgr, Signals.app_screenshots_ready, self.slot_app_screenshots_ready)
-        self.connect(self.appmgr, Signals.apt_cache_update_ready, self.slot_apt_cache_update_ready)
-        self.connect(self.appmgr, Signals.submit_review_over, self.detailScrollWidget.slot_submit_review_over)
-        self.connect(self.appmgr, Signals.submit_rating_over, self.detailScrollWidget.slot_submit_rating_over)
-        self.connect(self.appmgr, Signals.get_user_applist_over, self.slot_get_user_applist_over)
-        self.connect(self.appmgr, Signals.get_user_transapplist_over, self.slot_get_user_transapplist_over)
-        self.connect(self.appmgr, Signals.submit_translate_appinfo_over, self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
-        self.connect(self.appmgr, Signals.count_application_update,self.slot_count_application_update)
-        self.connect(self.appmgr, Signals.refresh_page, self.slot_refresh_page)
-        self.connect(self.appmgr, Signals.check_source_useable_over, self.slot_check_source_useable_over)
-        self.connect(self, Signals.count_application_update,self.slot_count_application_update)
-        self.connect(self, Signals.apt_process_finish,self.slot_apt_process_finish)
+        self.appmgr.init_models_ready.connect(self.slot_init_models_ready)
+        self.appmgr.ads_ready.connect(self.slot_advertisement_ready)
+        self.appmgr.recommend_ready.connect(self.slot_recommend_apps_ready)
+        self.appmgr.ratingrank_ready.connect(self.slot_ratingrank_apps_ready)
+        #self.connect(self.appmgr, rating_reviews_ready, self.slot_rating_reviews_ready)
+        self.appmgr.app_reviews_ready.connect(self.slot_app_reviews_ready)
+        self.appmgr.app_screenshots_ready.connect(self.slot_app_screenshots_ready)
+        self.appmgr.apt_cache_update_ready.connect(self.slot_apt_cache_update_ready)
+        self.appmgr.submit_review_over.connect(self.detailScrollWidget.slot_submit_review_over)
+        self.appmgr.submit_rating_over.connect(self.detailScrollWidget.slot_submit_rating_over)
+        self.appmgr.get_user_applist_over.connect(self.slot_get_user_applist_over)
+        self.appmgr.get_user_transapplist_over.connect(self.slot_get_user_transapplist_over)
+        self.appmgr.submit_translate_appinfo_over.connect(self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
+        self.appmgr.count_application_update.connect(self.slot_count_application_update)
+        self.appmgr.refresh_page.connect(self.slot_refresh_page)
+        self.appmgr.check_source_useable_over.connect(self.slot_check_source_useable_over)
+        self.count_application_update.connect(self.slot_count_application_update)
+        self.apt_process_finish.connect(self.slot_apt_process_finish)
 
     def init_dbus(self):
         self.backend = InstallBackend()
-        self.connect(self.backend, Signals.dbus_apt_process,self.slot_status_change)
-        #self.connect(self.backend, Signals.dbus_fail_to_usecdrom, self.slot_fail_to_usecdrom)
-        #self.connect(self.backend, Signals.dbus_no_cdrom_mount, self.slot_no_cdrom_mount)
-        #self.connect(self.backend, Signals.dbus_usecdrom_success, self.slot_usecdrom_success)
-        #self.connect(self.backend, Signals.dbus_find_up_server_result, self.slot_find_up_server_result)
+        self.backend.dbus_apt_process.connect(self.slot_status_change)
+        #self.connect(self.backend, dbus_fail_to_usecdrom, self.slot_fail_to_usecdrom)
+        #self.connect(self.backend, dbus_no_cdrom_mount, self.slot_no_cdrom_mount)
+        #self.connect(self.backend, dbus_usecdrom_success, self.slot_usecdrom_success)
+        #self.connect(self.backend, dbus_find_up_server_result, self.slot_find_up_server_result)
 
         res = self.backend.init_dbus_ifaces()
         while res == False:
@@ -882,7 +883,7 @@ class SoftwareCenter(QMainWindow):
         requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
         url = QUrl(requestData)
         self.httpmodel.sendDownLoadRequest(url)
-        self.connect(self.httpmodel, Signals.unzip_img, self.slot_unzip_img_zip)
+        self.httpmodel.unzip_img.connect(self.slot_unzip_img_zip)
 
     def slot_unzip_img_zip(self):
         unzip_resource("/tmp/uk-win.zip")
@@ -920,15 +921,15 @@ class SoftwareCenter(QMainWindow):
                     #winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
                     #card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                     #self.winListWidget.add_card(card)
-                    #self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-                    #self.connect(card, Signals.install_app, self.slot_click_install)
-                    #self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
-                    #self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-                    #self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-                    #self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+                    #self.connect(card, show_app_detail, self.slot_show_app_detail)
+                    #self.connect(card, install_app, self.slot_click_install)
+                    #self.connect(card, upgrade_app, self.slot_click_upgrade)
+                    #self.connect(self, apt_process_finish, card.slot_work_finished)
+                    #self.connect(self, apt_process_cancel, card.slot_work_cancel)
+                    #self.connect(card,get_card_status,self.slot_get_normal_card_status)#12.02
 
                     # kobe 1106
-                    #self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+                    #self.connect(self, trans_card_status, card.slot_change_btn_status)
                 #else:
                     app = self.appmgr.get_application_by_name(context[0])
                     if app is not None and app.package is not None:
@@ -936,15 +937,15 @@ class SoftwareCenter(QMainWindow):
                         winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
                         card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                         self.winListWidget.add_card(card)
-                        self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-                        self.connect(card, Signals.install_app, self.slot_click_install)
-                        self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
-                        self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
-                        self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-                        self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
+                        card.show_app_detail.connect(self.slot_show_app_detail)
+                        card.install_app.connect(self.slot_click_install)
+                        card.upgrade_app.connect(self.slot_click_upgrade)
+                        card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
+                        self.apt_process_finish.connect(card.slot_work_finished)
+                        self.apt_process_cancel.connect(card.slot_work_cancel)
 
                     # kobe 1106
-                        self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+                        self.trans_card_status.connect(card.slot_change_btn_status)
         self.win_exists = 1
 
     def show_to_frontend(self):
@@ -1166,33 +1167,33 @@ class SoftwareCenter(QMainWindow):
 
             # oneitem = QListWidgetItem()
             # liw = ListItemWidget(app, self.backend, self.nowPage, self)
-            # self.connect(liw, Signals.show_app_detail, self.slot_show_app_detail)
-            # self.connect(liw, Signals.install_app, self.slot_click_install)
-            # self.connect(liw, Signals.upgrade_app, self.slot_click_upgrade)
-            # self.connect(liw, Signals.remove_app, self.slot_click_remove)
+            # self.connect(liw, show_app_detail, self.slot_show_app_detail)
+            # self.connect(liw, install_app, self.slot_click_install)
+            # self.connect(liw, upgrade_app, self.slot_click_upgrade)
+            # self.connect(liw, remove_app, self.slot_click_remove)
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
             card = NormalCard(app,self.messageBox, listWidget.cardPanel)#self.nowPage, self.prePage,
             listWidget.add_card(card)
-            self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(card, Signals.install_app, self.slot_click_install)
-            self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
-            self.connect(card, Signals.remove_app, self.slot_click_remove)
-            self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-            self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-            self.connect(card, Signals.get_card_status, self.slot_get_normal_card_status)#12.02
+            card.show_app_detail.connect(self.slot_show_app_detail)
+            card.install_app.connect(self.slot_click_install)
+            card.upgrade_app.connect(self.slot_click_upgrade)
+            card.remove_app.connect(self.slot_click_remove)
+            self.apt_process_finish.connect(card.slot_work_finished)
+            self.apt_process_cancel.connect(card.slot_work_cancel)
+            card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
             if app.name == "ubuntu-kylin-software-center":
-                self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
-                self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
-                self.connect(self, Signals.cancel_uninstall_uksc, card.cancel_uninstall_uksc)
+                card.uninstall_uksc_or_not.connect(self.slot_uninstall_uksc_or_not)
+                self.uninstall_uksc.connect(card.uninstall_uksc)
+                self.cancel_uninstall_uksc.connect(card.cancel_uninstall_uksc)
 
             # wb : show_progress
-            self.connect(self, Signals.normalcard_progress_change,card.slot_progress_change)
-            self.connect(self, Signals.normalcard_progress_finish,card.slot_progress_finish)
-            self.connect(self, Signals.normalcard_progress_cancel,card.slot_progress_cancel)
+            self.normalcard_progress_change.connect(card.slot_progress_change)
+            self.normalcard_progress_finish.connect(card.slot_progress_finish)
+            self.normalcard_progress_cancel.connect(card.slot_progress_cancel)
 
             # kobe 1106
-            self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+            self.trans_card_status.connect(card.slot_change_btn_status)
 
             count = count + 1
 
@@ -1228,25 +1229,25 @@ class SoftwareCenter(QMainWindow):
 
                 card = NormalCard(app, self.messageBox, listWidget.cardPanel)# self.nowPage, self.prePage,
                 listWidget.add_card(card)
-                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(card, Signals.install_app, self.slot_click_install)
-                self.connect(card, Signals.upgrade_app, self.slot_click_upgrade)
-                self.connect(card, Signals.remove_app, self.slot_click_remove)
-                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-                self.connect(card, Signals.get_card_status, self.slot_get_normal_card_status)#12.02
+                card.show_app_detail.connect(self.slot_show_app_detail)
+                card.install_app.connect(self.slot_click_install)
+                card.upgrade_app.connect(self.slot_click_upgrade)
+                card.remove_app.connect(self.slot_click_remove)
+                self.apt_process_finish.connect(card.slot_work_finished)
+                self.apt_process_cancel.connect(card.slot_work_cancel)
+                card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
                 if app.name == "ubuntu-kylin-software-center":
-                    self.connect(card, Signals.uninstall_uksc_or_not, self.slot_uninstall_uksc_or_not)
-                    self.connect(self, Signals.uninstall_uksc, card.uninstall_uksc)
-                    self.connect(self, Signals.cancel_uninstall_uksc, card.cancel_uninstall_uksc)
+                    card.uninstall_uksc_or_not.connect(self.slot_uninstall_uksc_or_not)
+                    self.uninstall_uksc.connect(card.uninstall_uksc)
+                    self.cancel_uninstall_uksc.connect(card.cancel_uninstall_uksc)
 
                 # wb : show_progress
-                self.connect(self, Signals.normalcard_progress_change,card.slot_progress_change)
-                self.connect(self, Signals.normalcard_progress_finish,card.slot_progress_finish)
-                self.connect(self, Signals.normalcard_progress_cancel,card.slot_progress_cancel)
+                self.normalcard_progress_change.connect(card.slot_progress_change)
+                self.normalcard_progress_finish.connect(card.slot_progress_finish)
+                self.normalcard_progress_cancel.connect(card.slot_progress_cancel)
 
                 # kobe 1106
-                self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+                self.trans_card_status.connect(card.slot_change_btn_status)
 
                 count = count + 1
 
@@ -1289,7 +1290,7 @@ class SoftwareCenter(QMainWindow):
 
         self.show_more_software(listWidget)
 
-        self.emit(Signals.count_application_update)
+        self.count_application_update.emit()
 
 
     def add_task_item(self, app, action, isdeb=False):
@@ -1297,25 +1298,25 @@ class SoftwareCenter(QMainWindow):
         if(isdeb == True):
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self, isdeb=True)
-            # self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            # self.connect(tliw, task_cancel, self.slot_click_cancel)
+            tliw.task_remove.connect(self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
         else:
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self)
-            self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-            self.connect(tliw, Signals.task_remove, self.slot_remove_task)
+            tliw.task_cancel_tliw.connect(self.slot_click_cancel)
+            tliw.task_remove.connect(self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
 
         self.stmap[app.name] = tliw
-        #self.connect(tliw, Signals.task_cancel, self.slot_click_cancel)
-        #self.connect(tliw, Signals.task_remove, self.slot_remove_task)
-        #self.connect(tliw, Signals.task_upgrade, self.slot_click_upgrade)
-        #self.connect(tliw, Signals.task_reinstall, self.slot_click_install)
-        self.connect(self, Signals.apt_process_finish, tliw.slot_work_finished)
+        #self.connect(tliw, task_cancel, self.slot_click_cancel)
+        #self.connect(tliw, task_remove, self.slot_remove_task)
+        #self.connect(tliw, task_upgrade, self.slot_click_upgrade)
+        #self.connect(tliw, task_reinstall, self.slot_click_install)
+        self.apt_process_finish.connect(tliw.slot_work_finished)
 
         self.ui.btnGoto.setVisible(False)
         self.ui.notaskImg.setVisible(False)
@@ -1406,23 +1407,23 @@ class SoftwareCenter(QMainWindow):
             if(self.uksc.is_upgradable == True):
                 self.show_mainwindow()
                 cd = ConfirmDialog("软件商店有新版本，是否升级？", self)
-                self.connect(cd, SIGNAL("confirmdialogok"), self.update_uksc)
+                cd.confirmdialog_ok.connect(self.update_uksc)
                 cd.exec_()
 
     def slot_uninstall_uksc_or_not(self, where):
         cd = ConfirmDialog("您真的要卸载软件商店吗?\n卸载后该应用将会关闭.", self, where)
-        self.connect(cd, SIGNAL("confirmdialogok"), self.to_uninstall_uksc)
-        self.connect(cd, SIGNAL("confirmdialogno"), self.to_cancel_uninstall_uksc)
+        cd.confirmdialog_ok.connect(self.to_uninstall_uksc)
+        cd.confirmdialog_no.connect(self.to_cancel_uninstall_uksc)
         cd.exec_()
 
     def to_uninstall_uksc(self, where):
-        self.emit(Signals.uninstall_uksc, where)
+        self.uninstall_uksc.emit(where)
 
     def to_cancel_uninstall_uksc(self, where):
-        self.emit(Signals.cancel_uninstall_uksc, where)
+        self.cancel_uninstall_uksc.emit(where)
 
     def update_uksc(self):
-        self.emit(Signals.upgrade_app, self.uksc)
+        self.upgrade_app.emit(self.uksc)
 
     def restart_uksc(self):
         self.restart_uksc_now()
@@ -1465,13 +1466,13 @@ class SoftwareCenter(QMainWindow):
                     continue
                 card = PointCard(p,self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
-                self.connect(card, Signals.show_app_detail, self.slot_show_app_detail)
-                self.connect(card, Signals.install_app, self.slot_click_install)
-                self.connect(card, Signals.install_app_rcm, self.slot_click_install_rcm)
-                self.connect(self, Signals.apt_process_finish, card.slot_work_finished)
-                self.connect(self, Signals.apt_process_cancel, card.slot_work_cancel)
-                self.connect(card,Signals.get_card_status,self.slot_get_normal_card_status)#12.03
-                self.connect(self, Signals.trans_card_status, card.slot_change_btn_status)
+                card.show_app_detail.connect(self.slot_show_app_detail)
+                card.install_app.connect(self.slot_click_install)
+                card.install_app_rcm.connect(self.slot_click_install_rcm)
+                self.apt_process_finish.connect(card.slot_work_finished)
+                self.apt_process_cancel.connect(card.slot_work_cancel)
+                card.get_card_status.connect(self.slot_get_normal_card_status)#12.03
+                self.trans_card_status.connect(card.slot_change_btn_status)
             self.pointout.show_animation(True)
         else:
             # in quiet mode, no pointout app.  quit uksc
@@ -1750,23 +1751,23 @@ class SoftwareCenter(QMainWindow):
 
         #self.slot_btn_set()
         #adlist
-        self.animation2 = QPropertyAnimation(self.ui.label_12, "geometry")
+        self.animation2 = QPropertyAnimation(self.ui.label_12, b"geometry")
         self.animation2.setDuration(700)
         self.animation2.setStartValue(self.r1)
         self.animation2.setEndValue(self.r3)
 
 
-        self.animation = QPropertyAnimation(self.ui.label_13, "geometry")
+        self.animation = QPropertyAnimation(self.ui.label_13, b"geometry")
         self.animation.setDuration(700)
         self.animation.setStartValue(self.r3)
         self.animation.setEndValue(self.r2)
 
-        self.animation1 = QPropertyAnimation(self.ui.label_14, "geometry")
+        self.animation1 = QPropertyAnimation(self.ui.label_14, b"geometry")
         self.animation1.setDuration(700)
         self.animation1.setStartValue(self.r2)
         self.animation1.setEndValue(self.r4)
 
-        self.animation3 = QPropertyAnimation(self.ui.label_11, "geometry")
+        self.animation3 = QPropertyAnimation(self.ui.label_11, b"geometry")
         self.animation3.setDuration(1000)
         self.animation3.setStartValue(self.r4)
         self.animation3.setEndValue(self.r1)
@@ -1822,22 +1823,22 @@ class SoftwareCenter(QMainWindow):
                     image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 3].pic)        
                     self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
         #self.slot_btn_set()
-        self.animation2 = QPropertyAnimation(self.ui.label_12, "geometry")
+        self.animation2 = QPropertyAnimation(self.ui.label_12, b"geometry")
         self.animation2.setDuration(700)
         self.animation2.setStartValue(self.r2)
         self.animation2.setEndValue(self.r3)
 
-        self.animation = QPropertyAnimation(self.ui.label_11, "geometry")
+        self.animation = QPropertyAnimation(self.ui.label_11, b"geometry")
         self.animation.setDuration(700)
         self.animation.setStartValue(self.r3)
         self.animation.setEndValue(self.r1)
 
-        self.animation1 = QPropertyAnimation(self.ui.label_14, "geometry")
+        self.animation1 = QPropertyAnimation(self.ui.label_14, b"geometry")
         self.animation1.setDuration(700)
         self.animation1.setStartValue(self.r1)
         self.animation1.setEndValue(self.r4)
 
-        self.animation3 = QPropertyAnimation(self.ui.label_13, "geometry")
+        self.animation3 = QPropertyAnimation(self.ui.label_13, b"geometry")
         self.animation3.setDuration(1000)
         self.animation3.setStartValue(self.r5)
         self.animation3.setEndValue(self.r2)
@@ -1865,17 +1866,17 @@ class SoftwareCenter(QMainWindow):
                 continue
             recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
             self.recommendListWidget.add_card(recommend)
-            self.connect(recommend, Signals.show_app_detail, self.slot_show_app_detail)
-            self.connect(recommend, Signals.install_app, self.slot_click_install)
-            self.connect(self, Signals.apt_process_finish, recommend.slot_work_finished)
-            self.connect(self, Signals.apt_process_cancel, recommend.slot_work_cancel)
-            self.connect(self, Signals.trans_card_status, recommend.slot_change_btn_status)
+            recommend.show_app_detail.connect(self.slot_show_app_detail)
+            recommend.install_app.connect(self.slot_click_install)
+            self.apt_process_finish.connect(recommend.slot_work_finished)
+            self.apt_process_cancel.connect(recommend.slot_work_cancel)
+            self.trans_card_status.connect(recommend.slot_change_btn_status)
             # wb : show_progress
-            self.connect(self, Signals.normalcard_progress_change,recommend.slot_progress_change)
-            self.connect(self, Signals.normalcard_progress_finish,recommend.slot_progress_finish)
-            self.connect(self, Signals.normalcard_progress_cancel,recommend.slot_progress_cancel)
+            self.normalcard_progress_change.connect(recommend.slot_progress_change)
+            self.normalcard_progress_finish.connect(recommend.slot_progress_finish)
+            self.normalcard_progress_cancel.connect(recommend.slot_progress_cancel)
 
-            self.connect(recommend,Signals.get_card_status,self.slot_get_normal_card_status)#12.02
+            recommend.get_card_status.connect(self.slot_get_normal_card_status)#12.02
         self.rec_ready = True
         self.check_init_ready(bysignal)
 
@@ -2212,11 +2213,11 @@ class SoftwareCenter(QMainWindow):
             self.ui.btnCloseDetail.setVisible(False)
             self.winListWidget.scrollToTop()
         self.init_win_solution_widget()
-        self.emit(Signals.count_application_update)
+        self.count_application_update.emit()
         Globals.NOWPAGE = PageStates.WINPAGE
         # self.prePage = "winpage"
         # self.nowPage = 'winpage'
-        # self.emit(Signals.count_application_update)
+        # self.emit(count_application_update)
         self.categoryBar.reset_categorybar()
         self.category = ''
         self.categoryBar.hide()
@@ -2317,6 +2318,7 @@ class SoftwareCenter(QMainWindow):
 
 
     def slot_get_user_applist_over(self, reslist):
+        reslist = reslist[0]['res']
         self.userAppListWidget.clear()
         if False == reslist:
             self.messageBox.alert_msg("网络连接出错\n"
@@ -2337,14 +2339,14 @@ class SoftwareCenter(QMainWindow):
                     app.install_date = install_date
                     item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
                     self.userAppListWidget.add_card(item)
-                    self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
-                    self.connect(item, Signals.install_app, self.slot_click_install)
-                    self.connect(item, Signals.upgrade_app, self.slot_click_upgrade)
-                    self.connect(item, Signals.remove_app, self.slot_click_remove)
-                    self.connect(self, Signals.apt_process_finish, item.slot_work_finished)
-                    self.connect(self, Signals.apt_process_cancel, item.slot_work_cancel)
-                    self.connect(item, Signals.get_card_status, self.slot_get_normal_card_status)#12.02
-                    self.connect(self, Signals.trans_card_status, item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
+                    item.show_app_detail.connect(self.slot_show_app_detail)
+                    item.install_app.connect(self.slot_click_install)
+                    item.upgrade_app.connect(self.slot_click_upgrade)
+                    item.remove_app.connect(self.slot_click_remove)
+                    self.apt_process_finish.connect(item.slot_work_finished)
+                    self.apt_process_cancel.connect(item.slot_work_cancel)
+                    item.get_card_status.connect(self.slot_get_normal_card_status)#12.02
+                    self.trans_card_status.connect(item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
             else:
                 self.ui.uaNoItemText.show()
                 self.ui.uaNoItemWidget.show()
@@ -2353,6 +2355,7 @@ class SoftwareCenter(QMainWindow):
         self.slot_ua_select_all()
 
     def slot_get_user_transapplist_over(self,reslist):#zx 2015.01.30
+        reslist = reslist[0]['res']
         self.userTransAppListWidget.clear()
         if False != reslist:
             if(len(reslist) > 0):
@@ -2403,7 +2406,7 @@ class SoftwareCenter(QMainWindow):
                 for appname in allappname:
                     item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
                     self.userTransAppListWidget.add_card(item)
-                    self.connect(item, Signals.show_app_detail, self.slot_show_app_detail)
+                    item.show_app_detail.connect(self.slot_show_app_detail)
             else:
                 self.ui.NoTransItemText.show()
                 self.ui.NoTransItemWidget.show()
@@ -2418,7 +2421,7 @@ class SoftwareCenter(QMainWindow):
         try:
             if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
                 cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
-                self.connect(cd, SIGNAL("confirmdialogok"), self.slot_exit_uksc)
+                cd.confirmdialog_ok.connect(self.slot_exit_uksc)
                 cd.exec_()
             else:
                 self.slot_exit_uksc()
@@ -2470,7 +2473,7 @@ class SoftwareCenter(QMainWindow):
             self.slot_show_app_detail(app)
         else:
             MS = QMessageBox
-            MS.information(self,"提示","软件源不完整或不包含该软件",'确定','','',0, 0)
+            MS.information(self,"提示","软件源不完整或不包含该软件",QMessageBox.Yes)
             
             #print "sssssssssssssssssssssssssssssssss"
             #webbrowser.open_new_tab(self.adlist[self.adi].urlorpkgid)
@@ -2498,7 +2501,7 @@ class SoftwareCenter(QMainWindow):
 
     # kobe 1106
     def slot_get_normal_card_status(self, pkgname, status):
-        self.emit(Signals.trans_card_status, pkgname, status)
+        self.trans_card_status.emit(pkgname, status)
 
     def slot_update_source(self,quiet=False):
         LOG.info("add an update task:%s","###")
@@ -2517,7 +2520,7 @@ class SoftwareCenter(QMainWindow):
             cd.exec_()
 
     def slot_click_update_source(self):
-        self.emit(Signals.update_source)
+        self.update_source.emit()
 
     def slot_click_install_debfile(self, debfile): #modified by zhangxin 11:19
         LOG.info("add an install debfile task:%s", debfile.path)
@@ -2593,7 +2596,7 @@ class SoftwareCenter(QMainWindow):
         self.appmgr.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description)
 
     def slot_submit_rating(self, app_name, rating):
-        LOG.info("submit one rating:%s", rating)
+        LOG.info("submit one rating:%s", str(rating))
         self.appmgr.submit_rating(app_name, rating)
 
     def slot_click_cancel(self, app, action):
@@ -2618,12 +2621,12 @@ class SoftwareCenter(QMainWindow):
                     app.status = PkgStates.UNINSTALL
                 elif action == AppActions.UPGRADE:
                     app.status = PkgStates.UPDATE
-                self.emit(Signals.normalcard_progress_finish, app.name)
-                self.emit(Signals.apt_process_cancel, app.name, action)
+                self.normalcard_progress_finish.emit(app.name)
+                self.apt_process_cancel.emit(app.name, action)
                 self.del_task_item(app.name, action, True, False)
 
     def slot_cancel_for_work_filed(self, appname, action):
-        self.emit(Signals.apt_process_cancel, appname, action)
+        self.apt_process_cancel.emit(appname, action)
 
     def slot_remove_task(self, tasknumber, app):
         count = self.ui.taskListWidget_complete.count()
@@ -2718,8 +2721,8 @@ class SoftwareCenter(QMainWindow):
                         app.status = PkgStates.UNINSTALL
                     elif action == AppActions.UPGRADE:
                         app.status = PkgStates.UPDATE
-                self.emit(Signals.normalcard_progress_cancel, name)
-                self.emit(Signals.apt_process_cancel,name,action)
+                self.normalcard_progress_cancel.emit(name)
+                self.apt_process_cancel.emit(name,action)
                 self.del_task_item(name, action, True, False)
                 try:
                     del self.stmap[name]
@@ -2733,14 +2736,14 @@ class SoftwareCenter(QMainWindow):
                     # (install debfile deps finish) is not the (install debfile task) finish
                     if app is not None and app.package is not None:
                         app.percent = 0
-                    self.emit(Signals.apt_process_finish, name, action)
-                    self.emit(Signals.normalcard_progress_finish, name)
+                    self.apt_process_finish.emit(name, action)
+                    self.normalcard_progress_finish.emit(name)
                     self.del_task_item(name, action, False, True)
                     if name == "ubuntu-kylin-software-center":
                         if action == AppActions.UPGRADE:
                             cd = ConfirmDialog("软件中心升级完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
-                            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
-                            self.connect(cd, SIGNAL("confirmdialogno"), self.backend.set_uksc_not_working) #if uksc upgrade itself,  the uksc will keep working status untill using func set_uksc_not_working
+                            cd.confirmdialog_ok.connect(self.restart_uksc)
+                            cd.confirmdialog_no.connect(self.backend.set_uksc_not_working) #if uksc upgrade itself,  the uksc will keep working status untill using func set_uksc_not_working
                             cd.exec_()
                         elif action == AppActions.REMOVE:
                             self.backend.clear_dbus_worklist()
@@ -2749,7 +2752,7 @@ class SoftwareCenter(QMainWindow):
                             sys.exit(0)
                         else:
                             cd = ConfirmDialog("软件中心安装完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
-                            self.connect(cd, SIGNAL("confirmdialogok"), self.restart_uksc)
+                            cd.confirmdialog_ok.connect(self.restart_uksc)
                             cd.exec_()
                     else:
                         self.messageBox.alert_msg(AptActionMsg[action] + "完成")
@@ -2757,7 +2760,7 @@ class SoftwareCenter(QMainWindow):
                 elif percent < 0:
                     if app is not None and app.package is not None:
                         app.percent = 0
-                    self.emit(Signals.normalcard_progress_cancel, name)
+                    self.normalcard_progress_cancel.emit(name)
                     count = self.ui.taskListWidget.count()
                     for i in range(count):
                         item = self.ui.taskListWidget.item(i)
@@ -2769,19 +2772,19 @@ class SoftwareCenter(QMainWindow):
                     if int(percent) == int(-9):
                         self.slot_cancel_for_work_filed(name, action)
                         self.appmgr.update_models(action, name)
-                        buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                        buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
                     elif int(percent) == int(-1):
                         self.slot_cancel_for_work_filed(name, action)
                         self.appmgr.update_models(action, name)
-                        buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                        buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
                     elif int(percent) == int(-11):
                         self.slot_cancel_for_work_filed(name, action)
                         self.appmgr.update_models(action, name)
-                        buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n","知道了","","",0,0)
+                        buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
                     elif int(percent) == int(-7):
                         self.messageBox.alert_msg(AptActionMsg[action] + "完成")
-                        self.emit(Signals.apt_process_finish, name, action)
-                        self.emit(Signals.normalcard_progress_finish, name)
+                        self.apt_process_finish.emit(name, action)
+                        self.normalcard_progress_finish.emit(name)
                     else:
                         self.slot_cancel_for_work_filed(name, action)
                         self.messageBox.alert_msg(AptActionMsg[action] + "失败")
@@ -2796,7 +2799,7 @@ class SoftwareCenter(QMainWindow):
                         taskitem = self.ui.taskListWidget.itemWidget(item)
                         if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                             taskitem.status_change(processtype, percent, msg)
-                    self.emit(Signals.normalcard_progress_change, name, percent, action)
+                    self.normalcard_progress_change.emit(name, percent, action)
 
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:
@@ -2822,7 +2825,7 @@ class SoftwareCenter(QMainWindow):
                     self.updateSinglePB.hide()
                     self.appmgr.init_models()
         else:
-            self.emit(Signals.count_application_update)
+            self.count_application_update.emit()
 
             # app = self.appmgr.get_application_by_name(pkgname)
             # if app is not None:
@@ -3022,9 +3025,8 @@ def windows():
 
 def main():
     app = QApplication(sys.argv)
-
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+#   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+#   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
     # globalfont.setFamily("")

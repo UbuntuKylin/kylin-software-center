@@ -24,12 +24,13 @@
 
 
 import os
+
 from xdg import BaseDirectory as xdg
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from backend.ubuntu_sw import safe_makedirs
-
+from models.application import Application
 
 #########################################################
 
@@ -39,7 +40,7 @@ UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 #UBUNTUKYLIN_SERVER = "http://192.168.70.129/uksc/"
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
-Specials=["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
+Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
 
 
 # add by kobe to format long text
@@ -156,96 +157,99 @@ PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
 
 class Signals:
-    init_models_ready = SIGNAL("init-data-ready")
-    chksoftwareover = SIGNAL("chksoftwareover")
-    getallpackagesover = SIGNAL("getallpackagesover")
-    countiover = SIGNAL("countiover")
-    countuover = SIGNAL("countuover")
-    task_remove = SIGNAL("taskremove")
-    task_cancel = SIGNAL("taskcancel")
-    task_stop = SIGNAL("taskstop")
+    init_models_ready = pyqtSignal(str,str)
+#    chksoftwareover = pyqtSignal()
+#    getallpackagesover = pyqtSignal()
+#    countiover = pyqtSignal()
+#    countuover = pyqtSignal()
+    task_remove = pyqtSignal(int,Application)
+    task_cancel = pyqtSignal(str,str)
+    task_cancel_tliw = pyqtSignal(Application,str)
+    task_stop = pyqtSignal(str,str)
     #add
-    task_reinstall = SIGNAL("taskreinstall")
-    task_upgrade = SIGNAL("task_upgrade")
-    ads_ready = SIGNAL("advertisements-ready")
-    recommend_ready = SIGNAL("recommend-ready")
-    ratingrank_ready = SIGNAL("ratingrank-ready")
-    toprated_ready = SIGNAL("toprated-ready")
-    rating_reviews_ready = SIGNAL("rating-reviews-ready")
-    app_reviews_ready = SIGNAL("app-reviews-ready")
-    app_screenshots_ready = SIGNAL("app-screenshots-ready")
-    count_application_update = SIGNAL("count-application-update")
-    click_categoy = SIGNAL("clickcategory")
-    click_item = SIGNAL("clickitem")
-    show_app_detail = SIGNAL("app-show-detail")
-    install_debfile = SIGNAL("install-debfile")
-    install_app = SIGNAL("install-app")
-    install_app_rcm = SIGNAL("install-app-rcm")
-    remove_app = SIGNAL("remove-app")
-    upgrade_app = SIGNAL("upgrade-app")
-    click_update_source = SIGNAL("click-update-source")
-    update_source = SIGNAL("update-source")
-    update_source_cancel = SIGNAL("update-source-cancel")
+    task_reinstall = pyqtSignal()
+    task_upgrade = pyqtSignal()
+    ads_ready = pyqtSignal(list,bool)
+    recommend_ready = pyqtSignal(list,bool)
+    ratingrank_ready = pyqtSignal(list,bool)
+    toprated_ready = pyqtSignal(list)
+    rating_reviews_ready = pyqtSignal(list)
+    app_reviews_ready = pyqtSignal(list)
+    app_screenshots_ready = pyqtSignal(str)
+    count_application_update = pyqtSignal()
+    click_categoy = pyqtSignal(str,bool)
+    click_item = pyqtSignal()
+    show_app_detail = pyqtSignal(Application)
+    install_debfile = pyqtSignal(Application)
+    install_app = pyqtSignal(Application)
+    install_app_rcm = pyqtSignal(Application)
+    remove_app = pyqtSignal(Application)
+    upgrade_app = pyqtSignal(Application)
+    click_update_source = pyqtSignal()
+    update_source = pyqtSignal()
+    update_source_cancel = pyqtSignal()
 
-    click_usecdrom = SIGNAL("click-usecdrom")
-    usecdrom = SIGNAL("usecdrom")
-    dbus_fail_to_usecdrom = SIGNAL("dbus-fail-to-usecdrom")
-    dbus_no_cdrom_mount = SIGNAL("apt-no-cdrom-mount")
-    dbus_usecdrom_success = SIGNAL("dbus_usecdrom_success")
+    click_usecdrom = pyqtSignal()
+    usecdrom = pyqtSignal()
+    dbus_fail_to_usecdrom = pyqtSignal()
+    dbus_no_cdrom_mount = pyqtSignal()
+    dbus_usecdrom_success = pyqtSignal()
 
-    dbus_apt_process = SIGNAL("dbus-apt-process")
-    apt_process_finish = SIGNAL("apt-process-finish")
-    apt_process_cancel = SIGNAL("apt-process-cancel")
-    apt_cache_update_ready = SIGNAL("apt-cache-update-ready")
-    get_all_ratings_ready = SIGNAL("get-all-ratings-ready")
-    get_user_applist_over = SIGNAL("get-user-applist-over")
-    get_user_transapplist_over = SIGNAL("get-user-transapplist-over")#zx 2015.01.30
+    #dbus_apt_process = pyqtSignal(str,str,str,int,str)
+    apt_process_finish = pyqtSignal(str,str)
+    apt_process_cancel = pyqtSignal(str,str)
+    apt_cache_update_ready = pyqtSignal(str,str)
+    get_all_ratings_ready = pyqtSignal()
+    get_user_applist_over = pyqtSignal(list)
+    get_user_transapplist_over = pyqtSignal(list) #zx 2015.01.30
 #add
-    recover_password_over = SIGNAL("recover_password_over")
-    recover_password = SIGNAL("recover_password")
-    rset_password = SIGNAL("rset_password")	
-    rset_password_over = SIGNAL("rset_password_over")
-    change_user_identity_over = SIGNAL("change_user_identity_over")
-    change_identity = SIGNAL("change_identity")
-    get_ui_first_login_over = SIGNAL("get_ui_first_login_over")
-    get_ui_login_over = SIGNAL("get_ui_login_over")
-    ui_login_success = SIGNAL("ui_login_success")
-    ui_uksc_update = SIGNAL("ui_uksc_update")
-    get_ui_adduser_over = SIGNAL("get_ui_adduser_over")
-    ui_adduser = SIGNAL("ui_adduser")
-    ui_login = SIGNAL("ui_login")
+    recover_password_over = pyqtSignal(list)
+    recover_password = pyqtSignal(str,str,str)
+    rset_password = pyqtSignal(str)
+    rset_password_over = pyqtSignal(list)
+    change_user_identity_over = pyqtSignal(list)
+    change_identity = pyqtSignal()
+    get_ui_first_login_over = pyqtSignal(list)
+    get_ui_login_over = pyqtSignal(list)
+    ui_login_success = pyqtSignal()
+    ui_uksc_update = pyqtSignal()
+    get_ui_adduser_over = pyqtSignal(list)
+    ui_adduser = pyqtSignal(str,str,str,str,str)
+    ui_login = pyqtSignal(str,str)
 
-    submit_review = SIGNAL("submit-review")
-    submit_review_over = SIGNAL("submit-review-over")
-    submit_rating = SIGNAL("submit-rating")
-    submit_rating_over = SIGNAL("submit-rating-over")
-    show_login = SIGNAL("show-login")
-    get_user_rating = SIGNAL("get-user-rating")
-    unzip_img = SIGNAL("unzip-img")
-    mfb_click_run = SIGNAL("multifuncbtn-click-run")
-    mfb_click_install = SIGNAL("multifuncbtn-click-install")
-    mfb_click_update = SIGNAL("multifuncbtn-click-update")
-    mfb_click_uninstall = SIGNAL("multifuncbtn-click-uninstall")
-    get_card_status = SIGNAL("get-card-status")
-    trans_card_status = SIGNAL("trans-card-status")
-    submit_translate_appinfo = SIGNAL("submit_translate_appinfo")#zx 2015.01.26
-    submit_translate_appinfo_over = SIGNAL("submit_translate_appinfo_over")
-    uninstall_uksc_or_not = SIGNAL("uninstall_uksc_or_not")
-    uninstall_uksc = SIGNAL("uninstall_uksc")
-    cancel_uninstall_uksc = SIGNAL("cancel_uninstall_uksc")
-    refresh_page = SIGNAL("refresh-page")
-    check_source_useable_over = SIGNAL("check_source_useable_over")
-    click_find_up_server = SIGNAL("click_find_up_server")
-    dbus_find_up_server_result = SIGNAL("dbus_find_up_server_result")
-    restart_uksc_now = SIGNAL("restart_uksc_now")
-
-
+    submit_review = pyqtSignal(str,str)
+    submit_review_over = pyqtSignal(list)
+    submit_rating = pyqtSignal(str,int)
+    submit_rating_over = pyqtSignal(list)
+    show_login = pyqtSignal()
+    get_user_rating = pyqtSignal(int)
+    unzip_img = pyqtSignal()
+    mfb_click_run = pyqtSignal()
+    mfb_click_install = pyqtSignal(Application)
+    mfb_click_update = pyqtSignal(Application)
+    mfb_click_uninstall = pyqtSignal(Application)
+    get_card_status = pyqtSignal(str,int)
+    trans_card_status = pyqtSignal(str,int)
+    submit_translate_appinfo = pyqtSignal(str,str,str,str,str,str,str,str,str,str) #zx 2015.01.26
+    submit_translate_appinfo_over = pyqtSignal(list)
+    uninstall_uksc_or_not = pyqtSignal(str)
+    uninstall_uksc = pyqtSignal(str)
+    cancel_uninstall_uksc = pyqtSignal(str)
+    refresh_page = pyqtSignal()
+    check_source_useable_over = pyqtSignal(list)
+    click_find_up_server = pyqtSignal()
+    dbus_find_up_server_result = pyqtSignal()
+    restart_uksc_now = pyqtSignal()
+#add 20180904
+    confirmdialog_ok = pyqtSignal(str)
+    confirmdialog_no = pyqtSignal(str)
+    ad_signal = pyqtSignal(int)
 
     #wb 2015.06.26
-    normalcard_progress_change = SIGNAL("normalcard_progress_change")
-    normalcard_progress_finish = SIGNAL("normalcard_progress_finish")
-    normalcard_progress_cancel = SIGNAL("normalcard_progress_cancel")
-    click_task = SIGNAL("click_task")
+    normalcard_progress_change = pyqtSignal(str,float,int)
+    normalcard_progress_finish = pyqtSignal(str)
+    normalcard_progress_cancel = pyqtSignal(str)
+    click_task = pyqtSignal(str)
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

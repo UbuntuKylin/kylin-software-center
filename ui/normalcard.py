@@ -23,8 +23,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.uknormalcard import Ui_NormalCard
 from ui.starwidget import StarWidget
 from utils import run
@@ -33,7 +34,7 @@ from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
 from models.globals import Globals
 
-class NormalCard(QWidget):
+class NormalCard(QWidget,Signals):
 
     def __init__(self, app, messageBox, parent=None):#nowpage, prepage,
         QWidget.__init__(self, parent)
@@ -386,8 +387,8 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("等待安装")
                 self.slot_show_progress("install")
-                self.emit(Signals.install_app, self.app)
-                self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
+                self.install_app.emit(self.app)
+                self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
 
@@ -395,20 +396,20 @@ class NormalCard(QWidget):
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("等待升级")
                 self.slot_show_progress("upgrade")
-                self.emit(Signals.upgrade_app, self.app)
-                self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
+                self.upgrade_app.emit(self.app)
+                self.get_card_status.emit(self.app.name, PkgStates.UPGRADING)
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
             elif(self.ui.btn.text() == "卸载"):
                 if self.app.name == "ubuntu-kylin-software-center":
-                    self.emit(Signals.uninstall_uksc_or_not, "normalcard")
+                    self.uninstall_uksc_or_not.emit("normalcard")
                 else:
                     self.app.status = PkgStates.REMOVING
                     self.ui.btn.setText("等待卸载")
                     self.slot_show_progress("remove")
-                    self.emit(Signals.remove_app, self.app)
-                    self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+                    self.remove_app.emit(self.app)
+                    self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
@@ -416,8 +417,8 @@ class NormalCard(QWidget):
         if where == "normalcard":
             self.app.status = PkgStates.REMOVING
             self.ui.btn.setText("等待卸载")
-            self.emit(Signals.remove_app, self.app)
-            self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+            self.remove_app.emit(self.app)
+            self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
             self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
             self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
@@ -519,7 +520,7 @@ class NormalCard(QWidget):
 
 
     def slot_emit_detail(self):
-        self.emit(Signals.show_app_detail, self.app)
+        self.show_app_detail.emit(self.app)
 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:

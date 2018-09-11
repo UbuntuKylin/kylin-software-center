@@ -22,8 +22,9 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.loadingdiv import MiniLoadingDiv
 from ui.multifuncbtn import Ui_MultiFuncBtn
 from models.enums import Signals,PkgStates,PageStates
@@ -39,7 +40,7 @@ from utils.debfile import DebFile
 #     UNINSTALL = "uninstall"
 
 
-class MultiFunctionBtn(QWidget):
+class MultiFunctionBtn(QWidget,Signals):
 
     # no maxsize action when working
     isWorking = False
@@ -552,44 +553,44 @@ class MultiFunctionBtn(QWidget):
     def slot_click_btn_install(self):
         # kobe 1106
         self.app.status = PkgStates.INSTALLING
-        self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
+        self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
         if isinstance(self.app,DebFile):# for local deb file
-            self.emit(Signals.install_debfile, self.app)
+            self.install_debfile.emit(self.app)
         else:# for apt deb file
-            self.emit(Signals.mfb_click_install, self.app)
+            self.mfb_click_install.emit(self.app)
 
     def slot_click_btn_update(self):
         # kobe 1106
         self.app.status = PkgStates.UPGRADING
-        self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
+        self.get_card_status.emit(self.app.name, PkgStates.UPGRADING)
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
-        self.emit(Signals.mfb_click_update, self.app)
+        self.mfb_click_update.emit(self.app)
 
     def slot_click_btn_uninstall(self):
         # kobe 1106
         if self.app.name == "ubuntu-kylin-software-center":
-            self.emit(Signals.uninstall_uksc_or_not, "detailscrollwidget")
+            self.uninstall_uksc_or_not.emit("detailscrollwidget")
         else:
             self.app.status = PkgStates.REMOVING
-            self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+            self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
             self.switchDirection = 'up'
             self.switch_animation()
             self.start_work()
-            self.emit(Signals.mfb_click_uninstall, self.app)
+            self.mfb_click_uninstall.emit(self.app)
 
     def uninstall_uksc(self, where):
         if where == "detailscrollwidget":
             self.app.status = PkgStates.REMOVING
-            self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+            self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
             self.switchDirection = 'up'
             self.switch_animation()
             self.start_work()
-            self.emit(Signals.mfb_click_uninstall, self.app)
+            self.mfb_click_uninstall.emit(self.app)
 
     def cancel_uninstall_uksc(self, where):
         if where == "detailscrollwidget":

@@ -3,12 +3,12 @@
 # Form implementation generated from reading ui file 'uktliw.ui'
 #
 # Created: Fri Sep 12 17:02:26 2014
-#      by: PyQt4 UI code generator 4.10.4
+#      by: PyQt5 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
-
+from PyQt5 import QtCore, QtGui
+from PyQt5.QtWidgets import *
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -16,42 +16,42 @@ except AttributeError:
         return s
 
 try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QApplication.translate(context, text, disambig)
 
 class Ui_TaskLIWidget(object):
     def setupUi(self, TaskLIWidget):
         TaskLIWidget.setObjectName(_fromUtf8("TaskLIWidget"))
         TaskLIWidget.resize(300, 64)
-        self.progressBar = QtGui.QProgressBar(TaskLIWidget)
+        self.progressBar = QProgressBar(TaskLIWidget)
         self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
         self.progressBar.setProperty("value", 24)
         self.progressBar.setTextVisible(False)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
-        self.icon = QtGui.QLabel(TaskLIWidget)
+        self.icon = QLabel(TaskLIWidget)
         self.icon.setGeometry(QtCore.QRect(8, 8, 48, 48))
         self.icon.setText(_fromUtf8(""))
         self.icon.setObjectName(_fromUtf8("icon"))
-        self.name = QtGui.QLabel(TaskLIWidget)
+        self.name = QLabel(TaskLIWidget)
         self.name.setGeometry(QtCore.QRect(60, 14, 140, 18))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
-        self.size = QtGui.QLabel(TaskLIWidget)
+        self.size = QLabel(TaskLIWidget)
         self.size.setGeometry(QtCore.QRect(60, 34, 66, 18))
         self.size.setText(_fromUtf8(""))
         self.size.setObjectName(_fromUtf8("size"))
-        self.status = QtGui.QLabel(TaskLIWidget)
+        self.status = QLabel(TaskLIWidget)
         self.status.setGeometry(QtCore.QRect(235, 23, 50, 18))
         self.status.setObjectName(_fromUtf8("status"))
-        self.btnCancel = QtGui.QPushButton(TaskLIWidget)
+        self.btnCancel = QPushButton(TaskLIWidget)
         self.btnCancel.setGeometry(QtCore.QRect(278, 25, 13, 13))
         self.btnCancel.setText(_fromUtf8(""))
         self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
-        self.progresslabel = QtGui.QLabel(TaskLIWidget)
+        self.progresslabel = QLabel(TaskLIWidget)
         self.progresslabel.setGeometry(QtCore.QRect(240, 23, 35, 18))
         self.progresslabel.setText(_fromUtf8(""))
         self.progresslabel.setObjectName(_fromUtf8("progresslabel"))

@@ -25,11 +25,11 @@
 # Form implementation generated from reading ui file 'uksc.ui'
 #
 # Created: Tue Jan 21 17:02:54 2014
-#      by: PyQt4 UI code generator 4.10.3
+#      by: PyQt5 UI code generator 4.10.3
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -38,99 +38,99 @@ except AttributeError:
         return s
 
 try:
-    _encoding = QtGui.QApplication.UnicodeUTF8
+    _encoding = QApplication.UnicodeUTF8
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+        return QApplication.translate(context, text, disambig, _encoding)
 except AttributeError:
     def _translate(context, text, disambig):
-        return QtGui.QApplication.translate(context, text, disambig)
+        return QApplication.translate(context, text, disambig)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(750, 600)
-        self.centralwidget = QtGui.QWidget(MainWindow)
+        self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
-        self.headerWidget = QtGui.QWidget(self.centralwidget)
+        self.headerWidget = QWidget(self.centralwidget)
         self.headerWidget.setGeometry(QtCore.QRect(0, 0, 750, 120))
         self.headerWidget.setObjectName(_fromUtf8("headerWidget"))
-        # self.pushButton = QtGui.QPushButton(self.headerWidget)
+        # self.pushButton = QPushButton(self.headerWidget)
         # self.pushButton.setGeometry(QtCore.QRect(38, 40, 40, 40))
         # self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        # self.pushButton_2 = QtGui.QPushButton(self.headerWidget)
+        # self.pushButton_2 = QPushButton(self.headerWidget)
         # self.pushButton_2.setGeometry(QtCore.QRect(82, 40, 40, 40))
         # self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
-        self.pushButton_3 = QtGui.QPushButton(self.headerWidget)
+        self.pushButton_3 = QPushButton(self.headerWidget)
         self.pushButton_3.setGeometry(QtCore.QRect(280, 40, 80, 40))
         self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
-        # self.pushButton_4 = QtGui.QPushButton(self.headerWidget)
+        # self.pushButton_4 = QPushButton(self.headerWidget)
         # self.pushButton_4.setGeometry(QtCore.QRect(280, 40, 80, 40))
         # self.pushButton_4.setObjectName(_fromUtf8("pushButton_4"))
-        # self.pushButton_5 = QtGui.QPushButton(self.headerWidget)
+        # self.pushButton_5 = QPushButton(self.headerWidget)
         # self.pushButton_5.setGeometry(QtCore.QRect(380, 40, 80, 40))
         # self.pushButton_5.setObjectName(_fromUtf8("pushButton_5"))
-        self.pushButton_6 = QtGui.QPushButton(self.headerWidget)
+        self.pushButton_6 = QPushButton(self.headerWidget)
         self.pushButton_6.setGeometry(QtCore.QRect(380, 40, 80, 40))
         self.pushButton_6.setObjectName(_fromUtf8("pushButton_6"))
-        # self.logoImg = QtGui.QLabel(self.headerWidget)
+        # self.logoImg = QLabel(self.headerWidget)
         # self.logoImg.setGeometry(QtCore.QRect(490, 10, 200, 80))
         # self.logoImg.setText(_fromUtf8(""))
         # self.logoImg.setObjectName(_fromUtf8("logoImg"))
-        self.searchWidget = QtGui.QWidget(self.centralwidget)
+        self.searchWidget = QWidget(self.centralwidget)
         self.searchWidget.setGeometry(QtCore.QRect(0, 121, 750, 30))
         self.searchWidget.setObjectName(_fromUtf8("searchWidget"))
-        self.leSearch = QtGui.QLineEdit(self.searchWidget)
+        self.leSearch = QLineEdit(self.searchWidget)
         self.leSearch.setGeometry(QtCore.QRect(560, 0, 113, 27))
         self.leSearch.setObjectName(_fromUtf8("leSearch"))
-        self.btnSearch = QtGui.QPushButton(self.searchWidget)
+        self.btnSearch = QPushButton(self.searchWidget)
         self.btnSearch.setGeometry(QtCore.QRect(680, 0, 60, 27))
         self.btnSearch.setObjectName(_fromUtf8("btnSearch"))
-        self.leftWidget = QtGui.QWidget(self.centralwidget)
+        self.leftWidget = QWidget(self.centralwidget)
         self.leftWidget.setGeometry(QtCore.QRect(0, 152, 160, 417))
         self.leftWidget.setObjectName(_fromUtf8("leftWidget"))
-        self.categoryView = QtGui.QListWidget(self.leftWidget)
+        self.categoryView = QListWidget(self.leftWidget)
         self.categoryView.setGeometry(QtCore.QRect(0, 0, 160, 414))
         self.categoryView.setObjectName(_fromUtf8("categoryView"))
-        self.rightWidget = QtGui.QWidget(self.centralwidget)
+        self.rightWidget = QWidget(self.centralwidget)
         self.rightWidget.setGeometry(QtCore.QRect(161, 152, 589, 417))
         self.rightWidget.setObjectName(_fromUtf8("rightWidget"))
 
-        self.taskWidget = QtGui.QWidget(self.centralwidget)
+        self.taskWidget = QWidget(self.centralwidget)
         self.taskWidget.setGeometry(QtCore.QRect(0,152,750,417))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
 
-        self.ad = QtGui.QLabel(self.rightWidget)
+        self.ad = QLabel(self.rightWidget)
         self.ad.setGeometry(QtCore.QRect(0, 0, 589, 218))
         self.ad.setText(_fromUtf8(""))
         self.ad.setObjectName(_fromUtf8("ad"))
-        self.label = QtGui.QLabel(self.rightWidget)
+        self.label = QLabel(self.rightWidget)
         self.label.setGeometry(QtCore.QRect(80, 250, 81, 17))
         self.label.setObjectName(_fromUtf8("label"))
-        self.label_2 = QtGui.QLabel(self.rightWidget)
+        self.label_2 = QLabel(self.rightWidget)
         self.label_2.setGeometry(QtCore.QRect(380, 250, 81, 17))
         self.label_2.setObjectName(_fromUtf8("label_2"))
-        self.label_3 = QtGui.QLabel(self.rightWidget)
+        self.label_3 = QLabel(self.rightWidget)
         self.label_3.setGeometry(QtCore.QRect(240, 250, 81, 17))
         self.label_3.setObjectName(_fromUtf8("label_3"))
-        self.label_4 = QtGui.QLabel(self.rightWidget)
+        self.label_4 = QLabel(self.rightWidget)
         self.label_4.setGeometry(QtCore.QRect(240, 320, 81, 17))
         self.label_4.setObjectName(_fromUtf8("label_4"))
-        self.label_5 = QtGui.QLabel(self.rightWidget)
+        self.label_5 = QLabel(self.rightWidget)
         self.label_5.setGeometry(QtCore.QRect(380, 320, 81, 17))
         self.label_5.setObjectName(_fromUtf8("label_5"))
-        self.label_6 = QtGui.QLabel(self.rightWidget)
+        self.label_6 = QLabel(self.rightWidget)
         self.label_6.setGeometry(QtCore.QRect(80, 320, 81, 17))
         self.label_6.setObjectName(_fromUtf8("label_6"))
 
-        self.label_7 = QtGui.QLabel(self.taskWidget)
+        self.label_7 = QLabel(self.taskWidget)
         self.label_7.setGeometry(QtCore.QRect(100, 150, 500, 80))
         self.label_7.setObjectName(_fromUtf8("label_7"))
         self.label_7.setText("")
 
-        self.bottomWidget = QtGui.QWidget(self.centralwidget)
+        self.bottomWidget = QWidget(self.centralwidget)
         self.bottomWidget.setGeometry(QtCore.QRect(0, 570, 750, 30))
         self.bottomWidget.setObjectName(_fromUtf8("bottomWidget"))
-        self.listWidget = QtGui.QListWidget(self.centralwidget)
+        self.listWidget = QListWidget(self.centralwidget)
         self.listWidget.setGeometry(QtCore.QRect(161, 152, 589, 414))
         self.listWidget.setObjectName(_fromUtf8("listWidget"))
         MainWindow.setCentralWidget(self.centralwidget)

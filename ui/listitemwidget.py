@@ -23,8 +23,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.ukliw import Ui_Ukliw
 from ui.starwidget import StarWidget
 from utils import run
@@ -38,7 +39,7 @@ from models.enums import (ITEM_LABEL_STYLE,
                           Signals,
                           PkgStates)
 
-class ListItemWidget(QWidget):
+class ListItemWidget(QWidget,Signals):
     app = ''
     workType = ''
 
@@ -167,23 +168,23 @@ class ListItemWidget(QWidget):
             if(self.workType == 'ins'):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
                 self.ui.btn.setText("正在安装")
-                self.emit(Signals.install_app, self.app)
-                self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
+                self.install_app.emit(self.app)
+                self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
             elif(self.workType == 'up'):
                 self.app.status = PkgStates.UPGRADING
-                self.emit(Signals.upgrade_app, self.app)
+                self.upgrade_app.emit(self.app)
                 self.ui.btn.setText("正在升级")
-                self.emit(Signals.get_card_status, self.app.name, PkgStates.UPGRADING)
+                self.get_card_status.emit(self.app.name, PkgStates.UPGRADING)
             elif(self.workType == 'un'):
                 self.app.status = PkgStates.REMOVING
-                self.emit(Signals.remove_app, self.app)
+                self.remove_app.emit(self.app)
                 self.ui.btn.setText("正在卸载")
-                self.emit(Signals.get_card_status, self.app.name, PkgStates.REMOVING)
+                self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
 
 
 
     def slot_emit_detail(self):
-        self.emit(Signals.show_app_detail, self.app)
+        self.show_app_detail.emit(self.app)
 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:

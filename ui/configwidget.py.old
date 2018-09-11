@@ -22,9 +22,9 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.confw import Ui_ConfigWidget
 from models.enums import Signals
 
@@ -196,13 +196,13 @@ class ConfigWidget(QWidget):
 
     def slot_click_cancel(self):
         self.iscanceled = True
-        self.emit(Signals.task_cancel, "#update", "update")
+        self.emit(task_cancel, "#update", "update")
 
     def slot_click_update(self):
         self.iscanceled = False
         self.ui.progressBar.reset()
         self.set_process_visiable(True)
-        self.emit(Signals.click_update_source)
+        self.emit(click_update_source)
 
     def slot_update_status_change(self, percent):
         self.ui.progressBar.setValue(percent)
@@ -339,8 +339,8 @@ class SourceItemWidget(QWidget):
 def main():
     import sys
     app = QApplication(sys.argv)
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
     globalfont.setFamily("文泉驿微米黑")

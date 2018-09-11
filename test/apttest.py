@@ -6,7 +6,7 @@ import apt
 import locale
 import apt.progress.base as apb
 
-from PyQt4.QtCore import *
+from PyQt5.QtCore import *
 try:
     _fromUtf8 = QString.fromUtf8
 except AttributeError:

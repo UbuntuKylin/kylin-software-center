@@ -4,8 +4,8 @@ __author__ = 'Shine Huang'
 
 import sys
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 class AAA(QMainWindow):
     def __init__(self,parent=None):
         QMainWindow.__init__(self,parent)
@@ -21,8 +21,8 @@ class AAA(QMainWindow):
 def main():
     app = QApplication(sys.argv)
 
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     mw = AAA()
     # windowWidth = QApplication.desktop().width()

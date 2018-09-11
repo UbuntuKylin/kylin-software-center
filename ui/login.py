@@ -23,8 +23,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from .login_ui import Ui_Login_ui
 from models.enums import Signals
 from backend.remote.piston_remoter import PistonRemoter
@@ -41,7 +42,7 @@ from models.globals import Globals
 from backend.service.save_password import password_write, password_read
 import re
 
-class Login(QWidget):
+class Login(QWidget,Signals):
         
     listadduser = ["","","",""]
     listlogin = ["",""]
@@ -153,7 +154,7 @@ class Login(QWidget):
         self.show()
 
     def slot_click_close(self):
-        self.emit(Signals.task_stop, "#update", "update")
+        self.task_stop.emit("#update", "update")
     def slot_click_login(self):        
         self.ui.groupBox_2.hide()
         self.ui.groupBox.show()
@@ -187,12 +188,12 @@ class Login(QWidget):
         IN = QMessageBox
         #print "xxxxxxxxxxxxx",self.listlogin[0],self.listlogin[1]
         if self.listlogin[0] == "":
-            IN.information(self,"提示","请输入用户名",'确定','','',0, 0)
+            IN.information(self,"提示","请输入用户名",QMessageBox.Yes)
         elif self.listlogin[1] == "":
-            IN.information(self,"提示","请输入用户密码",'确定','','',0, 0)        
+            IN.information(self,"提示","请输入用户密码",QMessageBox.Yes)        
         else:
             #res = self.premoter.log_in_appinfo(self.listlogin[0],self.listlogin[1])
-            self.emit(Signals.ui_login,self.listlogin[0],self.listlogin[1])
+            self.ui_login.emit(self.listlogin[0],self.listlogin[1])
             #self.messageBox.alert_msg("登录成功")
             #print "xxxxxxxxxxx",res
     def slot_adduser(self):
@@ -202,22 +203,23 @@ class Login(QWidget):
             self.listadduser[3] = "general_user"
         IM = QMessageBox        
         if self.listadduser[0] == "":
-            IM.information(self,"提示","请输入用户名",'确定','','',0, 0)        
+            IM.information(self,"提示","请输入用户名",QMessageBox.Yes)        
         elif self.listadduser[1] == "":
-            IM.information(self,"提示","请输入用户密码",'确定','','',0, 0)
+            IM.information(self,"提示","请输入用户密码",QMessageBox.Yes)
         elif self.listadduser[2] == "":
-            IM.information(self,"提示","请输入用户邮箱",'确定','','',0, 0)
+            IM.information(self,"提示","请输入用户邮箱",QMessageBox.Yes)
         elif re.match(self.strs,self.listadduser[2]):
             #print "adduser",self.listadduser[0],self.listadduser[1],self.listadduser[2],self.listadduser[3]
-            self.emit(Signals.ui_adduser,self.listadduser[0],self.listadduser[1],self.listadduser[2],self.listadduser[3])
+            self.ui_adduser.emit(self.listadduser[0],self.listadduser[1],self.listadduser[2],self.listadduser[3])
             #res = self.premoter.submit_add_user('wukaiage','123123','kevin@163.com','general_user')
             #print "yyyyyyyyyyy",res
             #self.messageBox.alert_msg("注册成功")
             #pass
         else:
-            IM.information(self,"提示","请输入正确的邮箱",'确定','','',0, 0)
+            IM.information(self,"提示","请输入正确的邮箱",QMessageBox.Yes)
 
     def slot_get_ui_first_login_over(self,res):
+        res = res[0]['res']
         try:
             if res == 1 or res == None:
                 #数据异常
@@ -243,26 +245,27 @@ class Login(QWidget):
                 Globals.LAST_LOGIN = res["last_login"]
                 Globals.USER_LEVEL = rem["level"]
                 Globals.PASSWORD = self.listlogin[1]
-                self.emit(Signals.ui_login_success,self.listlogin[0],self.listlogin[1])
+                self.ui_login_success.emit()
                 print ("ggggggggggggggggggggggg",Globals.USER_IDEN,Globals.USER_LEVEL)
         except:
             print ("######","自动服务器异常")
 
     def slot_get_ui_login_over(self,res):
         INO = QMessageBox
+        res = res[0]['res']
         print ("11111111111",res)
         if res == 1 or res == None:
             #数据异常
             print ("######","数据异常")
-            INO.information(self,"提示","数据异常",'确定','','',0, 0)
+            INO.information(self,"提示","数据异常",QMessageBox.Yes)
         elif res == 2:
             #用户验证失败
             print ("######","用户验证失败")
-            INO.information(self,"提示","用户验证失败",'确定','','',0, 0)
+            INO.information(self,"提示","用户验证失败",QMessageBox.Yes)
         elif res == 3:
             #服务器异常
             print ("######","服务器异常")
-            INO.information(self,"提示","服务器异常",'确定','','',0, 0)
+            INO.information(self,"提示","服务器异常",QMessageBox.Yes)
         else:
             #self.messageBox.alert_msg("登录成功")
 #add try    
@@ -295,52 +298,48 @@ class Login(QWidget):
             except:
                 ree = False
             if ree == True:
-                print("wb1111")
-                self.emit(Signals.ui_login_success,self.listlogin[0],self.listlogin[1]) 
-                print("wb2222222")
+                self.ui_login_success.emit() 
                 self.messageBox.alert_msg("登录成功")
-                print("wb33333")
                 self.hide()
-                print("wb44444")
-                #self.emit(Signals.ui_uksc_update)
-                print("wb5555")
+                #self.emit(ui_uksc_update)
             else:
                 self.messageBox.alert_msg("服务器异常")
     def slot_get_ui_adduser_over(self,res):
+        res = res[0]['res']
         print ("ddddddddddddddd",res)
         INO = QMessageBox
         #if res == 0:
         #    #注册成功
         #    print "######","注册成功"
-        #    INO.information(self,"提示","注册成功",'确定','','',0, 0)
+        #    INO.information(self,"提示","注册成功",QMessageBox.Yes)
         #    self.slot_click_login()
 
         if res == 1 or res == None:
             #数据异常
             print ("######","数据异常")
-            INO.information(self,"提示","数据异常",'确定','','',0, 0)
+            INO.information(self,"提示","数据异常",QMessageBox.Yes)
         elif res == 2:
             #用户名已存在
             print ("######","用户名已存在")
-            INO.information(self,"提示","用户名已存在",'确定','','',0, 0)
+            INO.information(self,"提示","用户名已存在",QMessageBox.Yes)
         elif res == 3:
             #服务器异常
             print ("######1","服务器异常")
-            INO.information(self,"提示","服务器异常",'确定','','',0, 0)
+            INO.information(self,"提示","服务器异常",QMessageBox.Yes)
         elif res == 0:
             print ("######","注册成功")
-            INO.information(self,"提示","注册成功",'确定','','',0, 0)
+            INO.information(self,"提示","注册成功",QMessageBox.Yes)
             self.slot_click_login()
         else: 
             #注册成功
             #print "######","注册成功"
-            INO.information(self,"提示","服务器异常",'确定','','',0, 0)
+            INO.information(self,"提示","服务器异常",QMessageBox.Yes)
 
 def main():
     import sys
     app = QApplication(sys.argv)
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
     globalfont.setFamily("文泉驿微米黑")

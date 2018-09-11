@@ -23,8 +23,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.uktransliw import Ui_Uktransliw
 from ui.starwidget import StarWidget
 from utils import run
@@ -38,7 +39,7 @@ from models.enums import (ITEM_LABEL_STYLE,
                           Signals,
                           PkgStates)
 
-class TransListItemWidget(QWidget):
+class TransListItemWidget(QWidget,Signals):
     app = ''
     workType = ''
 
@@ -133,4 +134,4 @@ class TransListItemWidget(QWidget):
         self.show()
 
     def slot_emit_detail(self):
-        self.emit(Signals.show_app_detail, self.app)
+        self.show_app_detail.emit(self.app)

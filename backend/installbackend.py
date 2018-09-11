@@ -33,8 +33,8 @@ import locale
 
 import logging
 
-from PyQt4.QtCore import *
-from PyQt4 import QtDBus
+from PyQt5.QtCore import *
+from PyQt5 import QtDBus
 
 from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
                           UBUNTUKYLIN_INTERFACE_PATH,
@@ -54,7 +54,9 @@ mainloop = DBusGMainLoop(set_as_default=True)
 LOG = logging.getLogger("uksc")
 
 
-class InstallBackend(QObject):
+class InstallBackend(QObject,Signals):
+
+    dbus_apt_process = pyqtSignal(str,str,str,int,str)
 
     def __init__(self):
         QObject.__init__(self)
@@ -68,7 +70,7 @@ class InstallBackend(QObject):
         except Exception as e:
             print("could not initiate dbus")
             LOG.error("dbus exception:%s" % str(e))
-            self.emit(Signals.init_models_ready,"fail","初始化失败!")
+            self.init_models_ready.emit("fail","初始化失败!")
             return False
 
         try:
@@ -86,7 +88,7 @@ class InstallBackend(QObject):
         except dbus.DBusException as e:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
-            self.emit(Signals.init_models_ready,"fail","初始化失败!")
+            self.init_models_ready.emit("fail","初始化失败!")
             LOG.error("dbus exception:%s" % str(e))
             print("dbus.DBusException error: ",str(e))
             return False
@@ -130,7 +132,7 @@ class InstallBackend(QObject):
         if type == "down_fetch":
             print("正在下载：",kwarg["uri"])
 
-        self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
+        self.dbus_apt_process.emit(appname,sendType,action,percent,sendMsg)
 
     def _on_software_apt_signal(self,type, kwarg):
         sendType = "apt"
@@ -140,7 +142,7 @@ class InstallBackend(QObject):
         action = str(kwarg['action'])
         sendMsg = AptActionMsg[action] + AptProcessMsg[str(type)]
 
-        self.emit(Signals.dbus_apt_process,appname,sendType,action,percent,sendMsg)
+        self.dbus_apt_process.emit(appname,sendType,action,percent,sendMsg)
 
     def _on_software_auth_signal(self,type, kwarg):
 
@@ -151,7 +153,7 @@ class InstallBackend(QObject):
         if type == "auth_cancel":
             sendType = "cancel"
 
-        self.emit(Signals.dbus_apt_process,appname,sendType,action,0,sendMsg)
+        self.dbus_apt_process.emit(appname,sendType,action,0,sendMsg)
 
     def install_deps(self, path):
         return self.call_dbus_iface(AppActions.INSTALLDEPS, path)
@@ -213,7 +215,8 @@ class InstallBackend(QObject):
 
         return resList
 
-from PyQt4.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 import sys
 
 

@@ -22,14 +22,14 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.uksw import Ui_StarWidget
 from models.enums import Signals
 
 
-class DynamicStarWidget(QWidget):
+class DynamicStarWidget(QWidget,Signals):
     '''kobe test dynamic start'''
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
@@ -86,7 +86,7 @@ class DynamicStarWidget(QWidget):
                     self.changeGrade(0)
             elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
-                self.emit(Signals.get_user_rating, 1)
+                self.get_user_rating.emit(1)
             # elif(event.type() == QEvent.MouseButtonRelease):
             #     self.grade = 1
         elif(obj == self.ui.star2):
@@ -103,7 +103,7 @@ class DynamicStarWidget(QWidget):
                     self.changeGrade(0)
             elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
-                self.emit(Signals.get_user_rating, 2)
+                self.get_user_rating.emit(2)
             # elif(event.type() == QEvent.MouseButtonRelease):
             #     self.grade = 2
         elif(obj == self.ui.star3):
@@ -120,7 +120,7 @@ class DynamicStarWidget(QWidget):
                     self.changeGrade(0)
             elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
-                self.emit(Signals.get_user_rating, 3)
+                self.get_user_rating.emit(3)
             # elif(event.type() == QEvent.MouseButtonRelease):
             #     self.grade = 3
         elif(obj == self.ui.star4):
@@ -137,7 +137,7 @@ class DynamicStarWidget(QWidget):
                     self.changeGrade(0)
             elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
-                self.emit(Signals.get_user_rating, 4)
+                self.get_user_rating.emit(4)
             # elif(event.type() == QEvent.MouseButtonRelease):
             #     self.grade = 4
         elif(obj == self.ui.star5):
@@ -154,7 +154,7 @@ class DynamicStarWidget(QWidget):
                     self.changeGrade(0)
             elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
                 self.mouse_press = True
-                self.emit(Signals.get_user_rating, 5)
+                self.get_user_rating.emit(5)
             # elif(event.type() == QEvent.MouseButtonRelease):
             #     self.grade = 5
         # print self.grade

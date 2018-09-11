@@ -25,11 +25,13 @@
 
 ### END LICENSE
 
+import sys,os
+
 import apt
 from utils import run
 from backend.ubuntu_sw import (SCREENSHOT_THUMB_URL,SCREENSHOT_LARGE_URL)
-from models.enums import PkgStates,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH
-
+#from models.enums import PkgStates,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH
+from . import enums
 
 class Application:
 
@@ -55,9 +57,9 @@ class Application:
         self.cache = apt_cache
         self.thumbnail_url = None
         self.screenshot_url = None
-        self.thumbnailfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
-        self.screenshotfile = UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
-        self.iconfile = UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
+        self.thumbnailfile = enums.UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
+        self.screenshotfile = enums.UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
+        self.iconfile = enums.UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
         self.screenshots = []
         self.icons = []
         self.reviews = {}
@@ -74,7 +76,7 @@ class Application:
 
         self.install_date = ''  # the date first install this app, get from server
 
-        self.status = PkgStates.NOTHING
+        self.status = enums.PkgStates.NOTHING
 
         self.percent = 0
 
@@ -145,12 +147,12 @@ class Application:
     @property
     def pkg_status(self):
         if(self.is_installed == False):
-            return PkgStates.UNINSTALLED
+            return enums.PkgStates.UNINSTALLED
         else:
             if(self.is_upgradable == False):
-                return PkgStates.INSTALLED
+                return enums.PkgStates.INSTALLED
             else:
-                return PkgStates.UPGRADABLE
+                return enums.PkgStates.UPGRADABLE
 
     @property
     def is_installed(self):

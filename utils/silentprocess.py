@@ -29,8 +29,9 @@ import sqlite3
 import urllib.request, urllib.error, urllib.parse
 import os
 import time
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
 import multiprocessing
 from backend.remote.piston_remoter import PistonRemoter
 from backend.ubuntu_sw import UK_APP_ICON_URL

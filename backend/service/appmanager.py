@@ -34,7 +34,7 @@ import multiprocessing
 import queue
 from piston_mini_client import auth
 
-from PyQt4.QtCore import *
+from PyQt5.QtCore import *
 
 from models.globals import Globals
 from models.category import Category
@@ -261,7 +261,7 @@ class ThreadWorkerDaemon(threading.Thread):
 
 
 #This class is the abstraction of application management
-class AppManager(QObject):
+class AppManager(QObject,Signals):
 
     # piston remoter
     premoter = ''
@@ -353,8 +353,8 @@ class AppManager(QObject):
             for aname,app in list(apps.items()):
                 app.update_cache(self.apt_cache)
         if "update" == kwargs["action"]:
-            self.emit(Signals.count_application_update)
-        self.emit(Signals.refresh_page)
+            self.count_application_update.emit()
+        self.refresh_page.emit()
 
     def update_models(self,action, pkgname=""):
         kwargs = {"packagename": pkgname,
@@ -584,7 +584,7 @@ class AppManager(QObject):
         tmpads.append(Advertisement("redeclipse", "pkg", "ad3.png", "adb3.png", "redeclipse"))
         tmpads.append(Advertisement("eclipse", "pkg", "ad4.png", "adb4.png", "eclipse"))
 
-        self.emit(Signals.ads_ready, tmpads, bysignal)
+        self.ads_ready.emit(tmpads, bysignal)
 
     #get apps in ubuntukylin archives, this is now implemented with config file
     #then we can sync with the archive
@@ -674,7 +674,7 @@ class AppManager(QObject):
             else:
                 print((item.kwargs['packagename'], " not exist"))
 
-            self.emit(Signals.app_reviews_ready,reviews)
+            self.app_reviews_ready.emit(reviews)
         elif item.funcname == "get_screenshots":
             LOG.debug("screenshots ready:%s",len(reslist))
             screenshots = reslist
@@ -683,7 +683,7 @@ class AppManager(QObject):
                 app.screenshots = screenshots
             else:
                 print((item.kwargs['packagename'], " not exist"))
-            self.emit(Signals.app_screenshots_ready,screenshots)
+            self.app_screenshots_ready.emit(screenshots)
         elif item.funcname == "get_rating_review_stats":
             LOG.debug("rating review stats ready:%d",len(reslist))
             rnrStats = reslist
@@ -699,22 +699,22 @@ class AppManager(QObject):
                     print(("######gparted ....", rnrStat.ratings_average,rnrStat.ratings_total, app))
 
 
-            self.emit(Signals.rating_reviews_ready,rnrStats)
+            self.rating_reviews_ready.emit(rnrStats)
         elif item.funcname == "get_toprated_stats":
             LOG.debug("toprated stats ready:%d",len(reslist))
             topRated = reslist
 
-            self.emit(Signals.toprated_ready,topRated)
+            self.toprated_ready.emit(topRated)
         elif item.funcname == "update_models":
             LOG.debug("update apt cache ready")
             pkgname = item.kwargs["packagename"]
             action = item.kwargs["action"]
             print(("update apt cache ready:",len(reslist),pkgname))
 
-            self.emit(Signals.apt_cache_update_ready, action, pkgname)
+            self.apt_cache_update_ready.emit(action, pkgname)
         elif item.funcname == "init_models":
             LOG.debug("init models ready")
-            self.emit(Signals.init_models_ready,"ok","获取分类信息完成")
+            self.init_models_ready.emit("ok","获取分类信息完成")
             print("init models后台运行中")
 
     def update_rating_reviews(self,rnrStats):
@@ -794,7 +794,7 @@ class AppManager(QObject):
                 app.recommendrank = rec[1]
                 applist.append(app)
         if Globals.UPDATE_HOM == 0:
-            self.emit(Signals.recommend_ready, applist, bysignal)
+            self.recommend_ready.emit(applist, bysignal)
 
      # get game apps
     def get_game_apps(self, bysignal=False,sig = False):
@@ -806,7 +806,7 @@ class AppManager(QObject):
                 app.recommendrank = rec[1]
                 applist.append(app)
         if sig == True:
-            self.emit(Signals.recommend_ready, applist, bysignal)
+            self.recommend_ready.emit(applist, bysignal)
 
      # get necessary apps
     def get_necessary_apps(self, bysignal=False,sig = False):
@@ -818,7 +818,7 @@ class AppManager(QObject):
                 app.recommendrank = rec[1]
                 applist.append(app)
         if sig == True:
-            self.emit(Signals.recommend_ready, applist, bysignal)
+            self.recommend_ready.emit(applist, bysignal)
 
 
 
@@ -858,7 +858,7 @@ class AppManager(QObject):
                 except:
                     applist.append(app)
         if Globals.UPDATE_HOM == 0:
-            self.emit(Signals.ratingrank_ready, applist, bysignal)
+            self.ratingrank_ready.emit(applist, bysignal)
 
     def submit_review(self, app_name, content):
         distroseries = get_distro_info()[2]
@@ -867,7 +867,8 @@ class AppManager(QObject):
             res = self.premoter.submit_review(app_name, content, distroseries, language, Globals.USER, Globals.USER_DISPLAY)
         except:
             res = "False"
-        self.emit(Signals.submit_review_over, res)
+        res = [{'res':res}]
+        self.submit_review_over.emit(res)
 
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):
         # distroseries = get_distro_info()[2]
@@ -876,7 +877,8 @@ class AppManager(QObject):
             res = self.premoter.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, Globals.USER, Globals.USER_DISPLAY)
         except:
              res = "False"
-        self.emit(Signals.submit_translate_appinfo_over, res)
+        res = [{'res':res}]
+        self.submit_translate_appinfo_over.emit(res)
 
 
     def submit_rating(self, app_name, rating):
@@ -884,7 +886,8 @@ class AppManager(QObject):
             res = self.premoter.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
         except:
             res = False
-        self.emit(Signals.submit_rating_over, res)
+        res = [{'res':res}]
+        self.submit_rating_over.emit(res)
 
     # update app ratingavg in cache db after user do rating app
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
@@ -895,14 +898,16 @@ class AppManager(QObject):
             res = self.premoter.get_user_applist(Globals.USER)
         except:
             res = False
-        self.emit(Signals.get_user_applist_over, res)
+        res = [{'res':res}]
+        self.get_user_applist_over.emit(res)
 
     def get_user_transapplist(self):#zx 2015.01.30
         try:
             res = self.premoter.get_user_transapplist(Globals.USER)
         except:
             res = False
-        self.emit(Signals.get_user_transapplist_over, res)
+        res = [{'res':res}]
+        self.get_user_transapplist_over.emit(res)
 
     def apprui_first_login(self,ui_username,ui_password):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
@@ -943,7 +948,8 @@ class AppManager(QObject):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
         res = self.premoter.log_in_appinfo(ui_username,ui_password)
         #print "res============",res
-        self.emit(Signals.get_ui_first_login_over, res)
+        res = [{'res':res}]
+        self.get_ui_first_login_over.emit(res)
 
     def ui_login(self,ui_username,ui_password):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
@@ -952,7 +958,8 @@ class AppManager(QObject):
         except:
             res = False
         #print "res============",res
-        self.emit(Signals.get_ui_login_over, res)
+        res = [{'res':res}]
+        self.get_ui_login_over.emit(res)
 
     def ui_adduser(self,ui_username,ui_password,ui_email,ui_iden):
         #print "ffffffffffffffff",ui_username,ui_password,ui_email,ui_iden
@@ -961,14 +968,16 @@ class AppManager(QObject):
         except:
             res = False
         #print "res============",res
-        self.emit(Signals.get_ui_adduser_over, res)
+        res = [{'res':res}]
+        self.get_ui_adduser_over.emit(res)
 
     def rset_password(self,new_password):
         try:
             res = self.premoter.rset_user_password(Globals.USER,new_password)
         except:
             res = False
-        self.emit(Signals.rset_password_over, res)
+        res = [{'res':res}]
+        self.rset_password_over.emit(res)
 
     def recover_password(self,old_username,old_email,new_password):
         try:
@@ -982,7 +991,8 @@ class AppManager(QObject):
                 rer = False
         else:
             rer = res
-        self.emit(Signals.recover_password_over, rer)        
+        res = [{'res':rer}]
+        self.recover_password_over.emit(res)        
 
     def change_identity(self):
         if Globals.USER_IDEN == "general_user":
@@ -993,7 +1003,8 @@ class AppManager(QObject):
             res = self.premoter.change_user_identity(Globals.USER,us_iden)
         except:
             res = False
-        self.emit(Signals.change_user_identity_over, res)
+        res = [{'res':res}]
+        self.change_user_identity_over.emit(res)
 
     #--------------------------------add by kobe for windows replace----------------------------------
     def search_name_and_categories_record(self):
@@ -1057,7 +1068,7 @@ class AppManager(QObject):
                 bad_source_urllist.append(source_url)
         if bad_source_urllist != []:
             print(('bad source urllist:',bad_source_urllist))
-            self.emit(Signals.check_source_useable_over,bad_source_urllist)
+            self.check_source_useable_over.emit(bad_source_urllist)
         #print "check source useable over"
 
     def sourcelist_need_update(self):

@@ -22,14 +22,14 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.confw import Ui_ConfigWidget
 from models.enums import Signals
 from models.globals import Globals
 
-class ConfigWidget(QWidget):
+class ConfigWidget(QWidget,Signals):
     mainw = ''
     iscanceled = ''
     listset = ["",""]
@@ -188,7 +188,8 @@ class ConfigWidget(QWidget):
 
 
 
-        self.ui.pageListWidget.setItemSelected(self.ui.pageListWidget.item(0), True)
+        #self.ui.pageListWidget.setItemSelected(self.ui.pageListWidget.item(0), True)
+        self.ui.pageListWidget.item(0).setSelected(True)
         self.ui.btnAdd.setEnabled(False)
         self.ui.btnReset.setEnabled(False)
         self.ui.cbhideubuntu.setChecked(True)
@@ -247,26 +248,27 @@ class ConfigWidget(QWidget):
         BC = QMessageBox
         if self.listuser == Globals.USER :
             try:
-                self.emit(Signals.change_identity)
+                self.change_identity.emit()
             except:
                 print("error")
-                BC.information(self,"提示","服务器异常",'确定','','',0, 0)
+                BC.information(self,"提示","服务器异常",QMessageBox.Yes)
         elif self.listuser == "":
             print("########:请输入用户名")
-            BC.information(self,"提示","请输入用户名",'确定','','',0, 0)
+            BC.information(self,"提示","请输入用户名",QMessageBox.Yes)
         elif Globals.USER == "":
             print("########:用户名错误")
-            BC.information(self,"提示","用户未登录软件中心",'确定','','',0, 0)
+            BC.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
         elif self.listuser != Globals.USER :
-            BC.information(self,"提示","改变身份的用户未登录",'确定','','',0, 0)
+            BC.information(self,"提示","改变身份的用户未登录",QMessageBox.Yes)
         else:
-            BC.information(self,"提示","服务器异常",'确定','','',0, 0)
+            BC.information(self,"提示","服务器异常",QMessageBox.Yes)
 
     def slot_change_user_identity_over(self,res):
+        res = res[0]['res']
         AC =QMessageBox
         if res == 0:
             print("######","修改成功")
-            AC.information(self,"提示","修改成功",'确定','','',0, 0)
+            AC.information(self,"提示","修改成功",QMessageBox.Yes)
             if Globals.USER_IDEN == "general_user":
                 Globals.USER_IDEN = "identity"
             elif Globals.USER_IDEN == "identity":
@@ -275,18 +277,18 @@ class ConfigWidget(QWidget):
         elif res == 1 or res == None:
             #数据异常
             print("######","用户不存在")
-            AC.information(self,"提示","用户不存在",'确定','','',0, 0)
+            AC.information(self,"提示","用户不存在",QMessageBox.Yes)
         elif res == 2:
             #用户验证失败
             print("######","服务器异常")
-            AC.information(self,"提示","服务器异常",'确定','','',0, 0)
+            AC.information(self,"提示","服务器异常",QMessageBox.Yes)
         elif res == 3:
             #服务器异常
             print("######","身份异常")
-            AC.information(self,"提示","身份异常",'确定','','',0, 0)
+            AC.information(self,"提示","身份异常",QMessageBox.Yes)
         else:
             print("######","服务器异常")
-            AC.information(self,"提示","服务器异常",'确定','','',0, 0)
+            AC.information(self,"提示","服务器异常",QMessageBox.Yes)
 
 #    def slot_le_input15(self,text):
 #        sourcetext = str(text.toUtf8())
@@ -297,63 +299,65 @@ class ConfigWidget(QWidget):
         BR =QMessageBox
         if self.listset[0] == Globals.USER and self.listset[0] != "" and self.listset[1] != "":
             try:
-                self.emit(Signals.rset_password,self.listset[1])
+                self.rset_password.emit(self.listset[1])
             except:
                 print("######","修改失败")
-                BR.information(self,"提示","修改失败",'确定','','',0, 0)
+                BR.information(self,"提示","修改失败",QMessageBox.Yes)
         elif self.listset[0] == "":
-            BR.information(self,"提示","请输入用户名",'确定','','',0, 0)
+            BR.information(self,"提示","请输入用户名",QMessageBox.Yes)
         elif self.listset[1] == "":
-            BR.information(self,"提示","请输入新密码",'确定','','',0, 0)
+            BR.information(self,"提示","请输入新密码",QMessageBox.Yes)
         elif Globals.USER == "":
-            BR.information(self,"提示","用户未登录软件中心",'确定','','',0, 0)
+            BR.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
         else:
-            BR.information(self,"提示","服务器异常",'确定','','',0, 0)
+            BR.information(self,"提示","服务器异常",QMessageBox.Yes)
 
     def slot_rset_password_over(self,res):
+        res = res[0]['res']
         AR = QMessageBox
         if res == 0:
             print("######","修改成功")
-            AR.information(self,"提示","修改成功",'确定','','',0, 0)
+            AR.information(self,"提示","修改成功",QMessageBox.Yes)
         elif res == 1 or res == None:
             #数据异常
             print("######","用户不存在")
-            AR.information(self,"提示","用户不存在",'确定','','',0, 0)
+            AR.information(self,"提示","用户不存在",QMessageBox.Yes)
         elif res == 2:
             #用户验证失败
-            AR.information(self,"提示","用户验证失败",'确定','','',0, 0)
+            AR.information(self,"提示","用户验证失败",QMessageBox.Yes)
         else:
-            AR.information(self,"提示","服务器异常",'确定','','',0, 0)  
+            AR.information(self,"提示","服务器异常",QMessageBox.Yes)  
  
 #for recover password
     def slot_click_recoverpassword(self):
         BC = QMessageBox
         if self.listrec[0] != "" and self.listrec[1] != "" and self.listrec[2] != "":
             try:
-                self.emit(Signals.recover_password,self.listrec[0],self.listrec[1],self.listrec[2])
+                self.recover_password.emit(self.listrec[0],self.listrec[1],self.listrec[2])
             except:
                 print("######","修改失败")
-                BC.information(self,"提示","服务器异常",'确定','','',0, 0)
+                BC.information(self,"提示","服务器异常",QMessageBox.Yes)
         elif self.listrec[0] == "":
-            BC.information(self,"提示","用户名为空",'确定','','',0, 0)
+            BC.information(self,"提示","用户名为空",QMessageBox.Yes)
         elif self.listrec[1] == "":
-            BC.information(self,"提示","邮箱为空",'确定','','',0, 0)
+            BC.information(self,"提示","邮箱为空",QMessageBox.Yes)
         elif self.listrec[2] == "":
-            BC.information(self,"提示","新密码为空",'确定','','',0, 0)
+            BC.information(self,"提示","新密码为空",QMessageBox.Yes)
         else:
-            BC.information(self,"提示","服务器异常",'确定','','',0, 0)
+            BC.information(self,"提示","服务器异常",QMessageBox.Yes)
     def slot_recover_password_over(self,res):
+        res = res[0]['res']
         AC = QMessageBox
         if res == 0:
             print("######","找回成功")
-            AC.information(self,"提示","找回成功",'确定','','',0, 0)
+            AC.information(self,"提示","找回成功",QMessageBox.Yes)
         elif res == 1 or res == None:
             #数据异常
             print("######","用户名不存在或密码为空")
-            AC.information(self,"提示","用户名不存在或密码为空",'确定','','',0, 0)
+            AC.information(self,"提示","用户名不存在或密码为空",QMessageBox.Yes)
         else:
             print("######xxxxxx","服务器异常")
-            AC.information(self,"提示","服务器异常",'确定','','',0, 0)
+            AC.information(self,"提示","服务器异常",QMessageBox.Yes)
 
 
 
@@ -389,13 +393,13 @@ class ConfigWidget(QWidget):
 
     def slot_click_cancel(self):
         self.iscanceled = True
-        self.emit(Signals.task_cancel, "#update", "update")
+        self.task_cancel.emit("#update", "update")
 
     def slot_click_update(self):
         self.iscanceled = False
         self.ui.progressBar.reset()
         self.set_process_visiable(True)
-        self.emit(Signals.click_update_source)
+        self.click_update_source.emit()
 
     def slot_update_status_change(self, percent):
         self.ui.progressBar.setValue(percent)
@@ -575,8 +579,8 @@ class SourceItemWidget(QWidget):
 def main():
     import sys
     app = QApplication(sys.argv)
-    QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
-    QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
+   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
     globalfont = QFont()
     globalfont.setFamily("文泉驿微米黑")

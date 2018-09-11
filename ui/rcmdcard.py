@@ -23,8 +23,9 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 from ui.uknormalcard import Ui_NormalCard
 from ui.starwidget import StarWidget
 from utils import run
@@ -33,7 +34,7 @@ from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
 from models.globals import Globals
 
-class RcmdCard(QWidget):
+class RcmdCard(QWidget,Signals):
 
     def __init__(self, app, messageBox, parent=None):
         QWidget.__init__(self, parent)
@@ -216,8 +217,8 @@ class RcmdCard(QWidget):
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
-        # self.connect(self.mainwin,Signals.apt_process_finish,self.slot_work_finished)
-        # self.connect(self.mainwin,Signals.apt_process_cancel,self.slot_work_cancel)
+        # self.connect(self.mainwin,apt_process_finish,self.slot_work_finished)
+        # self.connect(self.mainwin,apt_process_cancel,self.slot_work_cancel)
 
     def ui_init(self):
         self.ui = Ui_NormalCard()
@@ -282,8 +283,8 @@ class RcmdCard(QWidget):
             self.app.status = PkgStates.INSTALLING
             self.ui.btn.setText("等待安装")
             self.slot_show_progress("install")
-            self.emit(Signals.install_app, self.app)
-            self.emit(Signals.get_card_status, self.app.name, PkgStates.INSTALLING)
+            self.install_app.emit(self.app)
+            self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
 
     # wb
     def slot_show_progress(self,status):
@@ -377,7 +378,7 @@ class RcmdCard(QWidget):
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
     def slot_emit_detail(self):
-        self.emit(Signals.show_app_detail, self.app)
+        self.show_app_detail.emit(self.app)
 
     def slot_work_finished(self, pkgname,action):
         if self.app.name == pkgname:

@@ -29,9 +29,11 @@ import os
 import re
 import subprocess
 import xdg.DesktopEntry
-from models.enums import Specials
+#from models.enums import Specials
 
 import subprocess
+
+Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
 
 def RemoveArgs(Execline):
     NewExecline = []

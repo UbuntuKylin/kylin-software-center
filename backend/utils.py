@@ -1015,7 +1015,7 @@ class SimpleFileDownloader(GObject.GObject):
 #=================================================================
 # ported by Robert 20140626
 # from ubuntu-software-center/softwarecenter/ui/gtk3/utils.py
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 
 def get_parent(widget):

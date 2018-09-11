@@ -9,8 +9,8 @@ from defer import inline_callbacks
 from aptdaemon import policykit1
 
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 loop = gobject.MainLoop()
 
 def on_finished(trans, exit):
