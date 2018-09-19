@@ -1,54 +1,35 @@
-ubuntu-kylin-software-center (1.5.3) cosmic; urgency=medium
-
-  * Interface tuning and code optimization.
-
- -- wenbo <wenbo@ubuntukylin.com>  Tue, 11 Sep 2018 09:22:28 +0800
-
-ubuntu-kylin-software-center (1.5.2) cosmic; urgency=medium
-
-  * Migrate pyqt5 from pyqt4.
-
- -- wenbo <wenbo@ubuntukylin.com>  Tue, 11 Sep 2018 11:37:57 +0800
-
-ubuntu-kylin-software-center (1.5.1) cosmic; urgency=medium
-
-  * Rewrite user login and registration.
-
- -- wenbo <wenbo@ubuntukylin.com>  Tue, 11 Sep 2018 09:57:48 +0800
-
 ubuntu-kylin-software-center (1.5.0) cosmic; urgency=medium
 
-  * Migrate python3 from pyhton2.
+  * Migrate to python3.
+  * Migrate to pyqt5.
+  * Rewrite user login and registration.
+  * Interface tuning and code optimization.
 
- -- wenbo <wenbo@ubuntukylin.com>  Tue, 11 Sep 2018 09:22:28 +0800
+ -- wenbo <wenbo@ubuntukylin.com>  Wed, 19 Sep 2018 09:54:39 +0800
 
-ubuntu-kylin-software-center (1.4kord1) artful; urgency=medium
+ubuntu-kylin-software-center (1.4.0) bionic; urgency=medium
 
-  * fix up: max advertising button,update uksc,add icons,screenshop
-
- -- wukiage <wukaige@kylinos.cn>  Wed, 31 Jan 2018 17:33:11 +0800
-
-ubuntu-kylin-software-center (1.4) artful; urgency=medium
-
-  * update  advertising interface 
-  * update win interface
-  * fix up: install local software goto home interface
-  * update uksc and add screenshots and icons 
-  * adjustment screenshot display 
+  * Update advertising interface
+  * Update win interface
+  * Fix up: install local software goto home interface
+  * Fix up: max advertising button,update uksc,add icons,screenshop
+  * Update uksc and add screenshots and icons
+  * Adjustment screenshot display
+  * Update display page and main interface
+  * More recommended software and update UKSC
 
  -- wukaige <wukaige@kylinos.cn>  Fri, 22 Dec 2017 12:02:12 +0800
 
-ubuntu-kylin-software-center (1.3.14) artful; urgency=medium
+ubuntu-kylin-software-center (1.3.14) bionic; urgency=medium
 
-  *  update display page and main interface 
-  *  more recommended software and update UKSC
+  * Drop dependency on python-imaging.
 
- -- wukaige <wukaige@kylinos.cn>  Fri, 10 Nov 2017 17:23:54 +0800
+ -- Matthias Klose <doko@ubuntu.com>  Fri, 16 Feb 2018 16:46:44 +0700
 
 ubuntu-kylin-software-center (1.3.13) artful; urgency=medium
 
   * fix up: update the software source for the first time when sources.list wrong,software cannot start
-  * add settings interface,can update and edit sources.list    
+  * add settings interface,can update and edit sources.list
   * software startup acceleration
   * software details interface edit
   * databases uksc add and translation
@@ -69,11 +50,11 @@ ubuntu-kylin-software-center (1.3.11) xenial; urgency=medium
 
 ubuntu-kylin-software-center (1.3.10) xenial; urgency=medium
 
-  * fixed bug LP: #1559852,The UKSC freeze for a few seconds after it 
+  * fixed bug LP: #1559852,The UKSC freeze for a few seconds after it
     installs or uninstalls app successfully.
-  * fixed bug LP: #1561848,In allpage, the last categorybutton show 
+  * fixed bug LP: #1561848,In allpage, the last categorybutton show
     abnormally when mouse hover on it.
-  * fixed bug LP: #1559955,While the downloading page opened, adjust the 
+  * fixed bug LP: #1559955,While the downloading page opened, adjust the
     scroll bar at the right side of uksc, the Downloading page display abnormal.
   * improve ubuntu-kylin-software-center self update.
 
@@ -85,8 +66,8 @@ ubuntu-kylin-software-center (1.3.9) xenial; urgency=medium
     source software.
   * Add a list of installed packages.
   * xapian support all software source inside search.
-  * fixed bug LP: #1552647,Ubuntu Kylin Software Center has failed 
-    to start. 
+  * fixed bug LP: #1552647,Ubuntu Kylin Software Center has failed
+    to start.
   * fixed bug LP: #1530337,The software sources update operation invalid.
   * fixed bug LP: #1538153,The prompt box for source update still appeared
     after the software sources update operation has been performed.
@@ -95,12 +76,12 @@ ubuntu-kylin-software-center (1.3.9) xenial; urgency=medium
 
 ubuntu-kylin-software-center (1.3.8) xenial; urgency=medium
 
-  * fixed bug LP: #1550107,"Sudo apt-get update" command can not be 
+  * fixed bug LP: #1550107,"Sudo apt-get update" command can not be
     fully implemented.
-  * LP: #1550099,Click on the close button in the prompt box for source 
+  * LP: #1550099,Click on the close button in the prompt box for source
     update is invalid.
-  * LP: #1538152,After the system has started up for the first time, 
-    the software sources update operation could not be loaded graphical 
+  * LP: #1538152,After the system has started up for the first time,
+    the software sources update operation could not be loaded graphical
     interface.
   * refresh page when update source by uksc.
 
@@ -108,9 +89,9 @@ ubuntu-kylin-software-center (1.3.8) xenial; urgency=medium
 
 ubuntu-kylin-software-center (1.3.7) xenial; urgency=medium
 
-  * LP: #1535550 can't start uksc without giving password at uksc 
+  * LP: #1535550 can't start uksc without giving password at uksc
     first time start when update "source.list".
-  * LP: #1535548 no update progress when first time start uksc and 
+  * LP: #1535548 no update progress when first time start uksc and
     update the "source.list".
 
  -- Shine <shenghuang@ubuntukylin.com>  Tue, 19 Jan 2016 17:14:20 +0800
@@ -131,19 +112,19 @@ ubuntu-kylin-software-center (1.3.5) wily; urgency=medium
 
 ubuntu-kylin-software-center (1.3.3) vivid; urgency=medium
 
-  * Add the installation, upgrade, uninstall software progress 
+  * Add the installation, upgrade, uninstall software progress
     bar display.
   * Optimize the list, add the mouse hover effect.
-  * Optimize the state of the progress bar, bugs when dealing 
+  * Optimize the state of the progress bar, bugs when dealing
     with broken network download and install.
-  * Optimize the blurbs, add a layer of the gradient background, 
+  * Optimize the blurbs, add a layer of the gradient background,
     solve the problem of dislocation window after expanding ads.
   * fix many bugs.
 
  -- Shine <shenghuang@ubuntukylin.com>  Tue, 21 Jul 2015 14:51:52 +0800
 
 ubuntu-kylin-software-center (1.3.2) vivid; urgency=medium
-  
+
   * New upstream bug fix release
     LP: #1372283, #1396402, #1420670, #1467722
 
@@ -166,10 +147,10 @@ ubuntu-kylin-software-center (1.3.0) vivid; urgency=medium
 
 ubuntu-kylin-software-center (1.2.3.0) vivid; urgency=medium
 
-  * LP: #1409187 : When enter the live mode, there will popup 
-    a dialog about archive source update tip which is asking the 
+  * LP: #1409187 : When enter the live mode, there will popup
+    a dialog about archive source update tip which is asking the
     user to update the source or not.
-  * LP: #1402953 : Part of the software starts up again after 
+  * LP: #1402953 : Part of the software starts up again after
     closing will prompt "×× already running."
 
  -- Shine <shenghuang@ubuntukylin.com>  Tue, 20 Jan 2015 16:52:03 +0800
@@ -178,7 +159,7 @@ ubuntu-kylin-software-center (1.2.2.0) vivid; urgency=medium
 
   * Fixed the problem that interface can not receive the errorcode signal
   * Only upgradeable app,installed app can be searched in UPPAGE, UNPAGE
-  * Improve the detail logic in ui (normalcard.py,detailscrollwidget.py 
+  * Improve the detail logic in ui (normalcard.py,detailscrollwidget.py
     etc)
   * LP: #1396051, #1396403, #1396428, #1368208, #1379117, #1373916, #1396041, #1402898
 
@@ -187,7 +168,7 @@ ubuntu-kylin-software-center (1.2.2.0) vivid; urgency=medium
 ubuntu-kylin-software-center (1.2.1.0) utopic; urgency=medium
 
   * Icon from the server and automatically update the software.
-  * Detailed interface multifunction button, the default an 
+  * Detailed interface multifunction button, the default an
     operation, the drop-down to select other actions.
   * Icon from the server and automatically update the software.
   * Submit software review rules.
@@ -199,7 +180,7 @@ ubuntu-kylin-software-center (1.2.0.0) utopic; urgency=medium
   * complete list of user-based installation records login to view,
     check a key to install the software.
   * users log loading process area to prevent repeat.
-  * fixes from the search can not click on the current categories 
+  * fixes from the search can not click on the current categories
     (as is currently the treasure) back to the category page of the bug.
   * fixes a bug in the software display starts after unloading canceled.
   * repair function to delete all tasks logical errors.
@@ -262,7 +243,7 @@ ubuntu-kylin-software-center (1.1.1.0) utopic; urgency=medium
 
 ubuntu-kylin-software-center (1.1.0.0) utopic; urgency=medium
 
-  * UKID landing, ratings, reviews 
+  * UKID landing, ratings, reviews
   * pointout prompted only once, setting interface corresponding
     item also removed
   * New default software icon
@@ -289,7 +270,7 @@ ubuntu-kylin-software-center (0.3.4.1) utopic; urgency=medium
 
 ubuntu-kylin-software-center (0.3.4.0) utopic; urgency=medium
 
-  * Part of the data migration to the server: classification, software information, 
+  * Part of the data migration to the server: classification, software information,
     charts, recommended, pointout installation
   * xapian Chinese word search
   * All interfaces such as buttons close to the upper left corner of unity
@@ -300,76 +281,76 @@ ubuntu-kylin-software-center (0.3.4.0) utopic; urgency=medium
 
 ubuntu-kylin-software-center (0.3.3.0) utopic; urgency=medium
 
-  * .deb package can choose the right software center opens, 
+  * .deb package can choose the right software center opens,
     support the installation of deb files
-  * windows software alternative solutions to help users quickly find 
+  * windows software alternative solutions to help users quickly find
     popular software windows in our system
   * Add pchome wallpaper to Home Advertising
 
- -- Shine <shenghuang@ubuntukylin.com>  Fri, 01 Aug 2014 09:47:36 +0800 
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 01 Aug 2014 09:47:36 +0800
 
 ubuntu-kylin-software-center (0.3.2.0) utopic; urgency=medium
 
   * Increase the small icon, click on the optional after hide/show the
     main interface, exit procedures
   * Modify the update software source of tips, dbus tips such as text
-    and control logic 
-  * Increase start software center data record and install the software 
+    and control logic
+  * Increase start software center data record and install the software
     of data records
   * Fix many bugs (LP: #1329237, #1326692, #1297108, #1340497, #1323209)
 
- -- Shine <shenghuang@ubuntukylin.com>  Fri, 11 Jul 2014 16:34:17 +0800 
+ -- Shine <shenghuang@ubuntukylin.com>  Fri, 11 Jul 2014 16:34:17 +0800
 
 ubuntu-kylin-software-center (0.3.1.0) utopic; urgency=medium
- 
+
   * fix many ui bugs (LP: #1309906, #1314590, #1326681, #1323227, #1309515,
     #1326679, #1326689, #1329186, #1328749, #1329642)
- 
+
  -- Shine <shenghuang@ubuntukylin.com>  Mon, 16 Jun 2014 15:06:06 +0800
 
 ubuntu-kylin-software-center (0.3.0.0) trusty; urgency=medium
- 
+
   * new loading gif
   * add new categories
   * add page check for reviews
   * get ratings and reviews from ubuntukylin server
- 
+
  -- Shine <shenghuang@ubuntukylin.com>  Wed, 04 Jun 2014 17:23:50 +0800
 
 ubuntu-kylin-software-center (0.2.9.7) trusty; urgency=medium
- 
+
   [ Jun Ma ]
   * correct pyflakes serious warnings (bug#1306313)
   * update initial procedure to show loading flash (bug#1317563)
   * change sqlite connection paremeter to support multi-thread access
-  
+
   [ wenbo607 ]
   * update the description and icon of sogoupinyin (bug#1317047)
- 
+
  -- Jun Ma <majun@ubuntukylin.com>  Fri, 09 May 2014 13:55:26 +0800
 
 ubuntu-kylin-software-center (0.2.9.6) trusty; urgency=medium
- 
+
   [ Shine ]
   * solve the search entry ui problem (bug#1309900)
-  
+
   [ wenbo607 ]
   * update the translations of some apps in feature category.
- 
+
  -- Jun Ma <majun@ubuntukylin.com>  Wed, 30 Apr 2014 14:03:20 +0800
 
 ubuntu-kylin-software-center (0.2.9.5) trusty; urgency=medium
- 
+
   * update auth exception (bug#1307331)
   * add excption procedure of package info.
- 
+
  -- Jun Ma <majun@ubuntukylin.com>  Sat, 19 Apr 2014 14:43:49 +0800
 
 ubuntu-kylin-software-center (0.2.9.4) trusty; urgency=medium
- 
+
   * update new UI
   * fix serveral bugs (bug#1296054,bug#1304264,bug#1306137,bug#1307275)
- 
+
  -- Shine <shenghuang@ubuntukylin.com>  Sat, 19 Apr 2014 11:20:20 +0800
 
 ubuntu-kylin-software-center (0.2.9.2) trusty; urgency=medium
@@ -404,22 +385,22 @@ ubuntu-kylin-software-center (0.2.9-0ubuntu1) trusty; urgency=low
   * Modify the messagebox display position after update finish.
   * Update init application descriptions in db file.
   * Add source update ui and dbus process (bug#1301127,bug#1300592)
-  * Solve application state of recommend and detail view (bug#1297858)  
+  * Solve application state of recommend and detail view (bug#1297858)
   * Add update check of uksc (bug#1297574)
   * Solve the add/remove source function problem in dbus service.
-  
+
  -- Shine <shenghuang@ubuntukylin.com>  Thu, 10 Apr 2014 16:31:12 +0800
 
 ubuntu-kylin-software-center (0.2.8-0ubuntu1) trusty; urgency=low
 
   * Code and file standardization by Aron for launchpad package.
-  * Solve search problem with no result or crash (bug#1294499)  
+  * Solve search problem with no result or crash (bug#1294499)
   * Solve search entry response problem (bug#1297124)
-  
+
  -- Jun Ma <majun@ubuntukylin.com>  Wed, 26 Mar 2014 00:36:29 +0800
 
 ubuntu-kylin-software-center (0.2.7-0ubuntu1) trusty; urgency=low
 
   * Initial release (LP: #1293299).
-  
+
  -- Jun Ma <majun@ubuntukylin.com>  Thu, 20 Mar 2014 10:14:56 +0800
