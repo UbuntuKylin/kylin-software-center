@@ -1,4 +1,4 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: ubuntu-kylin-software-center
 Upstream-Contact: Ubuntu Kylin Team <ubuntukylin-members@lists.launchpad.net>
 Source: https://launchpad.net/ubuntu-kylin-software-center
@@ -7,7 +7,7 @@ Files: *
 Copyright: 2013-2014, National University of Defense Technology(NUDT) & Kylin Ltd.
 License: GPL-3
 
-Files: ubuntu-kylin-software-center-daemon/*
+Files: ubuntu_kylin_software_center_daemon/*
 Copyright: Copyright (C) 2013-2014 National University of Defense Technology(NUDT) & Kylin Ltd.
 License: GPL-3
 
