@@ -1,11 +1,11 @@
-ubuntu-kylin-software-center (1.5.0) cosmic; urgency=medium
+ubuntu-kylin-software-center (1.5.2) cosmic; urgency=medium
 
   * Migrate to python3.
   * Migrate to pyqt5.
   * Rewrite user login and registration.
   * Interface tuning and code optimization.
 
- -- wenbo <wenbo@ubuntukylin.com>  Wed, 19 Sep 2018 09:54:39 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Fri, 21 Sep 2018 16:53:53 +0800
 
 ubuntu-kylin-software-center (1.4.0) bionic; urgency=medium
 
