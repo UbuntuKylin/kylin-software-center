@@ -564,7 +564,7 @@ class SourceItemWidget(QWidget):
 
         compstr = " "
         for i in range(3, len(slist)):
-            compstr += slist[i]
+            compstr += str(slist[i])
             compstr += " "
         compstr = compstr[:-1]
         text = str(slist[1]) + " " + str(slist[2]) + compstr
