@@ -649,10 +649,10 @@ class SoftwareCenter(QMainWindow,Signals):
         while res == False:
             button=QMessageBox.question(self,"初始化提示",
                                     self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
-                                    "重试", "忽略", "退出", 0, 2)
-            if button == 0:
+                                    QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
+            if button == QMessageBox.Retry:
                 res = self.backend.init_dbus_ifaces()
-            elif button == 1:
+            elif button == QMessageBox.Ignore:
                 LOG.warning("failed to connecting dbus service, you still choose to continue...")
                 break
             else:
@@ -737,11 +737,11 @@ class SoftwareCenter(QMainWindow,Signals):
         INFO = QMessageBox
         btn = INFO.warning(self,"温馨提示",
                                 self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"),
-                                '详细','忽略','', 1, 1)
-        if btn == 0:
+                                QMessageBox.Ok|QMessageBox.Cancel, QMessageBox.Cancel)
+        if btn == QMessageBox.Ok:
             INFO.information(self,"温馨提示",
                                 self.tr(MSG),
-                                '知道了','','',0, 0)
+                                QMessageBox.Ok, QMessageBox.Ok)
 
     def check_singleton(self):
         try:
