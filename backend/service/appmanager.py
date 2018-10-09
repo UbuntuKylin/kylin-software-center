@@ -96,12 +96,12 @@ class ThreadWorker(threading.Thread):
         self.appmgr.apt_cache = self.apt_cache
         self.appmgr.db = self.db
         if Globals.UPDATE_HOM == 0:
-            self.appmgr.get_recommend_apps(False)
+            #self.appmgr.get_recommend_apps(False)
             self.appmgr.get_ratingrank_apps(False)
         sum_inst = 0
         sum_up = 0
         sum_all = len(self.apt_cache)
-        self.appmgr.get_recommend_apps(False)
+        #self.appmgr.get_recommend_apps(False)
         self.appmgr.get_ratingrank_apps(False)
         print(("ok",sum_all))
         self.appmgr.get_game_apps(False,False)
@@ -294,7 +294,7 @@ class AppManager(QObject,Signals):
         self.worker_thread.start()
         
         self.worker_thread1 = ThreadWorker(self)
-        #self.worker_thread1.setDaemon(True)
+        self.worker_thread1.setDaemon(True)
         self.worker_thread1.start()
 
 
