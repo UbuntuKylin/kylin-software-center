@@ -1,9 +1,10 @@
 ubuntu-kylin-software-center (1.5.3) cosmic; urgency=medium
 
   * Fix thread blocking affects normal exit.
-  * The repair interface will be forced to jump when the background thread data is loaded.
+  * The repair interface will be forced to jump when the background
+    thread data is loaded.
 
- -- wenbo <wenbo@ubuntukylin.com>  Tue, 09 Oct 2018 15:45:57 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 09 Oct 2018 16:43:24 +0800
 
 ubuntu-kylin-software-center (1.5.2) cosmic; urgency=medium
 
