@@ -1,12 +1,13 @@
-ubuntu-kylin-software-center (1.5.3) cosmic; urgency=medium
+ubuntu-kylin-software-center (1.5.3.1) cosmic; urgency=medium
 
   * Fix thread blocking affects normal exit.
   * The repair interface will be forced to jump when the background
     thread data is loaded.
+  * Fix the changelog.
 
- -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 09 Oct 2018 16:43:24 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Sat, 13 Oct 2018 14:05:37 +0800
 
-ubuntu-kylin-software-center (1.5.2) cosmic; urgency=medium
+ubuntu-kylin-software-center (1.5.2) UNRELEASED; urgency=medium
 
   * Migrate to python3.
   * Migrate to pyqt5.
@@ -15,7 +16,7 @@ ubuntu-kylin-software-center (1.5.2) cosmic; urgency=medium
 
  -- handsome_feng <jianfengli@ubuntukylin.com>  Fri, 21 Sep 2018 16:53:53 +0800
 
-ubuntu-kylin-software-center (1.4.0) bionic; urgency=medium
+ubuntu-kylin-software-center (1.4.0) UNRELEASED; urgency=medium
 
   * Update advertising interface
   * Update win interface
