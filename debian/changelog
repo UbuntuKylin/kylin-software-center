@@ -1,11 +1,13 @@
-ubuntu-kylin-software-center (1.5.3.1) cosmic; urgency=medium
+ubuntu-kylin-software-center (1.5.4) disco; urgency=medium
 
   * Fix thread blocking affects normal exit.
   * The repair interface will be forced to jump when the background
     thread data is loaded.
-  * Fix the changelog.
+  * Debian:
+    - Bump standards-version to 4.3.0, compat level to 12.
+    - Migrate from launchpad to github.
 
- -- handsome_feng <jianfengli@ubuntukylin.com>  Sat, 13 Oct 2018 14:05:37 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 20 Feb 2019 10:44:57 +0800
 
 ubuntu-kylin-software-center (1.5.2) UNRELEASED; urgency=medium
 
