@@ -504,9 +504,9 @@ class AppManager(QObject,Signals):
             app.summary = app.summary
             app.description = app.description
             app.from_ukscdb = False
-
-            cat = self.cat_list["Accessories"]
-            cat.apps[pkgname] = app
+            if("Accessories" in self.cat_list.keys()):
+                cat = self.cat_list["Accessories"]
+                cat.apps[pkgname] = app
             return app
 
         return None

@@ -290,7 +290,7 @@ class PistonRemoter(PistonAPI):
         postdata.language = language
         postdata.user = user
         postdata.user_display = user_display
-        gets = self._post('submitreview1810/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('submitreview20141124/', data=postdata, scheme='http', content_type='application/json')
         print("submit_review")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
@@ -323,7 +323,7 @@ class PistonRemoter(PistonAPI):
         #print postdata.user
         postdata.user_display = user_display
         #print postdata.user_display
-        gets = self._post('submittranslation1810/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('submittranslation/', data=postdata, scheme='http', content_type='application/json')
         print("submit_translate_appinfo")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
@@ -336,7 +336,7 @@ class PistonRemoter(PistonAPI):
         postdata.rating = rating
         postdata.user = user
         postdata.user_display = user_display
-        gets = self._post('submitrating1810/', data=postdata, scheme='http', content_type='application/json')
+        gets = self._post('submitrating0923/', data=postdata, scheme='http', content_type='application/json')
         print("submit_rating")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')

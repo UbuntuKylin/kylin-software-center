@@ -1,3 +1,15 @@
+ubuntu-kylin-software-center (1.5.6) disco; urgency=medium
+
+  * Rating comment interface adjustment.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Fri, 19 Apr 2019 10:47:44 +0800
+
+ubuntu-kylin-software-center (1.5.5) disco; urgency=medium
+
+  * Optimization source list.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Mon, 25 Mar 2019 16:26:02 +0800
+
 ubuntu-kylin-software-center (1.5.4) disco; urgency=medium
 
   * Fix thread blocking affects normal exit.

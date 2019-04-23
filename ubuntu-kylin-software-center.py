@@ -124,6 +124,7 @@ class SoftwareCenter(QMainWindow,Signals):
     lockads = True
     adm = 0
     bdm = 0
+    rec_ready = False
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
 

@@ -203,7 +203,9 @@ class ConfigWidget(QWidget,Signals):
 
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
 
+
         for one in slist:
+            one = one.decode('utf-8')
             item = QListWidgetItem()
             itemw = SourceItemWidget(one, self)
             self.ui.sourceListWidget.addItem(item)
@@ -366,6 +368,7 @@ class ConfigWidget(QWidget,Signals):
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
 
         for one in slist:
+            one = one.decode('utf-8')
             item = QListWidgetItem()
             itemw = SourceItemWidget(one, self)
             self.ui.sourceListWidget.addItem(item)
