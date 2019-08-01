@@ -84,9 +84,15 @@ class ConfigWidget(QWidget,Signals):
         self.ui.checkBox_6.setChecked(True)
 
         self.ui.lesource8.textChanged.connect(self.slot_le_input8)
+
+        self.ui.lesource9.setEchoMode(QLineEdit.Password)
+        self.ui.lesource9.setContextMenuPolicy(Qt.NoContextMenu)
         self.ui.lesource9.textChanged.connect(self.slot_le_input9)
         self.ui.lesource11.textChanged.connect(self.slot_le_input11)
         self.ui.lesource12.textChanged.connect(self.slot_le_input12)
+        
+        self.ui.lesource13.setEchoMode(QLineEdit.Password)
+        self.ui.lesource13.setContextMenuPolicy(Qt.NoContextMenu)
         self.ui.lesource13.textChanged.connect(self.slot_le_input13)
         self.ui.lesource14.textChanged.connect(self.slot_le_input14)#change identity        
 #        self.ui.lesource15.textChanged.connect(self.slot_le_input15)#change identity
@@ -94,13 +100,13 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnAdd_2.clicked.connect(self.slot_click_rsetpassword)
         self.ui.btnAdd_3.clicked.connect(self.slot_click_recoverpassword)
         self.ui.btnAdd_4.clicked.connect(self.slot_click_changeidentity)
-        self.ui.lesource8.setMaxLength(16)
-        self.ui.lesource9.setMaxLength(16)
-        self.ui.lesource11.setMaxLength(16)
-        self.ui.lesource12.setMaxLength(16)
-        self.ui.lesource13.setMaxLength(16)
-        self.ui.lesource14.setMaxLength(16)
-#        self.ui.lesource15.setMaxLength(16)
+        self.ui.lesource8.setMaxLength(22)
+        self.ui.lesource9.setMaxLength(22)
+        self.ui.lesource11.setMaxLength(22)
+        self.ui.lesource12.setMaxLength(22)
+        self.ui.lesource13.setMaxLength(22)
+        self.ui.lesource14.setMaxLength(22)
+#        self.ui.lesource15.setMaxLength(22)
         self.ui.lesource8.setPlaceholderText("请输入用户名")
         self.ui.lesource9.setPlaceholderText("请输入新密码")
         self.ui.lesource11.setPlaceholderText("请输入用户名")
@@ -223,6 +229,7 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnReset.setVisible(False)
         self.ui.cbhideubuntu.setVisible(False)
 
+
     def slot_le_input8(self,text):
         sourcetext = str(text)
         self.listset[0] = sourcetext
@@ -247,30 +254,47 @@ class ConfigWidget(QWidget,Signals):
         self.listuser = sourcetext
 
     def slot_click_changeidentity(self):
-        BC = QMessageBox
+        BC = QMessageBox()
+        BC.setWindowTitle('提示')
+        BC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if self.listuser == Globals.USER :
             try:
                 self.change_identity.emit()
             except:
                 print("error")
-                BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+                #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+                BC.setText('请输入用户密码')
+                BC.exec_()
+
         elif self.listuser == "":
             print("########:请输入用户名")
-            BC.information(self,"提示","请输入用户名",QMessageBox.Yes)
+            #BC.information(self,"提示","请输入用户名",QMessageBox.Yes)
+            BC.setText('请输入用户名')
+            BC.exec_()
         elif Globals.USER == "":
             print("########:用户名错误")
-            BC.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
+            #BC.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
+            BC.setText('用户未登录软件中心')
+            BC.exec_()
         elif self.listuser != Globals.USER :
-            BC.information(self,"提示","改变身份的用户未登录",QMessageBox.Yes)
+            #BC.information(self,"提示","改变身份的用户未登录",QMessageBox.Yes)
+            BC.setText('改变身份的用户未登录')
+            BC.exec_()
         else:
-            BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            BC.setText('服务器异常')
+            BC.exec_()
 
     def slot_change_user_identity_over(self,res):
         res = res[0]['res']
-        AC =QMessageBox
+        AC =QMessageBox()
+        AC.setWindowTitle('提示')
+        AC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
             print("######","修改成功")
-            AC.information(self,"提示","修改成功",QMessageBox.Yes)
+            #AC.information(self,"提示","修改成功",QMessageBox.Yes)
+            AC.setText('修改成功')
+            AC.exec_()
             if Globals.USER_IDEN == "general_user":
                 Globals.USER_IDEN = "identity"
             elif Globals.USER_IDEN == "identity":
@@ -279,18 +303,26 @@ class ConfigWidget(QWidget,Signals):
         elif res == 1 or res == None:
             #数据异常
             print("######","用户不存在")
-            AC.information(self,"提示","用户不存在",QMessageBox.Yes)
+            #AC.information(self,"提示","用户不存在",QMessageBox.Yes)
+            AC.setText('用户不存在')
+            AC.exec_()
         elif res == 2:
             #用户验证失败
             print("######","服务器异常")
-            AC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            AC.setText('服务器异常')
+            AC.exec_()
         elif res == 3:
             #服务器异常
             print("######","身份异常")
-            AC.information(self,"提示","身份异常",QMessageBox.Yes)
+            #AC.information(self,"提示","身份异常",QMessageBox.Yes)
+            AC.setText('身份异常')
+            AC.exec_()
         else:
             print("######","服务器异常")
-            AC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            AC.setText('服务器异常')
+            AC.exec_()
 
 #    def slot_le_input15(self,text):
 #        sourcetext = str(text.toUtf8())
@@ -298,68 +330,115 @@ class ConfigWidget(QWidget,Signals):
 
 #for rset password 
     def slot_click_rsetpassword(self):
-        BR =QMessageBox
+        BR =QMessageBox()
+        BR.setWindowTitle('提示')
+        BR.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if self.listset[0] == Globals.USER and self.listset[0] != "" and self.listset[1] != "":
             try:
                 self.rset_password.emit(self.listset[1])
             except:
                 print("######","修改失败")
-                BR.information(self,"提示","修改失败",QMessageBox.Yes)
+                #BR.information(self,"提示","修改失败",QMessageBox.Yes)
+                BR.setText('修改失败')
+                BR.exec_()
         elif self.listset[0] == "":
-            BR.information(self,"提示","请输入用户名",QMessageBox.Yes)
+            #BR.information(self,"提示","请输入用户名",QMessageBox.Yes)
+            BR.setText('请输入用户名')
+            BR.exec_()
         elif self.listset[1] == "":
-            BR.information(self,"提示","请输入新密码",QMessageBox.Yes)
+            #BR.information(self,"提示","请输入新密码",QMessageBox.Yes)
+            BR.setText('请输入新密码')
+            BR.exec_()
         elif Globals.USER == "":
-            BR.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
+            #BR.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
+            BR.setText('用户未登录软件中心')
+            BR.exec_()
         else:
-            BR.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #BR.information(self,"提示","请输入登录帐号用户名",QMessageBox.Yes)
+            BR.setText('请输入登录帐号用户名')
+            BR.exec_()
 
     def slot_rset_password_over(self,res):
         res = res[0]['res']
-        AR = QMessageBox
+        AR = QMessageBox()
+        AR.setWindowTitle('提示')
+        AR.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
             print("######","修改成功")
-            AR.information(self,"提示","修改成功",QMessageBox.Yes)
+            #AR.information(self,"提示","修改成功",QMessageBox.Yes)
+            AR.setText('修改成功')
+            AR.exec_()
         elif res == 1 or res == None:
             #数据异常
             print("######","用户不存在")
-            AR.information(self,"提示","用户不存在",QMessageBox.Yes)
-        elif res == 2:
+            #AR.information(self,"提示","用户不存在",QMessageBox.Yes)
+            AR.setText('用户不存在')
+            AR.exec_()
+        elif res == 3:
             #用户验证失败
-            AR.information(self,"提示","用户验证失败",QMessageBox.Yes)
+            #AR.information(self,"提示","新密码与原来一致，请重新修改",QMessageBox.Yes)
+            AR.setText('新密码与原来一致，请重新修改')
+            AR.exec_()
         else:
-            AR.information(self,"提示","服务器异常",QMessageBox.Yes)  
+            #AR.information(self,"提示","服务器异常",QMessageBox.Yes)
+            AR.setText('服务器异常')
+            AR.exec_()
  
 #for recover password
     def slot_click_recoverpassword(self):
-        BC = QMessageBox
+        BC = QMessageBox()
+        BC.setWindowTitle('提示')
+        BC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if self.listrec[0] != "" and self.listrec[1] != "" and self.listrec[2] != "":
             try:
                 self.recover_password.emit(self.listrec[0],self.listrec[1],self.listrec[2])
             except:
                 print("######","修改失败")
-                BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+                #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+                BC.setText('服务器异常')
+                BC.exec_()
         elif self.listrec[0] == "":
-            BC.information(self,"提示","用户名为空",QMessageBox.Yes)
+            #BC.information(self,"提示","用户名为空",QMessageBox.Yes)
+            BC.setText('用户名为空')
+            BC.exec_()
         elif self.listrec[1] == "":
-            BC.information(self,"提示","邮箱为空",QMessageBox.Yes)
+            #BC.information(self,"提示","邮箱为空",QMessageBox.Yes)
+            BC.setText('邮箱为空')
+            BC.exec_()
         elif self.listrec[2] == "":
-            BC.information(self,"提示","新密码为空",QMessageBox.Yes)
+            #BC.information(self,"提示","新密码为空",QMessageBox.Yes)
+            BC.setText('新密码为空')
+            BC.exec_()
         else:
-            BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            BC.setText('服务器异常')
+            BC.exec_()
     def slot_recover_password_over(self,res):
         res = res[0]['res']
-        AC = QMessageBox
+        AC = QMessageBox()
+        AC.setWindowTitle('提示')
+        AC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
             print("######","找回成功")
-            AC.information(self,"提示","找回成功",QMessageBox.Yes)
+            #AC.information(self,"提示","找回成功",QMessageBox.Yes)
+            AC.setText('找回成功')
+            AC.exec_()
         elif res == 1 or res == None:
             #数据异常
             print("######","用户名不存在或密码为空")
-            AC.information(self,"提示","用户名不存在或密码为空",QMessageBox.Yes)
+            #AC.information(self,"提示","用户名或邮箱错误",QMessageBox.Yes)
+            AC.setText('用户名或邮箱错误')
+            AC.exec_()
+        elif res == 3:
+            #用户验证失败
+            #AC.information(self,"提示","新密码与原来一致，请重新修改",QMessageBox.Yes)
+            AC.setText('新密码与原来一致')
+            AC.exec_()
         else:
             print("######xxxxxx","服务器异常")
-            AC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
+            AC.setText('服务器异常')
+            AC.exec_()
 
 
 
@@ -408,10 +487,12 @@ class ConfigWidget(QWidget,Signals):
         self.ui.progressBar.setValue(percent)
 
     def slot_update_finish(self):
+        self.fill_sourcelist()
         self.set_process_visiable(False)
 
     def slot_click_add(self):
         sourcetext = str(self.ui.lesource.text())
+        sourceflag = -1
         #if (sourcetext.find('kylinos') == -1):
         #        self.messageBox.alert_msg("非麒麟软件源")
         if (sourcetext.find(':') == -1):
@@ -421,21 +502,21 @@ class ConfigWidget(QWidget,Signals):
                 sourcetext = self.slot_app_sou(sourcetext)
                 if self.ui.checkBox_2.isChecked():
                         #sourcetext = self.slot_app_sou(sourcetext)
-                        self.backend.add_source(sourcetext)
+                        sourceflag = self.backend.add_source(sourcetext)
                         self.fill_sourcelist()
                         sourcetext = sourcetext.replace("deb ", "deb-src ")
         elif (sourcetext.find('deb-src ') == 0):
                 sourcetext = self.slot_app_sou(sourcetext)
                 if self.ui.checkBox.isChecked():
                         #sourcetext = self.slot_app_sou(sourcetext)
-                        self.backend.add_source(sourcetext)
+                        sourceflag = self.backend.add_source(sourcetext)
                         self.fill_sourcelist()
                         sourcetext = sourcetext.replace("deb-src ", "deb ")
         else:
                 if self.ui.checkBox.isChecked() and self.ui.checkBox_2.isChecked():
                         sourcetext = self.slot_app_sou(sourcetext)
                         sourcetext_deb = '%s%s' % ('deb ',sourcetext)
-                        self.backend.add_source(sourcetext_deb)
+                        sourceflag = self.backend.add_source(sourcetext_deb)
                         self.fill_sourcelist()
                         sourcetext = '%s%s' % ('deb-src ',sourcetext)
                 elif self.ui.checkBox.isChecked():
@@ -444,12 +525,19 @@ class ConfigWidget(QWidget,Signals):
                 elif self.ui.checkBox_2.isChecked():
                         sourcetext = '%s%s' % ('deb-src ',sourcetext)
                         sourcetext = self.slot_app_sou(sourcetext)
-        self.backend.add_source(sourcetext)
+        sourceflag = self.backend.add_source(sourcetext)
         self.fill_sourcelist()
-        if (sourcetext.find('kylinos') == -1):
+        if sourceflag == '0':
+            self.messageBox.alert_msg("root授权失败！")
+        elif sourceflag == '2':
+            self.messageBox.alert_msg("添加的软件源已存在！")
+        elif sourceflag == '1':
+            if (sourcetext.find('kylinos') == -1):
                 self.messageBox.alert_msg("添加非麒麟软件源完成") 
-        else:
+            else:
                 self.messageBox.alert_msg("添加麒麟软件源完成")
+        else:
+            self.messageBox.alert_msg("无效的软件源！")
 
     def slot_app_sou(self,sourcetext):
         if self.ui.checkBox_3.isChecked() and (sourcetext.find(' main') == -1):

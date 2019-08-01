@@ -65,7 +65,7 @@ class RankListItemWidget(QWidget):
     def ui_init(self):
         self.ui = Ui_RankListWidget()
         self.ui.setupUi(self)
-        self.show()
+        #self.show()
 
     def enterEvent(self, event):
         count = self.pwidget.count()

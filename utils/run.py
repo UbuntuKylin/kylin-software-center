@@ -105,6 +105,8 @@ def get_run_command(pkgname):
         pkgname = "obs"
     elif pkgname == "google-chrome-stable":
         pkgname = "google-chrome"
+    elif pkgname == "youker-assistant":
+        pkgname = "kylin-assistant"
 #crossover:i386
     elif pkgname == "crossover:i386":
         pkgname = "/opt/cxoffice/bin/crossover"

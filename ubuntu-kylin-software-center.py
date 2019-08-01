@@ -72,7 +72,7 @@ from utils.commontools import *
 import threading, time, signal
 import socket
 import sys
-
+import pwd
 socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -127,11 +127,16 @@ class SoftwareCenter(QMainWindow,Signals):
     rec_ready = False
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
+#        userlog = os.getlogin()
+#        uid = pwd.getpwuid(os.getuid())[0]
+#        if(uid != userlog):
+#            self.move((QApplication.desktop().screenGeometry(0).width()-self.width())/2,(QApplication.desktop().screenGeometry(0).height()-self.height())/2)
+#            QMessageBox.information(self, "软件商店启动权限异常", "请用当前系统用户权限启动软件商店！",QMessageBox.Ok)
+#            sys.exit(0)
 
         self.auto_l = False
         # singleton check
         self.check_singleton()
-
         # init dbus backend
         self.init_dbus()
         password_read()
@@ -159,7 +164,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # do not cover the launch loading div
         self.resize(0,0)
 
-        self.setWindowTitle("Ubuntu Kylin 软件商店")
+        self.setWindowTitle("银河麒麟软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
         self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
@@ -391,7 +396,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.uatitle.setText("云端保存的安装历史")
         self.ui.btnInstallAll.setText("一键安装")
-        self.ui.uaNoItemText.setText("您登陆后安装的软件会被记录在这里，目前暂无记录")
+        self.ui.uaNoItemText.setText("您登录后安装的软件会被记录在这里，目前暂无记录")
         self.ui.uaNoItemText.setAlignment(Qt.AlignCenter)
         self.ui.uaNoItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
         self.ui.uaNoItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
@@ -402,7 +407,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.transtitle.setText("云端保存的翻译历史")#zx 2015.01.30
         #self.ui.btnInstallAll.setText("一键安装")
-        self.ui.NoTransItemText.setText("您登陆后翻译的软件会被记录在这里，目前暂无记录")
+        self.ui.NoTransItemText.setText("您登录后翻译的软件会被记录在这里，目前暂无记录")
         self.ui.NoTransItemText.setAlignment(Qt.AlignCenter)
         self.ui.NoTransItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
         self.ui.NoTransItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
@@ -412,7 +417,7 @@ class SoftwareCenter(QMainWindow,Signals):
        # self.ui.btnInstallAll.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
 
 
-        self.ui.wintitle.setText("Windowns常用软件替换")
+        self.ui.wintitle.setText("Windows常用软件替换")
         self.ui.winlabel1.setText("可替换")
         self.ui.winlabel1.setAlignment(Qt.AlignLeft)
         self.ui.winlabel2.setAlignment(Qt.AlignLeft)
@@ -661,8 +666,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 sys.exit(0)
 
     def check_source(self):
-        if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
-
+        if(0):  #屏蔽检测软件源
+        #if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
             MessageBox = Update_Source_Dialog()
             if Globals.LAUNCH_MODE == 'quiet':
                 MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
@@ -713,15 +718,15 @@ class SoftwareCenter(QMainWindow,Signals):
                     res = self.backend.update_source_first_os()
                     if "False" == res:
                         self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("密码认证失败\n更新源失败", "Failed")
+                        self.messageBox.alert_msg("密码认证失败\n更新源失败")
                         self.appmgr.init_models()
                     elif res is None:
                         self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("输入密码超时\n更新源失败", "Failed")
+                        self.messageBox.alert_msg("输入密码超时\n更新源失败")
                         self.appmgr.init_models()
                     elif "True" != res:
                         self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("出现未知错误\n更新源失败", "Failed")
+                        self.messageBox.alert_msg("出现未知错误\n更新源失败")
                         self.appmgr.init_models()
                 elif MessageBox.button_notupdate == button:
                     self.appmgr.init_models()
@@ -735,14 +740,31 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_check_source_useable_over(self, bad_source_url_list):
         bad_source_urlstr = '\n'.join(bad_source_url_list)
         MSG = " 以下软件源访问过慢或者暂时无法访问:\n" + bad_source_urlstr
-        INFO = QMessageBox
-        btn = INFO.warning(self,"温馨提示",
-                                self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"),
-                                QMessageBox.Ok|QMessageBox.Cancel, QMessageBox.Cancel)
-        if btn == QMessageBox.Ok:
-            INFO.information(self,"温馨提示",
-                                self.tr(MSG),
-                                QMessageBox.Ok, QMessageBox.Ok)
+        INFO = QMessageBox()
+        REINFO = QMessageBox()
+
+        INFO.setWindowTitle('温馨提示')
+        INFO.setText(self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"))
+        INFO.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        buttonY = INFO.button(QMessageBox.Yes)
+        buttonY.setText('确认')
+        buttonN = INFO.button(QMessageBox.No)
+        buttonN.setText('取消')
+        INFO.exec_()
+
+        if INFO.clickedButton() == buttonY:
+            REINFO.setWindowTitle('温馨提示')
+            REINFO.setText(self.tr(MSG))
+            REINFO.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            REINFO.exec_()
+
+        #btn = INFO.warning(self,"温馨提示",
+        #                        self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"),
+        #                        QMessageBox.Ok|QMessageBox.Cancel, QMessageBox.Cancel)
+        #if btn == QMessageBox.Ok:
+        #    INFO.information(self,"温馨提示",
+        #                        self.tr(MSG),
+        #                        QMessageBox.Ok, QMessageBox.Ok)
 
     def check_singleton(self):
         try:
@@ -827,7 +849,7 @@ class SoftwareCenter(QMainWindow,Signals):
     def check_init_ready(self, bysignal=False):
         if ('self.ads_ready' in list(locals().keys()) == False):
             self.ads_ready = False
-        LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
+        #LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
         if self.ads_ready and self.rec_ready and self.rank_ready:
@@ -881,10 +903,10 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.appmgr.download_other_images()
 
         self.httpmodel = HttpDownLoad()
-        requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
+        requestData = "http://service.ubuntukylin.com/uksc/download/?name=uk-win.zip"
         url = QUrl(requestData)
-        self.httpmodel.sendDownLoadRequest(url)
-        self.httpmodel.unzip_img.connect(self.slot_unzip_img_zip)
+        #self.httpmodel.sendDownLoadRequest(url)
+        #self.httpmodel.unzip_img.connect(self.slot_unzip_img_zip)
 
     def slot_unzip_img_zip(self):
         unzip_resource("/tmp/uk-win.zip")
@@ -1140,6 +1162,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     if(self.isMaximized() == True):
                         self.ui.btnMax.hide()
                         self.ui.btnNormal.show()
+
                     # normal
                     else:
                         self.ui.btnMax.show()
@@ -1858,7 +1881,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.lockads = flag
 
 
-    def slot_recommend_apps_ready(self, applist, bysignal):
+    def slot_recommend_apps_ready(self, applist, bysignal, first=True):
         
         LOG.debug("receive recommend apps ready, count is %d", len(applist))
         self.recommendListWidget.clear()
@@ -1878,7 +1901,8 @@ class SoftwareCenter(QMainWindow,Signals):
             self.normalcard_progress_cancel.connect(recommend.slot_progress_cancel)
 
             recommend.get_card_status.connect(self.slot_get_normal_card_status)#12.02
-        self.rec_ready = True
+        if(first):
+            self.rec_ready = True
         self.check_init_ready(bysignal)
 
     def slot_ratingrank_apps_ready(self, applist, bysignal):
@@ -1886,9 +1910,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.rankView.clear()
         for app in applist:
             if app is not None and app.package is not None:
+                rliw = RankListItemWidget(app, self.ui.rankView.count() + 1, self.ui.rankView)
                 oneitem = QListWidgetItem()
                 oneitem.setWhatsThis(app.name)
-                rliw = RankListItemWidget(app, self.ui.rankView.count() + 1, self.ui.rankView)
                 self.ui.rankView.addItem(oneitem)
                 self.ui.rankView.setItemWidget(oneitem, rliw)
         self.ui.rankWidget.setVisible(True)
@@ -1989,12 +2013,12 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
     def slot_goto_homepage(self, bysignal = False):
-        if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-            #self.appmgr.get_recommend_apps(bysignal)
-            self.appmgr.get_ratingrank_apps(bysignal)
-            self.slot_rec_show_recommend()
-        else:
-            self.show_homepage(bysignal)
+        #if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
+        #    #self.appmgr.get_recommend_apps(bysignal)
+        #    self.appmgr.get_ratingrank_apps(bysignal)
+        #    self.slot_rec_show_recommend()
+        #else:
+        self.show_homepage(bysignal)
     def show_homepage(self, bysignal):
         if bysignal is False:
             self.ui.btnCloseDetail.setVisible(False)
@@ -2421,7 +2445,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
         try:
             if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
-                cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
+                cd = ConfirmDialog("正在安装或者卸载软件\n现在退出后台会继续完成操作\n但退出可能导致软件中心异常", self)
                 cd.confirmdialog_ok.connect(self.slot_exit_uksc)
                 cd.exec_()
             else:
@@ -2473,8 +2497,12 @@ class SoftwareCenter(QMainWindow,Signals):
         if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
         else:
-            MS = QMessageBox
-            MS.information(self,"提示","软件源不完整或不包含该软件",QMessageBox.Yes)
+            MS = QMessageBox()
+            MS.setWindowTitle('提示')
+            MS.setText('软件源不完整或不包含该软件')
+            MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            MS.exec_()
+            #MS.information(self,"提示","软件源不完整或不包含该软件",QMessageBox.Yes)
             
             #print "sssssssssssssssssssssssssssssssss"
             #webbrowser.open_new_tab(self.adlist[self.adi].urlorpkgid)
@@ -2684,7 +2712,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
         if action == AppActions.UPDATE:
             if int(percent) < 0:
-                self.messageBox.alert_msg("软件源更新失败", "Failed")
+                self.messageBox.alert_msg("软件源更新失败")
                 self.configWidget.slot_update_finish()
                 self.appmgr.update_models(AppActions.UPDATE,"")
             elif int(percent) >= 100 and "下载停止" == msg:
@@ -2694,7 +2722,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.messageBox.alert_msg("更新软件源完成")
             elif int(percent) == 0.0 and "下载停止" == msg:
                 self.appmgr.update_models(AppActions.UPDATE,"")
-                self.messageBox.alert_msg("软件源列表为空","Failed")
+                self.messageBox.alert_msg("软件源列表为空")
                 self.configWidget.slot_update_finish()
             else:
                 self.configWidget.slot_update_status_change(percent)
@@ -2706,10 +2734,10 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
             elif int(percent) < 0:
                 # self.updateSinglePB.value_change(0)
-                self.updateSinglePB.set_updatelabel_text("更新源失败")
+                # self.updateSinglePB.set_updatelabel_text("更新源失败")
                 self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
                 self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
-                self.messageBox.alert_msg("软件源更新失败", "Failed")
+                self.messageBox.alert_msg("软件源更新失败")
             else:
                 self.updateSinglePB.value_change(percent)
         else:
@@ -3049,9 +3077,11 @@ def main():
     globalfont.setPixelSize(14)
     app.setFont(globalfont)
     app.setWindowIcon(QIcon(UBUNTUKYLIN_RES_PATH +"uksc.png"))
+
     trans = QTranslator()
     trans.load('po/qt_zh_CN.qm')
     QApplication.installTranslator(trans)
+
 
     # check show quiet
     argn = len(sys.argv)

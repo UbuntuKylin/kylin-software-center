@@ -72,7 +72,7 @@ class MessageBox(QObject):
         self.alert.setText(alertText)
         self.alert.raise_()
         self.alert.show()
-        self.alertTimer.start(12)
+        self.alertTimer.start(10)
 
     def slot_alert_step(self):
         if(self.ao < 1):

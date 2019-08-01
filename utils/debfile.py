@@ -57,7 +57,7 @@ class DebFile():
     def get_deb_info(self):
         self.name = self.debfile._sections["Package"]
         self.version = self.debfile._sections["Version"]
-        self.installedsize = int(self.debfile._sections["Installed-Size"])
+        self.installedsize = int(float(self.debfile._sections["Installed-Size"]))
         self.description = self.debfile._sections["Description"]
 
     # install the deb file

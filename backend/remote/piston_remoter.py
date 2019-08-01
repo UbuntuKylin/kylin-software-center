@@ -98,6 +98,7 @@ class PistonRemoter(PistonAPI):
     default_service_forecast3d = 'forecast3d'
     default_content_type = 'application/x-www-form-urlencoded'
     default_service_root = UBUNTUKYLIN_SERVER
+    default_timeout = 5
 
     @returns_json
     def get_all_ratings(self):
@@ -106,6 +107,16 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         print("get_all_ratings")
         return gets
+    
+
+    @returns_json
+    def get_user_ratings(self,user_name,app_name):
+        get_ratings =self._get('getuserratings/?user_name=%s;app_name=%s' % (user_name,app_name),scheme="http")
+        if (isinstance(get_ratings,bytes)):
+            get_ratings = get_ratings.decode(encoding='utf-8')
+        print(get_ratings)
+        return get_ratings
+
 
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
@@ -232,18 +243,18 @@ class PistonRemoter(PistonAPI):
         #postdata = Rsetpassword()
         #postdata.username = username
         #postdata.password = password
-        gets = self._get('changepwd/?username=%s;newpwd=%s;' % (username ,newpwd), scheme='http')
+        gets = self._get('changepwd/?username=%s;newpwd=%s;' % (username, newpwd), scheme='http')
         print("rset_user_password")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
 
     @returns_json
-    def recover_user_password(self, username ,email):
+    def recover_user_password(self, username ,email, newpwd):
         #postdata = Reecoverpassword()
         #postdata.username = username
         #postdata.email = email
-        gets = self._get('retrievepwd/?username=%s;email=%s;' % (username ,email), scheme="http")
+        gets = self._get('retrievepwd/?username=%s;email=%s;newpwd=%s;' % (username, email, newpwd), scheme="http")
         print("recover_user_password")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')

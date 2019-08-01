@@ -272,12 +272,12 @@ class SoftwarecenterDbusService(dbus.service.Object):
         return True
 
     # add source in /etc/apt/sources.list
-    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='s', sender_keyword='sender')
     def add_source(self, text, sender=None):
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"要增加软件源")
         if not granted:
-            return False
+            return '0'
 
         return self.daemonApt.add_source(text)
 

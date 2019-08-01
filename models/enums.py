@@ -151,7 +151,7 @@ AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 # UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
 UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
 SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
-SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录 Ubuntu Kylin 软件中心。'
+SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录银河软件中心。'
 datadir = "./utils/"
 PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
@@ -170,7 +170,7 @@ class Signals:
     task_reinstall = pyqtSignal()
     task_upgrade = pyqtSignal()
     ads_ready = pyqtSignal(list,bool)
-    recommend_ready = pyqtSignal(list,bool)
+    recommend_ready = pyqtSignal(list,bool,bool)
     ratingrank_ready = pyqtSignal(list,bool)
     toprated_ready = pyqtSignal(list)
     rating_reviews_ready = pyqtSignal(list)

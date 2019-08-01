@@ -460,13 +460,19 @@ class AptDaemon():
     # add source in /etc/apt/sources.list
     def add_source(self,text):
         source = aptsources.sourceslist.SourcesList()
-        for item in source.list:
-            if(item.str().find(text) != -1):
-                return False
 
         slist = text.split()
         if(len(slist) < 3): # wrong source text
-            return False
+            return '3'
+
+
+        for item in source.list:
+            itemflag = 0
+            for itemslist in slist:
+                if(item.str().find(itemslist) == -1):
+                    itemflag = 1
+            if itemflag == 0:
+                return '2' # 已存在的source
 
         type = slist[0]
         uri = slist[1]
@@ -477,7 +483,7 @@ class AptDaemon():
         source.add(type, uri, dist, comps)
         source.save()
 
-        return True
+        return '1'
 
     # remove source from /etc/apt/sources.list
     def remove_source(self,text):

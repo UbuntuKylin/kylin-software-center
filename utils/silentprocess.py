@@ -105,9 +105,12 @@ class SilentProcess(multiprocessing.Process):
                 app_name = rating['app_name']
                 rating_avg = str(rating['rating_avg'])
                 rating_total = str(rating['rating_total'])
-
-                sql = "update application set rating_total=?,rating_avg=? where app_name=?"
-                self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+                try:
+                    lock.acquire(True)
+                    sql = "update application set rating_total=?,rating_avg=? where app_name=?"
+                    self.cursor.execute(sql, (rating_total,rating_avg,app_name))
+                finally:
+                    lock.release()
             try:
                 lock.acquire(True)
                 self.connect.commit()
@@ -150,8 +153,12 @@ class SilentProcess(multiprocessing.Process):
                 priority = category['priority']
 
                 sql = "select count(*) from category where id=?"
-                self.cursor.execute(sql, (cid,))
-                res = self.cursor.fetchall()
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute(sql, (cid,))
+                    res = self.cursor.fetchall()
+                finally:
+                    lock.release()
                 isexist = ''
                 for item in res:
                     isexist = item[0]
@@ -216,8 +223,12 @@ class SilentProcess(multiprocessing.Process):
     def get_newer_application_info(self):
         # get application info last update date
         last_update_date = ''
-        self.cursor.execute("select value from dict where key='appinfo_updatetime'")
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key='appinfo_updatetime'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         for item in res:
             last_update_date = item[0]
 
@@ -248,8 +259,12 @@ class SilentProcess(multiprocessing.Process):
                     #     command = None
 
                     sql = "select count(*) from application where id=?"
-                    self.cursor.execute(sql, (aid,))
-                    res = self.cursor.fetchall()
+                    try:
+                        lock.acquire(True)
+                        self.cursor.execute(sql, (aid,))
+                        res = self.cursor.fetchall()
+                    finally:
+                        lock.release()
                     isexist = ''
                     for item in res:
                         isexist = item[0]
@@ -272,7 +287,7 @@ class SilentProcess(multiprocessing.Process):
                             lock.release()
 
                 # set application info last update date
-                updatetime = reslist[0]['modify_time']
+                updatetime = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.localtime())
                 try:
                     lock.acquire(True)
                     self.cursor.execute("update dict set value=? where key=?", (updatetime,'appinfo_updatetime'))
@@ -294,8 +309,12 @@ class SilentProcess(multiprocessing.Process):
     def get_newer_application_icon(self):
         # get application icon last update date
         last_update_date = ''
-        self.cursor.execute("select value from dict where key='appicon_updatetime'")
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key='appicon_updatetime'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         for item in res:
             last_update_date = item[0]
 
@@ -340,7 +359,7 @@ class SilentProcess(multiprocessing.Process):
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self, kwargs):
         database = xapian.WritableDatabase(XAPIAN_DB_PATH, xapian.DB_OPEN)
-        DB = xapian.Database(database)
+        DB = xapian.Database(XAPIAN_DB_PATH)
         enquire = xapian.Enquire(database)
         indexer = xapian.TermGenerator()
 
@@ -356,8 +375,12 @@ class SilentProcess(multiprocessing.Process):
                 docid_for_xapiandb_version = re.document.get_docid()
                 doc_for_xapiandb_version = re.document
                 doc_data = doc_for_xapiandb_version.get_data()
+                if (isinstance(doc_data,bytes)):
+                    doc_data = doc_data.decode(encoding='utf-8')
                 if ("XAPIANDB_VERSION" == doc_data):
                     the_latest_update_time = doc_for_xapiandb_version.get_value(2) #valueslot:2 xapiandb update time
+                    if (isinstance(the_latest_update_time,bytes)):
+                        the_latest_update_time = the_latest_update_time.decode(encoding='utf-8')
                 else:
                     the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
                     print("Failed to get the latest update time from client xapiandb,use default time.localtime()")
@@ -375,7 +398,10 @@ class SilentProcess(multiprocessing.Process):
                 matches = enquire.get_mset(0,doccount)
                 if matches.size() != 0:
                     for re in matches:
-                        if re.document.get_data() == app_name:
+                        get_name = re.document.get_data()
+                        if (isinstance(get_name,bytes)):
+                            get_name = get_name.decode(encoding='utf-8')
+                        if get_name == app_name:
                             docid = re.docid
                             doc = re.document
                             doc.clear_terms()

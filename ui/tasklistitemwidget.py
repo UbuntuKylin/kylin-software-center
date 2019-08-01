@@ -69,6 +69,8 @@ class TaskListItemWidget(QWidget,Signals):
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
 
+        self.ui.btnCancel.hide()
+
         if app.status == PkgStates.INSTALLING:#"installing":
             #self.ui.name.setText("安装 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
@@ -133,7 +135,7 @@ class TaskListItemWidget(QWidget,Signals):
     def ui_init(self):
         self.ui = Ui_TaskLIWidget()
         self.ui.setupUi(self)
-        self.show()
+        #self.show()
 
     def status_change(self, processtype, percent, msg):
         if(self.finish == False):
@@ -178,10 +180,11 @@ class TaskListItemWidget(QWidget,Signals):
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
                 else:
-                    self.ui.progressBar.show()
                     self.ui.progresslabel.show()
                     self.ui.status.hide()
+                    self.ui.progressBar.hide()
                     self.ui.progressBar.setValue(percent)
+                    self.ui.progressBar.show()
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 

@@ -326,7 +326,9 @@ class RcmdCard(QWidget,Signals):
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:#C5CED9;}")
 
+            self.ui.progressBar.hide()
             self.ui.progressBar.setValue(percent)
+            self.ui.progressBar.show()
             if percent < float(0.0):
                 self.ui.progressBar.setValue(0)
                 self.ui.progresslabel.setText("失败")

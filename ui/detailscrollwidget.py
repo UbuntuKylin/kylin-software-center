@@ -47,6 +47,8 @@ from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
 
+from backend.remote.piston_remoter import PistonRemoter
+
 class DetailScrollWidget(QScrollArea,Signals):
     mainwindow = ''
     app = None
@@ -66,6 +68,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui_init()
         self.messageBox = messageBox
         self.mainwindow = parent
+
+        self.server=PistonRemoter()
 
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
@@ -202,6 +206,9 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
         self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
         self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
+
+        self.ui.grade1.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
+        self.ui.gradetitle1.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
 
         # self.ui.gradeBG.setStyleSheet("QLabel{background-image:url('res/gradebg.png')}")
         # self.ui.gradeBG.setStyleSheet("QLabel{border-width: 1px;border-style: solid;border-color:#cccccc;}")
@@ -808,6 +815,15 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
         self.mainwindow.appmgr.get_application_reviews(app.name)
 
+		
+        if (Globals.USER != ''):
+            my_rating = self.server.get_user_ratings(Globals.USER, self.app.name)
+            if (my_rating == []):
+                self.ui.grade1.setText('')
+            else:
+                self.reset_ratings(my_rating)
+
+
     def add_review(self, reviewlist):
         # get maxpage
         self.maxpage = self.mainwindow.appmgr.db.get_pagecount_by_pkgname(self.app.pkgname)
@@ -1171,6 +1187,14 @@ class DetailScrollWidget(QScrollArea,Signals):
         if(res != False):
             ratingavg = res['rating_avg']
             ratingtotal = res['rating_total']
+
+            app_name = self.app.name
+            my_rating=self.server.get_user_ratings(Globals.USER, app_name)
+            if(my_rating!=[]):
+                self.reset_ratings(my_rating)
+            else:
+                pass
+            
             self.mainwindow.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
             self.reset_rating_text(ratingavg, ratingtotal)
             self.mainwindow.messageBox.alert_msg("评分已提交")
@@ -1178,6 +1202,16 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.mainwindow.messageBox.alert_msg("评分失败")
 
         self.submitratingload.stop_loading()
+
+
+
+    def reset_ratings(self,my_rating):
+        my_rating_int=my_rating[0]['rating']
+        self.ratingstar.changeGrade(int(my_rating_int))
+        #my_rating_int= self.ratingstar.getUserGrade()
+        my_rating_int=str(my_rating_int)
+        self.ui.grade1.setText(my_rating_int)
+        self.ui.gradetitle1.setText("分")
 
     def reset_rating_text(self, ratingavg, ratingtotal):
         self.app.ratings_average = ratingavg

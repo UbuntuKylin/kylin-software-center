@@ -187,6 +187,22 @@ class Ui_DetailWidget(object):
         self.grade.setText(_fromUtf8(""))
         self.grade.setAlignment(QtCore.Qt.AlignCenter)
         self.grade.setObjectName(_fromUtf8("grade"))
+
+
+        #add in dengnan
+        self.grade1 = QLabel(self.gradeBG)
+        self.grade1.setGeometry(QtCore.QRect(640, 13, 60, 41))
+        self.grade1.setText(_fromUtf8(""))
+        self.grade1.setAlignment(QtCore.Qt.AlignCenter)
+        self.grade1.setObjectName(_fromUtf8("grade1"))
+        self.gradetitle1= QLabel(self.gradeBG)
+        self.gradetitle1.setGeometry(QtCore.QRect(700, 35, 31, 21))
+        self.gradetitle1.setText(_fromUtf8(""))
+        self.gradetitle1.setAlignment(QtCore.Qt.AlignCenter)
+        self.gradetitle1.setObjectName(_fromUtf8("gradetitle1"))
+
+
+
         self.vline = QLabel(self.gradeBG)
         self.vline.setGeometry(QtCore.QRect(435, 6, 1, 120))
         self.vline.setText(_fromUtf8(""))

@@ -47,7 +47,8 @@ class Login(QWidget,Signals):
     listadduser = ["","","",""]
     listlogin = ["",""]
     res = []
-    strs = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
+    #strs = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
+    strs = r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$'
     def __init__(self,parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
@@ -83,11 +84,11 @@ class Login(QWidget,Signals):
         self.ui.lesource_3.textChanged.connect(self.slot_le_input3)
         self.ui.lesource_4.textChanged.connect(self.slot_le_input4)
         self.ui.lesource_5.textChanged.connect(self.slot_le_input5)
-        self.ui.lesource.setMaxLength(16)
-        self.ui.lesource_2.setMaxLength(16)
-        self.ui.lesource_3.setMaxLength(16)
-        self.ui.lesource_4.setMaxLength(16)
-        self.ui.lesource_5.setMaxLength(16)
+        self.ui.lesource.setMaxLength(22)
+        self.ui.lesource_2.setMaxLength(22)
+        self.ui.lesource_3.setMaxLength(22)
+        self.ui.lesource_4.setMaxLength(22)
+        self.ui.lesource_5.setMaxLength(22)
         #self.ui.lesource_8.setMaxLength(16)
         #self.ui.lesource_9.setMaxLength(16)
         self.ui.btnAdd.setText("快捷登录")
@@ -148,6 +149,11 @@ class Login(QWidget,Signals):
         self.ui.btnAdd_3.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")        
         self.ui.btnAdd_4.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
 
+        if(Globals.SET_REM):
+            self.ui.lesource.setText(Globals.USER)
+            self.ui.lesource_2.setText(Globals.PASSWORD)
+            self.ui.checkBox_5.setChecked(True)
+
     def ui_init(self):
         self.ui = Ui_Login_ui()
         self.ui.setupUi(self)
@@ -185,12 +191,19 @@ class Login(QWidget,Signals):
         self.listadduser[2] = sourcetext
 
     def slot_login(self):
-        IN = QMessageBox
+        IN = QMessageBox()
+        IN.setWindowTitle('提示')
+        IN.addButton(QPushButton('确定'), QMessageBox.YesRole)
         #print "xxxxxxxxxxxxx",self.listlogin[0],self.listlogin[1]
         if self.listlogin[0] == "":
-            IN.information(self,"提示","请输入用户名",QMessageBox.Yes)
+            #IN.information(self,"提示","请输入用户名",QMessageBox.Yes)
+
+            IN.setText('请输入用户名')
+            IN.exec_()
         elif self.listlogin[1] == "":
-            IN.information(self,"提示","请输入用户密码",QMessageBox.Yes)        
+            #IN.information(self,"提示","请输入用户密码",QMessageBox.Yes)
+            IN.setText('请输入用户密码')
+            IN.exec_()
         else:
             #res = self.premoter.log_in_appinfo(self.listlogin[0],self.listlogin[1])
             self.ui_login.emit(self.listlogin[0],self.listlogin[1])
@@ -201,13 +214,21 @@ class Login(QWidget,Signals):
             self.listadduser[3] = "developer"         
         else:
             self.listadduser[3] = "general_user"
-        IM = QMessageBox        
+        IM = QMessageBox()
+        IM.setWindowTitle('提示')
+        IM.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if self.listadduser[0] == "":
-            IM.information(self,"提示","请输入用户名",QMessageBox.Yes)        
+            #IM.information(self,"提示","请输入用户名",QMessageBox.Yes)
+            IM.setText('请输入用户名')
+            IM.exec_()
         elif self.listadduser[1] == "":
-            IM.information(self,"提示","请输入用户密码",QMessageBox.Yes)
+            #IM.information(self,"提示","请输入用户密码",QMessageBox.Yes)
+            IM.setText('请输入用户密码')
+            IM.exec_()
         elif self.listadduser[2] == "":
-            IM.information(self,"提示","请输入用户邮箱",QMessageBox.Yes)
+            #IM.information(self,"提示","请输入用户邮箱",QMessageBox.Yes)
+            IM.setText('请输入用户邮箱')
+            IM.exec_()
         elif re.match(self.strs,self.listadduser[2]):
             #print "adduser",self.listadduser[0],self.listadduser[1],self.listadduser[2],self.listadduser[3]
             self.ui_adduser.emit(self.listadduser[0],self.listadduser[1],self.listadduser[2],self.listadduser[3])
@@ -216,22 +237,26 @@ class Login(QWidget,Signals):
             #self.messageBox.alert_msg("注册成功")
             #pass
         else:
-            IM.information(self,"提示","请输入正确的邮箱",QMessageBox.Yes)
+            #IM.information(self,"提示","请输入正确的邮箱",QMessageBox.Yes)
+            IM.setText('请输入正确的邮箱')
+            IM.exec_()
 
     def slot_get_ui_first_login_over(self,res):
         res = res[0]['res']
         try:
-            if res == 1 or res == None:
+            if res == False:
+                print("$$$$$","网络或服务异常")
+            elif res == 1 or res == None:
                 #数据异常
-                print ("######","自动登录数据异常")
+                print ("$$$$$","自动登录数据异常")
             elif res == 2:
                 #用户验证失败
-                print ("######","自动用户验证失败")
+                print ("$$$$$","自动用户验证失败")
             elif res == 3:
                 #服务器异常
-                print ("######","自动服务器异常")
+                print ("$$$$$","自动服务器异常")
             else :
-                print ("######","自动登录成功")
+                print ("$$$$$","自动登录成功")
                 data = res[0]
                 rem = res[1]
                 rem = rem[0]
@@ -251,21 +276,34 @@ class Login(QWidget,Signals):
             print ("######","自动服务器异常")
 
     def slot_get_ui_login_over(self,res):
-        INO = QMessageBox
+        INO = QMessageBox()
+        INO.setWindowTitle('提示')
+        INO.addButton(QPushButton('确定'), QMessageBox.YesRole)
         res = res[0]['res']
         print ("11111111111",res)
-        if res == 1 or res == None:
+
+        if  res == False:
+            print ("######","网络或服务异常")
+            INO.setText('网络或服务异常')
+            INO.exec_()
+        elif res == 1 or res == None:
             #数据异常
             print ("######","数据异常")
-            INO.information(self,"提示","数据异常",QMessageBox.Yes)
+            #INO.information(self,"提示","数据异常",QMessageBox.Yes)
+            INO.setText('数据异常')
+            INO.exec_()
         elif res == 2:
             #用户验证失败
             print ("######","用户验证失败")
-            INO.information(self,"提示","用户验证失败",QMessageBox.Yes)
+            #INO.information(self,"提示","用户验证失败",QMessageBox.Yes)
+            INO.setText('用户验证失败')
+            INO.exec_()
         elif res == 3:
             #服务器异常
             print ("######","服务器异常")
-            INO.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
+            INO.setText('服务器异常')
+            INO.exec_()
         else:
             #self.messageBox.alert_msg("登录成功")
 #add try    
@@ -286,6 +324,8 @@ class Login(QWidget,Signals):
                 set_rem_pass = '0'
                 if self.ui.checkBox_6.isChecked():
                     auto_login = '1'
+                    Globals.PASSWORD = self.listlogin[1]
+                    password_write(set_rem_pass,auto_login,Globals.USER,Globals.PASSWORD)
                 if self.ui.checkBox_5.isChecked():
                     set_rem_pass = '1'
                     Globals.PASSWORD = self.listlogin[1]
@@ -307,7 +347,9 @@ class Login(QWidget,Signals):
     def slot_get_ui_adduser_over(self,res):
         res = res[0]['res']
         print ("ddddddddddddddd",res)
-        INO = QMessageBox
+        INO = QMessageBox()
+        INO.setWindowTitle('提示')
+        INO.addButton(QPushButton('确定'), QMessageBox.YesRole)
         #if res == 0:
         #    #注册成功
         #    print "######","注册成功"
@@ -317,27 +359,40 @@ class Login(QWidget,Signals):
         if res == 1 or res == None:
             #数据异常
             print ("######","数据异常")
-            INO.information(self,"提示","数据异常",QMessageBox.Yes)
+            #INO.information(self,"提示","数据异常",QMessageBox.Yes)
+            INO.setText('数据异常')
+            INO.exec_()
+
         elif res == 2:
             #用户名已存在
             print ("######","用户名已存在")
-            INO.information(self,"提示","用户名已存在",QMessageBox.Yes)
+            #INO.information(self,"提示","用户名已存在",QMessageBox.Yes)
+            INO.setText('用户名已存在')
+            INO.exec_()
         elif res == 4:
-            #用户名已存在
+            #邮箱已存在
             print ("######","邮箱已存在")
-            INO.information(self,"提示","邮箱已被注册",QMessageBox.Yes)
+            #INO.information(self,"提示","邮箱已被注册",QMessageBox.Yes)
+            INO.setText('邮箱已被注册')
+            INO.exec_()
         elif res == 3:
             #服务器异常
             print ("######1","服务器异常")
-            INO.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
+            INO.setText('服务器异常')
+            INO.exec_()
         elif res == 0:
             print ("######","注册成功")
-            INO.information(self,"提示","注册成功",QMessageBox.Yes)
+            #INO.information(self,"提示","注册成功",QMessageBox.Yes)
+            INO.setText('注册成功')
+            INO.exec_()
             self.slot_click_login()
         else: 
             #注册成功
             #print "######","注册成功"
-            INO.information(self,"提示","服务器异常",QMessageBox.Yes)
+            #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
+            INO.setText('服务器异常')
+            INO.exec_()
 
 def main():
     import sys

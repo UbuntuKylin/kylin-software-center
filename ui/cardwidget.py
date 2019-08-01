@@ -86,8 +86,8 @@ class CardWidget(QWidget):
         self.cardcount = self.count()
 
     def add_card(self, card):
-        x = int(self.cardcount % self.number_per_row) * (self.itemwidth + self.cardspacing)
-        y = int(self.cardcount / self.number_per_row) * (self.itemheight + self.cardspacing)
+        x = int(self.cardcount % int(self.number_per_row)) * (self.itemwidth + self.cardspacing)
+        y = int(self.cardcount / int(self.number_per_row)) * (self.itemheight + self.cardspacing)
 
         # resize the widget to adapt items
         nowHeight = y + self.itemheight

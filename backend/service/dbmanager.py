@@ -96,8 +96,12 @@ class Database:
 
 
     def query_categories(self):
-        self.cursor.execute("select * from category")
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select * from category")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
 #        print "query_categories:",len(res),res
         return res
 
@@ -105,16 +109,23 @@ class Database:
         al = ''
 
         sql = "select id from category where name='%s'"
-
-        self.cursor.execute(sql % cate_name)
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(sql % cate_name)
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         cateid = ''
         for i in res:
             cateid = i[0]
 
         sql = "select id,categories from application"
-        self.cursor.execute(sql)
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(sql)
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         for i in res:
             aid = i[0]
             cstring = i[1]
@@ -132,8 +143,12 @@ class Database:
         al = al[:-1]
 
         sql = "select app_name,display_name_cn from application where id in (%s) order by rating_total DESC"
-        self.cursor.execute(sql % al)
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(sql % al)
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
 
         # for a in res:
         #     print a[0],"    ",a[1]
@@ -142,8 +157,13 @@ class Database:
 
     #return as (display_name, summary, description, rating_average,rating_total,review_total,download_total)
     def query_application(self,pkgname):
-        self.cursor.execute(QUERY_APP % (pkgname))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(QUERY_APP % (pkgname))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
+
 #        print "query_application:",pkgname,len(res),res
         if len(res)==0:
             return []
@@ -152,8 +172,12 @@ class Database:
 
     #return as (display_name, app_name)
     def query_applications(self):
-        self.cursor.execute(QUERY_APPS)
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(QUERY_APPS)
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
 #        print "query_application:",pkgname,len(res),res
         if len(res)==0:
             return []
@@ -185,8 +209,12 @@ class Database:
         connectsrc = sqlite3.connect(srcFile, check_same_thread=False)
         cursorsrc = connectsrc.cursor()
 
-        self.cursor.execute("select count(*) from sqlite_master where type='table' and name='dict'")
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select count(*) from sqlite_master where type='table' and name='dict'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         dictcount = ''
         for item in res:
             dictcount = item[0]
@@ -194,14 +222,22 @@ class Database:
         if(dictcount == 0):
             return True
 
-        self.cursor.execute("select value from dict where key='dbversion'")
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key='dbversion'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         olddbversion = ''
         for item in res:
             olddbversion = int(item[0])
 
-        cursorsrc.execute("select value from dict where key='dbversion'")
-        res = cursorsrc.fetchall()
+        try:
+            lock.acquire(True)
+            cursorsrc.execute("select value from dict where key='dbversion'")
+            res = cursorsrc.fetchall()
+        finally:
+            lock.release()
         newdbversion = ''
         for item in res:
             newdbversion = int(item[0])
@@ -246,23 +282,37 @@ class Database:
 
 
     def get_pagecount_by_pkgname(self, package_name):
-        self.cursor.execute("select review_total from application where app_name=?", (package_name,))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select review_total from application where app_name=?", (package_name,))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         for item in res:
             review_total = item[0]
+            if(review_total == None):
+                review_total = 0
             return review_total / 10 + 1
 
     def get_review_by_pkgname(self, package_name, page):
         # get application id
-        self.cursor.execute("select id from application where app_name=?", (package_name,))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select id from application where app_name=?", (package_name,))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         aid = ''
         for item in res:
             aid = str(item[0])
 
         # get review count
-        self.cursor.execute("select count(*) from review where aid_id=?", (aid,))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select count(*) from review where aid_id=?", (aid,))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         count = ''
         for item in res:
             count = item[0]
@@ -299,8 +349,12 @@ class Database:
             # normal init, check and download newest reviews
             else:
                 # get newest review's id from local cache
-                self.cursor.execute("select id from review where aid_id=? order by date DESC limit 0,1", (aid,))
-                res = self.cursor.fetchall()
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute("select id from review where aid_id=? order by date DESC limit 0,1", (aid,))
+                    res = self.cursor.fetchall()
+                finally:
+                    lock.release()
                 id = ''
                 for item in res:
                     id = item[0]
@@ -398,8 +452,12 @@ class Database:
 
         # all download check over, return reviews to show
         limit = (page - 1) * 10
-        self.cursor.execute("select id, aid_id, content, user_display, date, language, up_total, down_total from review where aid_id=? order by date DESC limit ?,10", (aid,limit))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select id, aid_id, content, user_display, date, language, up_total, down_total from review where aid_id=? order by date DESC limit ?,10", (aid,limit))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         reviews = []
         for item in res:
             review = Review(package_name)
@@ -416,8 +474,12 @@ class Database:
         return reviews
 
     def get_pointout_is_show(self):
-        self.cursor.execute("select value from dict where key=?", ('pointout',))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key=?", ('pointout',))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         for item in res:
             isshow = item[0]
             return isshow
@@ -436,8 +498,12 @@ class Database:
             lock.release()
 
     def get_pointout_apps(self):
-        self.cursor.execute("select app_name,rank_pointout from rank,application where rank_pointout!=0 and rank.aid_id=application.id order by rank_pointout")
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select app_name,rank_pointout from rank,application where rank_pointout!=0 and rank.aid_id=application.id order by rank_pointout")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         pointouts = []
         for item in res:
             app_name = item[0]
@@ -472,7 +538,7 @@ class Database:
         recommends.append(("wireshark","9"))
         recommends.append(("librecad","12"))
         recommends.append(("flashplugin-installer","13"))
-        recommends.append(("brasero","13"))
+        #recommends.append(("brasero","13"))
         recommends.append(("uget","5"))
         recommends.append(("calibre","10"))
         recommends.append(("gimp","3"))
@@ -581,8 +647,12 @@ class Database:
 
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):
-        self.cursor.execute(QUERY_NAME_CATEGORIES)
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(QUERY_NAME_CATEGORIES)
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         if len(res) == 0:
             return []
         else:
@@ -590,8 +660,12 @@ class Database:
 
     #------------add by kobe for windows replace------------
     def search_app_display_info(self, categories):
-        self.cursor.execute(QUERY_APP_ACCORD_CATEGORIES % (categories))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute(QUERY_APP_ACCORD_CATEGORIES % (categories))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         if len(res) == 0:
             return []
         else:
@@ -607,8 +681,12 @@ class Database:
             lock.release()
 
     def need_do_sourcelist_update(self):
-        self.cursor.execute("select value from dict where key=?", ('sourcelist_need_update',))
-        res = self.cursor.fetchall()
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key=?", ('sourcelist_need_update',))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
         for item in res:
             re = item[0]
             return re

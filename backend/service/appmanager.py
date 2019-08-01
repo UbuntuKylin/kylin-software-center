@@ -95,13 +95,13 @@ class ThreadWorker(threading.Thread):
         self.appmgr.cat_list = self.cat_list
         self.appmgr.apt_cache = self.apt_cache
         self.appmgr.db = self.db
-        if Globals.UPDATE_HOM == 0:
+        #if Globals.UPDATE_HOM == 0:
             #self.appmgr.get_recommend_apps(False)
-            self.appmgr.get_ratingrank_apps(False)
+            #self.appmgr.get_ratingrank_apps(False)
         sum_inst = 0
         sum_up = 0
         sum_all = len(self.apt_cache)
-        #self.appmgr.get_recommend_apps(False)
+        self.appmgr.get_recommend_apps(False,False)
         self.appmgr.get_ratingrank_apps(False)
         print(("ok",sum_all))
         self.appmgr.get_game_apps(False,False)
@@ -123,7 +123,6 @@ class ThreadWorker(threading.Thread):
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
             self.appmgr.cat_list = cat_list
-
         Globals.ALL_APPS = {}
         return cat_list
 
@@ -142,6 +141,8 @@ class ThreadWorker(threading.Thread):
             #pkgname = UnicodeToAscii(item[0])
             pkgname = item[0]
             displayname_cn = item[1]
+            if pkgname == "brasero":
+                continue
             if pkgname in list(Globals.ALL_APPS.keys()):
                 apps[pkgname] = Globals.ALL_APPS[pkgname]
             else:
@@ -271,7 +272,7 @@ class AppManager(QObject,Signals):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
-        self.login_in()
+#        self.login_in()
         self.name = "Ubuntu Kylin Software Center"
         self.apt_cache = None
         self.cat_list = {}
@@ -335,13 +336,14 @@ class AppManager(QObject,Signals):
         self.apt_cache.open()
         self.pkgcount = len(self.apt_cache)
 
-   # def _init_models(self):
-    #    self.open_cache()
-    #    self.cat_list = self.get_category_list_from_db()
+    # def _init_models(self):
+    #     self.open_cache()
+    #     self.cat_list = self.get_category_list_from_db()
 
     def init_models(self):
         #print "self.appmgr.init_models()"
         item = WorkerItem("init_models",None)
+        # self.cat_list = self.get_category_list_from_db()
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()
@@ -354,7 +356,7 @@ class AppManager(QObject,Signals):
                 app.update_cache(self.apt_cache)
         if "update" == kwargs["action"]:
             self.count_application_update.emit()
-        self.refresh_page.emit()
+        # self.refresh_page.emit()
 
     def update_models(self,action, pkgname=""):
         kwargs = {"packagename": pkgname,
@@ -380,7 +382,6 @@ class AppManager(QObject,Signals):
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
-
         Globals.ALL_APPS = {}# zx10.05 To free the all_apps dict after all apps init ready for using less memeory
         return cat_list
 
@@ -399,6 +400,8 @@ class AppManager(QObject,Signals):
             #pkgname = UnicodeToAscii(item[0])
             pkgname = item[0]
             displayname_cn = item[1]
+            if pkgname == "brasero":
+                continue
             if pkgname in list(Globals.ALL_APPS.keys()):
                 apps[pkgname] = Globals.ALL_APPS[pkgname]
             else:
@@ -447,6 +450,8 @@ class AppManager(QObject,Signals):
         file = open(catdir + cat, 'r')
         for line in file:
             pkgname = line.strip('\n')
+            if pkgname == "brasero":
+                continue
             app = Application(pkgname,cat, self.apt_cache)
             if app.package:
                 apps[pkgname] = app
@@ -467,10 +472,10 @@ class AppManager(QObject,Signals):
         else:
             #get the apps from category list
             if not load:
-                if not self.cat_list[cat]:
-                    apps = []
-                else:
+                if cat in self.cat_list.keys():
                     apps = self.cat_list[cat].apps
+                else:
+                    apps = []
             else:
                 apps = self.download_category_apps(cat,catdir)
 
@@ -483,6 +488,8 @@ class AppManager(QObject,Signals):
     #get application object by appname
     def get_application_by_name(self,pkgname):
         #print "get_application_by_name:", pkgname
+        if pkgname == "brasero":
+            return None
         if not pkgname:
             return None
         if self.cat_list is None:
@@ -537,7 +544,6 @@ class AppManager(QObject,Signals):
         sum_up = 0
         #sum_all = len(self.apt_cache)
         sum_all = len(self.apt_cache)
-
         if len(cat_name)>0:
             cat = self.cat_list[cat_name]
             (sum_inst,sum_up, sum_all) = cat.get_application_count()
@@ -757,20 +763,19 @@ class AppManager(QObject,Signals):
 
     def submit_pingback_main(self):
         pass
-        # kwargs = {}
+        kwargs = {}
         #
-        # item = SilentWorkerItem("submit_pingback_main", kwargs)
-        # self.squeue.put_nowait(item)
+        item = SilentWorkerItem("submit_pingback_main", kwargs)
+        self.squeue.put_nowait(item)
 
     def submit_pingback_app(self, app_name, isrcm=False):
-        pass
-        # kwargs = {"app_name": app_name,
-        #           "isrcm": isrcm,
-        #           "user": Globals.USER,
-        #           }
-        #
-        # item = SilentWorkerItem("submit_pingback_app", kwargs)
-        # self.squeue.put_nowait(item)
+#        pass
+        kwargs = {"app_name": app_name,
+                "isrcm": isrcm,
+                "user": Globals.USER,
+                }
+        item = SilentWorkerItem("submit_pingback_app", kwargs)
+        self.squeue.put_nowait(item)
 
     # update xapiandb add by zhangxin
     def update_xapiandb(self, pkgname):
@@ -785,7 +790,7 @@ class AppManager(QObject,Signals):
         self.squeue.put_nowait(item)
         
     # get recommend apps
-    def get_recommend_apps(self, bysignal=False):
+    def get_recommend_apps(self, bysignal=False, first=True):
         recommends = self.db.get_recommend_apps()
         applist = []
         for rec in recommends:
@@ -794,7 +799,7 @@ class AppManager(QObject,Signals):
                 app.recommendrank = rec[1]
                 applist.append(app)
         if Globals.UPDATE_HOM == 0:
-            self.recommend_ready.emit(applist, bysignal)
+            self.recommend_ready.emit(applist, bysignal,first)
 
      # get game apps
     def get_game_apps(self, bysignal=False,sig = False):
@@ -806,7 +811,7 @@ class AppManager(QObject,Signals):
                 app.recommendrank = rec[1]
                 applist.append(app)
         if sig == True:
-            self.recommend_ready.emit(applist, bysignal)
+            self.recommend_ready.emit(applist, bysignal, True)
 
      # get necessary apps
     def get_necessary_apps(self, bysignal=False,sig = False):
@@ -818,7 +823,7 @@ class AppManager(QObject,Signals):
                 app.recommendrank = rec[1]
                 applist.append(app)
         if sig == True:
-            self.recommend_ready.emit(applist, bysignal)
+            self.recommend_ready.emit(applist, bysignal, True)
 
 
 
@@ -946,7 +951,10 @@ class AppManager(QObject,Signals):
 
     def ui_first_login(self,ui_username,ui_password):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
-        res = self.premoter.log_in_appinfo(ui_username,ui_password)
+        try:
+            res = self.premoter.log_in_appinfo(ui_username,ui_password)
+        except:
+            res = False
         #print "res============",res
         res = [{'res':res}]
         self.get_ui_first_login_over.emit(res)
@@ -966,7 +974,7 @@ class AppManager(QObject,Signals):
         try:
             res = self.premoter.submit_add_user(ui_username,ui_password,ui_email,ui_iden)
         except:
-            res = False
+            res = -1
         #print "res============",res
         res = [{'res':res}]
         self.get_ui_adduser_over.emit(res)
@@ -981,17 +989,17 @@ class AppManager(QObject,Signals):
 
     def recover_password(self,old_username,old_email,new_password):
         try:
-            res = self.premoter.rset_user_password(old_username,old_email)
+            res = self.premoter.recover_user_password(old_username,old_email,new_password)
         except:
             res = False
-        if res == 0:
-            try:
-                rer = self.premoter.rset_user_password(old_username,new_password)
-            except:
-                rer = False
-        else:
-            rer = res
-        res = [{'res':rer}]
+        # if res == 0:
+        #     try:
+        #         rer = self.premoter.rset_user_password(old_username,new_password)
+        #     except:
+        #         rer = False
+        # else:
+        #     rer = res
+        res = [{'res':res}]
         self.recover_password_over.emit(res)        
 
     def change_identity(self):
