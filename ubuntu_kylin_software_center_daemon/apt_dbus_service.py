@@ -59,7 +59,8 @@ UKPATH = '/'
 HTTP_SOURCE_UBUNTUKYLIN = "http://archive.ubuntukylin.com:10006/ubuntukylin" 
 DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
 UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
-
+LIB_PATH = "/var/lib/"
+DPKG_PATH = LIB_PATH + "dpkg/lock"
 
 class WorkItem:
      def __init__(self, pkgname, action, kwargs):
@@ -87,7 +88,7 @@ class WorkThread(threading.Thread):
                 time.sleep(0.5)
                 continue
 
-            if is_file_locked("/var/lib/dpkg/lock") is True or 1 == self.uksc_is_working:
+            if is_file_locked(DPKG_PATH) is True or 1 == self.uksc_is_working:
                 time.sleep(0.5)
                 continue
 
@@ -128,7 +129,8 @@ def is_file_locked(lockfile):
     """
     Check whether ``apt-get`` or ``dpkg`` is currently active by check the lock file.
 
-    This works by checking whether the lock file like ``/var/lib/dpkg/lock``
+    This works by checking whether the lock file like ``/var/lib/
+    dpkg/lock``
     ``/var/lib/apt/lists/lock`` is locked by an ``apt-get`` or ``dpkg`` process,
     which in turn is done by momentarily trying to acquire the lock.
      This means that the current process needs to have sufficient privileges.
@@ -590,7 +592,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         if len(self.worklist) != 0:
             workitemcount = len(self.worklist)
         self.mutex.release()
-        dpkg_is_running = is_file_locked("/var/lib/dpkg/lock")
+        dpkg_is_running = is_file_locked(DPKG_PATH)
         if dpkg_is_running is True:
             dpkg_is_running = 1
         else:
