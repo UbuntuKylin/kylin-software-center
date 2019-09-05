@@ -36,6 +36,7 @@ from piston_mini_client import (
     auth,
     )
 from models.enums import UBUNTUKYLIN_SERVER
+from models.globals import Globals
 from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client import APIError
 import httplib2
@@ -105,18 +106,19 @@ class PistonRemoter(PistonAPI):
         gets = self._get("getallratings", scheme="http")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
-        print("get_all_ratings")
+        if (Globals.DEBUG_SWITCH):
+            print("get_all_ratings")
         return gets
-    
+
 
     @returns_json
     def get_user_ratings(self,user_name,app_name):
         get_ratings =self._get('getuserratings/?user_name=%s;app_name=%s' % (user_name,app_name),scheme="http")
         if (isinstance(get_ratings,bytes)):
             get_ratings = get_ratings.decode(encoding='utf-8')
-        print(get_ratings)
+        if (Globals.DEBUG_SWITCH):
+            print(get_ratings)
         return get_ratings
-
 
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
@@ -130,7 +132,8 @@ class PistonRemoter(PistonAPI):
         start = 0
         range_ = 1
         gets = self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
-        print("get_newest_review")
+        if (Globals.DEBUG_SWITCH):
+            print("get_newest_review")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -143,7 +146,8 @@ class PistonRemoter(PistonAPI):
         postdata.version_os = version_os
         postdata.version_uksc = version_uksc
         gets = self._post('pingbackmain/', data=postdata, scheme='http', content_type='application/json')
-        print("submit_pingback_main")
+        if (Globals.DEBUG_SWITCH):
+            print("submit_pingback_main")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -156,7 +160,8 @@ class PistonRemoter(PistonAPI):
         postdata.isrcm = isrcm
         postdata.user = user
         gets = self._post('pingbackapp20141014/', data=postdata, scheme='http', content_type='application/json')
-        print("submit_pingback_app")
+        if (Globals.DEBUG_SWITCH):
+            print("submit_pingback_app")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -166,13 +171,15 @@ class PistonRemoter(PistonAPI):
         gets = self._get("getallcategories", scheme="http")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
-        print("get_all_categories")
+        if (Globals.DEBUG_SWITCH):
+            print("get_all_categories")
         return gets
 
     @returns_json
     def get_all_rank_and_recommend(self):
         gets = self._get("getallrankandrecommend", scheme='http')
-        print("get_all_rank_and_recommend")
+        if (Globals.DEBUG_SWITCH):
+            print("get_all_rank_and_recommend")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -182,7 +189,8 @@ class PistonRemoter(PistonAPI):
         gets = self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
-        print("get_newer_application_info")
+        if (Globals.DEBUG_SWITCH):
+            print("get_newer_application_info")
         return gets
 
     @returns_json
@@ -190,13 +198,15 @@ class PistonRemoter(PistonAPI):
         gets = self._get('getnewericon/?modify_time=%s' % last_update_date, scheme="http")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
-        print("get_newer_application_icon")
+        if (Globals.DEBUG_SWITCH):
+            print("get_newer_application_icon")
         return gets
         
     @returns_json
     def allapp_forxapianupdate(self):
         gets = self._get('allappforxapianupdate/?', scheme="http")
-        print("allapp_forxapianupdate")
+        if (Globals.DEBUG_SWITCH):
+            print("allapp_forxapianupdate")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -204,7 +214,8 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def newerapp_for_xapianupdate(self, the_latest_update_time):
         gets = self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
-        print("newerapp_for_xapianupdate")
+        if (Globals.DEBUG_SWITCH):
+            print("newerapp_for_xapianupdate")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -212,7 +223,8 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def get_user_applist(self, user):
         gets = self._get('getapplist/?user=%s' % user, scheme="http")
-        print("get_user_applist")
+        if (Globals.DEBUG_SWITCH):
+            print("get_user_applist")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -220,7 +232,8 @@ class PistonRemoter(PistonAPI):
     @returns_json
     def get_user_transapplist(self, user):
         gets = self._get('getusertranslation/?user=%s' % user, scheme="http")
-        print("get_user_transapplist")
+        if (Globals.DEBUG_SWITCH):
+            print("get_user_transapplist")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -233,7 +246,8 @@ class PistonRemoter(PistonAPI):
         postdata.email = email
         postdata.identity = identity
         gets = self._post('register/', data=postdata, scheme='http', content_type='application/json')
-        print("submit_add_user")
+        if (Globals.DEBUG_SWITCH):
+            print("submit_add_user")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -244,7 +258,8 @@ class PistonRemoter(PistonAPI):
         #postdata.username = username
         #postdata.password = password
         gets = self._get('changepwd/?username=%s;newpwd=%s;' % (username, newpwd), scheme='http')
-        print("rset_user_password")
+        if (Globals.DEBUG_SWITCH):
+            print("rset_user_password")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -255,7 +270,8 @@ class PistonRemoter(PistonAPI):
         #postdata.username = username
         #postdata.email = email
         gets = self._get('retrievepwd/?username=%s;email=%s;newpwd=%s;' % (username, email, newpwd), scheme="http")
-        print("recover_user_password")
+        if (Globals.DEBUG_SWITCH):
+            print("recover_user_password")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -266,7 +282,8 @@ class PistonRemoter(PistonAPI):
         #postdata.username = username
         #postdata.identity = identity
         gets = self._get('changeidentity/?username=%s;identity=%s;' % (username ,identity), scheme="http")
-        print("change_user_identity")
+        if (Globals.DEBUG_SWITCH):
+            print("change_user_identity")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -278,7 +295,8 @@ class PistonRemoter(PistonAPI):
         postdata.username = username
         postdata.password = password
         gets = self._post('login/', data=postdata, scheme='http', content_type='application/json')
-        print("log_in_appinfo")
+        if (Globals.DEBUG_SWITCH):
+            print("log_in_appinfo")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -302,7 +320,8 @@ class PistonRemoter(PistonAPI):
         postdata.user = user
         postdata.user_display = user_display
         gets = self._post('submitreview20141124/', data=postdata, scheme='http', content_type='application/json')
-        print("submit_review")
+        if (Globals.DEBUG_SWITCH):
+            print("submit_review")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -335,7 +354,8 @@ class PistonRemoter(PistonAPI):
         postdata.user_display = user_display
         #print postdata.user_display
         gets = self._post('submittranslation/', data=postdata, scheme='http', content_type='application/json')
-        print("submit_translate_appinfo")
+        if (Globals.DEBUG_SWITCH):
+            print("submit_translate_appinfo")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -348,7 +368,8 @@ class PistonRemoter(PistonAPI):
         postdata.user = user
         postdata.user_display = user_display
         gets = self._post('submitrating0923/', data=postdata, scheme='http', content_type='application/json')
-        print("submit_rating")
+        if (Globals.DEBUG_SWITCH):
+            print("submit_rating")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
@@ -363,8 +384,9 @@ if __name__ == '__main__':
     authorizer = auth.OAuthAuthorizer(token["token"], token["token_secret"], token["consumer_key"], token["consumer_secret"])
     ss = PistonRemoterAuth(auth=authorizer)
     res = ss.submit_review('gimp', 'main', get_distro_info()[2], get_language(),'shine','shine')
-    print(res)
-    print((type(res)))
+    if (Globals.DEBUG_SWITCH):
+        print(res)
+        print((type(res)))
     # s = PistonRemoter(service_root="http://192.168.30.12/uksc/")
     # res = s.get_all_categories()
     # res = s.get_all_rank_and_recommend()

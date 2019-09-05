@@ -53,7 +53,7 @@ SCREENSHOT_LARGE_URL = ("http://screenshots.ubuntu.com/"
 #kobe 1103
 # UK_APP_ICON_URL = ("http://service.ubuntukylin.com:8001/"
 #     "static/uksc/icons/%(pkgname)s")
-UK_APP_ICON_URL = ("http://service.ubuntukylin.com/"
+UK_APP_ICON_URL = ("http://service.ubuntukylin.com:8001/"
     "media/%(pkgname)s")
 # UK_APP_ICON_URL = ("http://192.168.30.12/"
 #     "media/%(pkgname)s")

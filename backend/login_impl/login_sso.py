@@ -36,7 +36,7 @@ from backend.login import LoginBackend
 from backend.utils import utf8
 
 from models.enums import SOFTWARE_CENTER_NAME_KEYRING
-
+from models.globals import Globals
 LOG = logging.getLogger(__name__)
 
 class LoginBackendDbusSSO(LoginBackend):
@@ -74,29 +74,34 @@ class LoginBackendDbusSSO(LoginBackend):
         return p
 
     def find_credentials(self):
-        LOG.debug("find_credentials()")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("find_credentials()")
         self._credentials = None
         self.proxy.find_credentials(self.appname, self._get_params())
 
     def login(self):
-        LOG.debug("login()")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("login()")
         self._credentials = None
         self.proxy.login(self.appname, self._get_params())
 
     def login_or_register(self):
-        LOG.debug("login_or_register()")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("login_or_register()")
         self._credentials = None
         # print "login_sso::login_or_register:", self.appname, self._get_params()
         self.proxy.register(self.appname, self._get_params())
 
     def _on_credentials_not_found(self, app_name):
-        LOG.debug("_on_credentials_not_found for '%s'" % app_name)
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("_on_credentials_not_found for '%s'" % app_name)
         if app_name != self.appname:
             return
         self.emit("login-failed")
 
     def _on_credentials_found(self, app_name, credentials):
-        LOG.debug("_on_credentials_found for '%s'" % app_name)
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("_on_credentials_found for '%s'" % app_name)
         if app_name != self.appname:
             return
         # only emit signal here once, otherwise it may happen that a
@@ -115,7 +120,8 @@ class LoginBackendDbusSSO(LoginBackend):
         self.emit("login-failed")
 
     def _on_authorization_denied(self, app_name):
-        LOG.info("_on_authorization_denied: %s" % app_name)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("_on_authorization_denied: %s" % app_name)
         if app_name != self.appname:
             return
         self.cancel_login()

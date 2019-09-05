@@ -47,7 +47,7 @@ from models.enums import UBUNTUKYLIN_RES_SCREENSHOT_PATH
 
 from .ubuntu_sw import SortMethods, ReviewSortMethods, Review
 from .ubuntu_sw import (REVIEWS_SERVER, REVIEWS_URL)
-
+from  models.globals import Globals
 from .piston.rnrclient_pristine import RatingsAndReviewsAPI
 RatingsAndReviewsAPI.default_service_root = REVIEWS_SERVER
 #"http://reviews.ubuntu.com/reviews/api/1.0"
@@ -120,11 +120,12 @@ class SpawnProcess(GObject.GObject,multiprocessing.Process):
         try:
             func_method(self.kwargs,self.queue)
         except Exception as e:
-            print("SpawnProcess error: ",e)
+            if (Globals.DEBUG_SWITCH):
+                print("SpawnProcess error: ",e)
 
         self.event.set()
-
-        LOG.debug("backend process finished...")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("backend process finished...")
 
 #        if not res:
 #            self.emit("spawn-error","####error result from function run")
@@ -191,33 +192,35 @@ class RatingsAndReviwsMethod:
         if(thumbnail and screenshot and thumbnailfile and screenshotfile):
 
             try:
-                if not os.path.exists(thumbnailfile):
-                    urlFile = urllib.request.urlopen(thumbnail)
-                    rawContent = urlFile.read()
-                    if rawContent:
-                        localFile = open(thumbnailfile,"wb")
-                        localFile.write(rawContent)
-                        localFile.close()
-                else:
-                    print("get_screenshots,exists:",thumbnailfile)
+                # if not os.path.exists(thumbnailfile):
+                #     urlFile = urllib.request.urlopen(thumbnail)
+                #     rawContent = urlFile.read()
+                #     if rawContent:
+                #         localFile = open(thumbnailfile,"wb")
+                #         localFile.write(rawContent)
+                #         localFile.close()
+                # else:
+                #     print("get_screenshots,exists:",thumbnailfile)
 
                 screenshot_path_list.append(thumbnailfile)
                 queue.put_nowait(thumbnailfile)
-                if not os.path.exists(screenshotfile):
-                    urlFile = urllib.request.urlopen(screenshot)
-                    rawContent = urlFile.read()
-                    if rawContent:
-                        localFile = open(screenshotfile,"wb")
-                        localFile.write(rawContent)
-                        localFile.close()
-                else:
-                    print("get_screenshots,exists:",screenshotfile)
+                # if not os.path.exists(screenshotfile):
+                #     urlFile = urllib.request.urlopen(screenshot)
+                #     rawContent = urlFile.read()
+                #     if rawContent:
+                #         localFile = open(screenshotfile,"wb")
+                #         localFile.write(rawContent)
+                #         localFile.close()
+                # else:
+                #     print("get_screenshots,exists:",screenshotfile)
                 screenshot_path_list.append(screenshotfile)
                 queue.put_nowait(screenshotfile)
             except urllib.error.HTTPError as e:
-                print(e.code)
+                if (Globals.DEBUG_SWITCH):
+                    print(e.code)
             except urllib.error.URLError as e:
-                print(str(e))
+                if (Globals.DEBUG_SWITCH):
+                    print(str(e))
 
             return screenshot_path_list
         else:
@@ -231,9 +234,11 @@ class RatingsAndReviwsMethod:
                 if not rawContent:
                     return []
             except urllib.error.HTTPError as e:
-                print(e.code)
+                if (Globals.DEBUG_SWITCH):
+                    print(e.code)
             except urllib.error.URLError as e:
-                print(str(e))
+                if (Globals.DEBUG_SWITCH):
+                    print(str(e))
 
             if rawContent is None:
                 return []
@@ -241,7 +246,8 @@ class RatingsAndReviwsMethod:
             try:
                 jsonContent = json.loads(rawContent)
             except ValueError as e:
-                print("can not decode: '%s' (%s)" % (rawContent, e))
+                if (Globals.DEBUG_SWITCH):
+                    print("can not decode: '%s' (%s)" % (rawContent, e))
                 jsonContent = None
                 return []
 
@@ -275,9 +281,11 @@ class RatingsAndReviwsMethod:
                     queue.put_nowait(destfile)
 
             except urllib.error.HTTPError as e:
-                print(e.code)
+                if (Globals.DEBUG_SWITCH):
+                    print(e.code)
             except urllib.error.URLError as e:
-                print(str(e))
+                if (Globals.DEBUG_SWITCH):
+                    print(str(e))
 
         return screenshot_path_list
 
@@ -289,7 +297,8 @@ class RatingsAndReviwsMethod:
         try:
             rnr = RatingsAndReviewsAPI(service_root=REVIEWS_SERVER)
             sat_res = rnr.server_status()
-            LOG.debug("review and rating service stat:%s",sat_res)
+            if (Globals.DEBUG_SWITCH):
+                LOG.debug("review and rating service stat:%s",sat_res)
             statlist = rnr.review_stats()  #distroseries='any'
 
             index = 0
@@ -306,14 +315,17 @@ class RatingsAndReviwsMethod:
                 try:
                     queue.put_nowait(rnrStat)
                 except queue.Full:
-                    print("queue put exception")
-            LOG.debug("got the rating and review list count:%d",len(rnrArray))
+                    if (Globals.DEBUG_SWITCH):
+                        print("queue put exception")
+            if (Globals.DEBUG_SWITCH):
+                LOG.debug("got the rating and review list count:%d",len(rnrArray))
 
             return rnrArray
 
         except Exception as e:
             LOG.error("exception when getting rating and review stat...")
-            print(e.args)
+            if (Globals.DEBUG_SWITCH):
+                print(e.args)
             return {}
 
 

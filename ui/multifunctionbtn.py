@@ -137,7 +137,7 @@ class MultiFunctionBtn(QWidget,Signals):
                 self.ui.btnUninstall.move(0, y + 123)
 
         else:# for apt deb file
-            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.TRANSPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#zx11.27
+            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.TRANSPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE,PageStates.APKPAGE)):#zx11.27
                 if(type == PkgStates.NORUN):
                     self.setBtnEnabledPlus(self.ui.btnRun, False)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
@@ -627,7 +627,7 @@ class MultiFunctionBtn(QWidget,Signals):
                 self.ui.btnUninstall.move(0, y + 123)
 
         else:# for apt deb file
-            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.TRANSPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#zx11.27
+            if(Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE,PageStates.WINPAGE,PageStates.TRANSPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE,PageStates.APKPAGE)):#zx11.27
                 # if(type == PkgStates.NORUN):
                 if app.is_instelled and run.get_run_command(self.app.name) == "":
                     self.setBtnEnabledPlus(self.ui.btnRun, False)

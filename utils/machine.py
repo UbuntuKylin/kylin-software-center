@@ -82,10 +82,11 @@ def get_language():
 
 
 def main():
-    print(get_machine_id())
-    print(get_distro_info())
-    print(get_uksc_version())
-    print(get_language())
+    if (Globals.DEBUG_SWITCH):
+        print(get_machine_id())
+        print(get_distro_info())
+        print(get_uksc_version())
+        print(get_language())
 
 if __name__ == '__main__':
     main()

@@ -31,7 +31,7 @@ from models.enums import PISTON_GENERIC_HELPER
 
 from gi import version_info as gi_version
 from gi.repository import GObject, GLib
-
+from models.globals import Globals
 LOG = logging.getLogger(__name__)
 
 
@@ -82,7 +82,8 @@ class SpawnHelper(GObject.GObject):
         cmd += [klass, func]
         if kwargs:
             cmd.append(json.dumps(kwargs))
-        LOG.debug("run_generic_piston_helper()")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("run_generic_piston_helper()")
         self.run(cmd)
 
     def run(self, cmd):
@@ -93,7 +94,8 @@ class SpawnHelper(GObject.GObject):
         (pid, stdin, stdout, stderr) = GLib.spawn_async(
             cmd, flags=GObject.SPAWN_DO_NOT_REAP_CHILD,
             standard_output=True, standard_error=True)
-        LOG.debug("running: '%s' as pid: '%s'" % (cmd, pid))
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("running: '%s' as pid: '%s'" % (cmd, pid))
         # python-gobject >= 3.7.3 has changed some API in incompatible
         # ways, so we need to check the version for which one to use.
         if gi_version < (3, 7, 3):
@@ -111,7 +113,8 @@ class SpawnHelper(GObject.GObject):
 
     def _helper_finished(self, pid, status, xxx_todo_changeme):
         (stdout, stderr) = xxx_todo_changeme
-        LOG.debug("helper_finished: '%s' '%s'" % (pid, status))
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("helper_finished: '%s' '%s'" % (pid, status))
         # get status code
         res = os.WEXITSTATUS(status)
         if res == 0:
@@ -159,7 +162,8 @@ class SpawnHelper(GObject.GObject):
             pass
         else:
             LOG.error("unknown format: '%s'", self._expect_format)
-        LOG.debug("got data for cmd: '%s'='%s'" % (self._cmd, data))
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("got data for cmd: '%s'='%s'" % (self._cmd, data))
         # print "Spawn_helper data-available, data is :", data
         self.emit("data-available", data)
         return False

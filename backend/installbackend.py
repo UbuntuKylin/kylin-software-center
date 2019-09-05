@@ -48,7 +48,7 @@ import multiprocessing
 
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
-
+from models.globals import Globals
 #from dbus.mainloop.qt import DBusQtMainLoop
 #mainloop = DBusQtMainLoop()
 LOG = logging.getLogger("uksc")
@@ -68,7 +68,8 @@ class InstallBackend(QObject,Signals):
         try:
             bus = dbus.SystemBus(mainloop)
         except Exception as e:
-            print("could not initiate dbus")
+            if (Globals.DEBUG_DEBUG_SWITCH):
+                print("could not initiate dbus")
             LOG.error("dbus exception:%s" % str(e))
             self.init_models_ready.emit("fail","初始化失败!")
             return False
@@ -90,7 +91,8 @@ class InstallBackend(QObject,Signals):
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
             self.init_models_ready.emit("fail","初始化失败!")
             LOG.error("dbus exception:%s" % str(e))
-            print("dbus.DBusException error: ",str(e))
+            if(Globals.DEBUG_SWITCH):
+                print("dbus.DBusException error: ",str(e))
             return False
 
         return True
@@ -108,7 +110,8 @@ class InstallBackend(QObject,Signals):
         try:
             res = func(kwargs)
         except dbus.DBusException as e:
-            print("DBusException from uksc dbus",e)
+            if (Globals.DEBUG_SWITCH):
+                print("DBusException from uksc dbus",e)
             LOG.error("apt-daemon dbus exception:%s" % str(e))
             return None
 
@@ -130,7 +133,8 @@ class InstallBackend(QObject,Signals):
 # #            sendMsg = "操作取消"
 #             percent = -1
         if type == "down_fetch":
-            print("正在下载：",kwarg["uri"])
+            if (Globals.DEBUG_SWITCH):
+                print("正在下载：",kwarg["uri"])
 
         self.dbus_apt_process.emit(appname,sendType,action,percent,sendMsg)
 
@@ -154,6 +158,60 @@ class InstallBackend(QObject,Signals):
             sendType = "cancel"
 
         self.dbus_apt_process.emit(appname,sendType,action,0,sendMsg)
+
+    # 安卓环境启动检测dbus接口
+    def kydroid_dbus_ifaces(self):
+        try:
+            bus = dbus.SystemBus(mainloop)
+        except Exception as e:
+            if (Globals.DEBUG_SWITCH):
+                print("could not initiate dbus")
+            LOG.error("dbus exception:%s" % str(e))
+            self.init_models_ready.emit("fail","安卓dbus初始化失败!")
+            return False
+
+        try:
+            obj = bus.get_object('cn.kylinos.Kydroid2',
+                                 '/cn/kylinos/Kydroid2',
+                                 'cn.kylinos.Kydroid2')
+            self.kydroid_iface = dbus.Interface(obj, 'cn.kylinos.Kydroid2')
+
+#            self.call_dbus_iface("check_source_ubuntukylin")
+
+            # self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal)
+            # self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal)
+            # self.iface.connect_to_signal("software_auth_signal",self._on_software_auth_signal)
+        except dbus.DBusException as e:
+#            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
+#            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
+            self.init_models_ready.emit("fail","安卓dbus初始化失败!")
+            LOG.error("dbus exception:%s" % str(e))
+            if(Globals.DEBUG_SWITCH):
+                print("dbus.DBusException error: ",str(e))
+            return False
+
+        return True
+
+    def call_kydroid_dbus_iface(self, funcname, kwargs=None,kwargs2=None,kwargs3=None):
+        if self.kydroid_iface is None:
+            return None
+        func = getattr(self.kydroid_iface,funcname)
+        if func is None:
+            return None
+
+        res = None
+        try:
+            res = func(kwargs,kwargs2,kwargs3)
+        except dbus.DBusException as e:
+            if (Globals.DEBUG_SWITCH):
+                print("DBusException from kydroid dbus",e)
+            LOG.error("apt-daemon kydroid dbus exception:%s" % str(e))
+            return None
+        return res
+
+    def get_kydroid_evnrun(self,name,uid,prop):
+        return self.call_kydroid_dbus_iface("GetPropOfContainer",name,uid,prop)
+
 
     def install_deps(self, path):
         return self.call_dbus_iface(AppActions.INSTALLDEPS, path)
@@ -215,6 +273,7 @@ class InstallBackend(QObject,Signals):
 
         return resList
 
+
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 import sys
@@ -233,7 +292,8 @@ def main():
     instBackend = InstallBackend()
     instBackend.init_dbus_ifaces()
     res = instBackend.call_dbus_iface(AppActions.INSTALL,"abe")
-    print("res=", res)
+    if (Globals.DEBUG_SWITCH):
+        print("res=", res)
 
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"gimp")
 #    instBackend.call_dbus_iface(AppActions.INSTALL,"bareftp")

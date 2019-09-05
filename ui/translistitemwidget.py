@@ -57,15 +57,17 @@ class TransListItemWidget(QWidget,Signals):
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
+        self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+        self.ui.btnDetail.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}");
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
-        self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#666666;}")
+        self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
         # self.ui.installedsize.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.translatedsection.setStyleSheet("QLabel{font-size:14px;color:#7E8B97;}")
-        self.ui.transstatu.setStyleSheet("QLabel{font-size:14px;color:#7E8B97;}")
-        self.ui.appname.setStyleSheet("QLabel{font-size:14px;color:#7E8B97;}")
-        self.ui.appsummary.setStyleSheet("QLabel{font-size:14px;color:#7E8B97;}")
-        self.ui.appdescription.setStyleSheet("QLabel{font-size:14px;color:#7E8B97;}")
-        self.ui.translateDate.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
+        self.ui.translatedsection.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.transstatu.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.appname.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.appsummary.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.appdescription.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.translateDate.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
         if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
             self.ui.name.setText(self.app.displayname_cn)
         else:

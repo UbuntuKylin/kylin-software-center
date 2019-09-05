@@ -12,7 +12,7 @@ try:
 except AttributeError:
     def _fromUtf8(s):
         return s
-
+from models.globals import Globals
 
 class BackendApt(QObject):
     #the apt cache
@@ -22,7 +22,8 @@ class BackendApt(QObject):
     def __init__(self):
         QObject.__init__(self)
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
-        print(locale.getlocale())
+        if (Globals.DEBUG_SWITCH):
+            print(locale.getlocale())
         self.ca = apt.Cache()
         self.ca.open()
 
@@ -62,8 +63,9 @@ class BackendApt(QObject):
         try:
             self.ca.commit(FetchProcess("deps","DEPS"), AptProcess("deps","DEPS"))
         except Exception as e:
-            print(e)
-            print("install err")
+            if (Globals.DEBUG_SWITCH):
+                print(e)
+                print("install err")
 
 
 class FetchProcess(apb.AcquireProgress):
@@ -81,7 +83,8 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print("done  ",item,"   ",str(self.percent))
+        if(Globals.DEBUG_SWITCH):
+            print("done  ",item,"   ",str(self.percent))
 
 
     def fail(self, item):
@@ -100,7 +103,8 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print("fetch  ",item,"   ",str(self.percent))
+        if(Globals.DEBUG_SWITCH):
+            print("fetch  ",item,"   ",str(self.percent))
 
     def ims_hit(self, item):
 #        print 'ims_hit'
@@ -120,7 +124,8 @@ class FetchProcess(apb.AcquireProgress):
                  "total_items":str(self.total_items),
                  "action":str(self.action),
                  }
-        print("pulse  ",owner,"   ",str(self.percent))
+        if (Globals.DEBUG_SWITCH):
+            print("pulse  ",owner,"   ",str(self.percent))
 
         #kwarg = "download_appname:"+ self.appname + ",download_bytes:" + str(self.current_bytes) + ",total_bytes:" + str(self.total_bytes) + ",download_items:" + str(self.current_items) + ",total_items:" + str(self.total_items)
 #        print "FetchProcess, pulse: ", str(self.percent)
@@ -143,7 +148,8 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print("######start")
+        if (Globals.DEBUG_SWITCH):
+            print("######start")
 
     def stop(self):
 #        print 'fetch progress stop ...'
@@ -151,7 +157,8 @@ class FetchProcess(apb.AcquireProgress):
                  "download_percent":str(200),
                  "action":str(self.action),
                  }
-        print("########stop:")
+        if(Globals.DEBUG_SWITCH):
+            print("########stop:")
 
 
 class AptProcess(apb.InstallProgress):
@@ -179,7 +186,8 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(self.percent),
                  "action":str(self.action),
                  }
-        print("@@@@start")
+        if(Globals.DEBUG_SWITCH):
+            print("@@@@start")
 
     def finish_update(self):
 #        print 'apt process finished', self.appname
@@ -187,7 +195,8 @@ class AptProcess(apb.InstallProgress):
                  "apt_percent":str(200),
                  "action":str(self.action),
                  }
-        print("@@@@finish")
+        if(Globals.DEBUG_SWITCH):
+            print("@@@@finish")
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg
@@ -201,7 +210,8 @@ class AptProcess(apb.InstallProgress):
                  "status":str(status),
                  "action":str(self.action),
                  }
-        print("status change   ",pkg,"   ",str(percent))
+        if(Globals.DEBUG_SWITCH):
+            print("status change   ",pkg,"   ",str(percent))
 #        print "####status_change:", kwarg
 
 

@@ -37,13 +37,17 @@ from backend.remote.piston_remoter import PistonRemoter
 from backend.ubuntu_sw import UK_APP_ICON_URL
 from utils.machine import *
 from utils.debfile import DebFile
+from models.globals import Globals
 
 from models.review import Review
 from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
 # from models.http import HttpDownLoad
 
+
 import threading
 lock = threading.Lock()
+# from multiprocessing import Process,Lock
+# lock = Lock()
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
 
@@ -73,7 +77,8 @@ class SilentProcess(multiprocessing.Process):
 
             item = self.squeue.get_nowait()
 
-            print("silent process get one workitem : ", item.funcname)
+            if (Globals.DEBUG_SWITCH):
+                print("silent process get one workitem : ", item.funcname)
 
             try: #if no network the process will be crashed
                 if item.funcname == "get_all_ratings":
@@ -93,7 +98,8 @@ class SilentProcess(multiprocessing.Process):
                 elif item.funcname == "update_xapiandb":
                     self.update_xapiandb(item.kwargs)
             except Exception as e:
-                print("silent process exception:", e)
+                if (Globals.DEBUG_SWITCH):
+                    print("silent process exception:", e)
             # elif item.funcname == "download_images":
             #     self.download_images()
 
@@ -119,9 +125,11 @@ class SilentProcess(multiprocessing.Process):
 
             #self.connect.commit()
 
-            print("all ratings and rating_total update over : ",len(reslist))
+            if (Globals.DEBUG_SWITCH):
+                print("all ratings and rating_total update over : ",len(reslist))
         else:
-            print("Failed to get all ratings and rating_total")
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to get all ratings and rating_total")
 
     # submit pingback-main to server
     def submit_pingback_main(self):
@@ -182,9 +190,11 @@ class SilentProcess(multiprocessing.Process):
 
             self.connect.commit()
 
-            print("all categories update over : ",len(reslist))
+            if (Globals.DEBUG_SWITCH):
+                print("all categories update over : ",len(reslist))
         else:
-            print("Failed to all categories")
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to all categories")
 
     # get all rank and recommend data from server
     def get_all_rank_and_recommend(self):
@@ -214,10 +224,11 @@ class SilentProcess(multiprocessing.Process):
                 finally:
                     lock.release()
 
-
-            print("all rank and recommend update over : ",len(reslist))
+            if (Globals.DEBUG_SWITCH):
+                print("all rank and recommend update over : ",len(reslist))
         else:
-            print("Failed to all rank and recommend")
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to all rank and recommend")
 
     # get newer application info from server
     def get_newer_application_info(self):
@@ -297,9 +308,11 @@ class SilentProcess(multiprocessing.Process):
 
                 #self.connect.commit()
 
-                print("all newer application info update over : ",len(reslist))
+                if (Globals.DEBUG_SWITCH):
+                    print("all newer application info update over : ",len(reslist))
         else:
-            print("failed to get newer application info")
+            if (Globals.DEBUG_SWITCH):
+                print("failed to get newer application info")
 
     # def download_images(self):
     #     requestData = "http://service.ubuntukylin.com:8001/uksc/download/?name=uk-win.zip"
@@ -340,9 +353,11 @@ class SilentProcess(multiprocessing.Process):
                             localFile.close()
 
                     except urllib.error.HTTPError as e:
-                        print(e.code)
+                        if (Globals.DEBUG_SWITCH):
+                            print(e.code)
                     except urllib.error.URLError as e:
-                        print(str(e))
+                        if (Globals.DEBUG_SWITCH):
+                            print(str(e))
 
                 # set application info last update date
                 new_update_time = reslist[0]['modify_time']
@@ -352,9 +367,11 @@ class SilentProcess(multiprocessing.Process):
                     self.connect.commit()
                 finally:
                     lock.release()
-                print("all newer application icon update over : ",len(reslist))
+                if (Globals.DEBUG_SWITCH):
+                    print("all newer application icon update over : ",len(reslist))
         else:
-            print("Failed to get  newer application icon")
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to get  newer application icon")
         
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self, kwargs):
@@ -383,8 +400,8 @@ class SilentProcess(multiprocessing.Process):
                         the_latest_update_time = the_latest_update_time.decode(encoding='utf-8')
                 else:
                     the_latest_update_time = time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime())
-                    print("Failed to get the latest update time from client xapiandb,use default time.localtime()")
-
+                    if (Globals.DEBUG_SWITCH):
+                        print("Failed to get the latest update time from client xapiandb,use default time.localtime()")
             reslist = self.premoter.newerapp_for_xapianupdate(the_latest_update_time)
 
             for app in reslist:
@@ -421,7 +438,8 @@ class SilentProcess(multiprocessing.Process):
                                     else:
                                         pass
                             except:
-                                print("----No mmseg model---")
+                                if (Globals.DEBUG_SWITCH):
+                                    print("----No mmseg model---")
 
                             database.replace_document(docid,doc)
                             xapiandb_update = "Yes"
@@ -450,11 +468,14 @@ class SilentProcess(multiprocessing.Process):
                         pass
                     database.add_document(doc)
                     add_num = add_num + 1
-                    print("App:",doc.get_data(),"  ","terms:", end=' ')
+                    if (Globals.DEBUG_SWITCH):
+                        print("App:",doc.get_data(),"  ","terms:", end=' ')
                     for itr in doc.termlist():
-                        print(itr.term, end=' ')
+                        if (Globals.DEBUG_SWITCH):
+                            print(itr.term, end=' ')
                     xapiandb_update = "Yes"
-                    print("  ")
+                    if (Globals.DEBUG_SWITCH):
+                        print("  ")
 
             try:
                 if xapiandb_update == "Yes":
@@ -462,10 +483,13 @@ class SilentProcess(multiprocessing.Process):
                     doc_for_xapiandb_version.add_value(2,now)
                     database.replace_document(docid_for_xapiandb_version, doc_for_xapiandb_version)
                     database.commit()
-                    print("Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist)))
+                    if (Globals.DEBUG_SWITCH):
+                        print("Xapiandb has updated . %d app modified, %d app add.  Tatal: %d app updated"%(modified_num,add_num,len(reslist)))
             except:
-                print("The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!")
-            print("update uksc xapiandb over")
+                if (Globals.DEBUG_SWITCH):
+                    print("The xapian database (/home/ice_bird/.cache/uksc/xapiandb) is crashed,please remove it and install a new one!")
+            if (Globals.DEBUG_SWITCH):
+                print("update uksc xapiandb over")
 
         else:
             appinfo_query = xapian.Query(kwargs["pkgname"])
@@ -480,22 +504,27 @@ class SilentProcess(multiprocessing.Process):
             doc = xapian.Document()
             doc.set_data(kwargs["pkgname"])
             doc.add_term(kwargs["pkgname"], 10)
-            print("debfile path:", kwargs["path"])
+            if (Globals.DEBUG_SWITCH):
+                print("debfile path:", kwargs["path"])
 
             deb = DebFile(kwargs["path"])
             terms = kwargs["pkgname"]
             try:
                 terms = terms + " " + deb.description
             except:
-                print("Failed to get app description")
+                if (Globals.DEBUG_SWITCH):
+                    print("Failed to get app description")
             indexer.set_document(doc)
             indexer.index_text(terms)
             database.add_document(doc)
             database.commit()
-            print("update xapiandb over: ", kwargs["pkgname"], "terms:", end=' ')
+            if (Globals.DEBUG_SWITCH):
+                print("update xapiandb over: ", kwargs["pkgname"], "terms:", end=' ')
             for itr in doc.termlist():
-                print(itr.term, end=' ')
-            print(" ")
+                if (Globals.DEBUG_SWITCH):
+                    print(itr.term, end=' ')
+            if (Globals.DEBUG_SWITCH):
+                print(" ")
             
 class SilentWorkerItem:
 

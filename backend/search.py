@@ -35,7 +35,7 @@ from gi.repository import GObject, Gio, GLib
 from gettext import gettext as _
 from xdg import BaseDirectory as xdg
 LOG = logging.getLogger(__name__)
-
+from models.globals import Globals
 # xapian paths
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
 XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT = os.path.join(
@@ -168,7 +168,8 @@ class StoreDatabase(GObject.GObject):
                 xapiandb.add_database(axi)
             except Exception as e:
                 logging.warn("failed to add apt-xapian-index db %s" % e)
-                print("Failed to add apt-xapian-index,some software may not be searched")
+                if (Globals.DEBUG_SWITCH):
+                    print("Failed to add apt-xapian-index,some software may not be searched")
         if (self._use_agent and
                 os.path.exists(XAPIAN_BASE_PATH_SOFTWARE_CENTER_AGENT)):
             try:
@@ -206,7 +207,8 @@ class StoreDatabase(GObject.GObject):
 
     def open(self, pathname=None, use_axi=True, use_agent=True,use_utsc=True):
         """ open the database """
-        LOG.debug("open() database: path=%s use_axi=%s "
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("open() database: path=%s use_axi=%s "
                           "use_agent=%s" % (pathname, use_axi, use_agent))
         if pathname:
             self._db_pathname = pathname
@@ -251,7 +253,8 @@ class StoreDatabase(GObject.GObject):
         # we only care about the utime() update from update-a-x-i
         if not event == Gio.FileMonitorEvent.ATTRIBUTE_CHANGED:
             return
-        LOG.debug("afile '%s' changed" % afile)
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("afile '%s' changed" % afile)
         if self._timeout_id:
             GLib.source_remove(self._timeout_id)
             self._timeout_id = None
@@ -265,7 +268,8 @@ class StoreDatabase(GObject.GObject):
 
     def reopen(self):
         """ reopen the database """
-        LOG.debug("reopen() database")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("reopen() database")
         self.open(use_axi=self._use_axi, use_agent=self._use_agent)
         self.emit("reopen")
 
@@ -322,11 +326,13 @@ class StoreDatabase(GObject.GObject):
             for item in self.SEARCH_GREYLIST_STR.split(";"):
                 (search_term, n) = re.subn('\\b%s\\b' % item, '', search_term)
                 if n:
-                    LOG.debug("greylist changed search term: '%s'" %
+                    if (Globals.DEBUG_SWITCH):
+                        LOG.debug("greylist changed search term: '%s'" %
                         search_term)
         # restore query if it was just greylist words
         if search_term == '':
-            LOG.debug("grey-list replaced all terms, restoring")
+            if (Globals.DEBUG_SWITCH):
+                LOG.debug("grey-list replaced all terms, restoring")
             search_term = orig_search_term
         # we have to strip the leading and trailing whitespaces to avoid having
         # different results for e.g. 'font ' and 'font' (LP: #506419)
@@ -391,7 +397,8 @@ class ExecutionTime(object):
         if time_spend < self.suppress_less_than_n_seconds:
             return
         logger = logging.getLogger("softwarecenter.performance")
-        logger.debug("%s: %s" % (self.info, time_spend))
+        if (Globals.DEBUG_SWITCH):
+            logger.debug("%s: %s" % (self.info, time_spend))
         if self.with_traceback:
             log_traceback("populate model from query: '%s' (threaded: %s)")
 
@@ -401,7 +408,8 @@ def log_traceback(info):
     the code at this place. Logs to softwarecenter.traceback
     """
     logger = logging.getLogger("softwarecenter.traceback")
-    logger.debug("%s: %s" % (info, "".join(traceback.format_stack())))
+    if (Globals.DEBUG_SWITCH):
+        logger.debug("%s: %s" % (info, "".join(traceback.format_stack())))
 
 class Search:
     db = ''
@@ -410,7 +418,8 @@ class Search:
         try:
             self.db.xapiandb
         except:
-            print("Failed to add db")
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to add db")
             #LOG.exception("failed to add db")
         self.db.open()
         

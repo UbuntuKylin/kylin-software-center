@@ -29,13 +29,13 @@ import os
 class Globals:
     # mainwindow size
     MAIN_WIDTH_NORMAL = 980
-    MAIN_HEIGHT_NORMAL = 608
+    MAIN_HEIGHT_NORMAL = 680
     MAIN_WIDTH = 980
-    MAIN_HEIGHT = 608
+    MAIN_HEIGHT = 680
 
     # card format
-    NORMALCARD_WIDTH = 212
-    NORMALCARD_HEIGHT = 88
+    NORMALCARD_WIDTH = 200
+    NORMALCARD_HEIGHT = 115
 
     # how many softwares show in a setp
     SOFTWARE_STEP_NUM = 24
@@ -48,6 +48,9 @@ class Globals:
 
     # open with local deb file
     LOCAL_DEB_FILE = None
+
+    #LOG.debug and print Switch
+    DEBUG_SWITCH = False
 
     # user name
     USER = ''
@@ -67,3 +70,5 @@ class Globals:
     UPDATE_HOM = 0
 
     ALL_APPS = {}
+
+    APK_EVNRUN = 0

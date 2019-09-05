@@ -31,7 +31,7 @@ class UploadSshotwidget(QDialog):
 class Ui_DetailWidget(object):
     def setupUi(self, DetailWidget):
         DetailWidget.setObjectName(_fromUtf8("DetailWidget"))
-        DetailWidget.resize(873, 920)
+        DetailWidget.resize(870, 920)
         DetailWidget.setStyleSheet(_fromUtf8(""))
         self.iconBG = QLabel(DetailWidget)
         self.iconBG.setGeometry(QtCore.QRect(25, 0, 80, 80))
@@ -174,7 +174,7 @@ class Ui_DetailWidget(object):
         #self.gradeBG.setGeometry(QtCore.QRect(40, 516, 810, 132))
         self.gradeBG.setObjectName(_fromUtf8("gradeBG"))
         self.gradeText2 = QLabel(self.gradeBG)
-        self.gradeText2.setGeometry(QtCore.QRect(30, 53, 151, 17))
+        self.gradeText2.setGeometry(QtCore.QRect(180, 33, 151, 17))
         self.gradeText2.setText(_fromUtf8(""))
         self.gradeText2.setAlignment(QtCore.Qt.AlignCenter)
         self.gradeText2.setObjectName(_fromUtf8("gradeText2"))
@@ -187,7 +187,15 @@ class Ui_DetailWidget(object):
         self.grade.setText(_fromUtf8(""))
         self.grade.setAlignment(QtCore.Qt.AlignCenter)
         self.grade.setObjectName(_fromUtf8("grade"))
-
+        self.vline = QLabel(self.gradeBG)
+        self.vline.setGeometry(QtCore.QRect(435, 6, 1, 120))
+        self.vline.setText(_fromUtf8(""))
+        self.vline.setObjectName(_fromUtf8("vline"))
+        self.gradetitle = QLabel(self.gradeBG)
+        self.gradetitle.setGeometry(QtCore.QRect(120, 35, 31, 21))
+        self.gradetitle.setText(_fromUtf8(""))
+        self.gradetitle.setAlignment(QtCore.Qt.AlignCenter)
+        self.gradetitle.setObjectName(_fromUtf8("gradetitle"))
 
         #add in dengnan
         self.grade1 = QLabel(self.gradeBG)
@@ -202,16 +210,6 @@ class Ui_DetailWidget(object):
         self.gradetitle1.setObjectName(_fromUtf8("gradetitle1"))
 
 
-
-        self.vline = QLabel(self.gradeBG)
-        self.vline.setGeometry(QtCore.QRect(435, 6, 1, 120))
-        self.vline.setText(_fromUtf8(""))
-        self.vline.setObjectName(_fromUtf8("vline"))
-        self.gradetitle = QLabel(self.gradeBG)
-        self.gradetitle.setGeometry(QtCore.QRect(120, 35, 31, 21))
-        self.gradetitle.setText(_fromUtf8(""))
-        self.gradetitle.setAlignment(QtCore.Qt.AlignCenter)
-        self.gradetitle.setObjectName(_fromUtf8("gradetitle"))
         self.icon = QLabel(DetailWidget)
         self.icon.setGeometry(QtCore.QRect(41, 16, 48, 48))
         self.icon.setText(_fromUtf8(""))

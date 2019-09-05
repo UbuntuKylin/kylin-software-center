@@ -24,7 +24,7 @@
 
 from apt.debfile import DebPackage
 import apt.progress.base as apb
-
+from models.globals import  Globals
 
 class DebFile():
 
@@ -77,17 +77,21 @@ class AptProcess(apb.InstallProgress):
         pass
 
     def error(self, pkg, errormsg):
-       print("AptProcess, error:", self.appname, pkg, errormsg)
+        if (Globals.DEBUG_SWITCH):
+            print("AptProcess, error:", self.appname, pkg, errormsg)
 
     def start_update(self):
-       print('apt process start work', self.appname)
+        if (Globals.DEBUG_SWITCH):
+            print('apt process start work', self.appname)
 
     def finish_update(self):
-       print('apt process finished', self.appname)
+        if (Globals.DEBUG_SWITCH):
+            print('apt process finished', self.appname)
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg
-        print(str(int(percent)) + "%  status : " + status)
+         if(Globals.DEBUG_SWITCH):
+             print(str(int(percent)) + "%  status : " + status)
 #        self.percent = percent
 #        if percent != self.percent:
 
@@ -96,9 +100,11 @@ if __name__ == "__main__":
     # du = DebFile("/home/shine/abe_1.1+dfsg-1_amd64.deb")
     # du = DebFile("/home/shine/abe-data_1.1+dfsg-1_all.deb")
     du = DebFile("/home/shine/下载/find games/andyetitmoves_1.2.2-1_i386.deb")
-    print(du.is_installable())
+    if (Globals.DEBUG_SWITCH):
+        print(du.is_installable())
     # print du.debfile.depends
-    print(du.get_missing_deps())
+    if (Globals.DEBUG_SWITCH):
+        print(du.get_missing_deps())
     # print type(du.get_missing_deps()[0])
     # du.install_deb()
     # info = du.get_deb_info()

@@ -25,6 +25,7 @@
 
 import os
 from models.enums import UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
+from models.globals import Globals
 
 
 def get_icon_path(app_name):
@@ -48,3 +49,11 @@ def is_livecd_mode():
     else:
         f.close()
         return False
+
+if __name__ == "__main__":
+    from ctypes import cdll
+
+    cur = cdll.LoadLibrary('/home/huangsheng/aa.so')
+
+    if (Globals.DEBUG_SWITCH):
+        print(cur.test2(6))

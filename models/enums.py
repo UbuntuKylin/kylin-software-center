@@ -24,6 +24,7 @@
 
 
 import os
+import pwd
 
 from xdg import BaseDirectory as xdg
 from PyQt5.QtCore import *
@@ -31,14 +32,22 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from backend.ubuntu_sw import safe_makedirs
 from models.application import Application
+from models.baseinfo import BaseInfo
 
 #########################################################
 
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-#UBUNTUKYLIN_SERVER = "http://192.168.70.129/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+UBUNTUKYLIN_SERVER = "http://192.168.70.129:8001/uksc/"
+#UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+
+#KYDROID_SOURCE_SERVER = "ftp://192.168.78.231/kydroid/"
+#KYDROID_SOURCE_SERVER = "http://ports.kylin.com/kylin/kydroid/"
+KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"
+#KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-1000-kylin/data/local/tmp"
+KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-" + str(os.getuid()) + "-" + str(pwd.getpwuid(os.getuid())[0]) + "/data/local/tmp"
+KYDROID_STARTAPP_ENV = "/usr/bin/startapp start_kydroid"
 
 Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
 
@@ -103,7 +112,9 @@ class PageStates:
      SEARCHWINPAGE,
      SEARCHUAPAGE,
      SEARCHTRANSPAGE,
-     ) = list(range(14))
+     APKPAGE,
+     SEARCHAPKPAGE,
+     ) = list(range(16))
 
 # transaction types
 class TransactionTypes:
@@ -156,6 +167,7 @@ datadir = "./utils/"
 PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
 
+
 class Signals:
     init_models_ready = pyqtSignal(str,str)
 #    chksoftwareover = pyqtSignal()
@@ -169,9 +181,9 @@ class Signals:
     #add
     task_reinstall = pyqtSignal()
     task_upgrade = pyqtSignal()
-    ads_ready = pyqtSignal(list,bool)
+    # ads_ready = pyqtSignal(list,bool)
     recommend_ready = pyqtSignal(list,bool,bool)
-    ratingrank_ready = pyqtSignal(list,bool)
+    # ratingrank_ready = pyqtSignal(list,bool)
     toprated_ready = pyqtSignal(list)
     rating_reviews_ready = pyqtSignal(list)
     app_reviews_ready = pyqtSignal(list)
@@ -179,9 +191,9 @@ class Signals:
     count_application_update = pyqtSignal()
     click_categoy = pyqtSignal(str,bool)
     click_item = pyqtSignal()
-    show_app_detail = pyqtSignal(Application)
+    show_app_detail = pyqtSignal(BaseInfo)
     install_debfile = pyqtSignal(Application)
-    install_app = pyqtSignal(Application)
+    install_app = pyqtSignal(BaseInfo)
     install_app_rcm = pyqtSignal(Application)
     remove_app = pyqtSignal(Application)
     upgrade_app = pyqtSignal(Application)
@@ -225,9 +237,9 @@ class Signals:
     get_user_rating = pyqtSignal(int)
     unzip_img = pyqtSignal()
     mfb_click_run = pyqtSignal()
-    mfb_click_install = pyqtSignal(Application)
-    mfb_click_update = pyqtSignal(Application)
-    mfb_click_uninstall = pyqtSignal(Application)
+    mfb_click_install = pyqtSignal(BaseInfo)
+    mfb_click_update = pyqtSignal(BaseInfo)
+    mfb_click_uninstall = pyqtSignal(BaseInfo)
     get_card_status = pyqtSignal(str,int)
     trans_card_status = pyqtSignal(str,int)
     submit_translate_appinfo = pyqtSignal(str,str,str,str,str,str,str,str,str,str) #zx 2015.01.26
@@ -251,10 +263,18 @@ class Signals:
     normalcard_progress_cancel = pyqtSignal(str)
     click_task = pyqtSignal(str)
 
+    # check and download kydroid apk source list
+    download_apk_source_over = pyqtSignal(bool)
+    apk_process = pyqtSignal(str, str, str, int, str)
+    kydroid_envrun_over = pyqtSignal(bool)
+    rcmdcard_kydroid_envrun = pyqtSignal()
+    normalcard_kydroid_envrun = pyqtSignal()
+
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"
     INSTALLDEBFILE = "install_debfile"
+    DOWNLOADAPK = "download_apk"
     INSTALL = "install"
     REMOVE = "remove"
     UPGRADE = "upgrade"

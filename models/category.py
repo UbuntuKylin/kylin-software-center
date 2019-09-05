@@ -26,7 +26,7 @@
 import urllib.request, urllib.error, urllib.parse
 import json
 import apt
-
+from models.globals import Globals
 from .application import Application
 
 #This class is the abstraction of a 
@@ -101,11 +101,13 @@ if __name__ == "__main__":
 
     cache = apt.Cache()
     cache.open()
-    print((len(cache)))
+    if (Globals.DEBUG_SWITCH):
+        print((len(cache)))
 
     cat1 = Category("devel","开发工具","",[])
-    print((cat1.name))
-    print((cat1.apps))
+    if (Globals.DEBUG_SWITCH):
+        print((cat1.name))
+        print((cat1.apps))
 
      
 

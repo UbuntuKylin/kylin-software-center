@@ -32,13 +32,16 @@ from utils import run
 from backend.ubuntu_sw import (SCREENSHOT_THUMB_URL,SCREENSHOT_LARGE_URL)
 #from models.enums import PkgStates,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_RES_SCREENSHOT_PATH
 from . import enums
+from models.baseinfo import BaseInfo
+from models.globals import Globals
 
-class Application:
+class Application(BaseInfo):
 
     # work type
     mark = ''
 
     def __init__(self, pkgname, displayname_cn, category_name, apt_cache):
+        super().__init__(pkgname)
         if not pkgname:
             raise ValueError("Need either appname or pkgname or request")
         # self.init_status = "nothing"
@@ -232,24 +235,29 @@ class Application:
 if __name__ == "__main__":
 
     app = Application("gimp",None)
-    print(app.name)
+    if (Globals.DEBUG_SWITCH):
+        print(app.name)
 #    print Application.get_screenshot_list_sync("gimp")
 
 
     cache = apt.Cache()
     cache.open()
-    print(len(cache))
+    if (Globals.DEBUG_SWITCH):
+        print(len(cache))
 #   print cache
     for item in cache:
-        print("\n************************")
-        print("fullname:"+item.fullname)
-#        print "section:" +item.section
+        if (Globals.DEBUG_SWITCH):
+            print("\n************************")
+            print("fullname:"+item.fullname)
+#           print "section:" +item.section
         if not item.candidate:
             continue
-        print(item.candidate.section)
+        if (Globals.DEBUG_SWITCH):
+            print(item.candidate.section)
         if "Icon" in item.candidate.record:
-            print("fullname:"+item.fullname)
-            print(item.candidate.record)
+            if (Globals.DEBUG_SWITCH):
+                print("fullname:"+item.fullname)
+                print(item.candidate.record)
 #        print item.candidate.uri
      
 

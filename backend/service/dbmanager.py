@@ -33,6 +33,7 @@ from backend.remote.piston_remoter import PistonRemoter
 from shutil import copytree, ignore_patterns, rmtree
 DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
 XAPIAN_DB_SOURCE_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"xapiandb")
+from models.globals import Globals
 #DB_PATH = "../data/uksc.db"
 
 QUERY_CATEGORY = "select * from category where name='%s'"
@@ -49,6 +50,8 @@ UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
 
 import threading
 lock = threading.Lock()
+# from multiprocessing import Process,Lock
+# lock = Lock()
 
 class Database:
 
@@ -60,7 +63,8 @@ class Database:
         # no cache file, copy
         if not os.path.exists(destFile):
             if not os.path.exists(srcFile):
-                print("error with db file")
+                if (Globals.DEBUG_SWITCH):
+                    print("error with db file")
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
@@ -83,16 +87,19 @@ class Database:
         # no cache file, copy
         if not os.path.exists(xapian_destFile):
             if not os.path.exists(xapian_srcFile):
-                print("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
+                if (Globals.DEBUG_SWITCH):
+                    print("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
                 return
             copytree(xapian_srcFile,xapian_destFile)
-            print("Xapiandb has been copy to cache")
+            if (Globals.DEBUG_SWITCH):
+                print("Xapiandb has been copy to cache")
 
         # cache xapiandb need update, copy
         if self.is_xapiancachedb_need_update():
             rmtree(xapian_destFile)
             copytree(xapian_srcFile,xapian_destFile)
-            print("cache xapiandb versin updated")
+            if (Globals.DEBUG_SWITCH):
+                print("cache xapiandb versin updated")
 
 
     def query_categories(self):
@@ -185,7 +192,8 @@ class Database:
             return res
 
     def update_app_rnr(self,pkgname,rating_average,rating_total,review_total,download_total=0):
-        print(("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total))
+        if (Globals.DEBUG_SWITCH):
+            print(("update_app_rnr:",self.updatecount,pkgname,rating_average,rating_total,review_total,download_total))
         try:
             lock.acquire(True)
             self.cursor.execute(UPDATE_APP_RNR % (rating_average,rating_total,review_total,download_total,pkgname))
@@ -271,6 +279,7 @@ class Database:
                     for old_item in old_matches:
                         old_doc = old_item.document
                         old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
+            #if (Globals.DEBUG_SWITCH):
             print(("old xapiandb  version:",old_version," new xapiandb version:",new_version))
         except:
             return True
@@ -522,6 +531,9 @@ class Database:
         #    rank_recommend = item[1]
         #    recommends.append((app_name, rank_recommend))
         recommends.append(("youker-assistant","1"))
+        recommends.append(("com.tencent.mobileqq","1"))
+        recommends.append(("com.qqgame.hlddz","1"))
+        recommends.append(("cn.kuwo.player","1"))
         recommends.append(("atom","3"))
         recommends.append(("google-chrome-stable","3"))
         recommends.append(("sogoupinyin","1"))
@@ -538,7 +550,7 @@ class Database:
         recommends.append(("wireshark","9"))
         recommends.append(("librecad","12"))
         recommends.append(("flashplugin-installer","13"))
-        #recommends.append(("brasero","13"))
+        # recommends.append(("brasero","13"))
         recommends.append(("uget","5"))
         recommends.append(("calibre","10"))
         recommends.append(("gimp","3"))
@@ -609,32 +621,32 @@ class Database:
         recommends.append(("gparted","14"))
         return recommends
 
-    def get_ratingrank_apps(self):
-        #self.cursor.execute("select app_name,rank_rating from rank,application where rank_rating!=0 and rank.aid_id=application.id order by rank_rating")
-        #res = self.cursor.fetchall()
-        #ratingranks = []
-        #for item in res:
-        #    app_name = item[0]
-        #    rank_rating = item[1]
-        #    ratingranks.append((app_name, rank_rating))
-        #return ratingranks
-        recommends = []
-        #recommends.append(("youker-assistant","1"))
-        recommends.append(("vlc","2"))
-        recommends.append(("synaptic","3"))
-        recommends.append(("gparted","3"))
-        recommends.append(("fcitx","3"))
-        recommends.append(("qtcreator","3"))
-        recommends.append(("rar","3"))
-        recommends.append(("shotwell","3"))
-        recommends.append(("stellarium","3"))
-        recommends.append(("ubuntu-restricted-extras","3"))
-        recommends.append(("stardict","3"))
-        recommends.append(("vim","14"))
-        recommends.append(("kylin-video","12"))
-        recommends.append(("gnome-screenshot","12"))
-        recommends.append(("empire","12"))
-        return recommends
+    # def get_ratingrank_apps(self):
+    #     #self.cursor.execute("select app_name,rank_rating from rank,application where rank_rating!=0 and rank.aid_id=application.id order by rank_rating")
+    #     #res = self.cursor.fetchall()
+    #     #ratingranks = []
+    #     #for item in res:
+    #     #    app_name = item[0]
+    #     #    rank_rating = item[1]
+    #     #    ratingranks.append((app_name, rank_rating))
+    #     #return ratingranks
+    #     recommends = []
+    #     #recommends.append(("youker-assistant","1"))
+    #     recommends.append(("vlc","2"))
+    #     recommends.append(("synaptic","3"))
+    #     recommends.append(("gparted","3"))
+    #     recommends.append(("fcitx","3"))
+    #     recommends.append(("qtcreator","3"))
+    #     recommends.append(("rar","3"))
+    #     recommends.append(("shotwell","3"))
+    #     recommends.append(("stellarium","3"))
+    #     recommends.append(("ubuntu-restricted-extras","3"))
+    #     recommends.append(("stardict","3"))
+    #     recommends.append(("vim","14"))
+    #     recommends.append(("kylin-video","12"))
+    #     recommends.append(("gnome-screenshot","12"))
+    #     recommends.append(("empire","12"))
+    #     return recommends
 
 
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
@@ -699,10 +711,26 @@ class Database:
         finally:
             lock.release()
 
+
+    #-------------kydroid APK ----------------
+    def query_apk_applications(self):
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select app_name,display_name_cn,summary,description,rating_avg,rating_total,review_total from application where id > 3410 and categories = '17'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
+#        print "query_application:",pkgname,len(res),res
+        if len(res)==0:
+            return []
+        else:
+            return res
+
 if __name__ == "__main__":
     db = Database()
 
     # print db.get_pagecount_by_pkgname('gimp')
+    #if (Globals.DEBUG_SWITCH):
     print((db.is_cachedb_need_update()))
 
     # res = db.get_review_by_pkgname('gedit',2)

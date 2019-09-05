@@ -42,6 +42,8 @@ class LoadingDiv(QWidget):
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
+        self.setWindowTitle("银河麒麟软件商店")
+
         self.load_png()
 
         # launch loading

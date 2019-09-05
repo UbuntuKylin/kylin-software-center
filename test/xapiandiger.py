@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*
 
 import xapian
-
+from models.globals import Globals
 class XapianValues:
     APPNAME = 170
     PKGNAME = 171
@@ -41,7 +41,8 @@ if __name__ == "__main__":
     # ubuntu software center xapian 数据库
     db = xapian.Database("/var/cache/software-center/xapian")
     db.reopen()
-    print(db.get_doccount())
+    if (Globals.DEBUG_SWITCH):
+        print(db.get_doccount())
 
     for i in range(1, db.get_doccount()):
         doc = db.get_document(i)
@@ -50,9 +51,11 @@ if __name__ == "__main__":
         # print "appnameuntr : ", doc.get_value(XapianValues.APPNAME_UNTRANSLATED)#软件名
         # print "section : ", doc.get_value(XapianValues.ARCHIVE_SECTION)#所属仓库类型（main universe等）
         if doc.get_value(XapianValues.PKGNAME) == "p7zip-full":
-            print("categories : ", doc.get_value(XapianValues.CATEGORIES))#所属分类（多个）
+            if (Globals.DEBUG_SWITCH):
+                print("categories : ", doc.get_value(XapianValues.CATEGORIES))#所属分类（多个）
         if doc.get_value(XapianValues.PKGNAME) == "p7zip":
-            print("categories : ", doc.get_value(XapianValues.CATEGORIES))#所属分类（多个）
+            if (Globals.DEBUG_SWITCH):
+                print("categories : ", doc.get_value(XapianValues.CATEGORIES))#所属分类（多个）
         # print "desktop : ", doc.get_value(XapianValues.DESKTOP_FILE)#desktop文件路径
         # print ""
 

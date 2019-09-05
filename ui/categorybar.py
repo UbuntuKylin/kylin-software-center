@@ -22,7 +22,6 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import sip
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -33,24 +32,22 @@ from models.enums import Signals
 class CategoryBar(QWidget,Signals):
 
     categorycount = 0
-    itemwidth = 60
-    categoryspacing = 2
+    itemwidth = 45
+    categoryspacing = 1
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-        self.setGeometry(20, 52, 740, 32)
-        self.categorytab = QLabel(self)
-
+        # self.categorytab = QLabel(self)
         self.visiblecategorycount = 0
 
-        self.categorytab.setGeometry(0, 27, 53, 5)
-        self.categorytab.hide()
+        # self.categorytab.setGeometry(0, 27, 53, 5)
+        # self.categorytab.hide()
         self.categoryPanel = QWidget(self)
         self.btnGroup = QButtonGroup(self.categoryPanel)
         self.btnGroup.buttonClicked.connect(self.slot_btn_clicked)
 
-        self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
+        # self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
 
         # self.btnvline = QLabel(self)
         # self.btnvline.setGeometry(62, 0, 1, 28)
@@ -90,8 +87,8 @@ class CategoryBar(QWidget,Signals):
 
         if self.visiblecategorycount == self.categorycount:
             return
-        btnvline = CategoryLable(self.categoryPanel)
-        btnvline.move(x+57, 7)
+        # btnvline = CategoryLable(self.categoryPanel)
+        # btnvline.move(x+57, 7)
 #        btnvline.move(x-5, 7)
 
     def scrollToLeft(self):
@@ -113,21 +110,21 @@ class CategoryBar(QWidget,Signals):
     def slot_btn_clicked(self, btn):
         btns = self.btnGroup.buttons()
         for b in btns:
-            b.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
-        btn.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
+            b.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+        btn.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;background-color:#2d8ae1;}")
 
         category = str(btn.category_name)
-        self.categorytab.move(btn.x(), self.categorytab.y())
-        self.categorytab.show()
+        # self.categorytab.move(btn.x(), self.categorytab.y())
+        # self.categorytab.show()
         self.click_categoy.emit(category, False)
 
     # add by kobe
     def reset_categorybar(self):
-        self.categorytab.hide()
-        self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
+        # self.categorytab.hide()
+        # self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
         btns = self.btnGroup.buttons()
         for b in btns:
-            b.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+            b.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
 
 
 class CategoryButton(QPushButton):
@@ -138,7 +135,7 @@ class CategoryButton(QPushButton):
     def __init__(self, categoryname, displayname, parent=None):
         QPushButton.__init__(self, parent)
 
-        self.resize(58, 27)
+        self.resize(45, 22)
         self.setCheckable(True)
         self.setFocusPolicy(Qt.NoFocus)
 
@@ -146,7 +143,7 @@ class CategoryButton(QPushButton):
         self.display_name = displayname
         self.setText(self.display_name)
 
-        self.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
 
 class CategoryLable(QLabel):
         #setGeometry(QtCore.QRect(160, 37, 1, 14))

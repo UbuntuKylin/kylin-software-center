@@ -174,7 +174,7 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnupdate.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnAdd.setStyleSheet("QPushButton{border:1px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
-        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
         self.ui.cbhideubuntu.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/cbhideubuntuon.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}QPushButton:Checked{background:url('res/cbhideubuntuoff.png') no-repeat center left;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progress1.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
@@ -228,7 +228,6 @@ class ConfigWidget(QWidget,Signals):
         self.show()
         self.ui.btnReset.setVisible(False)
         self.ui.cbhideubuntu.setVisible(False)
-
 
     def slot_le_input8(self,text):
         sourcetext = str(text)
@@ -291,7 +290,8 @@ class ConfigWidget(QWidget,Signals):
         AC.setWindowTitle('提示')
         AC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
-            print("######","修改成功")
+            if (Globals.DEBUG_SWITCH):
+                print("######","修改成功")
             #AC.information(self,"提示","修改成功",QMessageBox.Yes)
             AC.setText('修改成功')
             AC.exec_()
@@ -302,24 +302,28 @@ class ConfigWidget(QWidget,Signals):
 
         elif res == 1 or res == None:
             #数据异常
-            print("######","用户不存在")
+            if (Globals.DEBUG_SWITCH):
+                print("######","用户不存在")
             #AC.information(self,"提示","用户不存在",QMessageBox.Yes)
             AC.setText('用户不存在')
             AC.exec_()
         elif res == 2:
             #用户验证失败
-            print("######","服务器异常")
+            if (Globals.DEBUG_SWITCH):
+                print("######","服务器异常")
             #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
             AC.setText('服务器异常')
             AC.exec_()
         elif res == 3:
             #服务器异常
-            print("######","身份异常")
+            if (Globals.DEBUG_SWITCH):
+                print("######","身份异常")
             #AC.information(self,"提示","身份异常",QMessageBox.Yes)
             AC.setText('身份异常')
             AC.exec_()
         else:
-            print("######","服务器异常")
+            if (Globals.DEBUG_SWITCH):
+                print("######","服务器异常")
             #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
             AC.setText('服务器异常')
             AC.exec_()
@@ -337,7 +341,8 @@ class ConfigWidget(QWidget,Signals):
             try:
                 self.rset_password.emit(self.listset[1])
             except:
-                print("######","修改失败")
+                if (Globals.DEBUG_SWITCH):
+                    print("######","修改失败")
                 #BR.information(self,"提示","修改失败",QMessageBox.Yes)
                 BR.setText('修改失败')
                 BR.exec_()
@@ -364,13 +369,15 @@ class ConfigWidget(QWidget,Signals):
         AR.setWindowTitle('提示')
         AR.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
-            print("######","修改成功")
+            if (Globals.DEBUG_SWITCH):
+                print("######","修改成功")
             #AR.information(self,"提示","修改成功",QMessageBox.Yes)
             AR.setText('修改成功')
             AR.exec_()
         elif res == 1 or res == None:
             #数据异常
-            print("######","用户不存在")
+            if (Globals.DEBUG_SWITCH):
+                print("######","用户不存在")
             #AR.information(self,"提示","用户不存在",QMessageBox.Yes)
             AR.setText('用户不存在')
             AR.exec_()
@@ -393,7 +400,8 @@ class ConfigWidget(QWidget,Signals):
             try:
                 self.recover_password.emit(self.listrec[0],self.listrec[1],self.listrec[2])
             except:
-                print("######","修改失败")
+                if (Globals.DEBUG_SWITCH):
+                    print("######","修改失败")
                 #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
                 BC.setText('服务器异常')
                 BC.exec_()
@@ -419,13 +427,15 @@ class ConfigWidget(QWidget,Signals):
         AC.setWindowTitle('提示')
         AC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
-            print("######","找回成功")
+            if (Globals.DEBUG_SWITCH):
+                print("######","找回成功")
             #AC.information(self,"提示","找回成功",QMessageBox.Yes)
             AC.setText('找回成功')
             AC.exec_()
         elif res == 1 or res == None:
             #数据异常
-            print("######","用户名不存在或密码为空")
+            if (Globals.DEBUG_SWITCH):
+                print("######","用户名不存在或密码为空")
             #AC.information(self,"提示","用户名或邮箱错误",QMessageBox.Yes)
             AC.setText('用户名或邮箱错误')
             AC.exec_()
@@ -435,7 +445,8 @@ class ConfigWidget(QWidget,Signals):
             AC.setText('新密码与原来一致')
             AC.exec_()
         else:
-            print("######xxxxxx","服务器异常")
+            if (Globals.DEBUG_SWITCH):
+                print("######xxxxxx","服务器异常")
             #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
             AC.setText('服务器异常')
             AC.exec_()

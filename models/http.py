@@ -28,7 +28,7 @@ import shutil
 from PyQt5.QtCore import *
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from models.enums import Signals
-
+from models.globals import Globals
 HOME_PATH = os.path.expandvars('$HOME')
 
 def generate_tmp_path(name):
@@ -46,10 +46,12 @@ def unzip_resource(package_file):
     subprocess.call(["unzip", package_file, "-d", unziped_dir])
     dest_dir = unziped_dir + "uk-win/"
     if not os.path.exists(dest_dir):
-        print(("unzip '%s' to '%s' failed" % (package_file , unziped_dir)))
+        if (Globals.DEBUG_SWITCH):
+            print(("unzip '%s' to '%s' failed" % (package_file , unziped_dir)))
         return False
     else:
-        print("unzip ok....")
+        if (Globals.DEBUG_SWITCH):
+            print("unzip ok....")
         return True
 
 class HttpDownLoad(QObject,Signals):

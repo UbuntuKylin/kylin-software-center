@@ -33,7 +33,7 @@ if "SOFTWARE_CENTER_DEBUG_HTTP" in os.environ:
 import piston_mini_client.auth
 import piston_mini_client.failhandlers
 from piston_mini_client.failhandlers import APIError
-
+from models.globals import Globals
 try:
     import backend
 except ImportError:
@@ -173,7 +173,8 @@ if __name__ == "__main__":
             s = "** itm: %s\n" % itm
             for var in vars(itm):
                 s += "%s: '%s'\n" % (var, getattr(itm, var))
-            LOG.debug(s)
+            if (Globals.DEBUG_SWITCH):
+                LOG.debug(s)
 
     # print to stdout where its consumed by the parent
 
@@ -187,7 +188,8 @@ if __name__ == "__main__":
 
     # and output it
     try:
-        print(res)
+        if (Globals.DEBUG_SWITCH):
+            print(res)
     except IOError:
         # this can happen if the parent gets killed, no need to trigger
         # apport for this

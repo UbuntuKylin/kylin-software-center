@@ -59,8 +59,9 @@ UKPATH = '/'
 HTTP_SOURCE_UBUNTUKYLIN = "http://archive.ubuntukylin.com:10006/ubuntukylin" 
 DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
 UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
+
 LIB_PATH = "/var/lib/"
-DPKG_PATH = LIB_PATH + "dpkg/lock"
+DPKG_PATH = "dpkg/lock"
 
 class WorkItem:
      def __init__(self, pkgname, action, kwargs):

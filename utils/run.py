@@ -29,8 +29,9 @@ import os
 import re
 import subprocess
 import xdg.DesktopEntry
+import time
 #from models.enums import Specials
-
+from models.globals import Globals
 import subprocess
 
 Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
@@ -41,7 +42,8 @@ def RemoveArgs(Execline):
         elem = elem.replace("'","")
         elem = elem.replace("\"", "")
         if elem not in Specials:
-            print(elem)
+            if (Globals.DEBUG_SWITCH):
+                print(elem)
             NewExecline.append(elem)
     return NewExecline
 
@@ -50,12 +52,14 @@ def RemoveArgs(Execline):
 def Execute(cmd):
     if isinstance( cmd, str ) or isinstance( cmd, str):
         if (cmd.find("/home/") >= 0) or (cmd.find("su-to-root") >= 0) or (cmd.find("\"") >= 0):
-            print("running manually...")
+            if (Globals.DEBUG_SWITCH):
+                print("running manually...")
             try:
                 os.system(cmd + " &")
                 return True
             except Exception as detail:
-                print(detail)
+                if (Globals.DEBUG_SWITCH):
+                    print(detail)
                 return False
     cmd = cmd.split()
     cmd = RemoveArgs(cmd)
@@ -67,7 +71,8 @@ def Execute(cmd):
         os.system(string)
         return True
     except Exception as detail:
-        print(detail)
+        if (Globals.DEBUG_SWITCH):
+            print(detail)
         return False
 
 
@@ -81,8 +86,6 @@ def get_run_command(pkgname):
         pkgname = 'eclipse'
     elif pkgname == 'software-center':
         pkgname = 'ubuntu-software-center'
-    elif pkgname == "sogoupinyin":
-        pkgname = "fcitx-ui-sogou-qimpanel"
     elif pkgname == "mathwar":
         pkgname = "MathWar"
     elif pkgname == "gnome-disk-utility":
@@ -126,6 +129,18 @@ def get_run_command(pkgname):
         DeskTopEntry = xdg.DesktopEntry.DesktopEntry(desktopfile)
         fullcmd = DeskTopEntry.getExec()
 
+    if fullcmd == "":
+        user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
+        if(os.path.exists(user_desktop_path) == False):
+            user_desktop_path = os.path.join(os.path.expanduser("~"), '桌面')
+
+        desktopfile = user_desktop_path + "/" + pkgname + ".desktop"
+
+        if os.path.exists(desktopfile):
+            time.sleep(0.5)
+            DeskTopEntry = xdg.DesktopEntry.DesktopEntry(desktopfile)
+            fullcmd = DeskTopEntry.getExec()
+
     # command = ['']
     # # 截取运行指令部分
     # if exc:
@@ -145,7 +160,8 @@ def get_run_command(pkgname):
 def run_app(pkgname):
     cmd = get_run_command(pkgname)
     if cmd != "":
-        print(("\n#####run_app:",cmd))
+        if (Globals.DEBUG_SWITCH):
+            print(("\n#####run_app:",cmd))
         Execute(cmd)
     # #p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
     # os.system(cmd[0] + "&")#fixed bug 1402953

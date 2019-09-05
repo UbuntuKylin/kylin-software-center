@@ -50,27 +50,30 @@ class ListItemWidget(QWidget,Signals):
         self.messageBox = messageBox
         self.parent = parent
 
-        self.ui.bg.lower()
+        # self.ui.bg.lower()
 
+        # self.ui.baseWidget.setAutoFillBackground(True)
         self.ui.cbSelect.raise_()
         self.ui.btn.raise_()
-        self.ui.btnDetail.stackUnder(self.ui.cbSelect)
+
+        self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
 
         self.ui.installedsize.setAlignment(Qt.AlignCenter)
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelect.setFocusPolicy(Qt.NoFocus)
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
 
+        self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
-        self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
-        self.ui.installedsize.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.summary.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
-        self.ui.bg.setStyleSheet("QWidget#bg{background-color:#F3F2F5;border:1px solid #F8F7FA;}")
-        self.ui.btnDetail.setStyleSheet("QPushButton#btnDetail{border:0px;}QPushButton#btnDetail:hover{background-image:url('res/listwidgethover.png');}")
-        self.ui.cbSelect.setStyleSheet("QCheckBox{font-size:13px;}QCheckBox:hover{background-color:#F3F2F5;}")
+        self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
+        self.ui.installedsize.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.summary.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        # self.ui.bg.setStyleSheet("QWidget#bg{background-color:#F3F2F5;border:1px solid #F8F7FA;}")
+        self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-color:transparent;}")
+        # self.ui.cbSelect.setStyleSheet("QCheckBox{outline: none;border:1px solid #d5d5d5;}QCheckBox:hover{border:1px solid #2d8ae1;}")
+        self.ui.installedDate.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
         if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
             self.ui.name.setText(app.displayname_cn)
         else:
@@ -98,7 +101,7 @@ class ListItemWidget(QWidget,Signals):
                     self.ui.btn.setText("等待安装")
                 self.ui.btn.setEnabled(False)
                 self.ui.cbSelect.setEnabled(False)
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
 
             elif self.app.status == PkgStates.REMOVING:
                 self.ui.btn.setEnabled(False)
@@ -106,7 +109,7 @@ class ListItemWidget(QWidget,Signals):
                     self.ui.btn.setText("正在卸载")
                 else:
                     self.ui.btn.setText("等待卸载")
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
 
             elif self.app.status == PkgStates.UPGRADING:
                 self.ui.btn.setEnabled(False)
@@ -114,7 +117,7 @@ class ListItemWidget(QWidget,Signals):
                     self.ui.btn.setText("正在升级")
                 else:
                     self.ui.btn.setText("等待升级")
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
 
         else:
             if(app.is_installed):
@@ -125,7 +128,7 @@ class ListItemWidget(QWidget,Signals):
                     self.app.status = PkgStates.UPDATE
                     self.workType = "up"
                     self.ui.cbSelect.setEnabled(False)
-                    self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
+                    self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                 else:
                     if(run.get_run_command(self.app.name) != ""):
                         self.ui.btn.setText("启动")
@@ -133,14 +136,14 @@ class ListItemWidget(QWidget,Signals):
                         self.app.status = PkgStates.RUN
                         self.workType = "run"
                         self.ui.cbSelect.setEnabled(False)
-                        self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
+                        self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                     else:
                         self.ui.btn.setText("卸载")
                         self.ui.btn.setEnabled(True)
                         self.app.status = PkgStates.UNINSTALL
                         self.workType = "un"
                         self.ui.cbSelect.setEnabled(False)
-                        self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
+                        self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
             else:
                 self.ui.status.hide()
                 self.ui.btn.setText("安装")
@@ -148,7 +151,7 @@ class ListItemWidget(QWidget,Signals):
                 self.app.status = PkgStates.INSTALL
                 self.workType = "ins"
                 self.ui.cbSelect.setEnabled(True)
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
@@ -196,14 +199,14 @@ class ListItemWidget(QWidget,Signals):
                     self.ui.btn.setEnabled(True)
                     self.workType = "un"
                     self.ui.cbSelect.setEnabled(False)
-                    self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
+                    self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                 else:
                     self.ui.btn.setText("启动")
                     self.app.status = PkgStates.RUN
                     self.ui.btn.setEnabled(True)
                     self.workType = "run"
                     self.ui.cbSelect.setEnabled(False)
-                    self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
+                    self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
             elif action == AppActions.REMOVE:
                 self.ui.status.hide()
                 self.ui.btn.setText("安装")
@@ -211,7 +214,7 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.btn.setEnabled(True)
                 self.workType = "ins"
                 self.ui.cbSelect.setEnabled(True)
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
 
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
@@ -242,15 +245,15 @@ class ListItemWidget(QWidget,Signals):
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 self.ui.btn.setText("正在安装")
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
 
             elif status == PkgStates.REMOVING:
                 self.app.status = PkgStates.REMOVING
                 self.ui.btn.setText("正在卸载")
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#b2bbc7;border:1px solid #97a5b9;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
 
             elif status == PkgStates.UPGRADING:
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
-                self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#edac3a;border:1px solid #df9b23;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
+                self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
 

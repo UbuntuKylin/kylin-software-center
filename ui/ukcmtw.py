@@ -40,7 +40,7 @@ class Ui_CommentWidget(object):
         self.commentBG.setText(_fromUtf8(""))
         self.commentBG.setObjectName(_fromUtf8("commentBG"))
         self.comment = QLabel(CommentWidget)
-        self.comment.setGeometry(QtCore.QRect(75, 30, 600, 34))
+        self.comment.setGeometry(QtCore.QRect(75, 31, 600, 34))
         self.comment.setText(_fromUtf8(""))
         self.comment.setObjectName(_fromUtf8("comment"))
         self.createDate = QLabel(CommentWidget)

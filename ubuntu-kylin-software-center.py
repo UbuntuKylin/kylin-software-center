@@ -34,7 +34,6 @@ from PyQt5 import QtGui
 from xdg import BaseDirectory as xdg
 from ui.mainwindow import Ui_MainWindow
 from ui.categorybar import CategoryBar
-from ui.taskwidget import  Taskwidget
 from ui.rcmdcard import RcmdCard
 from ui.normalcard import NormalCard
 from ui.wincard import WinCard, WinGather, DataModel
@@ -43,6 +42,7 @@ from ui.pointcard import PointCard
 from ui.listitemwidget import ListItemWidget
 from ui.translistitemwidget import TransListItemWidget#ZX 2015.01.30
 from ui.tasklistitemwidget import TaskListItemWidget
+#from ui.taskwidget import Taskwidget
 from ui.ranklistitemwidget import RankListItemWidget
 #from ui.adwidget import *
 from ui.detailscrollwidget import DetailScrollWidget
@@ -53,7 +53,7 @@ from ui.configwidget import ConfigWidget
 from ui.login import Login
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
-from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
+from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH,KYDROID_STARTAPP_ENV)
 from backend.search import *
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
@@ -64,7 +64,7 @@ from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageSt
 from models.enums import Signals, setLongTextToElideFormat
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
-
+from models.apkinfo import ApkInfo
 from apt.debfile import DebPackage
 
 from utils.commontools import *
@@ -73,6 +73,8 @@ import threading, time, signal
 import socket
 import sys
 import pwd
+from kydroid.kydroid_service import KydroidService
+
 socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -84,7 +86,6 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='w'
                     )
 LOG = logging.getLogger("uksc")
-
 
 class SoftwareCenter(QMainWindow,Signals):
 
@@ -116,7 +117,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #force_update = 0    
     re_page = ""
     re_cli = 0
-    up_num = ""
+    up_num = "0"
     # movie timer
     adlist = ["","",""]    
     adi = 1 
@@ -125,14 +126,17 @@ class SoftwareCenter(QMainWindow,Signals):
     adm = 0
     bdm = 0
     rec_ready = False
+
+    apkpagefirst = True
+
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
-#        userlog = os.getlogin()
-#        uid = pwd.getpwuid(os.getuid())[0]
-#        if(uid != userlog):
-#            self.move((QApplication.desktop().screenGeometry(0).width()-self.width())/2,(QApplication.desktop().screenGeometry(0).height()-self.height())/2)
-#            QMessageBox.information(self, "软件商店启动权限异常", "请用当前系统用户权限启动软件商店！",QMessageBox.Ok)
-#            sys.exit(0)
+        # userlog = os.getlogin()
+        # uid = pwd.getpwuid(os.getuid())[0]
+        # if(uid != userlog):
+        #     self.move((QApplication.desktop().screenGeometry(0).width()-self.width())/2,(QApplication.desktop().screenGeometry(0).height()-self.height())/2)
+        #     QMessageBox.information(self, "软件商店启动权限异常", "请用当前系统用户权限启动软件商店！",QMessageBox.Ok)
+        #     sys.exit(0)
 
         self.auto_l = False
         # singleton check
@@ -145,17 +149,20 @@ class SoftwareCenter(QMainWindow,Signals):
 
         # init main service
         self.init_main_service()
- 
-       # check ukid
+        # check ukid
         self.check_user()
-
         # check apt source and update it
         self.check_source()
 
+        # check has kydroid
+        self.kydroid_service = KydroidService()
+        self.kydroid_service.check_has_kydroid()
+        self.appmgr.kydroid_service = self.kydroid_service
+
         # data init
-        self.ads_ready = False
+        # self.ads_ready = False
         self.rec_ready = False
-        self.rank_ready = False
+        # self.rank_ready = False
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -171,50 +178,59 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.ui.adWidget.lower()
         #self.ui.adWidget.raise_()
         # category bar
-        self.categoryBar = CategoryBar(self.ui.rightWidget)
-        self.Taskwidget = Taskwidget(self.ui.taskWidget)
+        self.categoryBar = CategoryBar(self.ui.specialcategoryWidget)
+        self.categoryBar.setGeometry(208, 0, 507, 22)
+        #self.Taskwidget = Taskwidget(self.ui.taskWidget)
+        self.ui.taskWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #cccccc}")
         # point out widget
         self.pointout = PointOutWidget(self)
-        self.pointListWidget = CardWidget(212, 88, 4, self.pointout.ui.contentliw)
+        self.pointListWidget = CardWidget(200, 115, 4, self.pointout.ui.contentliw)
         self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
         self.pointListWidget.calculate_data()
         # recommend card widget
-        self.recommendListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 2, self.ui.recommendWidget)
-        self.recommendListWidget.setGeometry(0, 23, 640, 268)
+        self.recommendListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.recommendWidget)
+        self.recommendListWidget.setGeometry(0, 223, 849, 361)
         self.recommendListWidget.calculate_data()
         # all card widget
-        self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.allWidget)
-        self.allListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.allWidget)
+        self.allListWidget.setGeometry(0, 0, 830 + 6 + (20 - 6) / 2, 585)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.allListWidget.calculate_data()
+        # apk card widget
+        self.apkListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.apkWidget)
+        self.apkListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.apkListWidget.calculate_data()
         # up card widget
-        self.upListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.upWidget)
-        self.upListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.upListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.upWidget)
+        self.upListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.upListWidget.calculate_data()
         # un card widget
-        self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.unWidget)
-        self.unListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.unWidget)
+        self.unListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.unListWidget.calculate_data()
         # search card widget
-        self.searchListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 4, self.ui.searchWidget)
-        self.searchListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.searchListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.searchWidget)
+        self.searchListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.searchListWidget.calculate_data()
         # user applist widget
-        self.userAppListWidget = CardWidget(860, 88, 4, self.ui.userAppListWidget)
-        self.userAppListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.userAppListWidget = CardWidget(830, 88, 5, self.ui.userAppListWidget)
+        self.userAppListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 520)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.userAppListWidget.calculate_data()
         #user translateapplist widget zx 2015.01.30
-        self.userTransAppListWidget = CardWidget(860, 88, 4, self.ui.userTransListWidget)
-        self.userTransAppListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.userTransAppListWidget = CardWidget(830, 88, 5, self.ui.userTransListWidget)
+        self.userTransAppListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.userTransAppListWidget.calculate_data()
         # win card widget
-        self.winListWidget = CardWidget(427, 88, 6, self.ui.winpageWidget)
-        self.winListWidget.setGeometry(0, 50, 860 + 6 + (20 - 6) / 2, 516)
+        self.winListWidget = CardWidget(410, 115, 6, self.ui.winpageWidget)
+        self.winListWidget.setGeometry(0, 0, 830 + 6 + (20 - 6) / 2, 585)
         self.winListWidget.calculate_data()
         # loading div
         self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
-        self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankView)
-        self.userload = MiniLoadingDiv(self.ui.beforeLoginWidget, self.ui.homeMsgWidget)
+        # self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankView)
+        self.userload = MiniLoadingDiv(self.ui.beforeLoginWidget, self.ui.beforeLoginWidget)
+        self.apkpageload = MiniLoadingDiv(self.ui.apkWidget, self.ui.apkWidget)
+
+        self.launchLoadingDiv.start_loading("")
         # alert message box
         self.messageBox = MessageBox(self)
         # detail page
@@ -233,9 +249,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.configWidget.click_update_source.connect(self.slot_click_update_source)
         self.configWidget.task_cancel.connect(self.slot_click_cancel)
         # resize corner
-        self.resizeCorner = QPushButton(self.ui.centralwidget)
-        self.resizeCorner.resize(15, 15)
-        self.resizeCorner.installEventFilter(self)
+        # self.resizeCorner = QPushButton(self.ui.centralwidget)
+        # self.resizeCorner.resize(15, 15)
+        # self.resizeCorner.installEventFilter(self)
         # search trigger
         self.searchDTimer = QTimer(self)
         self.searchDTimer.timeout.connect(self.slot_searchDTimer_timeout)
@@ -247,11 +263,11 @@ class SoftwareCenter(QMainWindow,Signals):
         palette.setColor(QPalette.Background, QColor(238, 237, 240))
         self.ui.centralwidget.setPalette(palette)
 
-        self.ui.rankWidget.setAutoFillBackground(True)
-        palette = QPalette()
+        # self.ui.rankWidget.setAutoFillBackground(True)
+        # palette = QPalette()
         # palette.setColor(QPalette.Background, QColor(234, 240, 243))
-        palette.setColor(QPalette.Background, QColor(238, 237, 240))
-        self.ui.rankWidget.setPalette(palette)
+        # palette.setColor(QPalette.Background, QColor(238, 237, 240))
+        # self.ui.rankWidget.setPalette(palette)
 
         self.ui.taskWidget.setAutoFillBackground(True)
         palette = QPalette()
@@ -277,8 +293,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnAppList.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnAppList.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnLogout.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnMax.setFocusPolicy(Qt.NoFocus)
@@ -287,6 +303,8 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.headercw1.lebg.setFocusPolicy(Qt.NoFocus)
         self.ui.btnHomepage.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAll.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnAllsoftware.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnApk.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp_num.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp_num_long.setFocusPolicy(Qt.NoFocus)
@@ -294,22 +312,26 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
+        #self.ui.btnTask.setFocusPolicy(Qt.NoFocus)
+
+        self.ui.btnTask3.setFocusPolicy(Qt.NoFocus)
+
         self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.taskListWidget_complete.setFocusPolicy(Qt.NoFocus)
-        self.ui.rankView.setFocusPolicy(Qt.NoFocus)
+        self.ui.taskListWidget.show()
+      #  self.ui.taskListWidget_complete.setFocusPolicy(Qt.NoFocus)
+        # self.ui.rankView.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelectAll.setFocusPolicy(Qt.NoFocus)
         self.ui.btnInstallAll.setFocusPolicy(Qt.NoFocus)
-        self.resizeCorner.setFocusPolicy(Qt.NoFocus)
+        # self.resizeCorner.setFocusPolicy(Qt.NoFocus)
 
-        self.ui.btnTransList.setFocusPolicy(Qt.NoFocus)#zx 2015.01.30
+        # self.ui.btnTransList.setFocusPolicy(Qt.NoFocus)#zx 2015.01.30
 
         # add by kobe
-        self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
+        # self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseDetail.clicked.connect(self.slot_close_detail)
         self.ui.btnCloseDetail.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
-        self.ui.virtuallabel.setStyleSheet("QLabel{background-image:url('res/virtual-bg.png')}")
+        # self.ui.virtuallabel.setStyleSheet("QLabel{background-image:url('res/virtual-bg.png')}")
 
         #add
         self.ui.btnClosesearch.setFocusPolicy(Qt.NoFocus)
@@ -322,18 +344,18 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.headercw1.leSearch.stackUnder(self.ui.headercw1.lebg)
         self.ui.detailShellWidget.raise_()
         self.ui.taskWidget.raise_()
-        self.ui.virtuallabel.raise_()
-        self.resizeCorner.raise_()
+        # self.ui.virtuallabel.raise_()
+        # self.resizeCorner.raise_()
 
-        self.ui.rankView.setCursor(Qt.PointingHandCursor)
-        self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.ui.rankView.setCursor(Qt.PointingHandCursor)
+        # self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        # self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.ui.btnLogin.setText("登录/注册")
+        self.ui.btnLogin.setText("登录")
         #self.ui.btnReg.setText("去注册")
-        self.ui.welcometext.setText("欢迎您")
-        self.ui.btnAppList.setText("我的软件")
-        self.ui.btnTransList.setText("我的翻译")#zx.2015.01.30
+        # self.ui.welcometext.setText("欢迎您")
+        self.ui.btnAppList.setText("安装历史")
+        self.ui.btnTransList.setText("我翻译的软件")#zx.2015.01.30
         self.ui.btnLogout.setText("退出")
 
         self.ui.hometext1.setText("推荐软件")
@@ -341,7 +363,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.hometext9.setText("游戏娱乐")
 
         #self.ui.hometext2.setText("评分排行")
-        self.ui.hometext2.setText("热门排行")
+        # self.ui.hometext2.setText("热门排行")
         # self.ui.headercw1.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
         # style by qss
@@ -354,45 +376,55 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.hometext4.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
         self.ui.homecount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
 
-        self.ui.alltext1.setText("共有")
-        self.ui.alltext1.setAlignment(Qt.AlignLeft)
-        self.ui.alltext2.setAlignment(Qt.AlignLeft)
-        self.ui.allcount.setAlignment(Qt.AlignCenter)
-        self.ui.alltext2.setText("款软件")
-        self.ui.allline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.alltext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.alltext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.allcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        # self.ui.alltext1.setText("共有")
+        # self.ui.alltext1.setAlignment(Qt.AlignLeft)
+        # self.ui.alltext2.setAlignment(Qt.AlignLeft)
+        # self.ui.allcount.setAlignment(Qt.AlignCenter)
+        # self.ui.alltext2.setText("款软件")
+        # # self.ui.allline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        # self.ui.alltext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        # self.ui.alltext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        # self.ui.allcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
 
-        self.ui.uptext1.setText("可升级")
+        self.ui.apktext1.setText("有")
+        self.ui.apktext1.setAlignment(Qt.AlignLeft)
+        self.ui.apktext2.setText("款安卓软件")
+        self.ui.apktext2.setAlignment(Qt.AlignLeft)
+        self.ui.apkcount.setAlignment(Qt.AlignCenter)
+        # self.ui.apkline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.apktext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.apktext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.apkcount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
+
+        self.ui.uptext1.setText("有")
         self.ui.uptext1.setAlignment(Qt.AlignLeft)
         self.ui.uptext2.setAlignment(Qt.AlignLeft)
         self.ui.upcount.setAlignment(Qt.AlignCenter)
-        self.ui.uptext2.setText("款软件")
-        self.ui.upline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.uptext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.uptext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.upcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        self.ui.uptext2.setText("款软件可以升级")
+        # self.ui.upline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.uptext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.uptext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.upcount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
-        self.ui.untext1.setText("已安装")
+        self.ui.untext1.setText("已经安装了")
         self.ui.untext1.setAlignment(Qt.AlignLeft)
         self.ui.untext2.setAlignment(Qt.AlignLeft)
         self.ui.uncount.setAlignment(Qt.AlignCenter)
         self.ui.untext2.setText("款软件")
-        self.ui.unline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.untext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.untext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.uncount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        # self.ui.unline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.untext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.untext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.uncount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
         self.ui.searchtext1.setText("搜索到")
         self.ui.searchtext1.setAlignment(Qt.AlignLeft)
         self.ui.searchtext2.setAlignment(Qt.AlignLeft)
         self.ui.searchcount.setAlignment(Qt.AlignCenter)
         self.ui.searchtext2.setText("款软件")
-        self.ui.searchline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.searchtext1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.searchtext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.searchcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        # self.ui.searchline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.searchtext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.searchtext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
+        self.ui.searchcount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
         self.ui.uatitle.setText("云端保存的安装历史")
         self.ui.btnInstallAll.setText("一键安装")
@@ -400,7 +432,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.uaNoItemText.setAlignment(Qt.AlignCenter)
         self.ui.uaNoItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
         self.ui.uaNoItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
-        self.ui.ualine.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.ualine.setStyleSheet("QLabel{background-color:#e5e5e5;}")
         self.ui.uatitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
         self.ui.cbSelectAll.setStyleSheet("QCheckBox{color:#666666;font-size:13px;}QCheckBox:hover{background-color:rgb(238, 237, 240);}")
         self.ui.btnInstallAll.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
@@ -411,69 +443,79 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.NoTransItemText.setAlignment(Qt.AlignCenter)
         self.ui.NoTransItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
         self.ui.NoTransItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
-        self.ui.transline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        # self.ui.transline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.transtitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
        # self.ui.cbSelectAll.setStyleSheet("QCheckBox{color:#666666;font-size:13px;}QCheckBox:hover{background-color:rgb(238, 237, 240);}")
        # self.ui.btnInstallAll.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
 
 
-        self.ui.wintitle.setText("Windows常用软件替换")
-        self.ui.winlabel1.setText("可替换")
-        self.ui.winlabel1.setAlignment(Qt.AlignLeft)
-        self.ui.winlabel2.setAlignment(Qt.AlignLeft)
-        self.ui.wincountlabel.setAlignment(Qt.AlignCenter)
-        self.ui.winlabel2.setText("款软件")
-        self.ui.winline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.wintitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
-        self.ui.winlabel1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.winlabel2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.wincountlabel.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        # self.ui.wintitle.setText("Windows常用软件替换")
+        # self.ui.winlabel1.setText("可替换")
+        # self.ui.winlabel1.setAlignment(Qt.AlignLeft)
+        # self.ui.winlabel2.setAlignment(Qt.AlignLeft)
+        # self.ui.wincountlabel.setAlignment(Qt.AlignCenter)
+        # self.ui.winlabel2.setText("款软件")
+        # self.ui.winline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        # self.ui.wintitle.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        # self.ui.winlabel1.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        # self.ui.winlabel2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        # self.ui.wincountlabel.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
 
-        self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
-        self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
-        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
-        self.ui.btnAppList.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")
 
-        self.ui.btnTransList.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#0F84BC;}QPushButton:hover{color:#0396DC;}")#zx 2015.01.30
+        self.ui.adWidget.setStyleSheet("QPushButton{background-image:url('data/ads/ad2.png');border:none;}")
+        self.ui.loginMenu.setStyleSheet("QMenu{border:1px solid #cccccc;background-color:#ffffff;}QMenu::item{font-size:12px;color:#000000;}QMenu::item:selected{color:#ffffff; color:#2d8ae1;}")
+        # self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        # self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
+        self.ui.btnLogin.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:12px;color:#ffffff;}QPushButton:hover{color:#00e4ff;}")
+        # self.ui.btnAppList.setStyleSheet("QAction{border:0px;text-align:left;font-size:12px;color:#000000;}QAction:hover{color:#ffffff;background-color:#2d8ae1;}")
+        # self.ui.btnTransList.setStyleSheet("QAction{border:0px;text-align:left;font-size:12px;color:#000000;}QAction:hover{color:#ffffff;background-color:#2d8ae1;}")#zx 2015.01.30
+        # self.ui.btnLogout.setStyleSheet("QAction{border:0px;text-align:left;font-size:12px;color:#000000;}QAction:hover{color:#ffffff;background-color:#2d8ae1;}")
 
         self.ui.btnReg.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
-        self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
-        self.ui.username.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#EF9800;}")
-        self.ui.btnLogout.setStyleSheet("QPushButton{border:0px;text-align:left;font-size:14px;color:#666666;}QPushButton:hover{color:#0396DC;}")
+        # self.ui.welcometext.setStyleSheet("QLabel{text-align:left;font-size:14px;color:#666666;}")
+        self.ui.username.setStyleSheet("QToolButton{border:0px;text-align:left;font-size:12px;color:#ffffff;}QToolButton:hover{color:#00e4ff;}")
         self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
         self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
 
-        self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
-        self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.navWidget.setStyleSheet("QWidget{background-color:#0F84BC;}")
-        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
+        # self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
+        # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        # self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.navWidget.setStyleSheet("QWidget{background-color:#535353;}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
+        self.ui.btnApk.setStyleSheet("QPushButton{background-image:url('res/nav-apk-1.png');border:0px;}QPushButton:hover{background:url('res/nav-apk-2.png');}QPushButton:pressed{background:url('res/nav-apk-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
-#add
+
         self.ui.btnUp_num.setStyleSheet("QLabel{background-color:red;color:white;font-size:13px;}")
         self.ui.btnUp_num_long.setStyleSheet("QLabel{background-color:red;color:white;font-size:12px;}")
 
-
-        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
-        self.ui.btnGoto.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
-        self.ui.btnGoto.setText("去宝库看看")
+        self.ui.btnHomepage.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+        self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+        self.ui.btnWin.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+        #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        #self.ui.btnGoto.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
+        #self.ui.btnGoto.setText("去宝库看看")
         self.ui.notaskImg.setStyleSheet("QLabel{background-image:url('res/no-download.png')}")
+        #暂无下载任务
+        self.ui.textbox.setText("暂无下载任务")
+        self.ui.textbox.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#808080;text-align:center;}")
+
+        self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
+        # self.ui.logoName.setText("软件商店")
+        # self.ui.logoName.setStyleSheet("QLabel{color:#ffffff;font-size:14px;}")
+
         # add by kobe
         #self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
         #self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
-        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background:url('res/min-2.png');}QPushButton:pressed{background:url('res/min-3.png');}")
+        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
+        self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background-color:#d0d0d0;}QPushButton:pressed{background-color:#ababab;}")
         self.ui.btnMax.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
         self.ui.btnNormal.setStyleSheet("QPushButton{background-image:url('res/normal-1.png');border:0px;}QPushButton:hover{background:url('res/normal-2.png');}QPushButton:pressed{background:url('res/normal-3.png');}")
-        self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background:url('res/conf-2.png');}QPushButton:pressed{background:url('res/conf-3.png');}")
-        self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
-        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
+        self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background-color:#d0d0d0;}QPushButton:pressed{background-color:#ababab;}")
+        # self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
+        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px solid #cccccc;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
         self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
@@ -483,29 +525,33 @@ class SoftwareCenter(QMainWindow,Signals):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
         self.ui.taskListWidget.setSpacing(1)
-        self.ui.taskListWidget_complete.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
-        self.ui.taskListWidget_complete.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
-             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
-             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
-             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
-             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
-             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
-             QScrollBar::down-arrow:vertical{background-color:yellow;}\
-             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
-        self.ui.taskListWidget_complete.setSpacing(1)
-        self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
-        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
-        self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
+        # self.ui.taskListWidget_complete.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
+        # self.ui.taskListWidget_complete.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
+        #      QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
+        #      QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
+        #      QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
+        #      QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
+        #      QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
+        #      QScrollBar::down-arrow:vertical{background-color:yellow;}\
+        #      QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
+        # self.ui.taskListWidget_complete.setSpacing(1)
+        # self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
+        # self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        # self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
         #self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         #self.ui.tasklabel.setText("任务列表")
-        self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        # self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        # self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
+        self.ui.taskhline.setStyleSheet("QLabel{background-color:#e5e5e5;}")
 
         self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
-        self.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
+        self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #2d8ae1;}")
+
+        # self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
+        #elf.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
         self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
         self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
         self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
@@ -514,8 +560,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.hometext9.clicked.connect(self.slot_rec_show_game)
 
         # signal / slot
-        self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
+        # self.ui.rankView.itemClicked.connect(self.slot_click_rank_item)
         self.allListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
+        self.apkListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.upListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.unListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
         self.searchListWidget.verticalScrollBar().valueChanged.connect(self.slot_softwidget_scroll_end)
@@ -529,10 +576,12 @@ class SoftwareCenter(QMainWindow,Signals):
         self.userTransAppListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
 
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
-        self.ui.btnAll.pressed.connect(self.slot_goto_allpage)
+        self.ui.btnAll.pressed.connect(self.slot_goto_homepage)
+        self.ui.btnAllsoftware.pressed.connect(self.slot_goto_allpage)
+        self.ui.btnApk.pressed.connect(self.slot_goto_apkpage)
         self.ui.btnUp.pressed.connect(self.slot_goto_uppage)
         self.ui.btnUn.pressed.connect(self.slot_goto_unpage)
-        self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
+       # self.ui.btnTask.pressed.connect(self.slot_goto_taskpage)
         self.ui.btnWin.pressed.connect(self.slot_goto_winpage)
         self.ui.btnClose.clicked.connect(self.slot_close)
         self.ui.btnMax.clicked.connect(self.slot_max)
@@ -542,17 +591,26 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.headercw1.leSearch.textChanged.connect(self.slot_search_text_change)
         self.ui.cbSelectAll.clicked.connect(self.slot_ua_select_all)
         self.ui.btnInstallAll.clicked.connect(self.slot_click_ua_install_all)
-        self.ui.btnGoto.pressed.connect(self.slot_goto_allpage)
+        #self.ui.btnGoto.pressed.connect(self.slot_goto_allpage)
+
+        self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+        self.ui.btnTask3.setIconSize(QSize(22, 22))
+        self.ui.btnTask3.setText("下载管理")
+        self.ui.btnTask3.setStyleSheet("QToolButton{border:0px;font-size:12px;color:#2d8ae1;text-align:center;} QToolButton:hover{border:0px;font-size:14px;color:#0396DC;} QToolButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.btnTask3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.ui.btnTask3.setAutoRaise(True)
+        self.ui.btnTask3.clicked.connect(self.slot_goto_taskpage)
+
 
         # user account
         #self.sso = get_ubuntu_sso_backend()
         #self.ui.btnLogin.clicked.connect(self.slot_do_login_account)
         #self.ui.btnReg.clicked.connect(self.slot_do_register)
         self.ui.btnLogin.clicked.connect(self.slot_do_login_ui)
-        self.ui.btnLogout.clicked.connect(self.slot_do_logout)
-        self.ui.btnAppList.clicked.connect(self.slot_goto_uapage)
+        self.ui.btnLogout.triggered.connect(self.slot_do_logout)
+        self.ui.btnAppList.triggered.connect(self.slot_goto_uapage)
 
-        self.ui.btnTransList.clicked.connect(self.slot_goto_translatepage)
+        self.ui.btnTransList.triggered.connect(self.slot_goto_translatepage)
 
         #self.sso.connect("whoami", self.slot_whoami_done)
 
@@ -564,7 +622,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.upgrade_app.connect(self.slot_click_upgrade)
         self.update_source.connect(self.slot_update_source)
         self.categoryBar.click_categoy.connect(self.slot_change_category)
-        self.Taskwidget.click_task.connect(self.slot_change_task)
+#        self.Taskwidget.click_task.connect(self.slot_change_task)
         self.detailScrollWidget.install_debfile.connect(self.slot_click_install_debfile)
         self.detailScrollWidget.install_app.connect(self.slot_click_install)
         self.detailScrollWidget.upgrade_app.connect(self.slot_click_upgrade)
@@ -587,12 +645,26 @@ class SoftwareCenter(QMainWindow,Signals):
         self.configWidget.rset_password.connect(self.slot_rset_password)
         self.configWidget.recover_password.connect(self.slot_recover_password)
 
+        # 清除按钮
+        self.ui.clean_button.setFocusPolicy(Qt.NoFocus)
+        self.ui.clean_button.setText("清空已下载")
+        self.ui.clean_button.setStyleSheet(
+            "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        # 清除按钮的下划线
+       # self.ui.taskline.setStyleSheet("QLabel{background-color:#666666;} QLable:hover{background-color:#2d8ae1;} QLable:pressed{background-color:#2d8ae1;}")
+        # 清空已经下载的软件
+        self.ui.clean_button.pressed.connect(self.delete_all_finished_taskwork)
+
+        self.ui.dow_manage.setText("下载管理")
+        self.ui.dow_manage.setStyleSheet("QWidget{border:0px;font-size:13px;color:#808080;text-align:center;}")
+
 
         # widget status
         self.ui.btnUp.setEnabled(False)
         self.ui.btnUn.setEnabled(False)
-        self.ui.btnTask.setEnabled(False)
+       # self.ui.btnTask.setEnabled(False)
         self.ui.btnWin.setEnabled(False)
+        self.ui.btnTask3.setEnabled(False)
 
         self.ui.btnNormal.hide()
         self.ui.allWidget.hide()
@@ -605,10 +677,10 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.winpageWidget.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
-
         # loading
         if(Globals.LAUNCH_MODE != 'quiet'):
             self.launchLoadingDiv.start_loading("系统正在初始化...")
+
 
     def init_main_service(self):
         self.appmgr = AppManager()
@@ -625,9 +697,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.appmgr.get_ui_adduser_over.connect(self.login.slot_get_ui_adduser_over)
 
         self.appmgr.init_models_ready.connect(self.slot_init_models_ready)
-        self.appmgr.ads_ready.connect(self.slot_advertisement_ready)
+        # self.appmgr.ads_ready.connect(self.slot_advertisement_ready)
         self.appmgr.recommend_ready.connect(self.slot_recommend_apps_ready)
-        self.appmgr.ratingrank_ready.connect(self.slot_ratingrank_apps_ready)
+        # self.appmgr.ratingrank_ready.connect(self.slot_ratingrank_apps_ready)
         #self.connect(self.appmgr, rating_reviews_ready, self.slot_rating_reviews_ready)
         self.appmgr.app_reviews_ready.connect(self.slot_app_reviews_ready)
         self.appmgr.app_screenshots_ready.connect(self.slot_app_screenshots_ready)
@@ -642,6 +714,13 @@ class SoftwareCenter(QMainWindow,Signals):
         self.appmgr.check_source_useable_over.connect(self.slot_check_source_useable_over)
         self.count_application_update.connect(self.slot_count_application_update)
         self.apt_process_finish.connect(self.slot_apt_process_finish)
+
+        self.appmgr.download_apk_source_over.connect(self.slot_download_apk_source_over)
+        self.appmgr.kydroid_envrun_over.connect(self.slot_kydroid_envrun_over)
+        self.appmgr.apk_process.connect(self.slot_apk_status_change)
+
+        #预先检测环境初始化APK_EVNRUN
+        self.appmgr.check_kydroid_envrun()
 
     def init_dbus(self):
         self.backend = InstallBackend()
@@ -666,7 +745,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 sys.exit(0)
 
     def check_source(self):
-        if(0):  #屏蔽检测软件源
+        if(0): #屏蔽检测软件源
         #if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
             MessageBox = Update_Source_Dialog()
             if Globals.LAUNCH_MODE == 'quiet':
@@ -684,7 +763,8 @@ class SoftwareCenter(QMainWindow,Signals):
                     self.appmgr.set_check_update_false()
 
                 if MessageBox.button_update == button:
-                    LOG.info("update source when first start...")
+                    if (Globals.DEBUG_SWITCH):
+                        LOG.info("update source when first start...")
                     self.updateSinglePB.show()
                     res = self.backend.update_source_first_os()
                     if "False" == res:
@@ -713,7 +793,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 if MessageBox.checkbox.isChecked():
                     self.appmgr.set_check_update_false()
                 if MessageBox.button_update == button:
-                    LOG.info("update source when first start...")
+                    if (Globals.DEBUG_SWITCH):
+                        LOG.info("update source when first start...")
                     self.updateSinglePB.show()
                     res = self.backend.update_source_first_os()
                     if "False" == res:
@@ -733,6 +814,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 else:
                     sys.exit(0)
         else:
+            #self.launchLoadingDiv.start_loading("")
             if(Globals.LAUNCH_MODE == 'normal'):
                 self.show()
             self.appmgr.init_models()
@@ -814,7 +896,6 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.ui.beforeLoginWidget.hide()
                 self.ui.afterLoginWidget.show()
 
-
     def init_last_data(self):
         # init category bar
         self.init_category_view()
@@ -835,30 +916,33 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.rec_ready = False
         #self.rank_ready = False
 
-        self.topratedload.start_loading()
-
-        self.appmgr.get_advertisements(False)
+        # self.topratedload.start_loading()
+        # self.appmgr.get_advertisements(False)
         self.appmgr.get_recommend_apps(False)
-        self.appmgr.get_ratingrank_apps(False)
+        # self.appmgr.get_ratingrank_apps(False)
         self.backend.check_dpkg_statu()
         self.slot_count_application_update()
         self.login.hide()
         # check uksc upgradable
         self.check_uksc_update()
+        if self.kydroid_service.hasKydroid != False:
+            self.appmgr.get_kydroid_apklist()
+
     # check base init
     def check_init_ready(self, bysignal=False):
-        if ('self.ads_ready' in list(locals().keys()) == False):
-            self.ads_ready = False
+        # if ('self.ads_ready' in list(locals().keys()) == False):
+        #     self.ads_ready = False
         #LOG.debug("check init data stat:%d,%d,%d",self.ads_ready,self.rec_ready,self.rank_ready)
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
-        if self.ads_ready and self.rec_ready and self.rank_ready:
-            (sum_inst,sum_up, sum_all) = self.appmgr.get_application_count()
+        if self.rec_ready: # and self.ads_ready and  self.rank_ready:
+            (sum_inst,sum_up, sum_all, sum_apk) = self.appmgr.get_application_count()
             self.ui.homecount.setText(str(sum_all))
             # self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
-            self.ui.btnTask.setEnabled(True)
+            #self.ui.btnTask.setEnabled(True)
+            self.ui.btnTask3.setEnabled(True)
             self.ui.btnWin.setEnabled(True)
 
             # self.ui.categoryView.show()
@@ -866,9 +950,10 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.centralwidget.show()
             # self.ui.leftWidget.show()
 
-            self.show_homepage(bysignal)
             self.launchLoadingDiv.stop_loading()
-            self.show_mainwindow()
+            if self.first_start is True:
+                self.show_homepage(bysignal)
+                self.show_mainwindow()
             # self.trayicon.show()
 
             # user clicked local deb file, show info
@@ -882,14 +967,15 @@ class SoftwareCenter(QMainWindow,Signals):
             if True == self.first_start:
                 self.start_silent_work()
             self.first_start = False
-            self.rec_ready = self.rank_ready = False
+            self.rec_ready = False
+            # self.rank_ready = False
 
     # silent background works
     def start_silent_work(self):
         # init pointout
         self.init_pointout()
         # check source useable
-        self.appmgr.check_source_useable()
+        # self.appmgr.check_source_useable()
         # pingback_main
         self.appmgr.submit_pingback_main()
 
@@ -905,8 +991,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.httpmodel = HttpDownLoad()
         requestData = "http://service.ubuntukylin.com/uksc/download/?name=uk-win.zip"
         url = QUrl(requestData)
-        #self.httpmodel.sendDownLoadRequest(url)
-        #self.httpmodel.unzip_img.connect(self.slot_unzip_img_zip)
+        # self.httpmodel.sendDownLoadRequest(url)
+        # self.httpmodel.unzip_img.connect(self.slot_unzip_img_zip)
 
     def slot_unzip_img_zip(self):
         unzip_resource("/tmp/uk-win.zip")
@@ -916,15 +1002,19 @@ class SoftwareCenter(QMainWindow,Signals):
             LOG.warning("init models failed:%s",message)
             sys.exit(0)
         elif step == "ok":
-            LOG.debug("init models successfully and ready to setup ui...")
+            if(Globals.DEBUG_SWITCH):
+                LOG.debug("init models successfully and ready to setup ui...")
             self.init_last_data()
 
     def init_category_view(self):
-        print("init_category_view11111")
+        if (Globals.DEBUG_SWITCH):
+            print("init_category_view11111")
         cat_list_orgin = self.appmgr.get_category_list(True)
-        print("init_category_view22222")
+        if (Globals.DEBUG_SWITCH):
+            print("init_category_view22222")
         self.categoryBar.init_categories(cat_list_orgin)
-        print("init_category_view33333")
+        if (Globals.DEBUG_SWITCH):
+            print("init_category_view33333")
         self.categoryBar.hide()
 
     # add by kobe
@@ -981,17 +1071,17 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_uksc_update(self):
         self.init_category_view()
 
-    def eventFilter(self, obj, event):
-        if obj == self.resizeCorner:
-            # do not respond when window maximized
-            if self.isMaximized() == False:
-                if event.type() == QEvent.MouseButtonPress:
-                    self.resizeFlag = True
-                elif event.type() == QEvent.MouseButtonRelease:
-                    self.resizeFlag = False
-            return False
-        else:
-            return False
+    # def eventFilter(self, obj, event):
+    #     if obj == self.resizeCorner:
+    #         # do not respond when window maximized
+    #         if self.isMaximized() == False:
+    #             if event.type() == QEvent.MouseButtonPress:
+    #                 self.resizeFlag = True
+    #             elif event.type() == QEvent.MouseButtonRelease:
+    #                 self.resizeFlag = False
+    #         return False
+    #     else:
+    #         return False
 
     def mousePressEvent(self, event):
         if(event.button() == Qt.LeftButton):
@@ -1030,161 +1120,171 @@ class SoftwareCenter(QMainWindow,Signals):
             # close task page while click anywhere except task page self
             if(event.button() == Qt.LeftButton and self.clickx == event.globalPos().x() and self.clicky == event.globalPos().y()):
                 # add by kobe 局部坐标:pos(), 全局坐标:globalPos()
-                if event.pos().x() > 400:
+                #if event.pos().x() > 400:
+                if event.pos().x()>0:
                     self.ui.taskWidget.setVisible(False)
-                    self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+                    self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+                    #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
         self.dragPosition = -1
 
+    # self.ui.btnTask3.move(self.ui.btnTask3.x() - 10, 12)
+    # self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.ui.taskWidget.height())
     # max size & normal size job
-    def resizeEvent(self, re):
-        Globals.MAIN_WIDTH = re.size().width()
-        Globals.MAIN_HEIGHT = re.size().height()
-
-        if(re.size().width() != 0):
-            # cannot resize more smaller, resize back
-            if(re.size().width() < Globals.MAIN_WIDTH_NORMAL):
-                if(re.size().height() < Globals.MAIN_HEIGHT_NORMAL):
-                    self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
-                else:
-                    self.resize(Globals.MAIN_WIDTH_NORMAL, re.size().height())
-            else:
-                if(re.size().height() < Globals.MAIN_HEIGHT_NORMAL):
-                    self.resize(re.size().width(), Globals.MAIN_HEIGHT_NORMAL)
-                else:
-                    # real work after resize
-
-                    # universal job
-                    self.ui.navWidget.resize(self.ui.navWidget.width(), Globals.MAIN_HEIGHT)
-                    self.ui.btnTask.move(self.ui.btnTask.x(), self.ui.navWidget.height() - self.ui.btnTask.height())
-                    self.ui.rightWidget.resize(Globals.MAIN_WIDTH - 80, Globals.MAIN_HEIGHT)
-
-                    self.ui.headerWidget.resize(Globals.MAIN_WIDTH - 80 - 20 * 2, self.ui.headerWidget.height())
-                    self.ui.headercl1.move(self.ui.headerWidget.width() - self.ui.headercl1.width(), 0)
-
-                    self.ui.homepageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.allWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.upWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.unWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.winpageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.searchWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.userAppListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-                    self.ui.userTransListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
-
-                    self.ui.rankWidget.move(self.ui.homepageWidget.width() - self.ui.rankWidget.width() - 20, self.ui.rankWidget.y())
-                    self.ui.recommendWidget.resize(self.ui.rankWidget.x() - 20, self.ui.recommendWidget.height())
-
-                    self.ui.homecw1.move(self.ui.homepageWidget.width() - self.ui.homecw1.width(), self.ui.homecw1.y())
-                    self.ui.allcw1.move(self.ui.allWidget.width() - self.ui.allcw1.width(), self.ui.allcw1.y())
-                    self.ui.upcw1.move(self.ui.upWidget.width() - self.ui.upcw1.width(), self.ui.upcw1.y())
-                    self.ui.uncw1.move(self.ui.unWidget.width() - self.ui.uncw1.width(), self.ui.uncw1.y())
-                    self.ui.wincw1.move(self.ui.winpageWidget.width() - self.ui.wincw1.width(), self.ui.wincw1.y())
-                    self.ui.searchcw1.move(self.ui.searchWidget.width() - self.ui.searchcw1.width(), self.ui.searchcw1.y())
-                    self.ui.uacw1.move(self.ui.userAppListWidget.width() - self.ui.uacw1.width(), self.ui.uacw1.y())
-                    self.ui.btnInstallAll.move(self.ui.uacw1.x() - self.ui.btnInstallAll.width() - 10, self.ui.btnInstallAll.y())
-                    self.ui.transcw1.move(self.ui.userTransListWidget.width()-self.ui.transcw1.width(),self.ui.transcw1.y())
-
-                    self.ui.allline.resize(self.ui.allWidget.width() - 20, self.ui.allline.height())
-                    self.ui.upline.resize(self.ui.upWidget.width() - 20, self.ui.upline.height())
-                    self.ui.unline.resize(self.ui.unWidget.width() - 20, self.ui.unline.height())
-                    self.ui.winline.resize(self.ui.winpageWidget.width() - 20, self.ui.winline.height())
-                    self.ui.searchline.resize(self.ui.searchWidget.width() - 20, self.ui.searchline.height())
-                    self.ui.ualine.resize(self.ui.userAppListWidget.width() - 20, self.ui.ualine.height())
-                    self.ui.homeline1.resize(self.ui.recommendWidget.width(), self.ui.homeline1.height())
-                    self.ui.transline.resize(self.ui.userTransListWidget.width() - 20,self.ui.transline.height())
-
-                    self.ui.virtuallabel.resize(self.ui.homepageWidget.width(), self.ui.virtuallabel.height())
-                    self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
-
-                    # ads widget
-                    #if hasattr(self, "adw"):
-                    #    self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
-
-                    # detail widget
-                    self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
-                    self.detailScrollWidget.resize(self.detailScrollWidget.width(), self.ui.detailShellWidget.height())
-                    self.detailScrollWidget.move((self.ui.detailShellWidget.width() / 2 - self.detailScrollWidget.detailWidget.width() / 2), self.detailScrollWidget.y())
-
-                    # task widget
-                    self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.height())
-                    self.ui.taskListWidget.resize(self.ui.taskListWidget.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
-                    self.ui.taskListWidget_complete.resize(self.ui.taskListWidget_complete.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
-                    self.ui.taskBottomWidget.move(self.ui.taskBottomWidget.x(), self.ui.taskWidget.height() - self.ui.taskBottomWidget.height())
-
-                    # resize, recalculate, refill the card widgets
-                    self.allListWidget.setGeometry(0, 50, self.ui.allWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.allWidget.height() - 50 - 6)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-                    self.allListWidget.calculate_software_step_num()
-                    if(self.allListWidget.count() != 0 and self.allListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                        self.allListWidget.clear()
-                        self.show_more_software(self.allListWidget)
-                    self.allListWidget.reload_cards()
-
-                    self.upListWidget.setGeometry(0, 50, self.ui.upWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.upWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-                    if(self.upListWidget.count() != 0 and self.upListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                        self.upListWidget.clear()
-                        self.show_more_software(self.upListWidget)
-                    self.upListWidget.reload_cards()
-
-                    self.unListWidget.setGeometry(0, 50, self.ui.unWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.unWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-                    if(self.unListWidget.count() != 0 and self.unListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                        self.unListWidget.clear()
-                        self.show_more_software(self.unListWidget)
-                    self.unListWidget.reload_cards()
-
-                    self.searchListWidget.setGeometry(0, 50, self.ui.searchWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.searchWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
-                    if(self.searchListWidget.count() != 0 and self.searchListWidget.count() < Globals.SOFTWARE_STEP_NUM):
-                        self.searchListWidget.clear()
-                        self.show_more_search_result(self.searchListWidget)
-                    self.searchListWidget.reload_cards()
-
-                    self.userAppListWidget.setGeometry(0, 50, self.ui.userAppListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userAppListWidget.height() - 50)
-                    self.userAppListWidget.reload_cards()
-
-                    self.userTransAppListWidget.setGeometry(0, 50, self.ui.userTransListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userTransListWidget.height() - 50)
-                    self.userTransAppListWidget.reload_cards()
-
-                    self.winListWidget.setGeometry(0, 50, self.ui.winpageWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.winpageWidget.height() - 50)
-                    self.winListWidget.reload_cards()
-
-                    self.recommendListWidget.setGeometry(0, 23, self.ui.recommendWidget.width(), self.ui.recommendWidget.height() - 23)
-                    self.recommendListWidget.reload_cards()
-
-                    # msg box
-                    self.messageBox.re_move()
-
-                    # loading div
-                    self.loadingDiv.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
-
-                    # corner
-                    self.resizeCorner.move(self.ui.centralwidget.width() - 16, self.ui.centralwidget.height() - 16)
-
-                    # max
-                    if(self.isMaximized() == True):
-                        self.ui.btnMax.hide()
-                        self.ui.btnNormal.show()
-
-                    # normal
-                    else:
-                        self.ui.btnMax.show()
-                        self.ui.btnNormal.hide()
+    # def resizeEvent(self, re):
+    #     Globals.MAIN_WIDTH = re.size().width()
+    #     Globals.MAIN_HEIGHT = re.size().height()
+    #     print("11111111111111111111")
+    #
+    #     if(re.size().width() != 0):
+    #         # cannot resize more smaller, resize back
+    #         if(re.size().width() < Globals.MAIN_WIDTH_NORMAL):
+    #             if(re.size().height() < Globals.MAIN_HEIGHT_NORMAL):
+    #                 self.resize(Globals.MAIN_WIDTH_NORMAL, Globals.MAIN_HEIGHT_NORMAL)
+    #             else:
+    #                 self.resize(Globals.MAIN_WIDTH_NORMAL, re.size().height())
+    #         else:
+    #             if(re.size().height() < Globals.MAIN_HEIGHT_NORMAL):
+    #                 self.resize(re.size().width(), Globals.MAIN_HEIGHT_NORMAL)
+    #             else:
+    #                 # real work after resize
+    #
+    #                 # universal job
+    #                 self.ui.navWidget.resize(self.ui.navWidget.width(), Globals.MAIN_HEIGHT)
+    #                 self.ui.btnTask.move(self.ui.btnTask.x(), self.ui.navWidget.height() - self.ui.btnTask.height())
+    #                 self.ui.rightWidget.resize(Globals.MAIN_WIDTH - 80, Globals.MAIN_HEIGHT)
+    #
+    #                 self.ui.headerWidget.resize(Globals.MAIN_WIDTH - 80 - 20 * 2, self.ui.headerWidget.height())
+    #                 # self.ui.headercl1.move(self.ui.headerWidget.width() - self.ui.headercl1.width(), 0)
+    #
+    #                 self.ui.homepageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.allWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.upWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.unWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.winpageWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.searchWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.userAppListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #                 self.ui.userTransListWidget.resize(self.ui.rightWidget.width() - 20, self.ui.rightWidget.height() - 36)
+    #
+    #                 self.ui.rankWidget.move(self.ui.homepageWidget.width() - self.ui.rankWidget.width() - 20, self.ui.rankWidget.y())
+    #                 self.ui.recommendWidget.resize(self.ui.rankWidget.x() - 20, self.ui.recommendWidget.height())
+    #
+    #                 self.ui.homecw1.move(self.ui.homepageWidget.width() - self.ui.homecw1.width(), self.ui.homecw1.y())
+    #                 self.ui.allcw1.move(self.ui.allWidget.width() - self.ui.allcw1.width(), self.ui.allcw1.y())
+    #                 self.ui.upcw1.move(self.ui.upWidget.width() - self.ui.upcw1.width(), self.ui.upcw1.y())
+    #                 self.ui.uncw1.move(self.ui.unWidget.width() - self.ui.uncw1.width(), self.ui.uncw1.y())
+    #                 self.ui.wincw1.move(self.ui.winpageWidget.width() - self.ui.wincw1.width(), self.ui.wincw1.y())
+    #                 self.ui.searchcw1.move(self.ui.searchWidget.width() - self.ui.searchcw1.width(), self.ui.searchcw1.y())
+    #                 self.ui.uacw1.move(self.ui.userAppListWidget.width() - self.ui.uacw1.width(), self.ui.uacw1.y())
+    #                 self.ui.btnInstallAll.move(self.ui.uacw1.x() - self.ui.btnInstallAll.width() - 10, self.ui.btnInstallAll.y())
+    #                 self.ui.transcw1.move(self.ui.userTransListWidget.width()-self.ui.transcw1.width(),self.ui.transcw1.y())
+    #
+    #                 self.ui.allline.resize(self.ui.allWidget.width() - 20, self.ui.allline.height())
+    #                 self.ui.upline.resize(self.ui.upWidget.width() - 20, self.ui.upline.height())
+    #                 self.ui.unline.resize(self.ui.unWidget.width() - 20, self.ui.unline.height())
+    #                 self.ui.winline.resize(self.ui.winpageWidget.width() - 20, self.ui.winline.height())
+    #                 self.ui.searchline.resize(self.ui.searchWidget.width() - 20, self.ui.searchline.height())
+    #                 self.ui.ualine.resize(self.ui.userAppListWidget.width() - 20, self.ui.ualine.height())
+    #                 self.ui.homeline1.resize(self.ui.recommendWidget.width(), self.ui.homeline1.height())
+    #                 self.ui.transline.resize(self.ui.userTransListWidget.width() - 20,self.ui.transline.height())
+    #
+    #                 self.ui.virtuallabel.resize(self.ui.homepageWidget.width(), self.ui.virtuallabel.height())
+    #                 self.ui.virtuallabel.move(self.ui.virtuallabel.x(), self.ui.rightWidget.height() - self.ui.virtuallabel.height())
+    #
+    #                 # ads widget
+    #                 #if hasattr(self, "adw"):
+    #                 #    self.adw.resize_(self.ui.homepageWidget.width() - 20, self.adw.height())
+    #
+    #                 # detail widget
+    #                 self.ui.detailShellWidget.resize(self.ui.rightWidget.width() - 20 - 7, self.ui.rightWidget.height() - 50)
+    #                 self.detailScrollWidget.resize(self.detailScrollWidget.width(), self.ui.detailShellWidget.height())
+    #                 self.detailScrollWidget.move((self.ui.detailShellWidget.width() / 2 - self.detailScrollWidget.detailWidget.width() / 2), self.detailScrollWidget.y())
+    #
+    #                 # task widget
+    #                 self.ui.taskWidget.resize(self.ui.taskWidget.width(), self.height())
+    #                 self.ui.taskListWidget.resize(self.ui.taskListWidget.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
+    #                 self.ui.taskListWidget_complete.resize(self.ui.taskListWidget_complete.width(), self.ui.taskWidget.height() - 65 - self.ui.taskBottomWidget.height() - 5)
+    #                 self.ui.taskBottomWidget.move(self.ui.taskBottomWidget.x(), self.ui.taskWidget.height() - self.ui.taskBottomWidget.height())
+    #
+    #                 # resize, recalculate, refill the card widgets
+    #                 self.allListWidget.setGeometry(0, 50, self.ui.allWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.allWidget.height() - 50 - 6)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+    #                 self.allListWidget.calculate_software_step_num()
+    #                 if(self.allListWidget.count() != 0 and self.allListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+    #                     self.allListWidget.clear()
+    #                     self.show_more_software(self.allListWidget)
+    #                 self.allListWidget.reload_cards()
+    #
+    #                 self.upListWidget.setGeometry(0, 50, self.ui.upWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.upWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+    #                 if(self.upListWidget.count() != 0 and self.upListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+    #                     self.upListWidget.clear()
+    #                     self.show_more_software(self.upListWidget)
+    #                 self.upListWidget.reload_cards()
+    #
+    #                 self.unListWidget.setGeometry(0, 50, self.ui.unWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.unWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+    #                 if(self.unListWidget.count() != 0 and self.unListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+    #                     self.unListWidget.clear()
+    #                     self.show_more_software(self.unListWidget)
+    #                 self.unListWidget.reload_cards()
+    #
+    #                 self.searchListWidget.setGeometry(0, 50, self.ui.searchWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.searchWidget.height() - 50)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+    #                 if(self.searchListWidget.count() != 0 and self.searchListWidget.count() < Globals.SOFTWARE_STEP_NUM):
+    #                     self.searchListWidget.clear()
+    #                     self.show_more_search_result(self.searchListWidget)
+    #                 self.searchListWidget.reload_cards()
+    #
+    #                 self.userAppListWidget.setGeometry(0, 50, self.ui.userAppListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userAppListWidget.height() - 50)
+    #                 self.userAppListWidget.reload_cards()
+    #
+    #                 self.userTransAppListWidget.setGeometry(0, 50, self.ui.userTransListWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.userTransListWidget.height() - 50)
+    #                 self.userTransAppListWidget.reload_cards()
+    #
+    #                 self.winListWidget.setGeometry(0, 50, self.ui.winpageWidget.width() - 20 + 6 + (20 - 6) / 2, self.ui.winpageWidget.height() - 50)
+    #                 self.winListWidget.reload_cards()
+    #
+    #                 self.recommendListWidget.setGeometry(0, 23, self.ui.recommendWidget.width(), self.ui.recommendWidget.height() - 23)
+    #                 self.recommendListWidget.reload_cards()
+    #
+    #                 # msg box
+    #                 self.messageBox.re_move()
+    #
+    #                 # loading div
+    #                 self.loadingDiv.resize(Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+    #
+    #                 # corner
+    #                 self.resizeCorner.move(self.ui.centralwidget.width() - 16, self.ui.centralwidget.height() - 16)
+    #
+    #                 # max
+    #                 if(self.isMaximized() == True):
+    #                     self.ui.btnMax.hide()
+    #                     self.ui.btnNormal.show()
+    #                 # normal
+    #                 else:
+    #                     self.ui.btnMax.show()
+    #                     self.ui.btnNormal.hide()
 
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
 
         count = 0
+        # print("show_more_search_result 000 :",len(self.searchList),listLen)
         for appname in self.searchList:
-            app = self.appmgr.get_application_by_name(appname)
-            if app is None or app.package is None:
+            # print("show_more_search_result 111:",appname, count, Globals.NOWPAGE)
+            app = self.appmgr.get_apk_by_name(appname)
+            if app is None:
+                app = self.appmgr.get_application_by_name(appname)
+            if app is None:
                 continue
+            # print("show_more_search_result 222")
             # in uppage and unpage we just can search the software which can be upgraded or uninstalled zx11.27
             if Globals.NOWPAGE == PageStates.SEARCHUPPAGE:
                 if app.is_installed is False:
                     continue
                 if app.is_installed is True and app.is_upgradable is False:
                     continue
-
+            # print("show_more_search_result 333")
             if Globals.NOWPAGE == PageStates.SEARCHUNPAGE and app.is_installed is False:
                 continue
+            # print("show_more_search_result 444",count,listLen)
             if count < listLen:
                 count = count + 1
                 continue
@@ -1197,12 +1297,15 @@ class SoftwareCenter(QMainWindow,Signals):
             # self.connect(liw, remove_app, self.slot_click_remove)
             # listWidget.addItem(oneitem)
             # listWidget.setItemWidget(oneitem, liw)
+
+            # print("show_more_search_result 555")
             card = NormalCard(app,self.messageBox, listWidget.cardPanel)#self.nowPage, self.prePage,
             listWidget.add_card(card)
             card.show_app_detail.connect(self.slot_show_app_detail)
             card.install_app.connect(self.slot_click_install)
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
+            card.normalcard_kydroid_envrun.connect(self.slot_goto_apkpage)
             self.apt_process_finish.connect(card.slot_work_finished)
             self.apt_process_cancel.connect(card.slot_work_cancel)
             card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
@@ -1222,12 +1325,13 @@ class SoftwareCenter(QMainWindow,Signals):
             count = count + 1
 
             if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                # print("show_more_search_result 666",count ,(Globals.SOFTWARE_STEP_NUM + listLen))
                 break
         self.ui.searchcount.setText(str(count))
 
     def show_more_software(self, listWidget):
         # if self.nowPage == "searchpage":
-        if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE):
+        if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE,PageStates.SEARCHAPKPAGE,PageStates.APKPAGE):
             self.show_more_search_result(listWidget)
         else:
             # print self.nowPage
@@ -1278,28 +1382,68 @@ class SoftwareCenter(QMainWindow,Signals):
                 if(count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
                     break
 
+    # fill apk page
+    def slot_download_apk_source_over(self):
+        listLen = self.apkListWidget.count()
+
+        count = 0
+        for app in self.appmgr.apk_list:
+            # if Globals.NOWPAGE == PageStates.UPPAGE:
+            #     if app.is_installed is False:
+            #         continue
+            #     if app.is_installed is True and app.is_upgradable is False:
+            #         continue
+            # if Globals.NOWPAGE == PageStates.UNPAGE and app.is_installed is False:
+            #     continue
+            if count < listLen:
+                count = count + 1
+                continue
+            card = NormalCard(app, self.messageBox, self.apkListWidget.cardPanel)
+            self.apkListWidget.add_card(card)
+            card.show_app_detail.connect(self.slot_show_app_detail)
+            card.install_app.connect(self.slot_click_install)
+            card.upgrade_app.connect(self.slot_click_upgrade)
+            card.remove_app.connect(self.slot_click_remove)
+            self.apt_process_finish.connect(card.slot_work_finished)
+            self.apt_process_cancel.connect(card.slot_work_cancel)
+            card.get_card_status.connect(self.slot_get_normal_card_status)
+
+            # wb : show_progress
+            self.normalcard_progress_change.connect(card.slot_progress_change)
+            self.normalcard_progress_finish.connect(card.slot_progress_finish)
+            self.normalcard_progress_cancel.connect(card.slot_progress_cancel)
+            # kobe 1106
+            self.trans_card_status.connect(card.slot_change_btn_status)
+
+            count = count + 1
+            if (Globals.DEBUG_SWITCH):
+                print("apk count:",count)
+            if (count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
+                break
+        self.count_application_update.emit()
+        self.apkpageload.stop_loading()
+        if(count == 0):
+            self.messageBox.alert_msg("未找到安卓软件源\n或无法连接！")
+        # self.apkpageload.stop_loading()
+
     def get_current_listWidget(self):
         listWidget = ''
         if(Globals.NOWPAGE == PageStates.ALLPAGE):
             listWidget = self.allListWidget
+        elif(Globals.NOWPAGE == PageStates.APKPAGE):
+            listWidget = self.apkListWidget
         elif(Globals.NOWPAGE == PageStates.UPPAGE):
             listWidget = self.upListWidget
         elif(Globals.NOWPAGE == PageStates.UNPAGE):
             listWidget = self.unListWidget
-        elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#
+        elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE,PageStates.SEARCHAPKPAGE,PageStates.APKPAGE)):
             listWidget = self.searchListWidget
-        # if(self.nowPage == "allpage"):
-        #     listWidget = self.allListWidget
-        # elif(self.nowPage == "uppage"):
-        #     listWidget = self.upListWidget
-        # elif(self.nowPage == "unpage"):
-        #     listWidget = self.unListWidget
-        # elif(self.nowPage == "searchpage"):
-        #     listWidget = self.searchListWidget
         return listWidget
 
     def switch_to_category(self, category, forcechange):
-        LOG.debug("switch category from %s to %s", self.category, category)
+        # LOG.debug("switch category from %s to %s", self.category, category)
+        if (Globals.DEBUG_SWITCH):
+            print(self.category, category, forcechange)
         if self.category == category and forcechange == False:
             return
 
@@ -1316,25 +1460,24 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.count_application_update.emit()
 
-
     def add_task_item(self, app, action, isdeb=False):
         self.task_number += 1
         if(isdeb == True):
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self, isdeb=True)
             # self.connect(tliw, task_cancel, self.slot_click_cancel)
-            tliw.task_remove.connect(self.slot_remove_task)
+            #tliw.task_remove.connect(self.slot_remove_task)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-
         else:
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self)
             tliw.task_cancel_tliw.connect(self.slot_click_cancel)
             tliw.task_remove.connect(self.slot_remove_task)
+            if (Globals.DEBUG_SWITCH):
+                print("add_task_item 000:",tliw.__dict__)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
-
         self.stmap[app.name] = tliw
         #self.connect(tliw, task_cancel, self.slot_click_cancel)
         #self.connect(tliw, task_remove, self.slot_remove_task)
@@ -1342,26 +1485,36 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.connect(tliw, task_reinstall, self.slot_click_install)
         self.apt_process_finish.connect(tliw.slot_work_finished)
 
-        self.ui.btnGoto.setVisible(False)
+       # self.ui.btnGoto.setVisible(False)
         self.ui.notaskImg.setVisible(False)
+        self.ui.textbox.setVisible(False)
 
     def del_task_item(self, pkgname, action, iscancel=False, isfinish=False):
         i = 0
         if iscancel is False and isfinish is True:
             count = self.ui.taskListWidget.count()
-            print(("del_task_item:",count))
+            if (Globals.DEBUG_SWITCH):
+                print(("del_task_item:",count))
             #for i in range(count):
             while(i < count):
-                print(("i: ",i,"   count: ",count))
+                if (Globals.DEBUG_SWITCH):
+                    print(("i: ",i,"   count: ",count))
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
                 if taskitem.app.name == pkgname and taskitem.action == action:
-                    print(("del_task_item: found an item",i,pkgname))
-                    delitem = self.ui.taskListWidget.takeItem(i)
-                    self.ui.taskListWidget.removeItemWidget(delitem)
-
-                    self.ui.taskListWidget_complete.addItem(item)
-                    self.ui.taskListWidget_complete.setItemWidget(item, taskitem)
+                    wbwidget = TaskListItemWidget(taskitem.app, taskitem.action, taskitem.tasknumber, taskitem.parent,dftext=taskitem.ui.status.text(),uiname=taskitem.uiname )
+                    if (Globals.DEBUG_SWITCH):
+                        print(("del_task_item: found an item",i,pkgname))
+                    #delitem = self.ui.taskListWidget.takeItem(i)
+                    #self.ui.taskListWidget.removeItemWidget(delitem)
+                    if (Globals.DEBUG_SWITCH):
+                        print("del_task_item 000:", pkgname,action,taskitem.app.name,taskitem.action)
+                    #self.ui.taskListWidget_complete.addItem(item)
+                    self.ui.taskListWidget.addItem(item)
+                    if (Globals.DEBUG_SWITCH):
+                        print("del_task_item 111:", taskitem.__dict__)
+                    #self.ui.taskListWidget_complete.setItemWidget(item, wbwidget)
+                    self.ui.taskListWidget.setItemWidget(item, wbwidget)
                     i -= 1
                     count -= 1
                 i += 1
@@ -1372,14 +1525,16 @@ class SoftwareCenter(QMainWindow,Signals):
 
         elif iscancel is True and isfinish is False:
             count = self.ui.taskListWidget.count()
-            print(("del_task_item:",count))
+            if (Globals.DEBUG_SWITCH):
+                print(("del_task_item:",count))
             # for i in range(count):
             while(i < count):
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
 
                 if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
-                    print(("del_task_item: found an item",i,pkgname))
+                    if (Globals.DEBUG_SWITCH):
+                        print(("del_task_item: found an item",i,pkgname))
                     delitem = self.ui.taskListWidget.takeItem(i)
                     self.ui.taskListWidget.removeItemWidget(delitem)
                     i -= 1
@@ -1390,40 +1545,41 @@ class SoftwareCenter(QMainWindow,Signals):
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
         self.ui.btnAll.setEnabled(True)
+        self.ui.btnAllsoftware.setEnabled(True)
+        self.ui.btnApk.setEnabled(True)
         self.ui.btnUp.setEnabled(True)
         self.ui.btnUn.setEnabled(True)
-        self.ui.btnTask.setEnabled(True)
+        # self.ui.btnTask.setEnabled(True)
+        self.ui.btnTask3.setEnabled(True)
+
         self.ui.btnWin.setEnabled(True)
-        self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-1.png');border:0px;}QPushButton:hover{background:url('res/nav-homepage-2.png');}QPushButton:pressed{background:url('res/nav-homepage-3.png');}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
+        self.ui.btnApk.setStyleSheet("QPushButton{background-image:url('res/nav-apk-1.png');border:0px;}QPushButton:hover{background:url('res/nav-apk-2.png');}QPushButton:pressed{background:url('res/nav-apk-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
-        self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-1.png');border:0px;}QPushButton:hover{background:url('res/nav-windows-2.png');}QPushButton:pressed{background:url('res/nav-windows-3.png');}")
+        #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+
+        self.ui.btnHomepage.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+        self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+        self.ui.btnWin.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
+
 
     def reset_nav_bar_focus_one(self):
         self.reset_nav_bar()
-        if(Globals.NOWPAGE == PageStates.HOMEPAGE):
-            self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
-        elif(Globals.NOWPAGE == PageStates.ALLPAGE):
+        if(Globals.NOWPAGE in (PageStates.HOMEPAGE, PageStates.ALLPAGE, PageStates.WINPAGE)):
             self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
+        elif(Globals.NOWPAGE == PageStates.APKPAGE):
+            self.ui.btnApk.setStyleSheet("QPushButton{background-image:url('res/nav-apk-3.png');border:0px;}")
         elif(Globals.NOWPAGE == PageStates.UPPAGE):
             self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
         elif(Globals.NOWPAGE == PageStates.UNPAGE):
             self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
-        elif(Globals.NOWPAGE == PageStates.WINPAGE):
-            self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
-
-        # if(self.nowPage == 'homepage'):
-        #     self.ui.btnHomepage.setStyleSheet("QPushButton{background-image:url('res/nav-homepage-3.png');border:0px;}")
-        # elif(self.nowPage == 'allpage'):
-        #     self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
-        # elif(self.nowPage == 'uppage'):
-        #     self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
-        # elif(self.nowPage == 'unpage'):
-        #     self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
-        # elif(self.nowPage == 'winpage'):
-        #     self.ui.btnWin.setStyleSheet("QPushButton{background-image:url('res/nav-windows-3.png');border:0px;}")
+        if(Globals.NOWPAGE == PageStates.HOMEPAGE):
+            self.ui.btnHomepage.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;background-color:#2d8ae1;}")
+        if(Globals.NOWPAGE == PageStates.ALLPAGE):
+            self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;background-color:#2d8ae1;}")
+        if(Globals.NOWPAGE == PageStates.WINPAGE):
+            self.ui.btnWin.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;background-color:#2d8ae1;}")
 
     def check_uksc_update(self):
         self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
@@ -1463,7 +1619,8 @@ class SoftwareCenter(QMainWindow,Signals):
             self.backend.clear_dbus_worklist()
             self.backend.exit_uksc_apt_daemon()
         except Exception as e:
-            print((str(e)))
+            if (Globals.DEBUG_SWITCH):
+                print((str(e)))
         self.dbusControler.stop()
         os.system("ubuntu-kylin-software-center restart")
         sys.exit(0)
@@ -1544,10 +1701,25 @@ class SoftwareCenter(QMainWindow,Signals):
         if Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHUPPAGE,PageStates.SEARCHUNPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE):
             self.ui.searchWidget.setVisible(False)
 
+        if Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.WINPAGE):
+            Globals.NOWPAGE = PageStates.ALLPAGE
+            self.ui.homepageWidget.setVisible(False)
+            self.ui.allWidget.setVisible(True)
+            self.ui.apkWidget.setVisible(False)
+            self.ui.upWidget.setVisible(False)
+            self.ui.unWidget.setVisible(False)
+            self.ui.winpageWidget.setVisible(False)
+            self.ui.searchWidget.setVisible(False)
+            self.ui.taskWidget.setVisible(False)
+            self.ui.userAppListWidget.setVisible(False)
+            self.ui.userTransListWidget.setVisible(False)
+            self.reset_nav_bar_focus_one()
+
+        self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
         self.switch_to_category(category, forcechange)
 
-        if(Globals.NOWPAGE == PageStates.HOMEPAGE):
-            self.reset_nav_bar()
+        # if(Globals.NOWPAGE == PageStates.HOMEPAGE):
+            # self.reset_nav_bar()
         if(Globals.NOWPAGE == PageStates.ALLPAGE and self.ui.allWidget.isVisible() == False):
             self.ui.allWidget.setVisible(True)
         if(Globals.NOWPAGE == PageStates.UPPAGE and self.ui.upWidget.isVisible() == False):
@@ -1573,325 +1745,329 @@ class SoftwareCenter(QMainWindow,Signals):
         # if(self.nowPage == "winpage" and self.ui.winpageWidget.isVisible() == False):
         #     self.ui.winpageWidget.setVisible(True)
 
-
     def slot_change_task(self, category):
-        if category == "正在处理":
+       # if category == "正在处理":
+         if category == "下载管理":
             self.ui.btnClearTask.hide()
             self.ui.taskListWidget.setVisible(True)
-            self.ui.taskListWidget_complete.setVisible(False)
+            #self.ui.taskListWidget_complete.setVisible(False)
             count = self.ui.taskListWidget.count()
             if count == 0:
-                self.ui.btnGoto.setVisible(True)
+                #self.ui.btnGoto.setVisible(True)
+                self.ui.textbox.setVisible(True)
                 self.ui.notaskImg.setVisible(True)
             else:
-                self.ui.btnGoto.setVisible(False)
+                #self.ui.btnGoto.setVisible(False)
+                self.ui.textbox.setVisible(False)
                 self.ui.notaskImg.setVisible(False)
-        elif category == "处理完成":
-            self.ui.btnClearTask.show()
-            self.ui.taskListWidget.setVisible(False)
-            self.ui.taskListWidget_complete.setVisible(True)
-            self.ui.btnGoto.setVisible(False)
-            self.ui.notaskImg.setVisible(False)
+        # elif category == "处理完成":
+        #     self.ui.btnClearTask.show()
+        #     self.ui.taskListWidget.setVisible(False)
+        #     #self.ui.taskListWidget_complete.setVisible(True)
+        #     self.ui.btnGoto.setVisible(False)
+        #     self.ui.notaskImg.setVisible(False)
 
 
     def slot_softwidget_scroll_end(self, now):
         listWidget = self.get_current_listWidget()
         max = listWidget.verticalScrollBar().maximum()
         if(now > (max - (max / 10))):
-            self.show_more_software(listWidget)
-
-    def slot_change_bt(self,adw):
-        print(("vvvvvvvvvvvvvvvvvv",adw))
-        print(("ddddddddddddddddd",self.bdm,self.adi))
-        self.adtimer.stop()
-        i = 0
-        if adw > self.bdm:
-            while(self.bdm != adw):
-                self.slot_change_l_ad()
-        elif adw < self.bdm:
-            while(self.bdm != adw):
-                self.slot_change_l_ad()
-        print(("ssssssssssssssssssss",self.bdm,self.adi))
-        #self.adtimer.start(2000)
-
-
-    def slot_advertisement_ready(self,adlist, bysignal=False):
-        LOG.debug("receive ads ready, count is %d", len(adlist))
-        self.adlist = adlist
-        if adlist is not None:
-            #self.adw = lot_change_adDWidget(adlist, self)
-            #self.adw = ADWidget(adlist)
-            #self.adw.move(0, 44)
-#set
-            self.ui.bt1.hide()
-            self.ui.bt2.hide()
-            self.ui.bt3.hide()
-            self.ui.bt4.hide()
-            self.ui.bt5.hide()        
-        #    self.ui.bt1.setFocusPolicy(Qt.NoFocus)
-        #    self.ui.bt1.clicked.connect(lambda: self.slot_change_bt(1))
-
-        #    self.ui.bt2.setFocusPolicy(Qt.NoFocus)
-        #    self.ui.bt2.clicked.connect(lambda: self.slot_change_bt(2))
-
-        #    self.ui.bt3.setFocusPolicy(Qt.NoFocus)
-        #    self.ui.bt3.clicked.connect(lambda: self.slot_change_bt(3))
-
-        #    self.ui.bt4.setFocusPolicy(Qt.NoFocus)
-        #    self.ui.bt4.clicked.connect(lambda: self.slot_change_bt(4))
-
-        #    self.ui.bt5.setFocusPolicy(Qt.NoFocus)
-        #    self.ui.bt5.clicked.connect(lambda: self.slot_change_bt(5))
-
-        #左移
-            self.ui.thu.setFocusPolicy(Qt.NoFocus) 
-            self.ui.thu.resize(130, 160)
-            self.ui.thu.move(0, 30)
-            self.ui.thu.setStyleSheet("QPushButton{background:none;border:none;}")
-            self.ui.thu.clicked.connect(self.slot_change_r_ad_before)
-            self.ui.thu.setCursor(Qt.PointingHandCursor)
-        #右
-            self.ui.thur.setFocusPolicy(Qt.NoFocus)
-            self.ui.thur.resize(130,160)
-            self.ui.thur.move(730, 30)
-            self.ui.thur.setStyleSheet("QPushButton{background:none;border:none;}")
-            self.ui.thur.clicked.connect(self.slot_change_l_ad_before)
-            self.ui.thur.setCursor(Qt.PointingHandCursor)
-        #中间
-            self.ui.thun.setFocusPolicy(Qt.NoFocus)
-            self.ui.thun.resize(600, 200)
-            self.ui.thun.move(130, 10)
-            self.ui.thun.setStyleSheet("QPushButton{background:none;border:none;}")
-            self.ui.thun.clicked.connect(self.slot_click_ad)
-            self.ui.thun.setCursor(Qt.PointingHandCursor)
-
-            #self.ui.buright.setFocusPolicy(Qt.NoFocus)
-            #self.ui.buright.clicked.connect(self.slot_ad_show)
-
-
-            self.ui.label_12.setFocusPolicy(Qt.NoFocus)
-            image = QtGui.QImage()
-            image.load("data/ads/ad1.png")
-            self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-            self.ui.label_12.resize(600,200)
-            self.ui.label_12.move(130, 10)
-
-            self.ui.label_11.setFocusPolicy(Qt.NoFocus)
-            image.load("data/ads/ad0.png")
-            self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
-            self.ui.label_11.resize(600*0.8,200*0.8)
-            self.ui.label_11.move(0,(220-(200*0.8))*0.5)
-  
-            self.ui.label_13.setFocusPolicy(Qt.NoFocus)
-            image.load("data/ads/ad2.png") 
-            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-            self.ui.label_13.resize(600*0.8,200*0.8)
-            self.ui.label_13.move(860-(600*0.8), (220-(200*0.8))*0.5)
-
-            self.ui.label_14.setFocusPolicy(Qt.NoFocus)
-            image.load("data/ads/ad5.png")
-            self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
-            self.ui.label_14.resize(600*0.8*0.8,200*0.8*0.8)
-            self.ui.label_14.move(238,46)
-        
-            self.adtimer = QTimer(self)
-            self.adtimer.timeout.connect(self.slot_change_r_ad)
-            self.adtimer.start(2000)
-
-        self.ads_ready = True
-        self.check_init_ready(bysignal)
-
-    def slot_btn_set(self):
-        self.ui.thun.move(130 + self.adm, 10)
-        self.ui.thur.move(730 + self.adm, 30)
-        self.ui.thu.move(0 + self.adm, 30)
-        self.ui.bt1.setGeometry(335 + self.adm, 180, 10, 10)
-        self.ui.bt2.setGeometry(355 + self.adm, 180, 10, 10)
-        self.ui.bt3.setGeometry(375 + self.adm, 180, 10, 10)
-        self.ui.bt4.setGeometry(395 + self.adm, 180, 10, 10)
-        self.ui.bt5.setGeometry(415 + self.adm, 180, 10, 10)
-        self.ui.bt1.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        self.ui.bt2.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        self.ui.bt3.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        self.ui.bt4.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        self.ui.bt5.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")        
-        if self.adi == 1:
-            self.ui.bt1.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")        
-        elif self.adi == 2:
-            self.ui.bt2.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        elif self.adi == 3:
-            self.ui.bt3.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        elif self.adi == 4:
-            self.ui.bt4.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-        elif self.adi == 5:
-            self.ui.bt5.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
-
-    def slot_change_r_ad_before(self):
-        self.adtimer.stop()
-        self.slot_change_r_ad()
-        self.adtimer.start(2000)
-
-    def slot_change_l_ad_before(self):
-        self.adtimer.stop()
-        self.slot_change_l_ad()
-        self.adtimer.start(2000)
-
-    def slot_change_r_ad(self):
-        self.adm =(self.ui.homepageWidget.width() -880)*0.5
-        self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
-        self.ui.thu.move(0 + self.adm, 30)
-        self.ui.thur.move(730 + self.adm, 30)
-        self.ui.thun.move(130 + self.adm, 10)
-        self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
-        self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
-        self.r3 = QRect(130 + self.adm,10,600,200)
-        self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
-        self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
-        self.bdm =self.adi
-        #print "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",self.adi
-        #print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",self.ui.homepageWidget.width(),self.adlist[self.adi].pic
-        image = QtGui.QImage()
-        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
-        self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-        if self.adi == 5:
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)           
-            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
-            self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))            
-        else:
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic) 
-            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-            if self.adi == 4:
-                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-                self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+            if(Globals.NOWPAGE == PageStates.APKPAGE):
+                self.slot_download_apk_source_over()
             else:
-                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
-                self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
-        if self.adi == 1:
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[5].pic)                
-        else:
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi - 1].pic)
-        self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+                self.show_more_software(listWidget)
 
-        #self.slot_btn_set()
-        #adlist
-        self.animation2 = QPropertyAnimation(self.ui.label_12, b"geometry")
-        self.animation2.setDuration(700)
-        self.animation2.setStartValue(self.r1)
-        self.animation2.setEndValue(self.r3)
+    # def slot_change_bt(self,adw):
+    #     self.adtimer.stop()
+    #     i = 0
+    #     if adw > self.bdm:
+    #         while(self.bdm != adw):
+    #             self.slot_change_l_ad()
+    #     elif adw < self.bdm:
+    #         while(self.bdm != adw):
+    #             self.slot_change_l_ad()
+    #     #self.adtimer.start(2000)
 
 
-        self.animation = QPropertyAnimation(self.ui.label_13, b"geometry")
-        self.animation.setDuration(700)
-        self.animation.setStartValue(self.r3)
-        self.animation.setEndValue(self.r2)
+    # 新的广告加载逻辑 旧的ADWidget.py已经不再使用
+    # def slot_advertisement_ready(self,adlist, bysignal=False):
+    #     if (Globals.DEBUG_SWITCH):
+    #         LOG.debug("receive ads ready, count is %d", len(adlist))
+    #     self.adlist = adlist
+    #     if adlist is not None:
+    #         #self.adw = lot_change_adDWidget(adlist, self)
+    #         #self.adw = ADWidget(adlist)
+    #         #self.adw.move(0, 44)
+    #         self.ui.bt1.hide()
+    #         self.ui.bt2.hide()
+    #         self.ui.bt3.hide()
+    #         self.ui.bt4.hide()
+    #         self.ui.bt5.hide()
+    #     #    self.ui.bt1.setFocusPolicy(Qt.NoFocus)
+    #     #    self.ui.bt1.clicked.connect(lambda: self.slot_change_bt(1))
+    #
+    #     #    self.ui.bt2.setFocusPolicy(Qt.NoFocus)
+    #     #    self.ui.bt2.clicked.connect(lambda: self.slot_change_bt(2))
+    #
+    #     #    self.ui.bt3.setFocusPolicy(Qt.NoFocus)
+    #     #    self.ui.bt3.clicked.connect(lambda: self.slot_change_bt(3))
+    #
+    #     #    self.ui.bt4.setFocusPolicy(Qt.NoFocus)
+    #     #    self.ui.bt4.clicked.connect(lambda: self.slot_change_bt(4))
+    #
+    #     #    self.ui.bt5.setFocusPolicy(Qt.NoFocus)
+    #     #    self.ui.bt5.clicked.connect(lambda: self.slot_change_bt(5))
+    #
+    #     #左移
+    #         self.ui.thu.setFocusPolicy(Qt.NoFocus)
+    #         self.ui.thu.resize(130, 160)
+    #         self.ui.thu.move(0, 30)
+    #         self.ui.thu.setStyleSheet("QPushButton{background:none;border:none;}")
+    #         self.ui.thu.clicked.connect(self.slot_change_r_ad_before)
+    #         self.ui.thu.setCursor(Qt.PointingHandCursor)
+    #     #右
+    #         self.ui.thur.setFocusPolicy(Qt.NoFocus)
+    #         self.ui.thur.resize(130,160)
+    #         self.ui.thur.move(730, 30)
+    #         self.ui.thur.setStyleSheet("QPushButton{background:none;border:none;}")
+    #         self.ui.thur.clicked.connect(self.slot_change_l_ad_before)
+    #         self.ui.thur.setCursor(Qt.PointingHandCursor)
+    #     #中间
+    #         self.ui.thun.setFocusPolicy(Qt.NoFocus)
+    #         self.ui.thun.resize(600, 200)
+    #         self.ui.thun.move(130, 10)
+    #         self.ui.thun.setStyleSheet("QPushButton{background:none;border:none;}")
+    #         self.ui.thun.clicked.connect(self.slot_click_ad)
+    #         self.ui.thun.setCursor(Qt.PointingHandCursor)
+    #
+    #         #self.ui.buright.setFocusPolicy(Qt.NoFocus)
+    #         #self.ui.buright.clicked.connect(self.slot_ad_show)
+    #
+    #
+    #         self.ui.label_12.setFocusPolicy(Qt.NoFocus)
+    #         image = QtGui.QImage()
+    #         image.load("data/ads/ad1.png")
+    #         self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         self.ui.label_12.resize(600,200)
+    #         self.ui.label_12.move(130, 10)
+    #
+    #         self.ui.label_11.setFocusPolicy(Qt.NoFocus)
+    #         image.load("data/ads/ad0.png")
+    #         self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         self.ui.label_11.resize(600*0.8,200*0.8)
+    #         self.ui.label_11.move(0,(220-(200*0.8))*0.5)
+    #
+    #         self.ui.label_13.setFocusPolicy(Qt.NoFocus)
+    #         image.load("data/ads/ad2.png")
+    #         self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         self.ui.label_13.resize(600*0.8,200*0.8)
+    #         self.ui.label_13.move(860-(600*0.8), (220-(200*0.8))*0.5)
+    #
+    #         self.ui.label_14.setFocusPolicy(Qt.NoFocus)
+    #         image.load("data/ads/ad5.png")
+    #         self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         self.ui.label_14.resize(600*0.8*0.8,200*0.8*0.8)
+    #         self.ui.label_14.move(238,46)
+    #
+    #         self.adtimer = QTimer(self)
+    #         self.adtimer.timeout.connect(self.slot_change_r_ad)
+    #         self.adtimer.start(2000)
+    #
+    #     self.ads_ready = True
+    #     self.check_init_ready(bysignal)
 
-        self.animation1 = QPropertyAnimation(self.ui.label_14, b"geometry")
-        self.animation1.setDuration(700)
-        self.animation1.setStartValue(self.r2)
-        self.animation1.setEndValue(self.r4)
+    # def slot_btn_set(self):
+    #     self.ui.thun.move(130 + self.adm, 10)
+    #     self.ui.thur.move(730 + self.adm, 30)
+    #     self.ui.thu.move(0 + self.adm, 30)
+    #     self.ui.bt1.setGeometry(335 + self.adm, 180, 10, 10)
+    #     self.ui.bt2.setGeometry(355 + self.adm, 180, 10, 10)
+    #     self.ui.bt3.setGeometry(375 + self.adm, 180, 10, 10)
+    #     self.ui.bt4.setGeometry(395 + self.adm, 180, 10, 10)
+    #     self.ui.bt5.setGeometry(415 + self.adm, 180, 10, 10)
+    #     self.ui.bt1.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     self.ui.bt2.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     self.ui.bt3.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     self.ui.bt4.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     self.ui.bt5.setStyleSheet("QPushButton{background-color:white;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     if self.adi == 1:
+    #         self.ui.bt1.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     elif self.adi == 2:
+    #         self.ui.bt2.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     elif self.adi == 3:
+    #         self.ui.bt3.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     elif self.adi == 4:
+    #         self.ui.bt4.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #     elif self.adi == 5:
+    #         self.ui.bt5.setStyleSheet("QPushButton{background-color:red;border:1px groove gray;border-radius:0px;padding:2px 4px}")
+    #
+    # def slot_change_r_ad_before(self):
+    #     self.adtimer.stop()
+    #     self.slot_change_r_ad()
+    #     self.adtimer.start(2000)
+    #
+    # def slot_change_l_ad_before(self):
+    #     self.adtimer.stop()
+    #     self.slot_change_l_ad()
+    #     self.adtimer.start(2000)
 
-        self.animation3 = QPropertyAnimation(self.ui.label_11, b"geometry")
-        self.animation3.setDuration(1000)
-        self.animation3.setStartValue(self.r4)
-        self.animation3.setEndValue(self.r1)
-
-
-        self.animation.start()
-        self.animation1.start()
-        self.animation3.start()
-        self.animation2.start()
-        if self.adi == 1:
-            self.adi = 5
-        else:
-            self.adi -=1
-
-    def slot_change_l_ad(self):
-        self.adm =(self.ui.homepageWidget.width() -880)*0.5
-        self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
-        self.ui.thu.move(0 + self.adm, 30)
-        self.ui.thur.move(730 + self.adm, 30)
-        self.ui.thun.move(130 + self.adm, 10)
-
-        self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
-        self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
-        self.r3 = QRect(130 + self.adm,10,600,200)
-        self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
-        self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
-        self.bdm =self.adi
-        image = QtGui.QImage()
-        image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
-        self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
-        if self.adi == 5:
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-            self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
-            self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[3].pic)
-            self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-        else:
-            image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic)
-            self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
-            if self.adi == 4:
-                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-                self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
-                self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-            else:
-                image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
-                self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
-                if self.adi == 3:
-                    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
-                    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-                else:
-                    image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 3].pic)        
-                    self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
-        #self.slot_btn_set()
-        self.animation2 = QPropertyAnimation(self.ui.label_12, b"geometry")
-        self.animation2.setDuration(700)
-        self.animation2.setStartValue(self.r2)
-        self.animation2.setEndValue(self.r3)
-
-        self.animation = QPropertyAnimation(self.ui.label_11, b"geometry")
-        self.animation.setDuration(700)
-        self.animation.setStartValue(self.r3)
-        self.animation.setEndValue(self.r1)
-
-        self.animation1 = QPropertyAnimation(self.ui.label_14, b"geometry")
-        self.animation1.setDuration(700)
-        self.animation1.setStartValue(self.r1)
-        self.animation1.setEndValue(self.r4)
-
-        self.animation3 = QPropertyAnimation(self.ui.label_13, b"geometry")
-        self.animation3.setDuration(1000)
-        self.animation3.setStartValue(self.r5)
-        self.animation3.setEndValue(self.r2)
-
-
-        self.animation.start()
-        self.animation1.start()
-        self.animation3.start()
-        self.animation2.start()
-        if self.adi == 5:
-            self.adi = 1
-        else:
-            self.adi +=1
+    # def slot_change_r_ad(self):
+    #     self.adm =(self.ui.homepageWidget.width() -880)*0.5
+    #     self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+    #     self.ui.thu.move(0 + self.adm, 30)
+    #     self.ui.thur.move(730 + self.adm, 30)
+    #     self.ui.thun.move(130 + self.adm, 10)
+    #     self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
+    #     self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
+    #     self.r3 = QRect(130 + self.adm,10,600,200)
+    #     self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+    #     self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+    #     self.bdm =self.adi
+    #     #print "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",self.adi
+    #     #print "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",self.ui.homepageWidget.width(),self.adlist[self.adi].pic
+    #     image = QtGui.QImage()
+    #     image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
+    #     self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+    #     if self.adi == 5:
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+    #         self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+    #         self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+    #     else:
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic)
+    #         self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         if self.adi == 4:
+    #             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+    #             self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         else:
+    #             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
+    #             self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+    #     if self.adi == 1:
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[5].pic)
+    #     else:
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi - 1].pic)
+    #     self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+    #
+    #     #self.slot_btn_set()
+    #     #adlist
+    #     self.animation2 = QPropertyAnimation(self.ui.label_12, b"geometry")
+    #     self.animation2.setDuration(700)
+    #     self.animation2.setStartValue(self.r1)
+    #     self.animation2.setEndValue(self.r3)
+    #
+    #
+    #     self.animation = QPropertyAnimation(self.ui.label_13, b"geometry")
+    #     self.animation.setDuration(700)
+    #     self.animation.setStartValue(self.r3)
+    #     self.animation.setEndValue(self.r2)
+    #
+    #     self.animation1 = QPropertyAnimation(self.ui.label_14, b"geometry")
+    #     self.animation1.setDuration(700)
+    #     self.animation1.setStartValue(self.r2)
+    #     self.animation1.setEndValue(self.r4)
+    #
+    #     self.animation3 = QPropertyAnimation(self.ui.label_11, b"geometry")
+    #     self.animation3.setDuration(1000)
+    #     self.animation3.setStartValue(self.r4)
+    #     self.animation3.setEndValue(self.r1)
+    #
+    #
+    #     self.animation.start()
+    #     self.animation1.start()
+    #     self.animation3.start()
+    #     self.animation2.start()
+    #     if self.adi == 1:
+    #         self.adi = 5
+    #     else:
+    #         self.adi -=1
+    #
+    # def slot_change_l_ad(self):
+    #     self.adm =(self.ui.homepageWidget.width() -880)*0.5
+    #     self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
+    #     self.ui.thu.move(0 + self.adm, 30)
+    #     self.ui.thur.move(730 + self.adm, 30)
+    #     self.ui.thun.move(130 + self.adm, 10)
+    #
+    #     self.r1 = QRect(0 + self.adm,(220-(200*0.8))*0.5,600*0.8,200*0.8)
+    #     self.r2 = QRect(860-(600*0.8) + self.adm, (220-(200*0.8))*0.5,600*0.8,200*0.8)
+    #     self.r3 = QRect(130 + self.adm,10,600,200)
+    #     self.r4 = QRect(238 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+    #     self.r5 = QRect(380 + self.adm,46,600*0.8*0.8,200*0.8*0.8)
+    #     self.bdm =self.adi
+    #     image = QtGui.QImage()
+    #     image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi].pic)
+    #     self.ui.label_14.setPixmap(QtGui.QPixmap.fromImage(image))
+    #     if self.adi == 5:
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+    #         self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+    #         self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[3].pic)
+    #         self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #     else:
+    #         image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 1].pic)
+    #         self.ui.label_11.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         if self.adi == 4:
+    #             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+    #             self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+    #             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[2].pic)
+    #             self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #         else:
+    #             image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 2].pic)
+    #             self.ui.label_12.setPixmap(QtGui.QPixmap.fromImage(image))
+    #             if self.adi == 3:
+    #                 image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[1].pic)
+    #                 self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #             else:
+    #                 image.load(UBUNTUKYLIN_RES_AD_PATH + self.adlist[self.adi + 3].pic)
+    #                 self.ui.label_13.setPixmap(QtGui.QPixmap.fromImage(image))
+    #     #self.slot_btn_set()
+    #     self.animation2 = QPropertyAnimation(self.ui.label_12, b"geometry")
+    #     self.animation2.setDuration(700)
+    #     self.animation2.setStartValue(self.r2)
+    #     self.animation2.setEndValue(self.r3)
+    #
+    #     self.animation = QPropertyAnimation(self.ui.label_11, b"geometry")
+    #     self.animation.setDuration(700)
+    #     self.animation.setStartValue(self.r3)
+    #     self.animation.setEndValue(self.r1)
+    #
+    #     self.animation1 = QPropertyAnimation(self.ui.label_14, b"geometry")
+    #     self.animation1.setDuration(700)
+    #     self.animation1.setStartValue(self.r1)
+    #     self.animation1.setEndValue(self.r4)
+    #
+    #     self.animation3 = QPropertyAnimation(self.ui.label_13, b"geometry")
+    #     self.animation3.setDuration(1000)
+    #     self.animation3.setStartValue(self.r5)
+    #     self.animation3.setEndValue(self.r2)
+    #
+    #
+    #     self.animation.start()
+    #     self.animation1.start()
+    #     self.animation3.start()
+    #     self.animation2.start()
+    #     if self.adi == 5:
+    #         self.adi = 1
+    #     else:
+    #         self.adi +=1
 
     def slot_lock_ads(self,flag):
         self.lockads = flag
 
 
-    def slot_recommend_apps_ready(self, applist, bysignal, first=True):
-        
-        LOG.debug("receive recommend apps ready, count is %d", len(applist))
+    def slot_recommend_apps_ready(self, applist, bysignal, first = True):
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("receive recommend apps ready, count is %d", len(applist))
         self.recommendListWidget.clear()
         for app in applist:
-            if app is None or app.package is None:
+            if app is None and app.package is None:
                 continue
             recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
             self.recommendListWidget.add_card(recommend)
             recommend.show_app_detail.connect(self.slot_show_app_detail)
             recommend.install_app.connect(self.slot_click_install)
+            recommend.rcmdcard_kydroid_envrun.connect(self.slot_goto_apkpage)
             self.apt_process_finish.connect(recommend.slot_work_finished)
             self.apt_process_cancel.connect(recommend.slot_work_cancel)
             self.trans_card_status.connect(recommend.slot_change_btn_status)
@@ -1905,35 +2081,39 @@ class SoftwareCenter(QMainWindow,Signals):
             self.rec_ready = True
         self.check_init_ready(bysignal)
 
-    def slot_ratingrank_apps_ready(self, applist, bysignal):
-        LOG.debug("receive rating rank apps ready, count is %d", len(applist))
-        self.ui.rankView.clear()
-        for app in applist:
-            if app is not None and app.package is not None:
-                rliw = RankListItemWidget(app, self.ui.rankView.count() + 1, self.ui.rankView)
-                oneitem = QListWidgetItem()
-                oneitem.setWhatsThis(app.name)
-                self.ui.rankView.addItem(oneitem)
-                self.ui.rankView.setItemWidget(oneitem, rliw)
-        self.ui.rankWidget.setVisible(True)
-
-        self.topratedload.stop_loading()
-        self.rank_ready = True
-        self.check_init_ready(bysignal)
+    # def slot_ratingrank_apps_ready(self, applist, bysignal):
+    #     if (Globals.DEBUG_SWITCH):
+    #         LOG.debug("receive rating rank apps ready, count is %d", len(applist))
+    #     self.ui.rankView.clear()
+    #     for app in applist:
+    #         if app is not None and app.package is not None:
+    #             rliw = RankListItemWidget(app, self.ui.rankView.count() + 1, self.ui.rankView)
+    #             oneitem = QListWidgetItem()
+    #             oneitem.setWhatsThis(app.name)
+    #             self.ui.rankView.addItem(oneitem)
+    #             self.ui.rankView.setItemWidget(oneitem, rliw)
+    #     # self.ui.rankWidget.setVisible(True)
+    #
+    #     self.topratedload.stop_loading()
+    #     self.rank_ready = True
+    #     self.check_init_ready(bysignal)
 
     def slot_rating_reviews_ready(self,rnrlist):
-        LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
-        print(("receive ratings and reviews ready, count is:",len(rnrlist)))
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("receive ratings and reviews ready, count is %d", len(rnrlist))
+            if (Globals.DEBUG_SWITCH):
+                print(("receive ratings and reviews ready, count is:",len(rnrlist)))
         self.rnr_ready = True
 
     def slot_app_reviews_ready(self,reviewlist):
-        LOG.debug("receive reviews for an app, count is %d", len(reviewlist))
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("receive reviews for an app, count is %d", len(reviewlist))
 
         self.detailScrollWidget.add_review(reviewlist)
 
     def slot_app_screenshots_ready(self,sclist):
-        LOG.debug("receive screenshots for an app, count is %d", len(sclist))
-
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("receive screenshots for an app, count is %d", len(sclist))
         self.detailScrollWidget.add_sshot(sclist)
 
     def slot_close_detail(self):
@@ -1952,11 +2132,15 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_close_taskpage(self):
         self.ui.taskWidget.setVisible(False)
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+
+       # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
     def slot_clear_all_task_list(self):
-        count = self.ui.taskListWidget_complete.count()
-        print(("del_task_item:",count))
+        #count = self.ui.taskListWidget_complete.count()
+        count = self.ui.taskListWidget.count()
+        if (Globals.DEBUG_SWITCH):
+            print(("del_task_item:",count))
 
         truecount = 0
         top = 0 #Add by zhangxin
@@ -1964,11 +2148,17 @@ class SoftwareCenter(QMainWindow,Signals):
             # list is empty now
             if(truecount == count):
                 break
-            item = self.ui.taskListWidget_complete.item(top)
-            taskitem = self.ui.taskListWidget_complete.itemWidget(item)
-            print(("del_task_item: found an item",truecount,taskitem.app.name))
-            delitem = self.ui.taskListWidget_complete.takeItem(top)
-            self.ui.taskListWidget_complete.removeItemWidget(delitem)
+            #item = self.ui.taskListWidget_complete.item(top)
+            #taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+            item = self.ui.taskListWidget.item(top)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            if (Globals.DEBUG_SWITCH):
+                print(("del_task_item: found an item",truecount,taskitem.app.name))
+            #delitem = self.ui.taskListWidget_complete.takeItem(top)
+            delitem = self.ui.taskListWidget.takeItem(top)
+
+            #self.ui.taskListWidget_complete.removeItemWidget(delitem)
+            self.ui.taskListWidget.removeItemWidget(delitem)
             del delitem
             if taskitem.app.name in list(self.stmap.keys()):#for bug keyerror
                 del self.stmap[taskitem.app.name]
@@ -1986,18 +2176,54 @@ class SoftwareCenter(QMainWindow,Signals):
             # else:
             #     top = top + 1
 
+    # Empty downloaded or uninstalled software(清空已下载或者已卸载的软件)
+
+    def delete_all_finished_taskwork(self):
+        count = self.ui.taskListWidget.count()
+        truecount = 0
+        top =0
+        for i in range(count):
+        # list is empty now
+            if (truecount == count):
+                break
+            item = self.ui.taskListWidget.item(top)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+            if (taskitem.ui.status.text() == "完成"):
+                delitem = self.ui.taskListWidget.takeItem(top)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                del delitem
+                if taskitem.app.name in self.stmap.keys():  # for bug keyerror
+                    del self.stmap[taskitem.app.name]
+                    truecount = truecount + 1
+                # else:
+                #     top = top + 1
+
+            else:
+                pass
+        count = self.ui.taskListWidget.count()
+        if (count == 0):
+         # self.ui.btnGoto.setVisible(True)
+            self.ui.notaskImg.setVisible(True)
+            self.ui.textbox.setVisible(True)
+        else:
+         # self.ui.btnGoto.setVisible(False)
+          self.ui.notaskImg.setVisible(False)
+          self.ui.textbox.setVisible(False)
+
+
     def slot_count_application_update(self):
-        (inst, up, all) = self.appmgr.get_application_count(self.category)
-        self.ui.homecount.setText(str(all))
-        self.ui.allcount.setText(str(all))
+        (inst, up, all, apk) = self.appmgr.get_application_count(self.category)
+
+        # self.ui.allcount.setText(str(all))
         self.ui.uncount.setText(str(inst))
         self.ui.upcount.setText(str(up))
+        self.ui.apkcount.setText(str(apk))
         self.up_num = str(up)
         #add
-        #if up == 0:
-        #    self.ui.btnUp_num_long.hide()
-        #    self.ui.btnUp_num.hide()
-        #    #self.ui.btnUp_pic.hide()
+        if up == 0:
+            self.ui.btnUp_num_long.hide()
+            self.ui.btnUp_num.hide()
+           #self.ui.btnUp_pic.hide()
         if up < 10:
             self.ui.btnUp_num_long.hide()
             self.ui.btnUp_num.setText(str(up))
@@ -2009,16 +2235,23 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.btnUp_num_long.setText(99)
         #self.ui.btnUp_num.setText(str(up))
 
-        self.ui.wincountlabel.setText(str(self.winnum))
+        # self.ui.wincountlabel.setText(str(self.winnum))
+        if( Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE)):
+            self.ui.homecount.setText(str(all))
+        elif( Globals.NOWPAGE == PageStates.WINPAGE ):
+            self.ui.homecount.setText(str(self.winnum))
+
+        # self.reset_nav_bar_focus_one()
 
 
     def slot_goto_homepage(self, bysignal = False):
-        #if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-        #    #self.appmgr.get_recommend_apps(bysignal)
-        #    self.appmgr.get_ratingrank_apps(bysignal)
-        #    self.slot_rec_show_recommend()
+        if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
+            self.appmgr.get_recommend_apps(bysignal)
+            # self.appmgr.get_ratingrank_apps(bysignal)
+            self.slot_rec_show_recommend()
         #else:
         self.show_homepage(bysignal)
+
     def show_homepage(self, bysignal):
         if bysignal is False:
             self.ui.btnCloseDetail.setVisible(False)
@@ -2031,13 +2264,15 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.nowPage = 'homepage'
         self.categoryBar.reset_categorybar()
         self.category = ''
-        self.categoryBar.hide()
+        self.categoryBar.show()
         # self.switch_to_category(self.category,forceChange)
         # self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(True)
-        self.ui.rankWidget.setVisible(True)
+        self.ui.specialcategoryWidget.setVisible(True)
+        # self.ui.rankWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         # self.ui.xpWidget.setVisible(False)
@@ -2048,7 +2283,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
-        self.ui.btnHomepage.setEnabled(False)
+        if(self.ui.btnAll.isEnabled()):
+            self.ui.btnAll.setEnabled(False)
+
 
     def slot_goto_allpage(self, bysignal = False):
         self.ui.btnClosesearch.setVisible(False)
@@ -2057,11 +2294,11 @@ class SoftwareCenter(QMainWindow,Signals):
         elif Globals.NOWPAGE != PageStates.ALLPAGE:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
-            forceChange = True
+            # forceChange = True
         else:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
-            forceChange = False
+            # forceChange = False
         Globals.NOWPAGE = PageStates.ALLPAGE
         # if self.nowPage != 'allpage':
         #     forceChange = True
@@ -2074,12 +2311,14 @@ class SoftwareCenter(QMainWindow,Signals):
         self.categoryBar.reset_categorybar()
         self.category = ''
         self.categoryBar.show()
-        self.switch_to_category(self.category,forceChange)
+        self.switch_to_category(self.category, True)
         # self.detailScrollWidget.hide()
 
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(True)
         self.ui.allWidget.setVisible(True)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
@@ -2089,7 +2328,78 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
-        self.ui.btnAll.setEnabled(False)
+        # self.ui.btnAllsoftware.setEnabled(False)
+
+    def slot_goto_apkpage(self, bysignal = False):
+        if self.kydroid_service.hasKydroid == False:
+            self.messageBox.alert_msg("未检测到安卓兼容环境\n无法安装安卓APP")
+            return
+
+        self.ui.btnClosesearch.setVisible(False)
+        if bysignal is True:
+            forceChange = True
+        elif Globals.NOWPAGE != PageStates.APKPAGE:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
+            forceChange = True
+        else:
+            self.ui.detailShellWidget.hide()
+            self.ui.btnCloseDetail.setVisible(False)
+            forceChange = False
+        Globals.NOWPAGE = PageStates.APKPAGE
+
+        self.categoryBar.reset_categorybar()
+        self.category = ''
+        self.categoryBar.hide()
+
+        self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(False)
+        self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(True)
+        self.ui.upWidget.setVisible(False)
+        self.ui.unWidget.setVisible(False)
+        self.ui.winpageWidget.setVisible(False)
+        self.ui.searchWidget.setVisible(False)
+        self.ui.taskWidget.setVisible(False)
+        self.ui.userAppListWidget.setVisible(False)
+        self.ui.userTransListWidget.setVisible(False)
+
+        self.reset_nav_bar_focus_one()
+        self.ui.btnApk.setEnabled(False)
+
+        # self.loadingDiv.start_loading("")
+        if(self.apkpagefirst):
+            if not self.appmgr.check_kydroid_envrun():
+                self.slot_kydroid_envrun()
+            else :
+                self.apkpagefirst =False
+                if self.kydroid_service.hasKydroid != False:
+                    self.apkpageload.start_loading()
+                    # self.appmgr.get_kydroid_apklist()
+                    self.appmgr.apk_page_create()
+
+
+    def slot_kydroid_envrun(self):
+        os.system(KYDROID_STARTAPP_ENV + " &")
+        self.appmgr.start_cycle_check_kydroid_envrun()
+        self.apkpageload.start_loading()
+        self.ui.navWidget.setEnabled(False)
+        self.ui.headercw1.setEnabled(False)
+
+    def slot_kydroid_envrun_over(self,envrun):
+        if envrun:
+            self.apkListWidget.clear()
+            self.appmgr.get_kydroid_apklist()
+            self.apkpagefirst =False
+            self.appmgr.apk_page_create()
+            self.appmgr.get_recommend_apps(False)
+            # self.count_application_update.emit()
+        else :
+            self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
+        self.ui.navWidget.setEnabled(True)
+        self.ui.headercw1.setEnabled(True)
+        # self.apkpageload.stop_loading()
+        # self.appmgr.get_recommend_apps(False)
 
     def slot_goto_uppage(self, bysignal=False):
         self.ui.btnClosesearch.setVisible(False)
@@ -2119,7 +2429,9 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(True)
         self.ui.unWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
@@ -2159,7 +2471,9 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(True)
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(True)
         self.ui.winpageWidget.setVisible(False)
@@ -2177,11 +2491,14 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.btnCloseDetail.setVisible(False)
             self.ui.btnClosesearch.setVisible(True)
         self.re_cli = 1
-        if Globals.NOWPAGE == 0 or Globals.NOWPAGE == 1 or Globals.NOWPAGE == 2 or Globals.NOWPAGE == 3 or Globals.NOWPAGE == 4 :
+        if Globals.NOWPAGE == 0 or Globals.NOWPAGE == 1 or Globals.NOWPAGE == 2 or Globals.NOWPAGE == 3 or Globals.NOWPAGE == 4 or Globals.NOWPAGE == 14:
             self.re_page = Globals.NOWPAGE
+
         if Globals.NOWPAGE == PageStates.HOMEPAGE:
             Globals.NOWPAGE = PageStates.SEARCHHOMEPAGE
         elif Globals.NOWPAGE == PageStates.ALLPAGE:
+            Globals.NOWPAGE = PageStates.SEARCHALLPAGE
+        elif Globals.NOWPAGE == PageStates.APKPAGE:
             Globals.NOWPAGE = PageStates.SEARCHALLPAGE
         elif Globals.NOWPAGE == PageStates.UPPAGE:
             Globals.NOWPAGE = PageStates.SEARCHUPPAGE
@@ -2205,7 +2522,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.switch_to_category(self.category,True)
         # self.detailScrollWidget.hide()
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
@@ -2218,20 +2537,23 @@ class SoftwareCenter(QMainWindow,Signals):
         self.reset_nav_bar_focus_one()
         if(self.ui.taskWidget.isHidden() == True):
             self.ui.taskWidget.setVisible(True)
-            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
+           # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
+            self.ui.btnTask3.setIcon(QIcon('res/dowload_app2.png'))
         else:
             self.ui.taskWidget.setVisible(False)
-            self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+            self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+            #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         # self.prePage = "taskpage"
         # self.nowPage = 'taskpage'
         # self.ui.btnCloseDetail.setVisible(False)
 
     def set_taskwidget_visible_false(self):
         self.ui.taskWidget.setVisible(False)
-        self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
+        #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
 
     def slot_goto_winpage(self, bysignal=False):
+        Globals.NOWPAGE = PageStates.WINPAGE
         self.ui.btnClosesearch.setVisible(False)
         if bysignal is False:
             self.ui.detailShellWidget.hide()
@@ -2239,19 +2561,20 @@ class SoftwareCenter(QMainWindow,Signals):
             self.winListWidget.scrollToTop()
         self.init_win_solution_widget()
         self.count_application_update.emit()
-        Globals.NOWPAGE = PageStates.WINPAGE
         # self.prePage = "winpage"
         # self.nowPage = 'winpage'
         # self.emit(count_application_update)
         self.categoryBar.reset_categorybar()
         self.category = ''
-        self.categoryBar.hide()
+        self.categoryBar.show()
         # self.ui.categoryView.setEnabled(False)
         # self.ui.categoryView.clearSelection()
         # self.detailScrollWidget.hide()
         # self.ui.searchBG.setVisible(False)
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(True)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
@@ -2261,21 +2584,22 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
-        self.ui.btnWin.setEnabled(False)
-
+        # self.ui.btnWin.setEnabled(False)
 
     def slot_goto_uapage(self, bysignal=False):
+        Globals.NOWPAGE = PageStates.UAPAGE
         if bysignal is False:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
-        Globals.NOWPAGE = PageStates.UAPAGE
         # self.nowPage = 'uapage'
 
         self.categoryBar.reset_categorybar()
         self.category = ''
         self.categoryBar.hide()
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
@@ -2290,16 +2614,18 @@ class SoftwareCenter(QMainWindow,Signals):
         self.appmgr.get_user_applist()
 
     def slot_goto_translatepage(self, bysignal=False):#zx 2015.01.30
+        Globals.NOWPAGE = PageStates.TRANSPAGE
         if bysignal is False:
             self.ui.detailShellWidget.hide()
             self.ui.btnCloseDetail.setVisible(False)
-        Globals.NOWPAGE = PageStates.TRANSPAGE
 
         self.categoryBar.reset_categorybar()
         self.category = ''
         self.categoryBar.hide()
         self.ui.homepageWidget.setVisible(False)
+        self.ui.specialcategoryWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
+        self.ui.apkWidget.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
@@ -2319,9 +2645,14 @@ class SoftwareCenter(QMainWindow,Signals):
 
         elif PageStates.HOMEPAGE == Globals.NOWPAGE:
             self.slot_goto_homepage(True)
+            self.ui.specialcategoryWidget.setVisible(True)
 
         elif PageStates.ALLPAGE == Globals.NOWPAGE:
             self.slot_goto_allpage(True)
+            self.ui.specialcategoryWidget.setVisible(True)
+
+        elif PageStates.APKPAGE == Globals.NOWPAGE:
+            self.slot_goto_apkpage(True)
 
         elif PageStates.UPPAGE == Globals.NOWPAGE:
             self.slot_goto_uppage(True)
@@ -2331,6 +2662,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
         elif PageStates.WINPAGE == Globals.NOWPAGE:
             self.slot_goto_winpage(True)
+            self.ui.specialcategoryWidget.setVisible(True)
 
         elif PageStates.TRANSPAGE == Globals.NOWPAGE:
             self.slot_goto_translatepage(True)
@@ -2355,7 +2687,6 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.userAppListWidget.show()
 
                 for res in reslist:
-                    print("wb88888",res,reslist)
                     app_name = res['aid']['app_name']
                     install_date = res['date']
                     app = self.appmgr.get_application_by_name(app_name)
@@ -2445,13 +2776,14 @@ class SoftwareCenter(QMainWindow,Signals):
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
         try:
             if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
-                cd = ConfirmDialog("正在安装或者卸载软件\n现在退出后台会继续完成操作\n但退出可能导致软件中心异常", self)
+                cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
                 cd.confirmdialog_ok.connect(self.slot_exit_uksc)
                 cd.exec_()
             else:
                 self.slot_exit_uksc()
         except Exception as e:
-            print((str(e)))
+            if (Globals.DEBUG_SWITCH):
+                print((str(e)))
             self.slot_exit_uksc()
 
     def slot_exit_uksc(self):
@@ -2460,7 +2792,8 @@ class SoftwareCenter(QMainWindow,Signals):
             self.backend.clear_dbus_worklist()
             self.backend.exit_uksc_apt_daemon()
         except Exception as e:
-            print((str(e)))
+            if (Globals.DEBUG_SWITCH):
+                print((str(e)))
             
         self.dbusControler.stop()
         sys.exit(0)
@@ -2507,16 +2840,19 @@ class SoftwareCenter(QMainWindow,Signals):
             #print "sssssssssssssssssssssssssssssssss"
             #webbrowser.open_new_tab(self.adlist[self.adi].urlorpkgid)
 
-    def slot_click_rank_item(self, item):
-        pkgname = item.whatsThis()
-        app = self.appmgr.get_application_by_name(str(pkgname))
-        if app is not None and app.package is not None:
-            self.slot_show_app_detail(app)
-        else:
-            LOG.debug("rank item does not have according app...")
+    # def slot_click_rank_item(self, item):
+    #     pkgname = item.whatsThis()
+    #     app = self.appmgr.get_application_by_name(str(pkgname))
+    #     if app is not None and app.package is not None:
+    #         self.slot_show_app_detail(app)
+    #     else:
+    #         if (Globals.DEBUG_SWITCH):
+    #             LOG.debug("rank item does not have according app...")
 
     def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
+        if (Globals.DEBUG_SWITCH):
+            print("slot_show_app_detail",app)
         self.ui.btnClosesearch.setVisible(False)
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
@@ -2533,7 +2869,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.trans_card_status.emit(pkgname, status)
 
     def slot_update_source(self,quiet=False):
-        LOG.info("add an update task:%s","###")
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
         res = self.backend.update_source(quiet)
         # print 'wb111111111111:',res
@@ -2552,7 +2889,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.update_source.emit()
 
     def slot_click_install_debfile(self, debfile): #modified by zhangxin 11:19
-        LOG.info("add an install debfile task:%s", debfile.path)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("add an install debfile task:%s", debfile.path)
         # install deb deps
         if debfile.get_missing_deps():
             res = self.backend.install_deps(debfile.path)
@@ -2566,15 +2904,23 @@ class SoftwareCenter(QMainWindow,Signals):
             if res:
                 self.add_task_item(debfile, "install_debfile", isdeb=True)
 
+
     def slot_click_install(self, app):
-        LOG.info("add an install task:%s",app.name)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("add an install task:%s",app.name)
         self.appmgr.submit_pingback_app(app.name)
-        res = self.backend.install_package(app.name)
-        if res:
+
+        if isinstance(app, ApkInfo):
+            self.appmgr.download_apk(app)
             self.add_task_item(app, AppActions.INSTALL)
+        else:
+            res = self.backend.install_package(app.name)
+            if res:
+                self.add_task_item(app, AppActions.INSTALL)
 
     def slot_click_install_rcm(self, app):
-        LOG.info("add an install task:%s",app.name)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("add an install task:%s",app.name)
         self.appmgr.submit_pingback_app(app.name, isrcm=True)
         res = self.backend.install_package(app.name)
         if res:
@@ -2582,18 +2928,33 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
     def slot_click_upgrade(self, app):
-        LOG.info("add an upgrade task:%s",app.name)
-
-        res = self.backend.upgrade_package(app.name)
-        if res:
-            self.add_task_item(app, AppActions.UPGRADE)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("add an upgrade task:%s",app.name)
+        if isinstance(app, ApkInfo):
+            # if not self.check_kydroid_envrun():
+            #     os.system(KYDROID_STARTAPP_ENV)
+            #     envrun = self.cycle_check_kydroid_envrun()
+            #     if not envrun :
+            #         self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
+            #         return
+            self.appmgr.download_apk(app)
+            self.add_task_item(app, AppActions.INSTALL)
+        else:
+            res = self.backend.upgrade_package(app.name)
+            if res:
+                self.add_task_item(app, AppActions.UPGRADE)
 
     def slot_click_remove(self, app):
-        LOG.info("add a remove task:%s",app.name)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("add a remove task:%s",app.name)
 
-        res = self.backend.remove_package(app.name)
-        if res:
+        if isinstance(app, ApkInfo):
+            self.appmgr.uninstall_app(app)
             self.add_task_item(app, AppActions.REMOVE)
+        else:
+            res = self.backend.remove_package(app.name)
+            if res:
+                self.add_task_item(app, AppActions.REMOVE)
     
     def slot_ui_login(self,ui_username,ui_password):
         self.appmgr.ui_login(ui_username,ui_password)
@@ -2603,6 +2964,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.beforeLoginWidget.hide()
         self.userload.stop_loading()
         self.ui.username.setText(Globals.USER)
+        self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/woman-logo.png')}")
 
     def slot_rset_password(self,new_password):
         self.appmgr.rset_password(new_password)
@@ -2617,20 +2979,24 @@ class SoftwareCenter(QMainWindow,Signals):
         self.appmgr.ui_adduser(ui_username,ui_password,ui_email,ui_iden)
 
     def slot_submit_review(self, app_name, content):
-        LOG.info("submit one review:%s", content)
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("submit one review:%s", content)
         self.appmgr.submit_review(app_name, content)
 
     def slot_submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):#zx 2015.01.26
-        LOG.info("Translate the app %s "%(appname))
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("Translate the app %s "%(appname))
         self.appmgr.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description)
 
     def slot_submit_rating(self, app_name, rating):
-        LOG.info("submit one rating:%s", str(rating))
+        if (Globals.DEBUG_SWITCH):
+            LOG.info("submit one rating:%s", str(rating))
         self.appmgr.submit_rating(app_name, rating)
 
     def slot_click_cancel(self, app, action):
         if hasattr(app, "name"):
-            LOG.info("cancel an task:%s",app.name)
+            if (Globals.DEBUG_SWITCH):
+                LOG.info("cancel an task:%s",app.name)
             cancelinfo = [app.name, action]
         elif isinstance(app, str):
             cancelinfo = [app, action] #for update cancel
@@ -2658,37 +3024,70 @@ class SoftwareCenter(QMainWindow,Signals):
         self.apt_process_cancel.emit(appname, action)
 
     def slot_remove_task(self, tasknumber, app):
-        count = self.ui.taskListWidget_complete.count()
-        print(("del_task_item:",count))
+        #count = self.ui.taskListWidget_complete.count()
+        count = self.ui.taskListWidget.count()
+        if (Globals.DEBUG_SWITCH):
+            print(("del_task_item:",count))
         for i in range(count):
-            item = self.ui.taskListWidget_complete.item(i)
-            taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+            # item = self.ui.taskListWidget_complete.item(i)
+            # taskitem = self.ui.taskListWidget_complete.itemWidget(item)
+            item = self.ui.taskListWidget.item(i)
+            taskitem = self.ui.taskListWidget.itemWidget(item)
+
             if taskitem.tasknumber == tasknumber:
-                print(("del_task_item: found an item",i,app.name))
-                delitem = self.ui.taskListWidget_complete.takeItem(i)
-                self.ui.taskListWidget_complete.removeItemWidget(delitem)
+                if (Globals.DEBUG_SWITCH):
+                    print(("del_task_item: found an item",i,app.name))
+                # delitem = self.ui.taskListWidget_complete.takeItem(i)
+                delitem = self.ui.taskListWidget.takeItem(i)
+                self.ui.taskListWidget.removeItemWidget(delitem)
+                #self.ui.taskListWidget_complete.removeItemWidget(delitem)
                 del delitem
                 break
 
     # search
     def slot_searchDTimer_timeout(self, bysignal=False):
+        print("1111111111111111",Globals.NOWPAGE)
         self.searchDTimer.stop()
         if self.ui.headercw1.leSearch.text():
             #s = self.ui.headercw1.leSearch.text().toUtf8()
-            s = self.ui.headercw1.leSearch.text()
-            if len(s) < 2:
+            st = self.ui.headercw1.leSearch.text()
+            if len(st) < 2:
                 return
+            if (Globals.DEBUG_SWITCH):
+                print("search : ",st)
 
-            reslist = self.searchDB.search_software(s)
-
-            LOG.debug("search result:%d",len(reslist))
-            self.searchList = reslist
+            try:
+                keyword = str(st, "utf-8")
+            except:
+                keyword = st
+            reslist = []
             count = 0
-            for appname in self.searchList:
-                app = self.appmgr.get_application_by_name(appname)
-                if app is None or app.package is None:
-                    continue
-                count = count + 1
+            if(Globals.NOWPAGE == PageStates.APKPAGE):
+                for apk in self.appmgr.apk_list:
+                    if apk.pkgname:
+                        if keyword in apk.pkgname:
+                            reslist.append(apk.pkgname)
+                            count = count + 1
+                            continue
+                    if apk.displayname:
+                        if keyword in apk.displayname:
+                            count = count + 1
+                            reslist.append(apk.pkgname)
+                self.searchList = reslist
+
+
+            else:
+                reslist = self.searchDB.search_software(st)
+                self.searchList = reslist
+                for appname in self.searchList:
+                    app = self.appmgr.get_application_by_name(appname)
+                    if app is None :
+                        continue
+                    count = count + 1
+
+            if (Globals.DEBUG_SWITCH):
+                print("search result list: ",reslist)
+                LOG.debug("search result:%d",len(reslist))
             self.goto_search_page(bysignal)
 
 
@@ -2702,7 +3101,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     # name:app name ; processtype:fetch/apt ;
     def slot_status_change(self, name, processtype, action, percent, msg):
-        print(("########### ", msg," ",name," ",action," ",percent))
+        if (Globals.DEBUG_SWITCH):
+            print(("########### ", msg," ",name," ",action," ",percent))
         # if "安装本地包失败!" == msg:
         #     self.messageBox.alert_msg("安装本地包失败!")
         if action == AppActions.INSTALLDEBFILE and ".deb" == name[-4:]:
@@ -2830,6 +3230,56 @@ class SoftwareCenter(QMainWindow,Signals):
                             taskitem.status_change(processtype, percent, msg)
                     self.normalcard_progress_change.emit(name, percent, action)
 
+    def slot_apk_status_change(self, name, processtype, action, percent, msg):
+        # print(("########### ", msg," ",name," ",action," ",percent))
+        app = self.appmgr.get_apk_by_name(name)
+
+        if int(percent) >= 200:
+            if app is not None:
+                app.percent = 0
+            self.apt_process_finish.emit(name, action)
+            self.normalcard_progress_finish.emit(name)
+            self.del_task_item(name, action, False, True)
+
+
+            self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+
+        elif percent < 0:
+            if app is not None:
+                app.percent = 0
+            self.normalcard_progress_cancel.emit(name)
+            count = self.ui.taskListWidget.count()
+            for i in range(count):
+                item = self.ui.taskListWidget.item(i)
+                taskitem = self.ui.taskListWidget.itemWidget(item)
+                if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                    taskitem.status_change(processtype, percent, msg)
+            self.del_task_item(name, action, False, True)
+
+            if int(percent) == int(-1):
+                self.slot_cancel_for_work_filed(name, action)
+                buttom = QMessageBox.information(self, "安装APP出错", "安装APP出错:" + name + "\n", QMessageBox.Yes)
+            elif int(percent) == int(-11):
+                self.slot_cancel_for_work_filed(name, action)
+                buttom = QMessageBox.information(self, "卸载APP出错", "卸载APP出错:" + name + "\n", QMessageBox.Yes)
+            else:
+                self.slot_cancel_for_work_filed(name, action)
+                self.messageBox.alert_msg(AptActionMsg[action] + "失败")
+
+            self.appmgr.get_kydroid_apklist()
+
+        else:
+            if app is not None:
+                app.percent = percent
+            count = self.ui.taskListWidget.count()
+            for i in range(count):
+                item = self.ui.taskListWidget.item(i)
+                taskitem = self.ui.taskListWidget.itemWidget(item)
+                if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                    taskitem.status_change(processtype, percent, msg)
+            self.normalcard_progress_change.emit(name, percent, action)
+
+
     def slot_update_listwidge(self, appname, action):
         if action == AppActions.REMOVE:
             self.unListWidget.remove_card(appname)
@@ -2887,6 +3337,7 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_click_stop(self):
         self.ui.btnLogin.show()
         self.userload.stop_loading()
+        self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
 
     def slot_do_login_ui(self):
         self.userload.start_loading()
@@ -2898,6 +3349,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.afterLoginWidget.hide()
         self.ui.beforeLoginWidget.show()
         self.ui.btnLogin.show()
+        self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         Globals.EMAIL = ''
         Globals.USER = ''
         Globals.USER_DISPLAY = ''
@@ -3040,7 +3492,8 @@ def check_local_deb_file(url):
     return os.path.isfile(url)
 
 def quit(signum, frame):
-    print('You choose to stop software-center.')
+    if (Globals.DEBUG_SWITCH):
+        print('You choose to stop software-center.')
     sys.exit()
 def windows():
     window = QMainWindow()
@@ -3082,7 +3535,6 @@ def main():
     trans.load('po/qt_zh_CN.qm')
     QApplication.installTranslator(trans)
 
-
     # check show quiet
     argn = len(sys.argv)
     if(argn == 1):
@@ -3100,7 +3552,7 @@ def main():
 
     mw = SoftwareCenter()
     signal.signal(signal.SIGINT, quit)
-    signal.signal(signal.SIGTERM,quit)
+    signal.signal(signal.SIGTERM, quit)
     
     sys.exit(app.exec_())
 

@@ -46,7 +46,6 @@ from utils import run
 from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
-
 from backend.remote.piston_remoter import PistonRemoter
 
 class DetailScrollWidget(QScrollArea,Signals):
@@ -70,7 +69,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.mainwindow = parent
 
         self.server=PistonRemoter()
-
+		
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
@@ -206,6 +205,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
         self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
         self.ui.gradetitle.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
+
 
         self.ui.grade1.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
         self.ui.gradetitle1.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
@@ -538,7 +538,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.debfile.is_installable = True
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
         else:
-            print("it can not be installed......")
+            if (Globals.DEBUG_SWITCH):
+                print("it can not be installed......")
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
             self.messageBox.alert_msg("无法安装该软件包")
             # self.ui.btnInstall.setText("无法安装")
@@ -595,6 +596,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.summary.setReadOnly(True)#zx 2015.01.26
         self.ui.description.setReadOnly(True)
         # self.btns.reset_btns(self.app, self.workType)
+        if (Globals.DEBUG_SWITCH):
+            print("reset_btns111111",self.app, self.app.status)
         self.btns.reset_btns(self.app, self.app.status)
 
         self.ui.btn_change.show()#zx2015.01.26
@@ -811,11 +814,11 @@ class DetailScrollWidget(QScrollArea,Signals):
         # show loading
         self.reviewload.start_loading()
         self.sshotload.start_loading()
-        # send request
-        self.mainwindow.appmgr.get_application_screenshots(app.name,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+        # send
+        self.mainwindow.appmgr.get_application_screenshots(app,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
         self.mainwindow.appmgr.get_application_reviews(app.name)
 
-		
+
         if (Globals.USER != ''):
             my_rating = self.server.get_user_ratings(Globals.USER, self.app.name)
             if (my_rating == []):
@@ -823,6 +826,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             else:
                 self.reset_ratings(my_rating)
 
+
+       
 
     def add_review(self, reviewlist):
         # get maxpage
@@ -832,7 +837,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         add = len(reviewlist)
         count = self.ui.reviewListWidget.count()
         reviewHeight = (count + add) * 85
-        self.detailWidget.resize(873, 790 + reviewHeight)
+        self.detailWidget.resize(873, 840 + reviewHeight)
         self.ui.reviewListWidget.resize(873, reviewHeight)
 
         for review in reviewlist:
@@ -882,7 +887,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             else:
                 i = i - 1
                 break
-        print("iiiiiiiiiiiiiiiiii",i)
+        if (Globals.DEBUG_SWITCH):
+            print("iiiiiiiiiiiiiiiiii",i)
         self.ui.btnSshotBack.show()
         self.ui.btnSshotNext.show()
         self.ntm = i
@@ -1050,6 +1056,7 @@ class DetailScrollWidget(QScrollArea,Signals):
             orig_description = self.app.description
         else:
             orig_description = self.app.orig_description
+
         self.appname = str(self.ui.name.text()).strip()
         self.summary = str(self.ui.summary.toPlainText()).strip()
         self.description = str(self.ui.description.toPlainText()).strip()
@@ -1174,7 +1181,8 @@ class DetailScrollWidget(QScrollArea,Signals):
     def slot_submit_rating(self, rating):
         if self.app.from_ukscdb is not True:
             self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
-            print("ignore submit rating")
+            if (Globals.DEBUG_SWITCH):
+                print("ignore submit rating")
             return
         if(Globals.USER != ''):
             self.submitratingload.start_loading()
@@ -1183,18 +1191,18 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.show_login.emit()
 
     def slot_submit_rating_over(self, res):
-        res = res = res[0]['res']
+        res = res[0]['res']
         if(res != False):
             ratingavg = res['rating_avg']
             ratingtotal = res['rating_total']
 
             app_name = self.app.name
             my_rating=self.server.get_user_ratings(Globals.USER, app_name)
-            if(my_rating!=[]):
+            if(my_rating!=''):
                 self.reset_ratings(my_rating)
             else:
                 pass
-            
+
             self.mainwindow.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
             self.reset_rating_text(ratingavg, ratingtotal)
             self.mainwindow.messageBox.alert_msg("评分已提交")
@@ -1204,7 +1212,6 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.submitratingload.stop_loading()
 
 
-
     def reset_ratings(self,my_rating):
         my_rating_int=my_rating[0]['rating']
         self.ratingstar.changeGrade(int(my_rating_int))
@@ -1212,6 +1219,9 @@ class DetailScrollWidget(QScrollArea,Signals):
         my_rating_int=str(my_rating_int)
         self.ui.grade1.setText(my_rating_int)
         self.ui.gradetitle1.setText("分")
+
+
+
 
     def reset_rating_text(self, ratingavg, ratingtotal):
         self.app.ratings_average = ratingavg
@@ -1319,6 +1329,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             max = self.verticalScrollBar().maximum()
             if(now == max):
                 # maxpage check
+                if(not self.maxpage):
+                    self.maxpage = 0
                 if(self.reviewpage <= self.maxpage):
                     self.currentreviewready = False
                     reviewcount = self.ui.reviewListWidget.count()

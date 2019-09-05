@@ -29,58 +29,60 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.enums import Signals
 
-
-class Taskwidget(QWidget,Signals):
-
-    itemwidth = 146
-    spacing = 6
-
-    def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
-
-        self.setGeometry(10, 35, 302, 21)
-        self.tasktab = QLabel(self)
-        self.tasktab.setGeometry(10, 19, 149, 5)
-        self.tasktab.hide()
-        self.taskPanel = QWidget(self)
-        self.btnGroup = QButtonGroup(self.taskPanel)
-        self.btnGroup.buttonClicked.connect(self.slot_btn_clicked)
-
-        self.tasktab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
-
-        btntask1 = TaskButton("正在处理", self.taskPanel)
-        self.btnGroup.addButton(btntask1)
-        btntask1.move(0, 0)
-        btntask2 = TaskButton("处理完成", self.taskPanel)
-        self.btnGroup.addButton(btntask2)
-        btntask2.move(self.itemwidth+self.spacing, 0)
-
-
-    def slot_btn_clicked(self, btn):
-        btns = self.btnGroup.buttons()
-        for b in btns:
-            b.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
-        btn.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:center;}")
-        category = str(btn.display_name)
-        self.tasktab.move(btn.x(), self.tasktab.y())
-        self.tasktab.show()
-        self.click_task.emit(category)
-
-
-
-class TaskButton(QPushButton):
-
-    category_name = ''
-    display_name = ''
-
-    def __init__(self, displayname, parent=None):
-        QPushButton.__init__(self, parent)
-
-        self.resize(150, 16)
-        self.setCheckable(True)
-        self.setFocusPolicy(Qt.NoFocus)
-
-        self.display_name = displayname
-        self.setText(self.display_name)
-
-        self.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+#
+# class Taskwidget(QWidget,Signals):
+#
+#     itemwidth = 146
+#     spacing = 6
+#
+#     def __init__(self, parent=None):
+#         QWidget.__init__(self, parent)
+#
+#         self.setGeometry(10, 25, 340, 42)
+#         # self.setGeometry(10, 35, 302, 21)
+#         # self.tasktab = QLabel(self)
+#         # self.tasktab.setGeometry(10, 19, 149, 5)
+#         # self.tasktab.hide()
+#         self.taskPanel = QWidget(self)
+#         self.btnGroup = QButtonGroup(self.taskPanel)
+#        # self.btnGroup.buttonClicked.connect(self.slot_btn_clicked)
+#
+#         #self.tasktab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
+#
+#        # btntask1 = TaskButton("正在处理", self.taskPanel)
+#         btntask1 = TaskButton("下载管理", self.taskPanel)
+#         #self.btnGroup.addButton(btntask1)
+#         btntask1.move(97, 0)
+#         # btntask2 = TaskButton("处理完成", self.taskPanel)
+#         # self.btnGroup.addButton(btntask2)
+#         # btntask2.move(self.itemwidth+self.spacing, 0)
+#
+#
+#     # def slot_btn_clicked(self, btn):
+#     #     btns = self.btnGroup.buttons()
+#     #     for b in btns:
+#     #         b.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+#     #     btn.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:center;}")
+#     #     category = str(btn.display_name)
+#     #     self.tasktab.move(btn.x(), self.tasktab.y())
+#     #     self.tasktab.show()
+#     #     self.click_task.emit(category)
+#
+#
+#
+# class TaskButton(QPushButton):
+#
+#     category_name = ''
+#     display_name = ''
+#
+#     def __init__(self, displayname, parent=None):
+#         QPushButton.__init__(self, parent)
+#
+#         self.resize(150, 16)
+#         self.setCheckable(True)
+#         self.setFocusPolicy(Qt.NoFocus)
+#
+#         self.display_name = displayname
+#         self.setText(self.display_name)
+#
+#         self.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")

@@ -55,7 +55,7 @@ from models.enums import (
 from .utils import clear_token_from_ubuntu_sso_sync
 
 LOG = logging.getLogger(__name__)
-
+from models.globals import Globals
 
 class UbuntuSSO(GObject.GObject):
     """ Ubuntu SSO interface using the oauth token from the keyring
@@ -97,7 +97,8 @@ class UbuntuSSO(GObject.GObject):
             will also verify if the current token is valid and if not,
             trigger a cleanup/re-authenticate
         """
-        LOG.debug("whoami called")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("whoami called")
         spawner = SpawnHelper()
         spawner.connect("data-available", self._on_whoami_data)
         spawner.connect("error", lambda spawner, err: self.emit("error", err))
@@ -105,7 +106,8 @@ class UbuntuSSO(GObject.GObject):
         spawner.run_generic_piston_helper("UbuntuSsoAPI", "whoami")
 
     def _login_successful(self, sso_backend, oauth_result):
-        LOG.debug("_login_successful")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("_login_successful")
         # print("ubuntusso::_login_successful oauth_result: %s" % oauth_result)
         self.oauth = oauth_result
         self.loop.quit()
@@ -117,7 +119,8 @@ class UbuntuSSO(GObject.GObject):
             Note that this may raise httplib2 exceptions if the server
             is not reachable
         """
-        LOG.debug("verify_token")
+        if (Globals.DEBUG_SWITCH):
+            LOG.debug("verify_token")
         auth = piston_mini_client.auth.OAuthAuthorizer(
             token["token"], token["token_secret"],
             token["consumer_key"], token["consumer_secret"])
@@ -250,11 +253,13 @@ def get_ubuntu_sso_backend(): #get_ubuntu_sso_backend(xid):
 
 # test code
 def _login_success(lp, token):
-    print("success", lp, token)
+    if (Globals.DEBUG_SWITCH):
+        print("success", lp, token)
 
 
 def _login_failed(lp):
-    print("fail", lp)
+    if (Globals.DEBUG_SWITCH):
+        print("fail", lp)
 
 
 def _login_need_user_and_password(sso):
@@ -271,15 +276,18 @@ def _login_need_user_and_password(sso):
 # interactive test code
 if __name__ == "__main__":
     def _whoami(sso, result):
-        print("res: ", result)
+        if (Globals.DEBUG_SWITCH):
+            print("res: ", result)
         Gtk.main_quit()
 
     def _error(sso, result):
-        print("err: ", result)
+        if (Globals.DEBUG_SWITCH):
+            print("err: ", result)
         Gtk.main_quit()
 
     def _dbus_maybe_login_successful(ssologin, oauth_result):
-        print("got token, verify it now")
+        if (Globals.DEBUG_SWITCH):
+            print("got token, verify it now")
         sso = UbuntuSSO()
         sso.connect("whoami", _whoami)
         sso.connect("error", _error)

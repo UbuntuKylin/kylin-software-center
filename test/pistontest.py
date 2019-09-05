@@ -12,6 +12,7 @@ from piston_mini_client import (
     returns_json,
     returns_list_of,
 )
+from models.globals import Globals
 from piston_mini_client.validators import validate_pattern, validate
 from piston_mini_client.failhandlers import APIError
 
@@ -46,6 +47,7 @@ if __name__ == '__main__':
     rdata.version_uksc = '0.3.33'
 
     res = wb.submit_review(review=rdata)
-    print(res)
+    if (Globals.DEBUG_SWITCH):
+        print(res)
     # decoded = json.loads(res)
     # print decoded

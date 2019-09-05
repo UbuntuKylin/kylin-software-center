@@ -5,7 +5,7 @@ __author__ = 'shine'
 import os
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
+from models.globals import Globals
 import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -69,13 +69,15 @@ class SoftwareCenter(QMainWindow):
         bc.move(0,200)
 
     def tedo(self):
-        print(self.te.toPlainText())
+        if (Globals.DEBUG_SWITCH):
+            print(self.te.toPlainText())
 
     def haha(self,a):
         import sip
         if(a.text() == "ha"):
-            print(a.isChecked())
-            print(a.isDown())
+            if (Globals.DEBUG_SWITCH):
+                print(a.isChecked())
+                print(a.isDown())
             cards = self.ww.children()
             for card in cards:
                 # del card
@@ -84,12 +86,14 @@ class SoftwareCenter(QMainWindow):
             # if(a.isChecked() == True):
             #     print a.text()
         else:
-            print("he")
+            if (Globals.DEBUG_SWITCH):
+                print("he")
             app = Appp()
             rc = RcmdCard(app,self.ww)
 
     def hahaha(self):
-        print("hahaha")
+        if (Globals.DEBUG_SWITCH):
+            print("hahaha")
         # btn = QPushButton("122", self.ww)
         # btn.resize(100,30)
         # btn.move(200,100)
@@ -137,7 +141,8 @@ def main():
     # for fm in db.families():
     #     print fm
 
-    print(0/10)
+    if (Globals.DEBUG_SWITCH):
+        print(0/10)
 
     sys.exit(app.exec_())
 

@@ -245,18 +245,23 @@ class Login(QWidget,Signals):
         res = res[0]['res']
         try:
             if res == False:
-                print("$$$$$","网络或服务异常")
+                if (Globals.DEBUG_SWITCH):
+                    print("$$$$$","网络或服务异常")
             elif res == 1 or res == None:
                 #数据异常
-                print ("$$$$$","自动登录数据异常")
+                if (Globals.DEBUG_SWITCH):
+                    print ("$$$$$","自动登录数据异常")
             elif res == 2:
                 #用户验证失败
-                print ("$$$$$","自动用户验证失败")
+                if (Globals.DEBUG_SWITCH):
+                    print ("$$$$$","自动用户验证失败")
             elif res == 3:
                 #服务器异常
-                print ("$$$$$","自动服务器异常")
+                if (Globals.DEBUG_SWITCH):
+                    print ("$$$$$","自动服务器异常")
             else :
-                print ("$$$$$","自动登录成功")
+                if (Globals.DEBUG_SWITCH):
+                    print ("$$$$$","自动登录成功")
                 data = res[0]
                 rem = res[1]
                 rem = rem[0]
@@ -271,36 +276,43 @@ class Login(QWidget,Signals):
                 Globals.USER_LEVEL = rem["level"]
                 Globals.PASSWORD = self.listlogin[1]
                 self.ui_login_success.emit()
-                print ("ggggggggggggggggggggggg",Globals.USER_IDEN,Globals.USER_LEVEL)
+                if (Globals.DEBUG_SWITCH):
+                    print ("ggggggggggggggggggggggg",Globals.USER_IDEN,Globals.USER_LEVEL)
         except:
-            print ("######","自动服务器异常")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","自动服务器异常")
 
     def slot_get_ui_login_over(self,res):
         INO = QMessageBox()
         INO.setWindowTitle('提示')
         INO.addButton(QPushButton('确定'), QMessageBox.YesRole)
         res = res[0]['res']
-        print ("11111111111",res)
+        if (Globals.DEBUG_SWITCH):
+            print ("11111111111",res)
 
         if  res == False:
-            print ("######","网络或服务异常")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","网络或服务异常")
             INO.setText('网络或服务异常')
             INO.exec_()
         elif res == 1 or res == None:
             #数据异常
-            print ("######","数据异常")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","数据异常")
             #INO.information(self,"提示","数据异常",QMessageBox.Yes)
             INO.setText('数据异常')
             INO.exec_()
         elif res == 2:
             #用户验证失败
-            print ("######","用户验证失败")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","用户验证失败")
             #INO.information(self,"提示","用户验证失败",QMessageBox.Yes)
             INO.setText('用户验证失败')
             INO.exec_()
         elif res == 3:
             #服务器异常
-            print ("######","服务器异常")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","服务器异常")
             #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
             INO.setText('服务器异常')
             INO.exec_()
@@ -312,11 +324,13 @@ class Login(QWidget,Signals):
                 rem = res[1]
                 rem = rem[0]
                 res = data[0]
-                print ("vvvvvvvvvvvvvvvvvvvv",res,rem)
+                if (Globals.DEBUG_SWITCH):
+                    print ("vvvvvvvvvvvvvvvvvvvv",res,rem)
                 Globals.USER = res["username"]
                 Globals.USER_DISPLAY = res["username"]
                 Globals.EMAIL = res["email"]
-                print ("dddddddddddddd",Globals.USER,Globals.USER_DISPLAY)
+                if (Globals.DEBUG_SWITCH):
+                    print ("dddddddddddddd",Globals.USER,Globals.USER_DISPLAY)
                 Globals.USER_IDEN = rem["identity"]
                 Globals.LAST_LOGIN = res["last_login"]
                 Globals.USER_LEVEL = rem["level"]
@@ -346,7 +360,8 @@ class Login(QWidget,Signals):
                 self.messageBox.alert_msg("服务器异常")
     def slot_get_ui_adduser_over(self,res):
         res = res[0]['res']
-        print ("ddddddddddddddd",res)
+        if (Globals.DEBUG_SWITCH):
+            print ("ddddddddddddddd",res)
         INO = QMessageBox()
         INO.setWindowTitle('提示')
         INO.addButton(QPushButton('确定'), QMessageBox.YesRole)
@@ -358,31 +373,36 @@ class Login(QWidget,Signals):
 
         if res == 1 or res == None:
             #数据异常
-            print ("######","数据异常")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","数据异常")
             #INO.information(self,"提示","数据异常",QMessageBox.Yes)
             INO.setText('数据异常')
             INO.exec_()
 
         elif res == 2:
             #用户名已存在
-            print ("######","用户名已存在")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","用户名已存在")
             #INO.information(self,"提示","用户名已存在",QMessageBox.Yes)
             INO.setText('用户名已存在')
             INO.exec_()
         elif res == 4:
             #邮箱已存在
-            print ("######","邮箱已存在")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","邮箱已存在")
             #INO.information(self,"提示","邮箱已被注册",QMessageBox.Yes)
             INO.setText('邮箱已被注册')
             INO.exec_()
         elif res == 3:
             #服务器异常
-            print ("######1","服务器异常")
+            if (Globals.DEBUG_SWITCH):
+                print ("######1","服务器异常")
             #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
             INO.setText('服务器异常')
             INO.exec_()
         elif res == 0:
-            print ("######","注册成功")
+            if (Globals.DEBUG_SWITCH):
+                print ("######","注册成功")
             #INO.information(self,"提示","注册成功",QMessageBox.Yes)
             INO.setText('注册成功')
             INO.exec_()
@@ -410,6 +430,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

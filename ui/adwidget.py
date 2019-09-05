@@ -29,6 +29,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.advertisement import Advertisement
+from models.globals import Globals
 from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
 #AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
 #UBUNTUKYLIN_RES_AD_PATH = data+ "ads/"
@@ -145,7 +146,8 @@ class ADWidget(QMainWindow):
         animation.setEndValue(QRect(300, 20, 200, 200))
         #animation.setEasingCurve(QEasingCurve.OutBounce)
         animation.start()
-        print("xxxxxxxxxxxxxxxxxxxxxxxx")
+        if (Globals.DEBUG_SWITCH):
+            print("xxxxxxxxxxxxxxxxxxxxxxxx")
         #self.admtimer.start(3000)
     def akg_move_left(self):
         pass
@@ -159,7 +161,8 @@ class ADWidget(QMainWindow):
             self.wkg = next(self.speed)
         except:
             self.wkg = 0
-        print(("cccccccccccccccccc",self.wkg))
+        if (Globals.DEBUG_SWITCH):
+            print(("cccccccccccccccccc",self.wkg))
         martix = QMatrix()
         martix.scale(0.99,0.99)
         #martix.scale((200+wkg)/400,(200+wkg)/400)
@@ -176,7 +179,8 @@ class ADWidget(QMainWindow):
         
 #调整大小
     def resize_(self, width, height):
-        print("ssssssssssssssssssssss")
+        if (Globals.DEBUG_SWITCH):
+            print("ssssssssssssssssssssss")
         self.resize(width, height)
         self.adsshadow.resize(width, self.adsshadow.height())
         self.adContentWidget.resize(self.adl * width, height)

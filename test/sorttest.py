@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+from models.globals import Globals
 class App:
     name = ''
     rank = 32767
@@ -19,4 +19,5 @@ if __name__ == "__main__":
     applist_sorted = sorted(applist_orig, key = lambda applist_orig: applist_orig["rank"], reverse=False)
 
     for app in applist_sorted:
-        print(app.name, "   ", app.rank)
+        if (Globals.DEBUG_SWITCH):
+            print(app.name, "   ", app.rank)

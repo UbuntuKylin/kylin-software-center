@@ -32,7 +32,7 @@ import traceback
 import time
 import xml.sax.saxutils
 import errno
-
+from models.globals import Globals
 # py3 compat
 try:
     from urllib.parse import urlsplit
@@ -85,7 +85,8 @@ class ExecutionTime(object):
         if time_spend < self.suppress_less_than_n_seconds:
             return
         logger = logging.getLogger("softwarecenter.performance")
-        logger.debug("%s: %s" % (self.info, time_spend))
+        if (Globals.DEBUG_SWITCH):
+            logger.debug("%s: %s" % (self.info, time_spend))
         if self.with_traceback:
             log_traceback("populate model from query: '%s' (threaded: %s)")
 
@@ -118,11 +119,14 @@ class TraceActiveObjectTypes(object):
             if not type(obj) in new_obj_types:
                 new_obj_types[type(obj)] = 0
             new_obj_types[type(obj)] += 1
-        print("+++ new types after '%s':" % self.info)
+        if (Globals.DEBUG_SWITCH):
+            print("+++ new types after '%s':" % self.info)
         #print new_obj_types
         for v in sorted(new_obj_types, key=new_obj_types.get):
-            print(v, new_obj_types[v])
-        print("/+++\n")
+            if (Globals.DEBUG_SWITCH):
+                print(v, new_obj_types[v])
+        if (Globals.DEBUG_SWITCH):
+            print("/+++\n")
 
 
 class TraceMemoryUsage(object):
@@ -171,7 +175,8 @@ def log_traceback(info):
     the code at this place. Logs to softwarecenter.traceback
     """
     logger = logging.getLogger("softwarecenter.traceback")
-    logger.debug("%s: %s" % (info, "".join(traceback.format_stack())))
+    if (Globals.DEBUG_SWITCH):
+        logger.debug("%s: %s" % (info, "".join(traceback.format_stack())))
 
 
 def wait_for_apt_cache_ready(f):
@@ -556,12 +561,14 @@ def clear_token_from_ubuntu_sso_sync(appname):
     # add to fix the argument count mismatch problem between dbus signals and handles
     def _on_credential_cleared(appname):
         # print 'CredentialsCleared'
-        LOG.info('LOGOUT: Credentials of "' + appname + '" cleared')
+        if (Globals.DEBUG_SWITCH):
+            LOG.info('LOGOUT: Credentials of "' + appname + '" cleared')
         loop.quit
 
     def _on_credential_not_found(appname):
         # print 'CredentialsNotFound'
-        LOG.info('LOGOUT: Credentials of "' + appname + '" not found')
+        if (Globals.DEBUG_SWITCH):
+            LOG.info('LOGOUT: Credentials of "' + appname + '" not found')
         loop.quit
 
     def _on_credential_error(appname, error_dict):
@@ -901,7 +908,8 @@ class SimpleFileDownloader(GObject.GObject):
             instead a permanent cache dir - no etag or timestamp
             checks are performed.
         """
-        self.LOG.debug(
+        if (Globals.DEBUG_SWITCH):
+            self.LOG.debug(
             "download_file: %s %s %s" % (url, dest_file_path, use_cache))
 
         # cancel anything pending to avoid race conditions
@@ -968,7 +976,8 @@ class SimpleFileDownloader(GObject.GObject):
         return True
 
     def _check_url_reachable_and_then_download_cb(self, f, result, want_url):
-        self.LOG.debug("_check_url_reachable_and_then_download_cb: %s" % f)
+        if (Globals.DEBUG_SWITCH):
+            self.LOG.debug("_check_url_reachable_and_then_download_cb: %s" % f)
         if not self._ensure_correct_url(want_url):
             return
         # normal operation
@@ -976,20 +985,23 @@ class SimpleFileDownloader(GObject.GObject):
             info = f.query_info_finish(result)
             etag = info.get_etag()
             self.emit('file-url-reachable', True)
-            self.LOG.debug("file reachable %s %s %s" % (self.url,
+            if (Globals.DEBUG_SWITCH):
+                self.LOG.debug("file reachable %s %s %s" % (self.url,
                                                         info,
                                                         etag))
             # url is reachable, now download the file
             f.load_contents_async(
                 self._cancellable, self._file_download_complete_cb, want_url)
         except GObject.GError as e:
-            self.LOG.debug("file *not* reachable %s" % self.url)
+            if (Globals.DEBUG_SWITCH):
+                self.LOG.debug("file *not* reachable %s" % self.url)
             self.emit('file-url-reachable', False)
             self.emit('error', GObject.GError, e)
         del f
 
     def _file_download_complete_cb(self, f, result, want_url):
-        self.LOG.debug("file download completed %s" % self.dest_file_path)
+        if (Globals.DEBUG_SWITCH):
+            self.LOG.debug("file download completed %s" % self.dest_file_path)
         if not self._ensure_correct_url(want_url):
             return
         # The result from the download is actually a tuple with three
@@ -1002,7 +1014,8 @@ class SimpleFileDownloader(GObject.GObject):
             # situation
             # 1. content = f.load_contents_finish(result)[0]
             #    Gio.Error: DBus error org.freedesktop.DBus.Error.NoReply
-            self.LOG.debug(e)
+            if (Globals.DEBUG_SWITCH):
+                self.LOG.debug(e)
             self.emit('error', Exception, e)
             return
         # write out the data
@@ -1040,6 +1053,7 @@ def get_parent_xid(widget):
 
 if __name__ == "__main__":
     s = decode_xml_char_reference('Search&#x2026;')
-    print(s)
-    print((type(s)))
-    print((str(s)))
+    if (Globals.DEBUG_SWITCH):
+        print(s)
+        print((type(s)))
+        print((str(s)))
