@@ -68,9 +68,9 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.name.setStyleSheet("QLabel{background-color: transparent;font-size:14px;color:#000000}")
 
         #self.ui.status.setStyleSheet("QLabel{font-size:12px;font-weight:bold;background-color:#EAF0F3;}")
-        self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:#EAF0F3;}")
+        self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:#ffffff;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
-        self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
@@ -79,10 +79,14 @@ class TaskListItemWidget(QWidget,Signals):
 
         if app.status == PkgStates.INSTALLING:#"installing":
             #self.ui.name.setText("安装 "+app.name)
+            self.ui.progressBarsmall.setValue(self.app.percent)
             text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
             self.uiname = "安装 "+app.name
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:rgba(45,138,225,20%);}")
+            self.ui.progresslabel.setStyleSheet("QLabel{background-color:#ffffff;color:#2d8ae1;}")
+            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                "QProgressBar:chunk{background-color:#2d8ae1;}")
             self.ui.progressBar.setWindowOpacity(0.8)
             if str(text).endswith("…") is True:
                 self.ui.name.setToolTip("安装 "+app.name)
@@ -90,20 +94,30 @@ class TaskListItemWidget(QWidget,Signals):
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.REMOVING:#"uninstalling":
             #self.ui.name.setText("卸载 "+app.name)
+            self.ui.progressBarsmall.setValue(self.app.percent)
             text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
             self.uiname = "卸载 "+app.name
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:rgba(233,83,33,20%);}")
+            self.ui.progresslabel.setStyleSheet("QLabel{background-color:#ffffff;color:#e95421;}")
+            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                "QProgressBar:chunk{background-color:#e95421;}")
+
             if str(text).endswith("…") is True:
                 self.ui.name.setToolTip("卸载 "+app.name)
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.UPGRADING:#"upgrading":
+            self.ui.progressBarsmall.setValue(self.app.percent)
             #self.ui.name.setText("升级 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
             self.uiname = "升级 "+app.name
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:rgba(7,195,11,20%);}")
+            self.ui.progresslabel.setStyleSheet("QLabel{background-color:#ffffff;color:#07c30b;}")
+
+            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                "QProgressBar:chunk{background-color:#07c30b;}")
             if str(text).endswith("…") is True:
                 self.ui.name.setToolTip("升级 "+app.name)
             else:
@@ -143,10 +157,10 @@ class TaskListItemWidget(QWidget,Signals):
             self.ui.status.setText(dftext)
         if(uiname):
             text = setLongTextToElideFormat(self.ui.name, uiname)
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:#FDD99A;}")
             self.ui.name.setToolTip(uiname)
-        self.ui.progressBar.hide()
+        # self.ui.progressBar.hide()
         self.ui.progresslabel.hide()
         self.ui.status.show()
 
@@ -160,11 +174,12 @@ class TaskListItemWidget(QWidget,Signals):
             text = ''
             if(processtype == 'fetch'):
                 text = "正在下载: "
+                self.ui.name.setText( "下载 " + self.app.name)
                 if percent >= 100:
                     #text = "下载完成，开始安装..."
                     self.ui.progressBar.reset()
                     self.ui.progresslabel.setText("")
-                    self.ui.progressBar.hide()
+                    # self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     self.ui.status.show()
                     self.ui.status.setText("正在安装")
@@ -174,13 +189,16 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.progresslabel.show()
                     self.ui.status.hide()
                     self.ui.progressBar.setValue(percent)
+                    self.ui.progressBarsmall.setValue(self.app.percent)
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
             elif(processtype == 'apt'):
                 text = "正在执行: "
+                if "下载" in self.ui.name.text():
+                    self.ui.name.setText("安装 " + self.app.name)
                 if percent < float(0.0):
                     #print percent
-                    self.ui.progressBar.hide()
+                    # self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     if int(percent) == int(-7):
                         self.ui.status.setText("完成")
@@ -190,33 +208,36 @@ class TaskListItemWidget(QWidget,Signals):
                     self.finish = True
                 elif percent >= 100:
                     text = "安装完成"
-                    self.ui.progressBar.hide()
+                    # self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     self.ui.status.setText("完成")
                     self.ui.status.show()
                     self.ui.progressBar.setValue(percent)
+                    self.ui.progressBarsmall.setValue(self.app.percent)
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
                 else:
                     if (self.ui.status.text() != '完成'):
                         self.ui.progresslabel.show()
-                        self.ui.progressBar.hide()
                         self.ui.status.hide()
                         self.ui.progressBar.setValue(percent)
+                        self.ui.progressBarsmall.setValue(self.app.percent)
                         self.ui.progressBar.show()
                         # self.ui.progresslabel.setText(self.ui.progressBar.value())
                         self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
                     else:
                         self.ui.progresslabel.hide()
-                        self.ui.progressBar.hide()
+                        # self.ui.progressBar.hide()
                         self.ui.status.show()
                         # self.ui.progressBar.setValue(percent)
 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname and action == self.action:
-            self.ui.progressBar.setValue(100)
+            #self.ui.progressBar.setValue(100)
+            self.ui.progressBar.setValue(0)
+            self.ui.progressBarsmall.setValue(0)
             self.ui.progresslabel.setText("")
-            self.ui.progressBar.hide()
+            # self.ui.progressBar.hide()
             self.ui.progresslabel.hide()
             self.ui.status.show()
             self.ui.status.setText("完成")

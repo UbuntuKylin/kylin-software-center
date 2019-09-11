@@ -65,7 +65,7 @@ class Ui_WinCard(object):
         # self.isInstalled.setText(_fromUtf8(""))
         # self.isInstalled.setObjectName(_fromUtf8("isInstalled"))
         self.arronicon = QLabel(self.baseWidget)
-        self.arronicon.setGeometry(QtCore.QRect(192, 30, 26, 21))
+        self.arronicon.setGeometry(QtCore.QRect(170, 20, 50, 31))
         self.arronicon.setText(_fromUtf8(""))
         self.arronicon.setObjectName(_fromUtf8("arronicon"))
         # self.detailWidget = QWidget(WinCard)
@@ -84,7 +84,7 @@ class Ui_WinCard(object):
         self.btnDetail.setText(_fromUtf8(""))
         self.btnDetail.setObjectName(_fromUtf8("btnDetail"))
         self.btn = QPushButton(self.baseWidget)
-        self.btn.setGeometry(QtCore.QRect(288, 75, 80, 26))
+        self.btn.setGeometry(QtCore.QRect(313, 75, 80, 26))
         self.btn.setText(_fromUtf8(""))
         self.btn.setObjectName(_fromUtf8("btn"))
 

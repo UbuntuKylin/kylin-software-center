@@ -131,7 +131,7 @@ class ThreadWorker(threading.Thread):
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
-            self.appmgr.cat_list = cat_list
+            self.appmgr.cat_list[c] = cat
 
         Globals.ALL_APPS = {}
         return cat_list
@@ -409,7 +409,7 @@ class AppManager(QObject,Signals):
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
-
+        self.cat_list = cat_list
         Globals.ALL_APPS = {}# zx10.05 To free the all_apps dict after all apps init ready for using less memeory
         return cat_list
 
@@ -503,7 +503,7 @@ class AppManager(QObject,Signals):
                 if cat in self.cat_list.keys():
                     apps = self.cat_list[cat].apps
                 else:
-                    apps = []
+                    apps = {}
             else:
                 apps = self.download_category_apps(cat,catdir)
 
@@ -666,10 +666,8 @@ class AppManager(QObject,Signals):
 
         if app is not None:
             reviews = app.get_reviews(page)
-        print("review 000:",reviews)
         # force == True means need get review from server immediately
         if reviews is not None and force == False:
-            print("get_application_reviews in memory")
             self.dispatchWorkerResult(item,reviews)
             return reviews
         else:
@@ -726,13 +724,14 @@ class AppManager(QObject,Signals):
         elif item.funcname == "get_screenshots":
             if (Globals.DEBUG_SWITCH):
                 LOG.debug("screenshots ready:%s",len(reslist))
-            print("get_application_screenshots wb444",reslist)
+                print("get_application_screenshots wb444",reslist)
             screenshots = reslist
             app = self.get_application_by_name(item.kwargs['packagename'])
             if app is not None and app.package is not None:
                 app.screenshots = screenshots
             else:
-                print((item.kwargs['packagename'], " not exist"))
+                if (Globals.DEBUG_SWITCH):
+                    print((item.kwargs['packagename'], " not exist"))
             self.app_screenshots_ready.emit(screenshots)
         elif item.funcname == "get_rating_review_stats":
             if (Globals.DEBUG_SWITCH):
@@ -1258,7 +1257,7 @@ class AppManager(QObject,Signals):
             if apk.name == app_dict['package_name']:
                 apk.is_installed = True
                 apk.installed_version = app_dict['version_name']
-                if apk.candidate_version != apk.installed_version:
+                if str(apk.candidate_version) > str(apk.installed_version):
                     apk.is_upgradable = True
                 return True
 

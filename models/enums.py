@@ -258,7 +258,8 @@ class Signals:
     ad_signal = pyqtSignal(int)
 
     #wb 2015.06.26
-    normalcard_progress_change = pyqtSignal(str,float,int)
+    normalcard_progress_change = pyqtSignal(str,float,str)
+    listitem_progress_change=pyqtSignal(str,float,str)
     normalcard_progress_finish = pyqtSignal(str)
     normalcard_progress_cancel = pyqtSignal(str)
     click_task = pyqtSignal(str)

@@ -56,24 +56,30 @@ class ListItemWidget(QWidget,Signals):
         self.ui.cbSelect.raise_()
         self.ui.btn.raise_()
 
-        self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
+        self.ui.progressBar.lower()
 
+        self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         self.ui.installedsize.setAlignment(Qt.AlignCenter)
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelect.setFocusPolicy(Qt.NoFocus)
 
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-color: transparent;background-image:url('" + iconpath + "')}")
 
-        self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+        self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:transparent;}.QWidget:hover{border:1px solid #2d8ae1}")
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
-        self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
-        self.ui.installedsize.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
-        self.ui.summary.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.name.setStyleSheet("QLabel{background-color: transparent;font-size:14px;color:#000000;}")
+        self.ui.installedsize.setStyleSheet("QLabel{background-color: transparent;font-size:12px;color:#888888;}")
+        self.ui.summary.setStyleSheet("QLabel{background-color: transparent;font-size:12px;color:#888888;}")
         # self.ui.bg.setStyleSheet("QWidget#bg{background-color:#F3F2F5;border:1px solid #F8F7FA;}")
         self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-color:transparent;}")
         # self.ui.cbSelect.setStyleSheet("QCheckBox{outline: none;border:1px solid #d5d5d5;}QCheckBox:hover{border:1px solid #2d8ae1;}")
-        self.ui.installedDate.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.installedDate.setStyleSheet("QLabel{background-color: transparent;font-size:12px;color:#888888;}")
+
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
+                                          "QProgressBar:chunk{background-color:#5DC4FE;}")
+        self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
+
         if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
             self.ui.name.setText(app.displayname_cn)
         else:
@@ -85,6 +91,8 @@ class ListItemWidget(QWidget,Signals):
 
         installedsize = app.installedSize
         installedsizek = installedsize / 1024
+
+
         if(installedsizek < 1024):
             self.ui.installedsize.setText(str(installedsizek) + " KB")
         else:
@@ -171,17 +179,21 @@ class ListItemWidget(QWidget,Signals):
             if(self.workType == 'ins'):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
                 self.ui.btn.setText("正在安装")
+
+                self.ui.btn.hide()
                 self.install_app.emit(self.app)
                 self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
             elif(self.workType == 'up'):
                 self.app.status = PkgStates.UPGRADING
                 self.upgrade_app.emit(self.app)
                 self.ui.btn.setText("正在升级")
+                self.ui.btn.hide()
                 self.get_card_status.emit(self.app.name, PkgStates.UPGRADING)
             elif(self.workType == 'un'):
                 self.app.status = PkgStates.REMOVING
                 self.remove_app.emit(self.app)
                 self.ui.btn.setText("正在卸载")
+                self.ui.btn.hide()
                 self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
 
 
@@ -195,6 +207,11 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.status.show()
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("卸载")
+                    self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+                    self.ui.progressBar.hide()
+                    self.ui.progresslabel.hide()
+                    #self.ui.progressBarsmall.hide()
+                    self.ui.btn.show()
                     self.app.status = PkgStates.UNINSTALL
                     self.ui.btn.setEnabled(True)
                     self.workType = "un"
@@ -202,6 +219,12 @@ class ListItemWidget(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                 else:
                     self.ui.btn.setText("启动")
+                    self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+                    self.ui.progressBar.hide()
+                    self.ui.progresslabel.hide()
+                    #self.ui.progressBarsmall.hide()
+                    self.ui.btn.show()
+
                     self.app.status = PkgStates.RUN
                     self.ui.btn.setEnabled(True)
                     self.workType = "run"
@@ -210,6 +233,12 @@ class ListItemWidget(QWidget,Signals):
             elif action == AppActions.REMOVE:
                 self.ui.status.hide()
                 self.ui.btn.setText("安装")
+                self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+                self.ui.progressBar.hide()
+                self.ui.progresslabel.hide()
+                #self.ui.progressBarsmall.hide()
+                self.ui.btn.show()
+
                 self.app.status = PkgStates.INSTALL
                 self.ui.btn.setEnabled(True)
                 self.workType = "ins"
@@ -220,20 +249,24 @@ class ListItemWidget(QWidget,Signals):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
                 self.ui.btn.setText("安装")
+                self.ui.btn.show()
                 self.ui.status.hide()
                 self.ui.btn.setEnabled(True)
                 self.ui.cbSelect.setEnabled(True)
             elif action == AppActions.REMOVE:
                 if(run.get_run_command(self.app.name) == ""):
                     self.ui.btn.setText("卸载")
+                    self.ui.btn.show()
                     self.ui.status.show()
                     self.ui.btn.setEnabled(True)
                 else:
                     self.ui.btn.setText("启动")
+                    self.ui.btn.show()
                     self.ui.btn.setEnabled(True)
                 self.ui.cbSelect.setEnabled(False)
             elif action == AppActions.UPGRADE:
                 self.ui.btn.setText("升级")
+                self.ui.btn.show()
                 self.ui.btn.setEnabled(True)
                 self.ui.status.show()
                 self.ui.cbSelect.setEnabled(True)
@@ -256,4 +289,59 @@ class ListItemWidget(QWidget,Signals):
                 self.app.status = PkgStates.UPGRADING
                 self.ui.btn.setText("正在升级")
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
+
+    def slot_progress_change(self, pkgname, percent, status):
+        if self.app.name == pkgname:
+            self.ui.progressBar.setVisible(True)
+            self.ui.progresslabel.setVisible(True)
+            #self.ui.progressBar_icon.setVisible(True)
+            # self.star.setVisible(False)
+            if status == AppActions.DOWNLOADAPK:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                                                  "QProgressBar:chunk{background-color:#d5e8f9;}")
+                self.ui.progressBarsmall.setStyleSheet(
+                    "QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    "QProgressBar:chunk{background-color:#2d8ae1;}")
+                self.ui.progresslabel.setStyleSheet(
+                    "QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
+                self.ui.btn.setText("正在下载")
+            if status == AppActions.INSTALL:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                                                  "QProgressBar:chunk{background-color:#d5e8f9;}")
+                self.ui.progressBarsmall.setStyleSheet(
+                    "QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    "QProgressBar:chunk{background-color:#2d8ae1;}")
+                self.ui.progresslabel.setStyleSheet(
+                    "QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
+                self.ui.btn.setText("正在安装")
+            elif status == AppActions.UPGRADE:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                                                  "QProgressBar:chunk{background-color:#d1f8d1;}")
+                self.ui.progressBarsmall.setStyleSheet(
+                    "QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    "QProgressBar:chunk{background-color:#07c30b;}")
+                self.ui.progresslabel.setStyleSheet(
+                    "QLabel{font-size:12px;color:#07c30b;background-color:transparent;}")
+                self.ui.btn.setText("正在升级")
+            elif status == AppActions.REMOVE:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                                                  "QProgressBar:chunk{background-color:#ffe0d6;}")
+                self.ui.progressBarsmall.setStyleSheet(
+                    "QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    "QProgressBar:chunk{background-color:#e95421;}")
+                self.ui.progresslabel.setStyleSheet(
+                    "QLabel{font-size:12px;color:#e95421;background-color:transparent;}")
+                self.ui.btn.setText("正在卸载")
+            self.ui.progressBar.hide()
+            self.ui.progressBar.setValue(percent)
+            self.ui.progressBarsmall.setValue(percent)
+            self.ui.progressBar.show()
+            if percent < float(0.0):
+                self.ui.progressBar.setValue(0)
+                self.ui.progressBarsmall.setValue(0)
+                self.ui.progresslabel.setText("失败")
+
+                self.ui.btn.show()
+            else:
+                self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 

@@ -103,7 +103,7 @@ class RcmdCard(QWidget,Signals):
         self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;background-color:transparent;}")
         # self.ui.progressBarname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;background:transparent;}")
         # self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;background-color:transparent;}")
         self.ui.progresslabel.setStyleSheet("QLabel{font-size:13px;color:#888888;background-color:transparent;}")
         # self.ui.isInstalled.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
         # self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")

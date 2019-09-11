@@ -61,7 +61,7 @@ from backend.utildbus import UtilDbus
 #from backend.ubuntusso import get_ubuntu_sso_backend
 from backend.service.save_password import password_write, password_read
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
-from models.enums import Signals, setLongTextToElideFormat
+from models.enums import Signals, setLongTextToElideFormat,KYDROID_SOURCE_SERVER
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 from models.apkinfo import ApkInfo
@@ -74,7 +74,8 @@ import socket
 import sys
 import pwd
 from kydroid.kydroid_service import KydroidService
-
+import requests
+import platform
 socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
@@ -171,7 +172,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # do not cover the launch loading div
         self.resize(0,0)
 
-        self.setWindowTitle("银河麒麟软件商店")
+        self.setWindowTitle("Ubuntu Kylin软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
         self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
@@ -515,7 +516,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnNormal.setStyleSheet("QPushButton{background-image:url('res/normal-1.png');border:0px;}QPushButton:hover{background:url('res/normal-2.png');}QPushButton:pressed{background:url('res/normal-3.png');}")
         self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background-color:#d0d0d0;}QPushButton:pressed{background-color:#ababab;}")
         # self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
-        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px solid #cccccc;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
+        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#ffffff;border:0px solid #cccccc;}QListWidget::item{height:83;margin-top:5px;border:0px;}")
         self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
              QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
              QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
@@ -543,8 +544,10 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         # self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#e5e5e5;}")
+        self.ui.head_manage.setStyleSheet(".QWidget{background-color:#ffffff;border: opx }")
 
         self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
+        self.ui.head_manage.setFocusPolicy(Qt.NoFocus)
         self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #2d8ae1;}")
 
         # self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
@@ -596,7 +599,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
         self.ui.btnTask3.setIconSize(QSize(22, 22))
         self.ui.btnTask3.setText("下载管理")
-        self.ui.btnTask3.setStyleSheet("QToolButton{border:0px;font-size:12px;color:#2d8ae1;text-align:center;} QToolButton:hover{border:0px;font-size:14px;color:#0396DC;} QToolButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.ui.btnTask3.setStyleSheet("QToolButton{border:0px;font-size:12px;color:#2d8ae1;text-align:center;} QToolButton:hover{border:0px;font-size:13px;color:#0396DC;} QToolButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         self.ui.btnTask3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.ui.btnTask3.setAutoRaise(True)
         self.ui.btnTask3.clicked.connect(self.slot_goto_taskpage)
@@ -656,7 +659,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.clean_button.pressed.connect(self.delete_all_finished_taskwork)
 
         self.ui.dow_manage.setText("下载管理")
-        self.ui.dow_manage.setStyleSheet("QWidget{border:0px;font-size:13px;color:#808080;text-align:center;}")
+        self.ui.dow_manage.setStyleSheet("QWidget{background-color: #ffffff;border:0px;font-size:13px;color:#808080;text-align:center;}")
 
 
         # widget status
@@ -1262,6 +1265,25 @@ class SoftwareCenter(QMainWindow,Signals):
     #                     self.ui.btnMax.show()
     #                     self.ui.btnNormal.hide()
 
+    def check_apk_sources(self):
+        url = KYDROID_SOURCE_SERVER
+        try:
+            r = requests.get(url, timeout=5)
+            code = r.status_code
+
+            if code == 200:
+                if (Globals.DEBUG_SWITCH):
+                    print("OK apk源问正常")
+                return 0
+            else:
+                if (Globals.DEBUG_SWITCH):
+                    print("Error apk源不能访问！")
+                return 1
+        except:
+            if (Globals.DEBUG_SWITCH):
+                print("系统网络异常，无法访问apk！")
+            return 2
+
     def show_more_search_result(self, listWidget):
         listLen = listWidget.count()
 
@@ -1422,8 +1444,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 break
         self.count_application_update.emit()
         self.apkpageload.stop_loading()
-        if(count == 0):
-            self.messageBox.alert_msg("未找到安卓软件源\n或无法连接！")
+        # if(count == 0):
+        #     self.messageBox.alert_msg("未找到安卓软件源\n或网络无法连接！")
         # self.apkpageload.stop_loading()
 
     def get_current_listWidget(self):
@@ -1476,6 +1498,7 @@ class SoftwareCenter(QMainWindow,Signals):
             tliw.task_remove.connect(self.slot_remove_task)
             if (Globals.DEBUG_SWITCH):
                 print("add_task_item 000:",tliw.__dict__)
+            self.ui.taskListWidget.insertItem(0,oneitem)
             self.ui.taskListWidget.addItem(oneitem)
             self.ui.taskListWidget.setItemWidget(oneitem, tliw)
         self.stmap[app.name] = tliw
@@ -1489,58 +1512,58 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.notaskImg.setVisible(False)
         self.ui.textbox.setVisible(False)
 
-    def del_task_item(self, pkgname, action, iscancel=False, isfinish=False):
-        i = 0
-        if iscancel is False and isfinish is True:
-            count = self.ui.taskListWidget.count()
-            if (Globals.DEBUG_SWITCH):
-                print(("del_task_item:",count))
-            #for i in range(count):
-            while(i < count):
-                if (Globals.DEBUG_SWITCH):
-                    print(("i: ",i,"   count: ",count))
-                item = self.ui.taskListWidget.item(i)
-                taskitem = self.ui.taskListWidget.itemWidget(item)
-                if taskitem.app.name == pkgname and taskitem.action == action:
-                    wbwidget = TaskListItemWidget(taskitem.app, taskitem.action, taskitem.tasknumber, taskitem.parent,dftext=taskitem.ui.status.text(),uiname=taskitem.uiname )
-                    if (Globals.DEBUG_SWITCH):
-                        print(("del_task_item: found an item",i,pkgname))
-                    #delitem = self.ui.taskListWidget.takeItem(i)
-                    #self.ui.taskListWidget.removeItemWidget(delitem)
-                    if (Globals.DEBUG_SWITCH):
-                        print("del_task_item 000:", pkgname,action,taskitem.app.name,taskitem.action)
-                    #self.ui.taskListWidget_complete.addItem(item)
-                    self.ui.taskListWidget.addItem(item)
-                    if (Globals.DEBUG_SWITCH):
-                        print("del_task_item 111:", taskitem.__dict__)
-                    #self.ui.taskListWidget_complete.setItemWidget(item, wbwidget)
-                    self.ui.taskListWidget.setItemWidget(item, wbwidget)
-                    i -= 1
-                    count -= 1
-                i += 1
-                #if self.ui.taskListWidget.count() == 0 :
-                #    self.ui.btnGoto.setVisible(True)
-                #    self.ui.notaskImg.setVisible(True)
-                #    del delitem
-
-        elif iscancel is True and isfinish is False:
-            count = self.ui.taskListWidget.count()
-            if (Globals.DEBUG_SWITCH):
-                print(("del_task_item:",count))
-            # for i in range(count):
-            while(i < count):
-                item = self.ui.taskListWidget.item(i)
-                taskitem = self.ui.taskListWidget.itemWidget(item)
-
-                if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
-                    if (Globals.DEBUG_SWITCH):
-                        print(("del_task_item: found an item",i,pkgname))
-                    delitem = self.ui.taskListWidget.takeItem(i)
-                    self.ui.taskListWidget.removeItemWidget(delitem)
-                    i -= 1
-                    count -= 1
-                i += 1
-                    #break
+    # def del_task_item(self, pkgname, action, iscancel=False, isfinish=False):
+    #     i = 0
+    #     if iscancel is False and isfinish is True:
+    #         count = self.ui.taskListWidget.count()
+    #         if (Globals.DEBUG_SWITCH):
+    #             print(("del_task_item:",count))
+    #         #for i in range(count):
+    #         while(i < count):
+    #             if (Globals.DEBUG_SWITCH):
+    #                 print(("i: ",i,"   count: ",count))
+    #             item = self.ui.taskListWidget.item(i)
+    #             taskitem = self.ui.taskListWidget.itemWidget(item)
+    #             if taskitem.app.name == pkgname and taskitem.action == action:
+    #                 wbwidget = TaskListItemWidget(taskitem.app, taskitem.action, taskitem.tasknumber, taskitem.parent,dftext=taskitem.ui.status.text(),uiname=taskitem.uiname )
+    #                 if (Globals.DEBUG_SWITCH):
+    #                     print(("del_task_item: found an item",i,pkgname))
+    #                 #delitem = self.ui.taskListWidget.takeItem(i)
+    #                 #self.ui.taskListWidget.removeItemWidget(delitem)
+    #                 if (Globals.DEBUG_SWITCH):
+    #                     print("del_task_item 000:", pkgname,action,taskitem.app.name,taskitem.action)
+    #                 #self.ui.taskListWidget_complete.addItem(item)
+    #                 self.ui.taskListWidget.addItem(item)
+    #                 if (Globals.DEBUG_SWITCH):
+    #                     print("del_task_item 111:", taskitem.__dict__)
+    #                 #self.ui.taskListWidget_complete.setItemWidget(item, wbwidget)
+    #                 self.ui.taskListWidget.setItemWidget(item, wbwidget)
+    #                 i -= 1
+    #                 count -= 1
+    #             i += 1
+    #             #if self.ui.taskListWidget.count() == 0 :
+    #             #    self.ui.btnGoto.setVisible(True)
+    #             #    self.ui.notaskImg.setVisible(True)
+    #             #    del delitem
+    #
+    #     elif iscancel is True and isfinish is False:
+    #         count = self.ui.taskListWidget.count()
+    #         if (Globals.DEBUG_SWITCH):
+    #             print(("del_task_item:",count))
+    #         # for i in range(count):
+    #         while(i < count):
+    #             item = self.ui.taskListWidget.item(i)
+    #             taskitem = self.ui.taskListWidget.itemWidget(item)
+    #
+    #             if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
+    #                 if (Globals.DEBUG_SWITCH):
+    #                     print(("del_task_item: found an item",i,pkgname))
+    #                 delitem = self.ui.taskListWidget.takeItem(i)
+    #                 self.ui.taskListWidget.removeItemWidget(delitem)
+    #                 i -= 1
+    #                 count -= 1
+    #             i += 1
+    #                 #break
 
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
@@ -2181,22 +2204,24 @@ class SoftwareCenter(QMainWindow,Signals):
     def delete_all_finished_taskwork(self):
         count = self.ui.taskListWidget.count()
         truecount = 0
-        top =0
+        top =count-1
         for i in range(count):
         # list is empty now
             if (truecount == count):
                 break
             item = self.ui.taskListWidget.item(top)
             taskitem = self.ui.taskListWidget.itemWidget(item)
-            if (taskitem.ui.status.text() == "完成"):
+            if (taskitem.ui.status.text() == "完成"or taskitem.ui.status.text()=="失败"):
                 delitem = self.ui.taskListWidget.takeItem(top)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
+                if top>0:
+                    top=top-1
                 if taskitem.app.name in self.stmap.keys():  # for bug keyerror
                     del self.stmap[taskitem.app.name]
                     truecount = truecount + 1
                 # else:
-                #     top = top + 1
+                #     top = top +1
 
             else:
                 pass
@@ -2331,10 +2356,20 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.btnAllsoftware.setEnabled(False)
 
     def slot_goto_apkpage(self, bysignal = False):
+        uname_release = platform.release()
+        if("4.4.58" in uname_release):
+            self.messageBox.alert_msg("当前启动项不支持安卓兼容\n请使用默认启动项")
+            return
+
         if self.kydroid_service.hasKydroid == False:
             self.messageBox.alert_msg("未检测到安卓兼容环境\n无法安装安卓APP")
             return
-
+        else:
+            ret = self.check_apk_sources()
+            if ret == 1:
+                self.messageBox.alert_msg("未找到安卓软件源或\n软件源连接异常！")
+            elif ret == 2:
+                self.messageBox.alert_msg("安卓软件源无法连接\n请检查系统网络！")
         self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
@@ -2703,6 +2738,8 @@ class SoftwareCenter(QMainWindow,Signals):
                     self.apt_process_cancel.connect(item.slot_work_cancel)
                     item.get_card_status.connect(self.slot_get_normal_card_status)#12.02
                     self.trans_card_status.connect(item.slot_change_btn_status)#zx11.28 To keep the same btn status in uapage and detailscrollwidget
+
+                    self.listitem_progress_change.connect(item.slot_progress_change)
             else:
                 self.ui.uaNoItemText.show()
                 self.ui.uaNoItemWidget.show()
@@ -3018,7 +3055,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     app.status = PkgStates.UPDATE
                 self.normalcard_progress_finish.emit(app.name)
                 self.apt_process_cancel.emit(app.name, action)
-                self.del_task_item(app.name, action, True, False)
+                # self.del_task_item(app.name, action, True, False)
 
     def slot_cancel_for_work_filed(self, appname, action):
         self.apt_process_cancel.emit(appname, action)
@@ -3046,7 +3083,6 @@ class SoftwareCenter(QMainWindow,Signals):
 
     # search
     def slot_searchDTimer_timeout(self, bysignal=False):
-        print("1111111111111111",Globals.NOWPAGE)
         self.searchDTimer.stop()
         if self.ui.headercw1.leSearch.text():
             #s = self.ui.headercw1.leSearch.text().toUtf8()
@@ -3152,7 +3188,7 @@ class SoftwareCenter(QMainWindow,Signals):
                         app.status = PkgStates.UPDATE
                 self.normalcard_progress_cancel.emit(name)
                 self.apt_process_cancel.emit(name,action)
-                self.del_task_item(name, action, True, False)
+                # self.del_task_item(name, action, True, False)
                 try:
                     del self.stmap[name]
                 except:
@@ -3167,7 +3203,7 @@ class SoftwareCenter(QMainWindow,Signals):
                         app.percent = 0
                     self.apt_process_finish.emit(name, action)
                     self.normalcard_progress_finish.emit(name)
-                    self.del_task_item(name, action, False, True)
+                    # self.del_task_item(name, action, False, True)
                     if name == "ubuntu-kylin-software-center":
                         if action == AppActions.UPGRADE:
                             cd = ConfirmDialog("软件中心升级完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
@@ -3196,7 +3232,7 @@ class SoftwareCenter(QMainWindow,Signals):
                         taskitem = self.ui.taskListWidget.itemWidget(item)
                         if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                             taskitem.status_change(processtype, percent, msg)
-                    self.del_task_item(name, action, False, True)
+                    # self.del_task_item(name, action, False, True)
 
                     if int(percent) == int(-9):
                         self.slot_cancel_for_work_filed(name, action)
@@ -3228,7 +3264,10 @@ class SoftwareCenter(QMainWindow,Signals):
                         taskitem = self.ui.taskListWidget.itemWidget(item)
                         if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                             taskitem.status_change(processtype, percent, msg)
+                    self.trans_card_status.emit(name, action)
                     self.normalcard_progress_change.emit(name, percent, action)
+
+                    self.listitem_progress_change.emit(name,percent,action)
 
     def slot_apk_status_change(self, name, processtype, action, percent, msg):
         # print(("########### ", msg," ",name," ",action," ",percent))
@@ -3239,7 +3278,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 app.percent = 0
             self.apt_process_finish.emit(name, action)
             self.normalcard_progress_finish.emit(name)
-            self.del_task_item(name, action, False, True)
+            # self.del_task_item(name, action, False, True)
 
 
             self.messageBox.alert_msg(AptActionMsg[action] + "完成")
@@ -3254,7 +3293,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 taskitem = self.ui.taskListWidget.itemWidget(item)
                 if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                     taskitem.status_change(processtype, percent, msg)
-            self.del_task_item(name, action, False, True)
+            # self.del_task_item(name, action, False, True)
 
             if int(percent) == int(-1):
                 self.slot_cancel_for_work_filed(name, action)

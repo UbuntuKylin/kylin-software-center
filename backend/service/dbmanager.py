@@ -148,7 +148,6 @@ class Database:
                     al += ','
 
         al = al[:-1]
-
         sql = "select app_name,display_name_cn from application where id in (%s) order by rating_total DESC"
         try:
             lock.acquire(True)

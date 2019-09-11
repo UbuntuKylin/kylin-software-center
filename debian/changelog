@@ -1,3 +1,8 @@
+ubuntu-kylin-software-center (3.0.3) eoan; urgency=medium
+  * Download management interface optimization.
+  * New interface skin detail adjustment.
+ -- wenbo <wenbo@ubuntukylin.com>  Wed, 11 Sep 2019 10:07:14 +0800
+
 ubuntu-kylin-software-center (2.2.5) eoan; urgency=medium
   * Complete the modification of most of the new interface, and
     add some details to the follow-up.

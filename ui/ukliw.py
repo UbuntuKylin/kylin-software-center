@@ -45,10 +45,6 @@ class Ui_Ukliw(object):
         self.summary.setGeometry(QtCore.QRect(100, 45, 320, 18))
         self.summary.setText(_fromUtf8(""))
         self.summary.setObjectName(_fromUtf8("summary"))
-        self.btn = QPushButton(self.baseWidget)
-        self.btn.setGeometry(QtCore.QRect(730, 31, 80, 26))
-        self.btn.setText(_fromUtf8(""))
-        self.btn.setObjectName(_fromUtf8("btn"))
         self.installedDate = QLabel(self.baseWidget)
         self.installedDate.setGeometry(QtCore.QRect(550, 35, 180, 18))
         self.installedDate.setText(_fromUtf8(""))
@@ -72,6 +68,34 @@ class Ui_Ukliw(object):
         self.status.setGeometry(QtCore.QRect(72, 52, 16, 16))
         self.status.setText(_fromUtf8(""))
         self.status.setObjectName(_fromUtf8("status"))
+
+        self.btn = QPushButton(self.baseWidget)
+        self.btn.setGeometry(QtCore.QRect(730, 31, 80, 26))
+        self.btn.setText(_fromUtf8(""))
+        self.btn.setObjectName(_fromUtf8("btn"))
+
+        self.progressBar = QProgressBar(self.baseWidget)
+        # self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
+        self.progressBar.setGeometry(QtCore.QRect(1, 1, 828, 86))
+        self.progressBar.setProperty("value", 0)
+        self.progressBar.setTextVisible(False)
+        self.progressBar.setVisible(False)
+        self.progressBar.setObjectName(_fromUtf8("progressBar"))
+
+
+        self.progresslabel = QLabel(self.baseWidget)
+        # self.progresslabel.setGeometry(QtCore.QRect(240, 23, 35, 18))
+        self.progresslabel.setGeometry(QtCore.QRect(762, 35, 60, 18))  # 下载进度百分比
+
+        self.progresslabel.setText(_fromUtf8(""))
+        self.progresslabel.setObjectName(_fromUtf8("progresslabel"))
+
+        self.progressBarsmall = QProgressBar(self.progressBar)
+        self.progressBarsmall.setGeometry(QtCore.QRect(0, 81, 830, 5))
+        self.progressBarsmall.setProperty("value", 0)
+        self.progressBarsmall.setTextVisible(False)
+        self.progressBarsmall.setObjectName(_fromUtf8("progressBar"))
+
 
         self.retranslateUi(Ukliw)
         QtCore.QMetaObject.connectSlotsByName(Ukliw)

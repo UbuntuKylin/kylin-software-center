@@ -373,11 +373,11 @@ class Ui_MainWindow(object):
         self.hometext3.setText(_fromUtf8(""))
         self.hometext3.setObjectName(_fromUtf8("hometext3"))
         self.hometext4 = QLabel(self.homecw1)
-        self.hometext4.setGeometry(QtCore.QRect(70, 0, 40, 20))
+        self.hometext4.setGeometry(QtCore.QRect(74, 0, 40, 20))
         self.hometext4.setText(_fromUtf8(""))
         self.hometext4.setObjectName(_fromUtf8("hometext4"))
         self.homecount = QLabel(self.homecw1)
-        self.homecount.setGeometry(QtCore.QRect(28, 0, 40, 20))
+        self.homecount.setGeometry(QtCore.QRect(28, 0, 45, 20))
         self.homecount.setText(_fromUtf8(""))
         self.homecount.setObjectName(_fromUtf8("homecount"))
         self.searchWidget = QWidget(self.rightWidget)
@@ -404,8 +404,13 @@ class Ui_MainWindow(object):
         self.searchcount.setObjectName(_fromUtf8("searchcount"))
         self.taskWidget = QWidget(self.rightWidget)
       # self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
-        self.taskWidget.setGeometry(QtCore.QRect(330, 70, 370, 460))
+        self.taskWidget.setGeometry(QtCore.QRect(300, 50, 370, 460))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
+
+
+        self.head_manage=QWidget(self.taskWidget)
+        self.head_manage.setGeometry(QtCore.QRect(1, 1,369,42))
+        self.head_manage.setObjectName(_fromUtf8("head_manage"))
 
         self.dow_manage = QLabel(self.taskWidget)
         self.dow_manage.setGeometry(QtCore.QRect(157,10,100,20))
@@ -414,7 +419,7 @@ class Ui_MainWindow(object):
 
         self.taskListWidget = QListWidget(self.taskWidget)
         #self.taskListWidget.setGeometry(QtCore.QRect(10, 65, 300, 475))
-        self.taskListWidget.setGeometry(QtCore.QRect(0, 42, 370, 378))
+        self.taskListWidget.setGeometry(QtCore.QRect(1, 42, 369, 378))
         self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
         # self.taskListWidget_complete = QListWidget(self.taskWidget)
         # self.taskListWidget_complete.setGeometry(QtCore.QRect(10, 65, 300, 475))

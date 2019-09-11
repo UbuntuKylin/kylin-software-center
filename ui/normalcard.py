@@ -104,7 +104,7 @@ class NormalCard(QWidget,Signals):
         self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;background-color:transparent;}")
         # self.ui.progressBarname.setStyleSheet("QLabel{font-size:14px;color:#000000;background:transparent;}")
         # self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.size.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:12px;color:#888888;background-color:transparent;}")
         self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#888888;background-color:transparent;}")
         # self.ui.isInstalled.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
         # self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
@@ -412,6 +412,7 @@ class NormalCard(QWidget,Signals):
 
         if(self.ui.btn.text() == "启动"):
             self.app.run()
+
         else:
             self.ui.btn.setEnabled(False)
             if(self.ui.btn.text() == "安装"):

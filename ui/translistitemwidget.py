@@ -55,19 +55,19 @@ class TransListItemWidget(QWidget,Signals):
         # self.ui.installedsize.setAlignment(Qt.AlignCenter)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-color:transparent;background-image:url('" + iconpath + "')}")
 
         self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
-        self.ui.btnDetail.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}");
-        self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
-        self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
+        self.ui.btnDetail.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:transparent;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}");
+        self.ui.status.setStyleSheet("QLabel{background-color:transparent;background-image:url('res/installed.png')}")
+        self.ui.name.setStyleSheet("QLabel{background-color:transparent;font-size:14px;color:#000000;}")
         # self.ui.installedsize.setStyleSheet("QLabel{font-size:14px;}")
-        self.ui.translatedsection.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
-        self.ui.transstatu.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
-        self.ui.appname.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
-        self.ui.appsummary.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
-        self.ui.appdescription.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
-        self.ui.translateDate.setStyleSheet("QLabel{font-size:12px;color:#888888;}")
+        self.ui.translatedsection.setStyleSheet("QLabel{background-color:transparent;font-size:12px;color:#888888;}")
+        self.ui.transstatu.setStyleSheet("QLabel{background-color:transparent;font-size:12px;color:#888888;}")
+        self.ui.appname.setStyleSheet("QLabel{background-color:transparent;font-size:12px;color:#888888;}")
+        self.ui.appsummary.setStyleSheet("QLabel{background-color:transparent;font-size:12px;color:#888888;}")
+        self.ui.appdescription.setStyleSheet("QLabel{background-color:transparent;font-size:12px;color:#888888;}")
+        self.ui.translateDate.setStyleSheet("QLabel{background-color:transparent;font-size:12px;color:#888888;}")
         if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
             self.ui.name.setText(self.app.displayname_cn)
         else:
@@ -96,38 +96,38 @@ class TransListItemWidget(QWidget,Signals):
             if app.transnamestatu is True:
                 if app.transnameenable is True:
                     self.ui.namestatu.setText("已采纳")
-                    self.ui.namestatu.setStyleSheet("QLabel{font-size:13px;color:green;}")
+                    self.ui.namestatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:green;}")
                 else:
                     self.ui.namestatu.setText("未采纳")
-                    self.ui.namestatu.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
+                    self.ui.namestatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:#7E8B97;}")
             else:
                 self.ui.namestatu.setText("待审核")
-                self.ui.namestatu.setStyleSheet("QLabel{font-size:13px;color:black;}")
+                self.ui.namestatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
         if hasattr(app,"transsummary"):
             self.ui.appsummary.show()
             if app.transsummarystatu is True:
                 if app.transsummaryenable is True:
                     self.ui.summarystatu.setText("已采纳")
-                    self.ui.summarystatu.setStyleSheet("QLabel{font-size:13px;color:green;}")
+                    self.ui.summarystatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:green;}")
                 else:
                     self.ui.summarystatu.setText("未采纳")
-                    self.ui.summarystatu.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
+                    self.ui.summarystatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:#7E8B97;}")
             else:
                 self.ui.summarystatu.setText("待审核")
-                self.ui.summarystatu.setStyleSheet("QLabel{font-size:13px;color:black;}")
+                self.ui.summarystatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
 
         if hasattr(app,"transdescription"):
             self.ui.appdescription.show()
             if app.transdescriptionstatu is True:
                 if app.transdescriptionenable is True:
                     self.ui.descriptionstatu.setText("已采纳")
-                    self.ui.descriptionstatu.setStyleSheet("QLabel{font-size:13px;color:green;}")
+                    self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:green;}")
                 else:
                     self.ui.descriptionstatu.setText("未采纳")
-                    self.ui.descriptionstatu.setStyleSheet("QLabel{font-size:13px;color:#7E8B97;}")
+                    self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:#7E8B97;}")
             else:
                 self.ui.descriptionstatu.setText("待审核")
-                self.ui.descriptionstatu.setStyleSheet("QLabel{font-size:13px;color:black;}")
+                self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
 
 
     def ui_init(self):
