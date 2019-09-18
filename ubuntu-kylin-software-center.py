@@ -80,6 +80,9 @@ socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 
+import threading
+import configparser
+
 #log.init_logger()
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s:%(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -87,6 +90,34 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='w'
                     )
 LOG = logging.getLogger("uksc")
+
+class  initThread(QThread,Signals):
+    def __init__(self):
+        super(initThread, self).__init__()
+
+    def run(self):
+        # init dbus backend
+        self.backend = InstallBackend()
+        self.appmgr = AppManager()
+        res = self.backend.init_dbus_ifaces()
+
+
+        while res == False:
+            button=QMessageBox.question(self,"初始化提示",
+                                    self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+                                    QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
+            if button == QMessageBox.Retry:
+                res = self.backend.init_dbus_ifaces()
+            elif button == QMessageBox.Ignore:
+                LOG.warning("failed to connecting dbus service, you still choose to continue...")
+                break
+            else:
+                LOG.warning("dbus service init failed, you choose to exit.\n\n")
+                sys.exit(0)
+
+
+        self.myinit_emit.emit()
+        self.sleep(1)
 
 class SoftwareCenter(QMainWindow,Signals):
 
@@ -129,6 +160,7 @@ class SoftwareCenter(QMainWindow,Signals):
     rec_ready = False
 
     apkpagefirst = True
+    config = configparser.ConfigParser()
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
@@ -138,41 +170,57 @@ class SoftwareCenter(QMainWindow,Signals):
         #     self.move((QApplication.desktop().screenGeometry(0).width()-self.width())/2,(QApplication.desktop().screenGeometry(0).height()-self.height())/2)
         #     QMessageBox.information(self, "软件商店启动权限异常", "请用当前系统用户权限启动软件商店！",QMessageBox.Ok)
         #     sys.exit(0)
+        self.launchLoadingDiv = LoadingDiv(None)
+        self.launchLoadingDiv.start_loading()
 
+        self.worker_thread0 = initThread()
+        # self.worker_thread0.setDaemon(True)
+        self.worker_thread0.start()
+
+    # def myinit(self):
         self.auto_l = False
         # singleton check
+
         self.check_singleton()
-        # init dbus backend
-        self.init_dbus()
+        self.flag=0
+
+
         password_read()
-        # init ui
-        self.init_main_view()
 
-        # init main service
-        self.init_main_service()
-        # check ukid
-        self.check_user()
-        # check apt source and update it
-        self.check_source()
-
-        # check has kydroid
-        self.kydroid_service = KydroidService()
-        self.kydroid_service.check_has_kydroid()
-        self.appmgr.kydroid_service = self.kydroid_service
+        self.worker_thread0.myinit_emit.connect(self.slot_init)
 
         # data init
         # self.ads_ready = False
         self.rec_ready = False
         # self.rank_ready = False
 
+    def slot_init(self):
+        #init main view
+        self.init_main_view()
+
+        # init main service
+        self.init_main_service()
+
+
+
+        # check ukid
+        self.check_user()
+        # check apt source and update it
+        self.check_source()
+        # check has kydroid
+        self.kydroid_service = KydroidService()
+        self.kydroid_service.check_has_kydroid()
+        self.worker_thread0.appmgr.kydroid_service = self.kydroid_service
+        self.worker_thread0.backend.dbus_apt_process.connect(self.slot_status_change)
+
+
     def init_main_view(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
         # do not cover the launch loading div
         self.resize(0,0)
 
-        self.setWindowTitle("Ubuntu Kylin软件商店")
+        self.setWindowTitle("银河麒麟软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
         self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
@@ -225,13 +273,12 @@ class SoftwareCenter(QMainWindow,Signals):
         self.winListWidget.setGeometry(0, 0, 830 + 6 + (20 - 6) / 2, 585)
         self.winListWidget.calculate_data()
         # loading div
-        self.launchLoadingDiv = LoadingDiv(None)
+        # self.launchLoadingDiv = LoadingDiv(None)
         self.loadingDiv = LoadingDiv(self)
         # self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankView)
         self.userload = MiniLoadingDiv(self.ui.beforeLoginWidget, self.ui.beforeLoginWidget)
         self.apkpageload = MiniLoadingDiv(self.ui.apkWidget, self.ui.apkWidget)
-
-        self.launchLoadingDiv.start_loading("")
+        # self.launchLoadingDiv.start_loading()
         # alert message box
         self.messageBox = MessageBox(self)
         # detail page
@@ -245,10 +292,13 @@ class SoftwareCenter(QMainWindow,Signals):
         #log in/out
         self.login.messageBox = MessageBox(self)
         # config widget
+
         self.configWidget = ConfigWidget(self)
         self.configWidget.messageBox = MessageBox(self)
         self.configWidget.click_update_source.connect(self.slot_click_update_source)
         self.configWidget.task_cancel.connect(self.slot_click_cancel)
+
+        self.login.find_password.connect(self.configWidget.slot_show_ui)
         # resize corner
         # self.resizeCorner = QPushButton(self.ui.centralwidget)
         # self.resizeCorner.resize(15, 15)
@@ -291,7 +341,6 @@ class SoftwareCenter(QMainWindow,Signals):
         shadoweb.setColor(Qt.gray)
         shadoweb.setBlurRadius(15)  # blur
         self.ui.taskBottomWidget.setGraphicsEffect(shadoweb)
-
         self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
         # self.ui.btnAppList.setFocusPolicy(Qt.NoFocus)
@@ -308,7 +357,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnApk.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp_num.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnUp_num_long.setFocusPolicy(Qt.NoFocus)
 
 
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
@@ -326,7 +374,6 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.resizeCorner.setFocusPolicy(Qt.NoFocus)
 
         # self.ui.btnTransList.setFocusPolicy(Qt.NoFocus)#zx 2015.01.30
-
         # add by kobe
         # self.ui.virtuallabel.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseDetail.setFocusPolicy(Qt.NoFocus)
@@ -489,8 +536,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
         self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-1.png');border:0px;}QPushButton:hover{background:url('res/nav-un-2.png');}QPushButton:pressed{background:url('res/nav-un-3.png');}")
 
-        self.ui.btnUp_num.setStyleSheet("QLabel{background-color:red;color:white;font-size:13px;}")
-        self.ui.btnUp_num_long.setStyleSheet("QLabel{background-color:red;color:white;font-size:12px;}")
+        self.ui.btnUp_num.setStyleSheet("QLabel{background-image:url('res/btnUp_num.png');color:white;font-size:9px;background-color:transparent;}")
 
         self.ui.btnHomepage.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
         self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
@@ -610,6 +656,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.ui.btnLogin.clicked.connect(self.slot_do_login_account)
         #self.ui.btnReg.clicked.connect(self.slot_do_register)
         self.ui.btnLogin.clicked.connect(self.slot_do_login_ui)
+        self.configWidget.goto_login.connect(self.slot_do_login_ui)
         self.ui.btnLogout.triggered.connect(self.slot_do_logout)
         self.ui.btnAppList.triggered.connect(self.slot_goto_uapage)
 
@@ -682,145 +729,255 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.centralwidget.hide()
         # loading
         if(Globals.LAUNCH_MODE != 'quiet'):
-            self.launchLoadingDiv.start_loading("系统正在初始化...")
+            self.launchLoadingDiv.start_loading()
 
 
     def init_main_service(self):
-        self.appmgr = AppManager()
+
 
         # self.win_exists = 0
         self.winnum = 0
-        self.win_model = DataModel(self.appmgr)
+        self.win_model = DataModel(self.worker_thread0.appmgr)
 
-        self.appmgr.get_ui_first_login_over.connect(self.login.slot_get_ui_first_login_over)
-        self.appmgr.rset_password_over.connect(self.configWidget.slot_rset_password_over)
-        self.appmgr.recover_password_over.connect(self.configWidget.slot_recover_password_over)
-        self.appmgr.change_user_identity_over.connect(self.configWidget.slot_change_user_identity_over)
-        self.appmgr.get_ui_login_over.connect(self.login.slot_get_ui_login_over)
-        self.appmgr.get_ui_adduser_over.connect(self.login.slot_get_ui_adduser_over)
+        self.worker_thread0.appmgr.get_ui_first_login_over.connect(self.login.slot_get_ui_first_login_over)
+        self.worker_thread0.appmgr.rset_password_over.connect(self.configWidget.slot_rset_password_over)
+        self.worker_thread0.appmgr.recover_password_over.connect(self.configWidget.slot_recover_password_over)
+        self.worker_thread0.appmgr.change_user_identity_over.connect(self.configWidget.slot_change_user_identity_over)
+        self.worker_thread0.appmgr.get_ui_login_over.connect(self.login.slot_get_ui_login_over)
+        self.worker_thread0.appmgr.get_ui_adduser_over.connect(self.login.slot_get_ui_adduser_over)
 
-        self.appmgr.init_models_ready.connect(self.slot_init_models_ready)
-        # self.appmgr.ads_ready.connect(self.slot_advertisement_ready)
-        self.appmgr.recommend_ready.connect(self.slot_recommend_apps_ready)
-        # self.appmgr.ratingrank_ready.connect(self.slot_ratingrank_apps_ready)
-        #self.connect(self.appmgr, rating_reviews_ready, self.slot_rating_reviews_ready)
-        self.appmgr.app_reviews_ready.connect(self.slot_app_reviews_ready)
-        self.appmgr.app_screenshots_ready.connect(self.slot_app_screenshots_ready)
-        self.appmgr.apt_cache_update_ready.connect(self.slot_apt_cache_update_ready)
-        self.appmgr.submit_review_over.connect(self.detailScrollWidget.slot_submit_review_over)
-        self.appmgr.submit_rating_over.connect(self.detailScrollWidget.slot_submit_rating_over)
-        self.appmgr.get_user_applist_over.connect(self.slot_get_user_applist_over)
-        self.appmgr.get_user_transapplist_over.connect(self.slot_get_user_transapplist_over)
-        self.appmgr.submit_translate_appinfo_over.connect(self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
-        self.appmgr.count_application_update.connect(self.slot_count_application_update)
-        self.appmgr.refresh_page.connect(self.slot_refresh_page)
-        self.appmgr.check_source_useable_over.connect(self.slot_check_source_useable_over)
+        self.worker_thread0.appmgr.init_models_ready.connect(self.slot_init_models_ready)
+        # self.worker_thread0.appmgr.ads_ready.connect(self.slot_advertisement_ready)
+        self.worker_thread0.appmgr.recommend_ready.connect(self.slot_recommend_apps_ready)
+        # self.worker_thread0.appmgr.ratingrank_ready.connect(self.slot_ratingrank_apps_ready)
+        #self.connect(self.worker_thread0.appmgr, rating_reviews_ready, self.slot_rating_reviews_ready)
+        self.worker_thread0.appmgr.app_reviews_ready.connect(self.slot_app_reviews_ready)
+        self.worker_thread0.appmgr.app_screenshots_ready.connect(self.slot_app_screenshots_ready)
+        self.worker_thread0.appmgr.apt_cache_update_ready.connect(self.slot_apt_cache_update_ready)
+        self.worker_thread0.appmgr.submit_review_over.connect(self.detailScrollWidget.slot_submit_review_over)
+        self.worker_thread0.appmgr.submit_rating_over.connect(self.detailScrollWidget.slot_submit_rating_over)
+        self.worker_thread0.appmgr.get_user_applist_over.connect(self.slot_get_user_applist_over)
+        self.worker_thread0.appmgr.get_user_transapplist_over.connect(self.slot_get_user_transapplist_over)
+        self.worker_thread0.appmgr.submit_translate_appinfo_over.connect(self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
+        self.worker_thread0.appmgr.count_application_update.connect(self.slot_count_application_update)
+        self.worker_thread0.appmgr.refresh_page.connect(self.slot_refresh_page)
+        self.worker_thread0.appmgr.check_source_useable_over.connect(self.slot_check_source_useable_over)
         self.count_application_update.connect(self.slot_count_application_update)
         self.apt_process_finish.connect(self.slot_apt_process_finish)
 
-        self.appmgr.download_apk_source_over.connect(self.slot_download_apk_source_over)
-        self.appmgr.kydroid_envrun_over.connect(self.slot_kydroid_envrun_over)
-        self.appmgr.apk_process.connect(self.slot_apk_status_change)
+        self.worker_thread0.appmgr.download_apk_source_over.connect(self.slot_download_apk_source_over)
+        self.worker_thread0.appmgr.kydroid_envrun_over.connect(self.slot_kydroid_envrun_over)
+        self.worker_thread0.appmgr.apk_process.connect(self.slot_apk_status_change)
 
         #预先检测环境初始化APK_EVNRUN
-        self.appmgr.check_kydroid_envrun()
+        self.worker_thread0.appmgr.check_kydroid_envrun()
 
-    def init_dbus(self):
-        self.backend = InstallBackend()
-        self.backend.dbus_apt_process.connect(self.slot_status_change)
-        #self.connect(self.backend, dbus_fail_to_usecdrom, self.slot_fail_to_usecdrom)
-        #self.connect(self.backend, dbus_no_cdrom_mount, self.slot_no_cdrom_mount)
-        #self.connect(self.backend, dbus_usecdrom_success, self.slot_usecdrom_success)
-        #self.connect(self.backend, dbus_find_up_server_result, self.slot_find_up_server_result)
+    # def init_dbus(self):
+    #     self.backend = InstallBackend()
+    #     self.backend.dbus_apt_process.connect(self.slot_status_change)
+    #     #self.connect(self.backend, dbus_fail_to_usecdrom, self.slot_fail_to_usecdrom)
+    #     #self.connect(self.backend, dbus_no_cdrom_mount, self.slot_no_cdrom_mount)
+    #     #self.connect(self.backend, dbus_usecdrom_success, self.slot_usecdrom_success)
+    #     #self.connect(self.backend, dbus_find_up_server_result, self.slot_find_up_server_result)
+    #
+    #     res = self.backend.init_dbus_ifaces()
+    #     while res == False:
+    #         button=QMessageBox.question(self,"初始化提示",
+    #                                 self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+    #                                 QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
+    #         if button == QMessageBox.Retry:
+    #             res = self.backend.init_dbus_ifaces()
+    #         elif button == QMessageBox.Ignore:
+    #             LOG.warning("failed to connecting dbus service, you still choose to continue...")
+    #             break
+    #         else:
+    #             LOG.warning("dbus service init failed, you choose to exit.\n\n")
+    #             sys.exit(0)
 
-        res = self.backend.init_dbus_ifaces()
-        while res == False:
-            button=QMessageBox.question(self,"初始化提示",
-                                    self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
-                                    QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
-            if button == QMessageBox.Retry:
-                res = self.backend.init_dbus_ifaces()
-            elif button == QMessageBox.Ignore:
-                LOG.warning("failed to connecting dbus service, you still choose to continue...")
+    def get_os_class(self):
+        self.desktop = False
+        self.server = False
+        self.command = 'dpkg -l | grep kylin-user-guide'
+        self.kernel = os.popen(self.command, 'r', 1)
+        print("bbb:", self.kernel)
+        if (self.kernel == "kylin-user-guide"):
+            self.desktop = True
+        self.command = 'dpkg -l | grep kylin-user-guide'
+        self.kernel = os.popen(self.command, 'r', 1)
+        if (self.kernel == "kylin-server-guide"):
+            self.server = True
+        else:
+            self.desktop = True
+        self.IS_server_2000 = 'dpkg -l | grep "libc6:" | grep "ft2000plus"'
+
+        self.file = open("/etc/lsb-release", encoding="utf-8", errors="ignore")
+        self.lines = self.file.readline()
+        while self.lines:
+            if not self.lines:
                 break
-            else:
-                LOG.warning("dbus service init failed, you choose to exit.\n\n")
-                sys.exit(0)
+            if (self.desktop == True):
+                if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2"):
+                    print("4.0.2-desktop")
+                    self.flag = 1
+                    return ("4.0.2-desktop")
+                if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2SP1"):
+                    print("4.0.2sp1-desktop")
+                    self.flag = 1
+                    return ("4.0.2sp1-desktop")
+                if (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP2"):
+                    print("4.0.2sp2-desktop")
+                    self.flag = 1
+                    return ("4.0.2sp2-desktop")
+
+            if (self.server):
+                if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2"):
+                    print("4.0.2-server")
+                    self.flag = 1
+                    return ("4.0.2-server")
+                if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2SP1"):
+                    print("4.0.2sp1-server")
+                    self.flag = 1
+                    return ("4.0.2sp1-server")
+                if (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP2"):
+                    print("4.0.2sp2-server")
+                    self.flag = 1
+                    return ("4.0.2sp2-server")
+            self.lines = self.file.readline()
+        if (self.server == True):
+            if (self.IS_server_2000 != ""):
+                print("4.0.2sp2-server-ft2000")
 
     def check_source(self):
-        if(0): #屏蔽检测软件源
-        #if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
-            MessageBox = Update_Source_Dialog()
-            if Globals.LAUNCH_MODE == 'quiet':
-                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
-                MessageBox.exec_()
-                button = MessageBox.clickedButton()
-                # button = MessageBox.question(self,"软件源更新提示",
-                #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"),
-                #                         "更新", "不更新", "退出", 0, 2)
-                #
-                # # show loading and update processbar this moment
-                # # self.show()
-                self.launchLoadingDiv.start_loading("")
-                if MessageBox.checkbox.isChecked():
-                    self.appmgr.set_check_update_false()
+        # if(0): #屏蔽检测软件源
+        # #if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
 
-                if MessageBox.button_update == button:
-                    if (Globals.DEBUG_SWITCH):
-                        LOG.info("update source when first start...")
-                    self.updateSinglePB.show()
-                    res = self.backend.update_source_first_os()
-                    if "False" == res:
-                        sys.exit(0)
-                    elif res is None:
-                        self.messageBox.alert_msg("输入密码超时\n更新源失败")
-                        sys.exit(0)
-                    elif "True" != res:
-                        self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("出现未知错误\n更新源失败")
-                        sys.exit(0)
-                # elif button_checkbox == button:
-                #     pass
+        #     if Globals.LAUNCH_MODE == 'quiet':
+        #         MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
+        #         MessageBox.exec_()
+        #         button = MessageBox.clickedButton()
+        #         # button = MessageBox.question(self,"软件源更新提示",
+        #         #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n\n请选择:"),
+        #         #                         "更新", "不更新", "退出", 0, 2)
+        #         #
+        #         # # show loading and update processbar this moment
+        #         # # self.show()
+        #         self.launchLoadingDiv.start_loading("")
+        #         if MessageBox.checkbox.isChecked():
+        #             self.appmgr.set_check_update_false()
+        #
+        #         if MessageBox.button_update == button:
+        #             if (Globals.DEBUG_SWITCH):
+        #                 LOG.info("update source when first start...")
+        #             self.updateSinglePB.show()
+        #             res = self.backend.update_source_first_os()
+        #             if "False" == res:
+        #                 sys.exit(0)
+        #             elif res is None:
+        #                 self.messageBox.alert_msg("输入密码超时\n更新源失败")
+        #                 sys.exit(0)
+        #             elif "True" != res:
+        #                 self.updateSinglePB.hide()
+        #                 self.messageBox.alert_msg("出现未知错误\n更新源失败")
+        #                 sys.exit(0)
+        #         # elif button_checkbox == button:
+        #         #     pass
+        #         else:
+        #             sys.exit(0)
+        if (os.path.exists("/etc/apt/sources.list")):
+            if (os.path.exists(UKSC_CACHE_DIR + '/kylin-software-center.ini')):
+                self.config.read(UKSC_CACHE_DIR + '/kylin-software-center.ini')
+                if ('sourcelist' not in self.config):
+                    self.config['sourcelist'] = {}
+                    self.config['sourcelist']['default_sourcelist'] = '0'
+                    with open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w') as configfile:
+                        self.config.write(configfile)
+                    self.start_init_testing()
                 else:
-                    sys.exit(0)
+                    if (self.config['sourcelist']['default_sourcelist'] == '1'):
+                        print("111111111111111")
+                        if (Globals.LAUNCH_MODE == 'normal'):
+                            self.show()
+                        self.worker_thread0.appmgr.init_models()
+                    else:
+                        self.start_init_testing()
             else:
-                MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
-                MessageBox.exec_()
-                button = MessageBox.clickedButton()
-                # button = MessageBox.question(self,"软件源更新提示",
-                #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
-                #                         "更新", "不更新", "退出", 0, 2)
-
-                # show loading and update processbar this moment
-                self.show()
-                if MessageBox.checkbox.isChecked():
-                    self.appmgr.set_check_update_false()
-                if MessageBox.button_update == button:
-                    if (Globals.DEBUG_SWITCH):
-                        LOG.info("update source when first start...")
-                    self.updateSinglePB.show()
-                    res = self.backend.update_source_first_os()
-                    if "False" == res:
-                        self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("密码认证失败\n更新源失败")
-                        self.appmgr.init_models()
-                    elif res is None:
-                        self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("输入密码超时\n更新源失败")
-                        self.appmgr.init_models()
-                    elif "True" != res:
-                        self.updateSinglePB.hide()
-                        self.messageBox.alert_msg("出现未知错误\n更新源失败")
-                        self.appmgr.init_models()
-                elif MessageBox.button_notupdate == button:
-                    self.appmgr.init_models()
+                self.config = configparser.ConfigParser()
+                self.top = open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w+')
+                if ('sourcelist' not in self.config):
+                    self.config['sourcelist'] = {}
+                    self.config['sourcelist']['default_sourcelist'] = '0'
+                    self.start_init_testing()
                 else:
-                    sys.exit(0)
-        else:
-            #self.launchLoadingDiv.start_loading("")
-            if(Globals.LAUNCH_MODE == 'normal'):
+                    if (Globals.LAUNCH_MODE == 'normal'):
+                        self.show()
+                    self.worker_thread0.appmgr.init_models()
+
+    def start_init_testing(self):
+        MessageBox = Update_Source_Dialog()
+        OS = self.get_os_class()
+        if (OS == None):
+            # self.launchLoadingDiv.start_loading("")
+            if (Globals.LAUNCH_MODE == 'normal'):
                 self.show()
-            self.appmgr.init_models()
+            self.worker_thread0.appmgr.init_models()
+            return
+        else:
+            with open("/etc/apt/sources.list", 'r')as f:
+                f.seek(0)
+                self.lines = f.readline()
+                if (
+                                OS != None and "deb http://archive.kylinos.cn/kylin/KYLIN-ALL main" + ' ' + OS + ' ' + "restricted universe multiverse" not in self.lines):
+                    # if "deb http://archive.kylinos.cn/kylin/KYLIN-ALL main OS restricted universe multiverse"not in self.lines:
+                    if (self.flag == 1):
+                        MessageBox.setText(self.tr("您系统缺少银河麒麟公网软件源，将会影响软件安装\n您是否需要添加？\n勾选不再提醒将不再弹出提示框\n请选择:"))
+                        MessageBox.exec_()
+                        button = MessageBox.clickedButton()
+
+                        # button = MessageBox.question(self,"软件源更新提示",
+                        #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
+                        #                         "更新", "不更新", "退出", 0, 2)
+
+                        # show loading and update processbar this moment
+                        self.show()
+                        if MessageBox.checkbox.isChecked():
+                            self.config['sourcelist']['default_sourcelist'] = '1'
+                            with open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w') as configfile:
+                                self.config.write(configfile)
+                            self.worker_thread0.appmgr.set_check_update_false()
+                        if MessageBox.button_update == button:
+                            if (Globals.DEBUG_SWITCH):
+                                LOG.info("update source when first start...")
+                            self.updateSinglePB.show()
+                            res = self.worker_thread0.backend.update_source_first_os()
+
+                            self.configWidget.slot_click_add_spacail(OS)
+
+                            if "False" == res:
+                                self.updateSinglePB.hide()
+                                self.messageBox.alert_msg("密码认证失败\n更新源失败")
+                                self.worker_thread0.appmgr.init_models()
+                            elif res is None:
+                                self.updateSinglePB.hide()
+                                self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                                self.worker_thread0.appmgr.init_models()
+                            elif "True" != res:
+                                self.updateSinglePB.hide()
+                                self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                                self.worker_thread0.appmgr.init_models()
+                        elif MessageBox.button_notupdate == button:
+                            self.worker_thread0.appmgr.init_models()
+                        else:
+                            sys.exit(0)
+                    else:
+                        # self.launchLoadingDiv.start_loading("")
+                        if (Globals.LAUNCH_MODE == 'normal'):
+                            self.show()
+                            self.worker_thread0.appmgr.init_models()
+                else:
+                    # self.launchLoadingDiv.start_loading("")
+                    if (Globals.LAUNCH_MODE == 'normal'):
+                        self.show()
+                    self.worker_thread0.appmgr.init_models()
 
     def slot_check_source_useable_over(self, bad_source_url_list):
         bad_source_urlstr = '\n'.join(bad_source_url_list)
@@ -892,7 +1049,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #    LOG.exception('Check user failed.')
         if Globals.AUTO_LOGIN == "1":
             try:
-                res = self.appmgr.ui_first_login(Globals.USER,Globals.PASSWORD)
+                res = self.worker_thread0.appmgr.ui_first_login(Globals.USER,Globals.PASSWORD)
             except:
                 res = False
             if res != False and res != None and res not in list(range(1,4)):
@@ -920,16 +1077,16 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.rank_ready = False
 
         # self.topratedload.start_loading()
-        # self.appmgr.get_advertisements(False)
-        self.appmgr.get_recommend_apps(False)
-        # self.appmgr.get_ratingrank_apps(False)
-        self.backend.check_dpkg_statu()
+        # self.worker_thread0.appmgr.get_advertisements(False)
+        self.worker_thread0.appmgr.get_recommend_apps(False)
+        # self.worker_thread0.appmgr.get_ratingrank_apps(False)
+        self.worker_thread0.backend.check_dpkg_statu()
         self.slot_count_application_update()
         self.login.hide()
         # check uksc upgradable
         self.check_uksc_update()
         if self.kydroid_service.hasKydroid != False:
-            self.appmgr.get_kydroid_apklist()
+            self.worker_thread0.appmgr.get_kydroid_apklist()
 
     # check base init
     def check_init_ready(self, bysignal=False):
@@ -939,7 +1096,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #print self.ads_ready,self.rec_ready,self.rank_ready
         # base init finished
         if self.rec_ready: # and self.ads_ready and  self.rank_ready:
-            (sum_inst,sum_up, sum_all, sum_apk) = self.appmgr.get_application_count()
+            (sum_inst,sum_up, sum_all, sum_apk) = self.worker_thread0.appmgr.get_application_count()
             self.ui.homecount.setText(str(sum_all))
             # self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
@@ -978,18 +1135,18 @@ class SoftwareCenter(QMainWindow,Signals):
         # init pointout
         self.init_pointout()
         # check source useable
-        # self.appmgr.check_source_useable()
+        # self.worker_thread0.appmgr.check_source_useable()
         # pingback_main
-        self.appmgr.submit_pingback_main()
+        self.worker_thread0.appmgr.submit_pingback_main()
 
         # update cache db
-        self.appmgr.get_newer_application_info()
-        self.appmgr.get_newer_application_icon()
-        self.appmgr.get_all_ratings()
-        self.appmgr.get_all_categories()
-        self.appmgr.get_all_rank_and_recommend()
-        self.appmgr.update_xapiandb("")
-        # self.appmgr.download_other_images()
+        self.worker_thread0.appmgr.get_newer_application_info()
+        self.worker_thread0.appmgr.get_newer_application_icon()
+        self.worker_thread0.appmgr.get_all_ratings()
+        self.worker_thread0.appmgr.get_all_categories()
+        self.worker_thread0.appmgr.get_all_rank_and_recommend()
+        self.worker_thread0.appmgr.update_xapiandb("")
+        # self.worker_thread0.appmgr.download_other_images()
 
         self.httpmodel = HttpDownLoad()
         requestData = "http://service.ubuntukylin.com/uksc/download/?name=uk-win.zip"
@@ -1012,7 +1169,7 @@ class SoftwareCenter(QMainWindow,Signals):
     def init_category_view(self):
         if (Globals.DEBUG_SWITCH):
             print("init_category_view11111")
-        cat_list_orgin = self.appmgr.get_category_list(True)
+        cat_list_orgin = self.worker_thread0.appmgr.get_category_list(True)
         if (Globals.DEBUG_SWITCH):
             print("init_category_view22222")
         self.categoryBar.init_categories(cat_list_orgin)
@@ -1028,7 +1185,7 @@ class SoftwareCenter(QMainWindow,Signals):
         category_list = self.win_model.get_win_category_list()#win替换分类在xp数据表中的所有分类列表，无重复
 
         for category in category_list:
-            app_list = self.appmgr.search_app_display_info(category)
+            app_list = self.worker_thread0.appmgr.search_app_display_info(category)
             for context in app_list:
                 if 1:
                 #if context[0] == 'wine-qq' or context[0] == 'ppstream':
@@ -1047,7 +1204,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     # kobe 1106
                     #self.connect(self, trans_card_status, card.slot_change_btn_status)
                 #else:
-                    app = self.appmgr.get_application_by_name(context[0])
+                    app = self.worker_thread0.appmgr.get_application_by_name(context[0])
                     if app is not None and app.package is not None:
                         self.winnum += 1
                         winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
@@ -1069,7 +1226,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.raise_()
 
     def slot_show_loading_div(self):
-        self.loadingDiv.start_loading("")
+        self.loadingDiv.start_loading()
 
     def slot_uksc_update(self):
         self.init_category_view()
@@ -1291,9 +1448,9 @@ class SoftwareCenter(QMainWindow,Signals):
         # print("show_more_search_result 000 :",len(self.searchList),listLen)
         for appname in self.searchList:
             # print("show_more_search_result 111:",appname, count, Globals.NOWPAGE)
-            app = self.appmgr.get_apk_by_name(appname)
+            app = self.worker_thread0.appmgr.get_apk_by_name(appname)
             if app is None:
-                app = self.appmgr.get_application_by_name(appname)
+                app = self.worker_thread0.appmgr.get_application_by_name(appname)
             if app is None:
                 continue
             # print("show_more_search_result 222")
@@ -1358,7 +1515,7 @@ class SoftwareCenter(QMainWindow,Signals):
         else:
             # print self.nowPage
             listLen = listWidget.count()
-            apps = self.appmgr.get_category_apps(self.category)
+            apps = self.worker_thread0.appmgr.get_category_apps(self.category)
 
             count = 0
             for pkgname, app in list(apps.items()):
@@ -1409,7 +1566,7 @@ class SoftwareCenter(QMainWindow,Signals):
         listLen = self.apkListWidget.count()
 
         count = 0
-        for app in self.appmgr.apk_list:
+        for app in self.worker_thread0.appmgr.apk_list:
             # if Globals.NOWPAGE == PageStates.UPPAGE:
             #     if app.is_installed is False:
             #         continue
@@ -1605,7 +1762,7 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.btnWin.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;background-color:#2d8ae1;}")
 
     def check_uksc_update(self):
-        self.uksc = self.appmgr.get_application_by_name("ubuntu-kylin-software-center")
+        self.uksc = self.worker_thread0.appmgr.get_application_by_name("ubuntu-kylin-software-center")
         if(self.uksc != None):
             if(self.uksc.is_upgradable == True):
                 self.show_mainwindow()
@@ -1639,8 +1796,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def restart_uksc_now(self):
         try:
-            self.backend.clear_dbus_worklist()
-            self.backend.exit_uksc_apt_daemon()
+            self.worker_thread0.backend.clear_dbus_worklist()
+            self.worker_thread0.backend.exit_uksc_apt_daemon()
         except Exception as e:
             if (Globals.DEBUG_SWITCH):
                 print((str(e)))
@@ -1651,9 +1808,9 @@ class SoftwareCenter(QMainWindow,Signals):
     # get the point out app
     def init_pointout(self):
         # check user config is show
-        flag = self.appmgr.get_pointout_is_show_from_db()
+        flag = self.worker_thread0.appmgr.get_pointout_is_show_from_db()
         if(flag == True):
-            self.appmgr.set_pointout_is_show(False) # only show pointout once
+            self.worker_thread0.appmgr.set_pointout_is_show(False) # only show pointout once
             self.get_pointout()
         else:
             # in quiet mode, dont show pointout ui means dont launch uksc
@@ -1662,7 +1819,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def get_pointout(self):
         # find not installed pointout apps
-        pl = self.appmgr.get_pointout_apps()
+        pl = self.worker_thread0.appmgr.get_pointout_apps()
 
         if(len(pl) > 0):
             for p in pl:
@@ -1684,7 +1841,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.slot_close()
 
     def get_pointout_apps_num(self):
-        pl = self.appmgr.get_pointout_apps()
+        pl = self.worker_thread0.appmgr.get_pointout_apps()
         return len(pl)
 
     def show_mainwindow(self):
@@ -1698,20 +1855,20 @@ class SoftwareCenter(QMainWindow,Signals):
 
     #-------------------------------------------------slots-------------------------------------------------
     def slot_rec_show_necessary(self):
-        self.appmgr.get_necessary_apps(False,True)
+        self.worker_thread0.appmgr.get_necessary_apps(False,True)
         self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
         self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
 
     def slot_rec_show_game(self):
-        self.appmgr.get_game_apps(False,True)
+        self.worker_thread0.appmgr.get_game_apps(False,True)
         self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
         self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
     def slot_rec_show_recommend(self):
-        self.appmgr.get_recommend_apps(False)
+        self.worker_thread0.appmgr.get_recommend_apps(False)
         #self.slot_recommend_apps_ready(applist,False)
 
         #self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
@@ -2146,7 +2303,7 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.btnClosesearch.setVisible(True)
         self.ui.detailShellWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
-        
+
     def slot_close_search(self):
         self.re_cli = 0
         self.ui.btnClosesearch.setVisible(False)
@@ -2237,7 +2394,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
     def slot_count_application_update(self):
-        (inst, up, all, apk) = self.appmgr.get_application_count(self.category)
+        (inst, up, all, apk) = self.worker_thread0.appmgr.get_application_count(self.category)
 
         # self.ui.allcount.setText(str(all))
         self.ui.uncount.setText(str(inst))
@@ -2246,18 +2403,15 @@ class SoftwareCenter(QMainWindow,Signals):
         self.up_num = str(up)
         #add
         if up == 0:
-            self.ui.btnUp_num_long.hide()
             self.ui.btnUp_num.hide()
-           #self.ui.btnUp_pic.hide()
-        if up < 10:
-            self.ui.btnUp_num_long.hide()
-            self.ui.btnUp_num.setText(str(up))
         elif up < 100:
-            self.ui.btnUp_num.hide()
-            self.ui.btnUp_num_long.setText(str(up))
+            # self.ui.btnUp_num.hide()
+            self.ui.btnUp_num.setText(str(up))
+            self.ui.btnUp_num.show()
         else:
-            self.ui.btnUp_num.hide()
-            self.ui.btnUp_num_long.setText(99)
+            # self.ui.btnUp_num.hide()
+            self.ui.btnUp_num.setText(99)
+            self.ui.btnUp_num.show()
         #self.ui.btnUp_num.setText(str(up))
 
         # self.ui.wincountlabel.setText(str(self.winnum))
@@ -2271,8 +2425,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_goto_homepage(self, bysignal = False):
         if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-            self.appmgr.get_recommend_apps(bysignal)
-            # self.appmgr.get_ratingrank_apps(bysignal)
+            self.worker_thread0.appmgr.get_recommend_apps(bysignal)
+            # self.worker_thread0.appmgr.get_ratingrank_apps(bysignal)
             self.slot_rec_show_recommend()
         #else:
         self.show_homepage(bysignal)
@@ -2402,21 +2556,21 @@ class SoftwareCenter(QMainWindow,Signals):
         self.reset_nav_bar_focus_one()
         self.ui.btnApk.setEnabled(False)
 
-        # self.loadingDiv.start_loading("")
+        # self.loadingDiv.start_loading()
         if(self.apkpagefirst):
-            if not self.appmgr.check_kydroid_envrun():
+            if not self.worker_thread0.appmgr.check_kydroid_envrun():
                 self.slot_kydroid_envrun()
             else :
                 self.apkpagefirst =False
                 if self.kydroid_service.hasKydroid != False:
                     self.apkpageload.start_loading()
-                    # self.appmgr.get_kydroid_apklist()
-                    self.appmgr.apk_page_create()
+                    # self.worker_thread0.appmgr.get_kydroid_apklist()
+                    self.worker_thread0.appmgr.apk_page_create()
 
 
     def slot_kydroid_envrun(self):
         os.system(KYDROID_STARTAPP_ENV + " &")
-        self.appmgr.start_cycle_check_kydroid_envrun()
+        self.worker_thread0.appmgr.start_cycle_check_kydroid_envrun()
         self.apkpageload.start_loading()
         self.ui.navWidget.setEnabled(False)
         self.ui.headercw1.setEnabled(False)
@@ -2424,17 +2578,17 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_kydroid_envrun_over(self,envrun):
         if envrun:
             self.apkListWidget.clear()
-            self.appmgr.get_kydroid_apklist()
+            self.worker_thread0.appmgr.get_kydroid_apklist()
             self.apkpagefirst =False
-            self.appmgr.apk_page_create()
-            self.appmgr.get_recommend_apps(False)
+            self.worker_thread0.appmgr.apk_page_create()
+            self.worker_thread0.appmgr.get_recommend_apps(False)
             # self.count_application_update.emit()
         else :
             self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
         self.ui.navWidget.setEnabled(True)
         self.ui.headercw1.setEnabled(True)
         # self.apkpageload.stop_loading()
-        # self.appmgr.get_recommend_apps(False)
+        # self.worker_thread0.appmgr.get_recommend_apps(False)
 
     def slot_goto_uppage(self, bysignal=False):
         self.ui.btnClosesearch.setVisible(False)
@@ -2645,8 +2799,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.reset_nav_bar()
 
-        self.loadingDiv.start_loading("")
-        self.appmgr.get_user_applist()
+        self.loadingDiv.start_loading()
+        self.worker_thread0.appmgr.get_user_applist()
 
     def slot_goto_translatepage(self, bysignal=False):#zx 2015.01.30
         Globals.NOWPAGE = PageStates.TRANSPAGE
@@ -2671,8 +2825,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.reset_nav_bar()
         #
-        self.loadingDiv.start_loading("")
-        self.appmgr.get_user_transapplist()
+        self.loadingDiv.start_loading()
+        self.worker_thread0.appmgr.get_user_transapplist()
 
     def slot_refresh_page(self):
         if self.category != "" and self.category is not None and PageStates.ALLPAGE == Globals.NOWPAGE:
@@ -2724,7 +2878,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 for res in reslist:
                     app_name = res['aid']['app_name']
                     install_date = res['date']
-                    app = self.appmgr.get_application_by_name(app_name)
+                    app = self.worker_thread0.appmgr.get_application_by_name(app_name)
                     if app is None or app.package is None:
                         continue
                     app.install_date = install_date
@@ -2778,7 +2932,7 @@ class SoftwareCenter(QMainWindow,Signals):
                             allapp[app_name].translatedate = newtranstime
 
                     else:
-                        app = self.appmgr.get_application_by_name(app_name)
+                        app = self.worker_thread0.appmgr.get_application_by_name(app_name)
                         if app is not None and app.package is not None:
                             app.translatedate = res["modify_time"].replace("T"," ").replace("Z","")
                             if res["type"] == "appname":
@@ -2812,7 +2966,7 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_close(self):
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
         try:
-            if self.backend.check_dbus_workitem()[0] > 0 or self.backend.check_uksc_is_working() == 1:
+            if self.worker_thread0.backend.check_dbus_workitem()[0] > 0 or self.worker_thread0.backend.check_uksc_is_working() == 1:
                 cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
                 cd.confirmdialog_ok.connect(self.slot_exit_uksc)
                 cd.exec_()
@@ -2826,12 +2980,12 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_exit_uksc(self):
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
         try:
-            self.backend.clear_dbus_worklist()
-            self.backend.exit_uksc_apt_daemon()
+            self.worker_thread0.backend.clear_dbus_worklist()
+            self.worker_thread0.backend.exit_uksc_apt_daemon()
         except Exception as e:
             if (Globals.DEBUG_SWITCH):
                 print((str(e)))
-            
+
         self.dbusControler.stop()
         sys.exit(0)
 
@@ -2862,8 +3016,8 @@ class SoftwareCenter(QMainWindow,Signals):
         if self.adi == 5:
             num = 1
         else:
-            num = self.adi +1    
-        app = self.appmgr.get_application_by_name(self.adlist[num].name)
+            num = self.adi +1
+        app = self.worker_thread0.appmgr.get_application_by_name(self.adlist[num].name)
         if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
         else:
@@ -2873,13 +3027,13 @@ class SoftwareCenter(QMainWindow,Signals):
             MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
             MS.exec_()
             #MS.information(self,"提示","软件源不完整或不包含该软件",QMessageBox.Yes)
-            
+
             #print "sssssssssssssssssssssssssssssssss"
             #webbrowser.open_new_tab(self.adlist[self.adi].urlorpkgid)
 
     # def slot_click_rank_item(self, item):
     #     pkgname = item.whatsThis()
-    #     app = self.appmgr.get_application_by_name(str(pkgname))
+    #     app = self.worker_thread0.appmgr.get_application_by_name(str(pkgname))
     #     if app is not None and app.package is not None:
     #         self.slot_show_app_detail(app)
     #     else:
@@ -2909,7 +3063,7 @@ class SoftwareCenter(QMainWindow,Signals):
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
-        res = self.backend.update_source(quiet)
+        res = self.worker_thread0.backend.update_source(quiet)
         # print 'wb111111111111:',res
         if res == "False":
             self.configWidget.set_process_visiable(False)
@@ -2930,14 +3084,14 @@ class SoftwareCenter(QMainWindow,Signals):
             LOG.info("add an install debfile task:%s", debfile.path)
         # install deb deps
         if debfile.get_missing_deps():
-            res = self.backend.install_deps(debfile.path)
+            res = self.worker_thread0.backend.install_deps(debfile.path)
             if res:
                 # install deb
-                res = self.backend.install_debfile(debfile.path)
+                res = self.worker_thread0.backend.install_debfile(debfile.path)
                 if res:
                     self.add_task_item(debfile, "install_debfile", isdeb=True)
         else:
-            res = self.backend.install_debfile(debfile.path)
+            res = self.worker_thread0.backend.install_debfile(debfile.path)
             if res:
                 self.add_task_item(debfile, "install_debfile", isdeb=True)
 
@@ -2945,21 +3099,21 @@ class SoftwareCenter(QMainWindow,Signals):
     def slot_click_install(self, app):
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an install task:%s",app.name)
-        self.appmgr.submit_pingback_app(app.name)
+        self.worker_thread0.appmgr.submit_pingback_app(app.name)
 
         if isinstance(app, ApkInfo):
-            self.appmgr.download_apk(app)
+            self.worker_thread0.appmgr.download_apk(app)
             self.add_task_item(app, AppActions.INSTALL)
         else:
-            res = self.backend.install_package(app.name)
+            res = self.worker_thread0.backend.install_package(app.name)
             if res:
                 self.add_task_item(app, AppActions.INSTALL)
 
     def slot_click_install_rcm(self, app):
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an install task:%s",app.name)
-        self.appmgr.submit_pingback_app(app.name, isrcm=True)
-        res = self.backend.install_package(app.name)
+        self.worker_thread0.appmgr.submit_pingback_app(app.name, isrcm=True)
+        res = self.worker_thread0.backend.install_package(app.name)
         if res:
             self.add_task_item(app, AppActions.INSTALL)
 
@@ -2974,10 +3128,10 @@ class SoftwareCenter(QMainWindow,Signals):
             #     if not envrun :
             #         self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
             #         return
-            self.appmgr.download_apk(app)
+            self.worker_thread0.appmgr.download_apk(app)
             self.add_task_item(app, AppActions.INSTALL)
         else:
-            res = self.backend.upgrade_package(app.name)
+            res = self.worker_thread0.backend.upgrade_package(app.name)
             if res:
                 self.add_task_item(app, AppActions.UPGRADE)
 
@@ -2986,15 +3140,15 @@ class SoftwareCenter(QMainWindow,Signals):
             LOG.info("add a remove task:%s",app.name)
 
         if isinstance(app, ApkInfo):
-            self.appmgr.uninstall_app(app)
+            self.worker_thread0.appmgr.uninstall_app(app)
             self.add_task_item(app, AppActions.REMOVE)
         else:
-            res = self.backend.remove_package(app.name)
+            res = self.worker_thread0.backend.remove_package(app.name)
             if res:
                 self.add_task_item(app, AppActions.REMOVE)
-    
+
     def slot_ui_login(self,ui_username,ui_password):
-        self.appmgr.ui_login(ui_username,ui_password)
+        self.worker_thread0.appmgr.ui_login(ui_username,ui_password)
 
     def slot_ui_login_success(self):
         self.ui.afterLoginWidget.show()
@@ -3004,31 +3158,31 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/woman-logo.png')}")
 
     def slot_rset_password(self,new_password):
-        self.appmgr.rset_password(new_password)
+        self.worker_thread0.appmgr.rset_password(old_username,new_password)
 
     def slot_recover_password(self,old_username,old_email,new_password):
-        self.appmgr.recover_password(old_username,old_email,new_password)
-    
+        self.worker_thread0.appmgr.recover_password(old_username,old_email,new_password)
+
     def slot_change_identity(self):
-        self.appmgr.change_identity()
+        self.worker_thread0.appmgr.change_identity()
 
     def slot_ui_adduser(self,ui_username,ui_password,ui_email,ui_iden):
-        self.appmgr.ui_adduser(ui_username,ui_password,ui_email,ui_iden)
+        self.worker_thread0.appmgr.ui_adduser(ui_username,ui_password,ui_email,ui_iden)
 
     def slot_submit_review(self, app_name, content):
         if (Globals.DEBUG_SWITCH):
             LOG.info("submit one review:%s", content)
-        self.appmgr.submit_review(app_name, content)
+        self.worker_thread0.appmgr.submit_review(app_name, content)
 
     def slot_submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):#zx 2015.01.26
         if (Globals.DEBUG_SWITCH):
             LOG.info("Translate the app %s "%(appname))
-        self.appmgr.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description)
+        self.worker_thread0.appmgr.submit_translate_appinfo(appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description)
 
     def slot_submit_rating(self, app_name, rating):
         if (Globals.DEBUG_SWITCH):
             LOG.info("submit one rating:%s", str(rating))
-        self.appmgr.submit_rating(app_name, rating)
+        self.worker_thread0.appmgr.submit_rating(app_name, rating)
 
     def slot_click_cancel(self, app, action):
         if hasattr(app, "name"):
@@ -3037,7 +3191,7 @@ class SoftwareCenter(QMainWindow,Signals):
             cancelinfo = [app.name, action]
         elif isinstance(app, str):
             cancelinfo = [app, action] #for update cancel
-        res = self.backend.cancel_package(cancelinfo)
+        res = self.worker_thread0.backend.cancel_package(cancelinfo)
         # print res,cancelinfo
         if 'True' == res:
             #print app.name,"    ", action
@@ -3099,7 +3253,7 @@ class SoftwareCenter(QMainWindow,Signals):
             reslist = []
             count = 0
             if(Globals.NOWPAGE == PageStates.APKPAGE):
-                for apk in self.appmgr.apk_list:
+                for apk in self.worker_thread0.appmgr.apk_list:
                     if apk.pkgname:
                         if keyword in apk.pkgname:
                             reslist.append(apk.pkgname)
@@ -3116,7 +3270,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 reslist = self.searchDB.search_software(st)
                 self.searchList = reslist
                 for appname in self.searchList:
-                    app = self.appmgr.get_application_by_name(appname)
+                    app = self.worker_thread0.appmgr.get_application_by_name(appname)
                     if app is None :
                         continue
                     count = count + 1
@@ -3144,20 +3298,20 @@ class SoftwareCenter(QMainWindow,Signals):
         if action == AppActions.INSTALLDEBFILE and ".deb" == name[-4:]:
             name = DebPackage(name).pkgname
 
-        app = self.appmgr.get_application_by_name(name)
+        app = self.worker_thread0.appmgr.get_application_by_name(name)
 
         if action == AppActions.UPDATE:
             if int(percent) < 0:
                 self.messageBox.alert_msg("软件源更新失败")
                 self.configWidget.slot_update_finish()
-                self.appmgr.update_models(AppActions.UPDATE,"")
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
             elif int(percent) >= 100 and "下载停止" == msg:
                 self.configWidget.slot_update_status_change(percent)
                 self.configWidget.slot_update_finish()
-                self.appmgr.update_models(AppActions.UPDATE,"")
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
                 self.messageBox.alert_msg("更新软件源完成")
             elif int(percent) == 0.0 and "下载停止" == msg:
-                self.appmgr.update_models(AppActions.UPDATE,"")
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
                 self.messageBox.alert_msg("软件源列表为空")
                 self.configWidget.slot_update_finish()
             else:
@@ -3167,12 +3321,12 @@ class SoftwareCenter(QMainWindow,Signals):
             if int(percent) >= 100 and "下载停止" == msg:
                 self.updateSinglePB.value_change(100)
                 self.updateSinglePB.set_updatelabel_text("源更新完成")
-                self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE_FIRST,"")
             elif int(percent) < 0:
                 # self.updateSinglePB.value_change(0)
                 # self.updateSinglePB.set_updatelabel_text("更新源失败")
                 self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
-                self.appmgr.update_models(AppActions.UPDATE_FIRST,"")
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE_FIRST,"")
                 self.messageBox.alert_msg("软件源更新失败")
             else:
                 self.updateSinglePB.value_change(percent)
@@ -3208,11 +3362,11 @@ class SoftwareCenter(QMainWindow,Signals):
                         if action == AppActions.UPGRADE:
                             cd = ConfirmDialog("软件中心升级完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
                             cd.confirmdialog_ok.connect(self.restart_uksc)
-                            cd.confirmdialog_no.connect(self.backend.set_uksc_not_working) #if uksc upgrade itself,  the uksc will keep working status untill using func set_uksc_not_working
+                            cd.confirmdialog_no.connect(self.worker_thread0.backend.set_uksc_not_working) #if uksc upgrade itself,  the uksc will keep working status untill using func set_uksc_not_working
                             cd.exec_()
                         elif action == AppActions.REMOVE:
-                            self.backend.clear_dbus_worklist()
-                            self.backend.exit_uksc_apt_daemon()
+                            self.worker_thread0.backend.clear_dbus_worklist()
+                            self.worker_thread0.backend.exit_uksc_apt_daemon()
                             self.dbusControler.stop()
                             sys.exit(0)
                         else:
@@ -3236,15 +3390,15 @@ class SoftwareCenter(QMainWindow,Signals):
 
                     if int(percent) == int(-9):
                         self.slot_cancel_for_work_filed(name, action)
-                        self.appmgr.update_models(action, name)
+                        self.worker_thread0.appmgr.update_models(action, name)
                         buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
                     elif int(percent) == int(-1):
                         self.slot_cancel_for_work_filed(name, action)
-                        self.appmgr.update_models(action, name)
+                        self.worker_thread0.appmgr.update_models(action, name)
                         buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
                     elif int(percent) == int(-11):
                         self.slot_cancel_for_work_filed(name, action)
-                        self.appmgr.update_models(action, name)
+                        self.worker_thread0.appmgr.update_models(action, name)
                         buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
                     elif int(percent) == int(-7):
                         self.messageBox.alert_msg(AptActionMsg[action] + "完成")
@@ -3253,7 +3407,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     else:
                         self.slot_cancel_for_work_filed(name, action)
                         self.messageBox.alert_msg(AptActionMsg[action] + "失败")
-                        self.appmgr.update_models(action, name)
+                        self.worker_thread0.appmgr.update_models(action, name)
 
                 else:
                     if app is not None and app.package is not None:
@@ -3271,7 +3425,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_apk_status_change(self, name, processtype, action, percent, msg):
         # print(("########### ", msg," ",name," ",action," ",percent))
-        app = self.appmgr.get_apk_by_name(name)
+        app = self.worker_thread0.appmgr.get_apk_by_name(name)
 
         if int(percent) >= 200:
             if app is not None:
@@ -3305,7 +3459,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.slot_cancel_for_work_filed(name, action)
                 self.messageBox.alert_msg(AptActionMsg[action] + "失败")
 
-            self.appmgr.get_kydroid_apklist()
+            self.worker_thread0.appmgr.get_kydroid_apklist()
 
         else:
             if app is not None:
@@ -3331,7 +3485,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     # call the backend models update opeartion
     def slot_apt_process_finish(self,pkgname,action):
-        self.appmgr.update_models(action,pkgname)
+        self.worker_thread0.appmgr.update_models(action,pkgname)
 
     # update backend models ready
     def slot_apt_cache_update_ready(self, action, pkgname):
@@ -3341,11 +3495,11 @@ class SoftwareCenter(QMainWindow,Signals):
             else:
                 if self.updateSinglePB.isVisible():
                     self.updateSinglePB.hide()
-                    self.appmgr.init_models()
+                    self.worker_thread0.appmgr.init_models()
         else:
             self.count_application_update.emit()
 
-            # app = self.appmgr.get_application_by_name(pkgname)
+            # app = self.worker_thread0.appmgr.get_application_by_name(pkgname)
             # if app is not None:
             #     app.percent = 0
         #
@@ -3482,7 +3636,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # Globals.TOKEN = self.sso.get_oauth_token_and_verify_sync()
      #   Globals.TOKEN = self.token
 
-     #   self.appmgr.reinit_premoter_auth()
+     #   self.worker_thread0.appmgr.reinit_premoter_auth()
 
     # user app list page, select all / un select all
     def slot_ua_select_all(self):
@@ -3590,6 +3744,7 @@ def main():
                 sys.exit(0)
 
     mw = SoftwareCenter()
+    # mw.set_sources_list()
     signal.signal(signal.SIGINT, quit)
     signal.signal(signal.SIGTERM, quit)
     

@@ -815,8 +815,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.reviewload.start_loading()
         self.sshotload.start_loading()
         # send
-        self.mainwindow.appmgr.get_application_screenshots(app,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-        self.mainwindow.appmgr.get_application_reviews(app.name)
+        self.mainwindow.worker_thread0.appmgr.get_application_screenshots(app,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+        self.mainwindow.worker_thread0.appmgr.get_application_reviews(app.name)
 
 
         if (Globals.USER != ''):
@@ -827,11 +827,11 @@ class DetailScrollWidget(QScrollArea,Signals):
                 self.reset_ratings(my_rating)
 
 
-       
+
 
     def add_review(self, reviewlist):
         # get maxpage
-        self.maxpage = self.mainwindow.appmgr.db.get_pagecount_by_pkgname(self.app.pkgname)
+        self.maxpage = self.mainwindow.worker_thread0.appmgr.db.get_pagecount_by_pkgname(self.app.pkgname)
 
         # lengthen ui
         add = len(reviewlist)
@@ -899,7 +899,7 @@ class DetailScrollWidget(QScrollArea,Signals):
                 #self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail','thumbnail1')
                 pass
         #else:
-         
+
             #self.ui.pushButton.show()
             #self.ui.pushButton_2.show()
             #if i == 5:
@@ -1166,7 +1166,7 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.reviewload.move(self.ui.reviewListWidget.x(), self.ui.reviewListWidget.y())
             self.reviewload.start_loading()
             # send request force get review from server
-            self.mainwindow.appmgr.get_application_reviews(self.app.name,force=True)
+            self.mainwindow.worker_thread0.appmgr.get_application_reviews(self.app.name,force=True)
         elif(res == 1):
             self.mainwindow.messageBox.alert_msg("话唠了吧，喝口茶休息一下")
         elif(res == 2):
@@ -1203,7 +1203,7 @@ class DetailScrollWidget(QScrollArea,Signals):
             else:
                 pass
 
-            self.mainwindow.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
+            self.mainwindow.worker_thread0.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
             self.reset_rating_text(ratingavg, ratingtotal)
             self.mainwindow.messageBox.alert_msg("评分已提交")
         else:
@@ -1336,7 +1336,7 @@ class DetailScrollWidget(QScrollArea,Signals):
                     reviewcount = self.ui.reviewListWidget.count()
                     self.reviewload.move(self.reviewload.x(), self.ui.reviewListWidget.y() + 84 * reviewcount)
                     self.reviewload.start_loading()
-                    self.mainwindow.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
+                    self.mainwindow.worker_thread0.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
 
 class ScreenShotBig(QWidget):
 

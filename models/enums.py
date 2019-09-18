@@ -170,6 +170,8 @@ PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
 class Signals:
     init_models_ready = pyqtSignal(str,str)
+
+    myinit_emit = pyqtSignal()
 #    chksoftwareover = pyqtSignal()
 #    getallpackagesover = pyqtSignal()
 #    countiover = pyqtSignal()
@@ -217,7 +219,7 @@ class Signals:
 #add
     recover_password_over = pyqtSignal(list)
     recover_password = pyqtSignal(str,str,str)
-    rset_password = pyqtSignal(str)
+    rset_password = pyqtSignal(str,str)
     rset_password_over = pyqtSignal(list)
     change_user_identity_over = pyqtSignal(list)
     change_identity = pyqtSignal()
@@ -270,6 +272,10 @@ class Signals:
     kydroid_envrun_over = pyqtSignal(bool)
     rcmdcard_kydroid_envrun = pyqtSignal()
     normalcard_kydroid_envrun = pyqtSignal()
+
+    goto_login = pyqtSignal()
+
+    find_password= pyqtSignal()
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:

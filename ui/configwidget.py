@@ -27,12 +27,14 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.confw import Ui_ConfigWidget
 from models.enums import Signals
+from ui.loadingdiv import MiniLoadingDiv
 from models.globals import Globals
 
+from ui.login import Login
 class ConfigWidget(QWidget,Signals):
     mainw = ''
     iscanceled = ''
-    listset = ["",""]
+    listset = ["","",'']
     listrec = ["","",""]
     listuser = ""
     def __init__(self, parent=None):
@@ -40,10 +42,10 @@ class ConfigWidget(QWidget,Signals):
         self.ui_init()
 
         self.mainw = parent
-        self.backend = parent.backend
+        self.backend = parent.worker_thread0.backend
 
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.ui.bg.lower()
+        # self.ui.bg.lower()
         self.move(183, 100)
         #self.move(173, 138)
         palette = QPalette()
@@ -62,7 +64,7 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnReset.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
         self.ui.cbhideubuntu.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
+        # self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
 #add
         self.ui.groupBox.setFocusPolicy(Qt.NoFocus)        
         self.ui.groupBox_user.setFocusPolicy(Qt.NoFocus)
@@ -85,37 +87,38 @@ class ConfigWidget(QWidget,Signals):
 
         self.ui.lesource8.textChanged.connect(self.slot_le_input8)
 
-        self.ui.lesource9.setEchoMode(QLineEdit.Password)
-        self.ui.lesource9.setContextMenuPolicy(Qt.NoContextMenu)
+        # self.ui.lesource9.setEchoMode(QLineEdit.Password)
+        # self.ui.lesource9.setContextMenuPolicy(Qt.NoContextMenu)
         self.ui.lesource9.textChanged.connect(self.slot_le_input9)
-        self.ui.lesource11.textChanged.connect(self.slot_le_input11)
+        # self.ui.lesource11.textChanged.connect(self.slot_le_input11)
         self.ui.lesource12.textChanged.connect(self.slot_le_input12)
         
-        self.ui.lesource13.setEchoMode(QLineEdit.Password)
-        self.ui.lesource13.setContextMenuPolicy(Qt.NoContextMenu)
+        # self.ui.lesource13.setEchoMode(QLineEdit.Password)
+        # self.ui.lesource13.setContextMenuPolicy(Qt.NoContextMenu)
         self.ui.lesource13.textChanged.connect(self.slot_le_input13)
         self.ui.lesource14.textChanged.connect(self.slot_le_input14)#change identity        
 #        self.ui.lesource15.textChanged.connect(self.slot_le_input15)#change identity
 
-        self.ui.btnAdd_2.clicked.connect(self.slot_click_rsetpassword)
-        self.ui.btnAdd_3.clicked.connect(self.slot_click_recoverpassword)
+        self.ui.btnAdd_2.clicked.connect(self.slot_click_recoverpassword)
+        self.ui.btnAdd_3.clicked.connect(self.slot_click_rsetpassword)
         self.ui.btnAdd_4.clicked.connect(self.slot_click_changeidentity)
+        self.ui.suc_land.clicked.connect(self.slot_cluck_sucland)
         self.ui.lesource8.setMaxLength(22)
         self.ui.lesource9.setMaxLength(22)
-        self.ui.lesource11.setMaxLength(22)
+        # self.ui.lesource11.setMaxLength(22)
         self.ui.lesource12.setMaxLength(22)
         self.ui.lesource13.setMaxLength(22)
         self.ui.lesource14.setMaxLength(22)
 #        self.ui.lesource15.setMaxLength(22)
         self.ui.lesource8.setPlaceholderText("请输入用户名")
-        self.ui.lesource9.setPlaceholderText("请输入新密码")
-        self.ui.lesource11.setPlaceholderText("请输入用户名")
-        self.ui.lesource12.setPlaceholderText("请输入邮箱")
-        self.ui.lesource13.setPlaceholderText("请输入新密码")
+        self.ui.lesource9.setPlaceholderText("请输入您的邮箱")
+        # self.ui.lesource11.setPlaceholderText("请输入用户名")
+        self.ui.lesource12.setPlaceholderText("请输新密码")
+        self.ui.lesource13.setPlaceholderText("请再次输入新密码")
         self.ui.lesource14.setPlaceholderText("请输入用户名")
 #        self.ui.lesource15.setPlaceholderText("请输入密码")
-        self.ui.btnAdd_2.setText("修改密码")
-        self.ui.btnAdd_3.setText("找回密码")
+        self.ui.btnAdd_2.setText("下一步")
+        self.ui.btnAdd_3.setText("确定")
         self.ui.btnAdd_4.setText("确定")        
         self.ui.btnClose.clicked.connect(self.hide)
         self.ui.btnUpdate.clicked.connect(self.slot_click_update)
@@ -123,16 +126,18 @@ class ConfigWidget(QWidget,Signals):
         self.ui.lesource.textChanged.connect(self.slot_le_input)
         self.ui.cbhideubuntu.setCheckable(True)
         self.ui.cbhideubuntu.clicked.connect(self.slot_checkstate_changed)
-        self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
+        # self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.ui.pageListWidget.itemClicked.connect(self.slot_item_clicked)
+
+        # self.ui.up_chk.stateChanged.connect(self.change1)
 
         #去掉软件源
         #self.ui.text2.setText("用户登录信息:")        
-        #self.ui.text1.setText("软件源列表")
+        self.ui.text1.setText("软件源列表")
         self.ui.cbhideubuntu.setText("    隐藏ubuntu源")
 
         self.ui.btnUpdate.setText("更新软件源")
-        self.ui.btnAdd.setText("添加软件源")
+        self.ui.btnAdd.setText("确定")
         self.ui.btnReset.setText("   恢复默认设置")
 
         sourceitem = QListWidgetItem("软件源设置")
@@ -153,49 +158,53 @@ class ConfigWidget(QWidget,Signals):
         # pointoutitem.setIcon(icon)
         # self.ui.pageListWidget.addItem(pointoutitem)
 
-        self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
+        # self.ui.bg.setStyleSheet("QLabel{background-image:url('res/configwidget.png');}")
         #self.ui.text2.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
         #self.ui.text1.setStyleSheet("QLabel{color:#666666;font-size:14px;}")
        #去掉上横线
          #self.ui.splitline.setStyleSheet("QLabel{background-color:#a5a5a5;}")
-        self.ui.label.setStyleSheet("QLabel{background-color:#077ab1;}")
+        # self.ui.label.setStyleSheet("QLabel{background-color:#077ab1;}")
         # self.ui.label_2.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         # self.ui.label_3.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         # self.ui.label_4.setStyleSheet("QLabel{background-color:#a5a5a5;}")
-        self.ui.pageListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:32px;padding-left:5px;margin-top:0px;border:0px;background-image:url('res/pageList.png');color:#ffffff;}QListWidget::item:selected{background-image:url('res/pageListselected.png');color:#47ccf3;}")
+        self.ui.pageListWidget.setStyleSheet("QListWidget{background-color:#535353;}QListWidget::item{font-size:17px;height:32px;padding-left:5px;margin-top:15px;border:0px;color:#ffffff;}QListWidget::item:selected{color:#47ccf3;}")
 #add
-        #self.ui.groupBox.setStyleSheet("QGroupBox{border:1px;color:#0fa2e8;font-size:13px}")
+        self.ui.groupBox.setStyleSheet(".QGroupBox{border:0px;font-size:14px;color:#000000}")
+        self.ui.groupBox_2.setStyleSheet("QGroupBox{border:0px;}")
+
+        self.ui.groupBox_recover.setStyleSheet("QGroupBox{border:1px transparent }")
         #self.ui.checkBox.setStyleSheet("QCheckBox{border:0px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")         
-        self.ui.sourceListWidget.setStyleSheet("QListWidget{border:0px;}QListWidget::item{height:25px;margin-top:0px;margin-left:1px;border:0px;}QListWidget::item:selected{background-color:#E4F1F8;;}")
+        self.ui.sourceListWidget.setStyleSheet("QListWidget{background-color: #ffffff;border:1px solid #cccccc;}QListWidget::item{height:22px;margin-top:-1px;margin-left:-2px;margin-right: -2px;border:1px solid #cccccc;}QListWidget::item:selected{background-color:#E4F1F8;;}")
         self.ui.userWidget.setStyleSheet("QListWidget{border:0px solid #c0d3dd;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
         self.ui.passwordWidget.setStyleSheet("QListWidget{border:0px solid #c0d3dd;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
-        self.ui.sourceWidget.setStyleSheet("QListWidget{border:1px;color::#0fa2e8;font-size:13px}")
-        self.ui.lesource.setStyleSheet("QLineEdit{border:0px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
-        self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnupdate.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
-        self.ui.btnAdd.setStyleSheet("QPushButton{border:1px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
+        self.ui.sourceWidget.setStyleSheet(".QListWidget{border:1px;color::#0fa2e8;font-size:13px}")
+        # self.ui.lesource.setStyleSheet("QLineEdit{border-radius:1px;color:#497FAB;font-size:13px;}")
+        self.ui.lesource.setStyleSheet("QLineEdit:pressd{background-color:#ffffff;border 1px solid #2d8ae1}")
+        self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;}QPushButton:hover{color:#0fa2e8}")
+        self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
         self.ui.cbhideubuntu.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/cbhideubuntuon.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}QPushButton:Checked{background:url('res/cbhideubuntuoff.png') no-repeat center left;}")
-        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
-        self.ui.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progress1.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
-                                          "QProgressBar:chunk{background-image:url('res/progress2.png');}")
+        # self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
+        self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                                       "QProgressBar:chunk{background-color:#2d8ae1;}")
         self.ui.sourceListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{width:11px;background-color:black;margin:0px,0px,0px,0px;padding-top:0px;padding-bottom:0px;}"
                                                                  "QScrollBar:sub-page:vertical{background:qlineargradient(x1: 0.5, y1: 1, x2: 0.5, y2: 0, stop: 0 #D4DCE1, stop: 1 white);}QScrollBar:add-page:vertical{background:qlineargradient(x1: 0.5, y1: 0, x2: 0.5, y2: 1, stop: 0 #D4DCE1, stop: 1 white);}"
                                                                  "QScrollBar:handle:vertical{background:qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 #CACACA, stop: 1 #818486);}QScrollBar:add-line:vertical{background-color:green;}")
 
         self.ui.lesource8.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
         self.ui.lesource9.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
-        self.ui.lesource11.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
+        # self.ui.lesource11.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
         self.ui.lesource12.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
         self.ui.lesource13.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
         self.ui.btnAdd_3.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
         self.ui.btnAdd_2.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
-        self.ui.btnAdd_4.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
+        self.ui.btnAdd_4.setStyleSheet("QPushButton{background-color:#ad8ae1;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
 
 
 
         #self.ui.pageListWidget.setItemSelected(self.ui.pageListWidget.item(0), True)
-        self.ui.pageListWidget.item(0).setSelected(True)
+        # self.ui.pageListWidget.item(0).setSelected(True)
         self.ui.btnAdd.setEnabled(False)
         self.ui.btnReset.setEnabled(False)
         self.ui.cbhideubuntu.setChecked(True)
@@ -208,24 +217,36 @@ class ConfigWidget(QWidget,Signals):
         self.ui.sourceListWidget.setSpacing(4)
 
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
-
-
         for one in slist:
             one = one.decode('utf-8')
             item = QListWidgetItem()
             itemw = SourceItemWidget(one, self)
             self.ui.sourceListWidget.addItem(item)
             self.ui.sourceListWidget.setItemWidget(item, itemw)
-
-        self.ui.progressBar.setRange(0,100)
-        self.ui.progressBar.reset()
+        self.ui.progressBar.setRange(0, 100)
+        # self.ui.progressBar.reset()
 
         self.hide()
+
+
+
+
+
+
+    # def sourcelist_selcet(self):
+    #
+    #     up_item = QListWidgetItem()
+    #     up_itemw = subQSourceItemWidget(self)
+    #     self.ui.sourceListWidget.addItem(up_item)
+    #     self.ui.sourceListWidget.setItemWidget(up_item, up_itemw)
+
+
+
 
     def ui_init(self):
         self.ui = Ui_ConfigWidget()
         self.ui.setupUi(self)
-        self.show()
+        # self.show()
         self.ui.btnReset.setVisible(False)
         self.ui.cbhideubuntu.setVisible(False)
 
@@ -239,18 +260,21 @@ class ConfigWidget(QWidget,Signals):
 
     def slot_le_input11(self,text):
         sourcetext = str(text)
-        self.listrec[0] = sourcetext
+
     def slot_le_input12(self,text):
         sourcetext = str(text)
-        self.listrec[1] = sourcetext
+        self.listrec[0] = sourcetext
     def slot_le_input13(self,text):
         sourcetext = str(text)
-        self.listrec[2] = sourcetext
+        self.listrec[1] = sourcetext
 
 #for change identuty
     def slot_le_input14(self,text):
         sourcetext = str(text)
         self.listuser = sourcetext
+
+    def slot_show_ui(self):
+        self.show()
 
     def slot_click_changeidentity(self):
         BC = QMessageBox()
@@ -283,6 +307,11 @@ class ConfigWidget(QWidget,Signals):
             #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
             BC.setText('服务器异常')
             BC.exec_()
+
+    def slot_cluck_sucland(self):
+        self.hide()
+        self.goto_login.emit()
+
 
     def slot_change_user_identity_over(self,res):
         res = res[0]['res']
@@ -332,19 +361,20 @@ class ConfigWidget(QWidget,Signals):
 #        sourcetext = str(text.toUtf8())
 #        print "for change identuty",sourcetext
 
-#for rset password 
-    def slot_click_rsetpassword(self):
+#for rset password
+
+    def slot_click_recoverpassword(self):
         BR =QMessageBox()
         BR.setWindowTitle('提示')
         BR.addButton(QPushButton('确定'), QMessageBox.YesRole)
-        if self.listset[0] == Globals.USER and self.listset[0] != "" and self.listset[1] != "":
+        if self.listset[0] != "" and self.listset[1] != ""and self.listset[2]=='':
             try:
-                self.rset_password.emit(self.listset[1])
+                self.recover_password.emit(self.listset[0], self.listset[1], self.listset[2])
             except:
                 if (Globals.DEBUG_SWITCH):
-                    print("######","修改失败")
+                    print("######","验证失败")
                 #BR.information(self,"提示","修改失败",QMessageBox.Yes)
-                BR.setText('修改失败')
+                BR.setText('验证失败')
                 BR.exec_()
         elif self.listset[0] == "":
             #BR.information(self,"提示","请输入用户名",QMessageBox.Yes)
@@ -352,7 +382,7 @@ class ConfigWidget(QWidget,Signals):
             BR.exec_()
         elif self.listset[1] == "":
             #BR.information(self,"提示","请输入新密码",QMessageBox.Yes)
-            BR.setText('请输入新密码')
+            BR.setText('请输入您的邮箱')
             BR.exec_()
         elif Globals.USER == "":
             #BR.information(self,"提示","用户未登录软件中心",QMessageBox.Yes)
@@ -372,8 +402,9 @@ class ConfigWidget(QWidget,Signals):
             if (Globals.DEBUG_SWITCH):
                 print("######","修改成功")
             #AR.information(self,"提示","修改成功",QMessageBox.Yes)
-            AR.setText('修改成功')
-            AR.exec_()
+            self.ui.groupBox_password.hide()
+            self.ui.groupBox_recover.hide()
+            self.ui.groupBox_success.show()
         elif res == 1 or res == None:
             #数据异常
             if (Globals.DEBUG_SWITCH):
@@ -392,13 +423,16 @@ class ConfigWidget(QWidget,Signals):
             AR.exec_()
  
 #for recover password
-    def slot_click_recoverpassword(self):
+
+    def slot_click_rsetpassword(self):
         BC = QMessageBox()
         BC.setWindowTitle('提示')
         BC.addButton(QPushButton('确定'), QMessageBox.YesRole)
-        if self.listrec[0] != "" and self.listrec[1] != "" and self.listrec[2] != "":
+        print(self.listrec[0])
+        if self.listrec[0] != "" and self.listrec[1] != "":
             try:
-                self.recover_password.emit(self.listrec[0],self.listrec[1],self.listrec[2])
+                self.rset_password.emit(self.listset[0],self.listrec[0])
+
             except:
                 if (Globals.DEBUG_SWITCH):
                     print("######","修改失败")
@@ -406,17 +440,18 @@ class ConfigWidget(QWidget,Signals):
                 BC.setText('服务器异常')
                 BC.exec_()
         elif self.listrec[0] == "":
+
             #BC.information(self,"提示","用户名为空",QMessageBox.Yes)
-            BC.setText('用户名为空')
+            BC.setText('新密码为空')
             BC.exec_()
         elif self.listrec[1] == "":
             #BC.information(self,"提示","邮箱为空",QMessageBox.Yes)
-            BC.setText('邮箱为空')
+            BC.setText('再次确认密码为空')
             BC.exec_()
-        elif self.listrec[2] == "":
-            #BC.information(self,"提示","新密码为空",QMessageBox.Yes)
-            BC.setText('新密码为空')
-            BC.exec_()
+        # elif self.listrec[2] == "":
+        #     #BC.information(self,"提示","新密码为空",QMessageBox.Yes)
+        #     BC.setText('新密码为空')
+        #     BC.exec_()
         else:
             #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
             BC.setText('服务器异常')
@@ -444,12 +479,30 @@ class ConfigWidget(QWidget,Signals):
             #AC.information(self,"提示","新密码与原来一致，请重新修改",QMessageBox.Yes)
             AC.setText('新密码与原来一致')
             AC.exec_()
+        elif res==4:
+            self.ui.groupBox_recover.show()
+            self.ui.groupBox_password.hide()
+            self.ui.groupBox_success.hide()
         else:
             if (Globals.DEBUG_SWITCH):
                 print("######xxxxxx","服务器异常")
             #AC.information(self,"提示","服务器异常",QMessageBox.Yes)
             AC.setText('服务器异常')
             AC.exec_()
+
+
+
+    def change1(self):
+        if self.ui.up_chk.isChecked()==True:
+            slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+            for one in slist:
+                itemw = SourceItemWidget(one, self)
+                itemw.chk.setChecked(True)
+        elif self.ui.up_chk.isChecked()==False:
+            slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+            for one in slist:
+                itemw = SourceItemWidget(one, self)
+                itemw.chk.setChecked(False)
 
 
 
@@ -466,9 +519,9 @@ class ConfigWidget(QWidget,Signals):
 
     def set_process_visiable(self, flag):
         if(flag == True):
-            self.ui.processwidget.setVisible(True)
+            # self.ui.processwidget.setVisible(True)
             self.ui.btnAdd.setEnabled(False)
-            self.ui.btnUpdate.setVisible(False)
+            self.ui.btnUpdate.setVisible(True)
             self.ui.btnReset.setVisible(False)
             self.ui.cbhideubuntu.setVisible(False)
             # self.ui.label_2.setVisible(False)
@@ -476,7 +529,7 @@ class ConfigWidget(QWidget,Signals):
             # self.ui.label_4.setVisible(False)
 
         else:
-            self.ui.processwidget.setVisible(False)
+            # self.ui.processwidget.setVisible(False)
             self.ui.btnUpdate.setVisible(True)
             self.ui.btnReset.setVisible(False)
             self.ui.cbhideubuntu.setVisible(False)
@@ -489,13 +542,16 @@ class ConfigWidget(QWidget,Signals):
         self.task_cancel.emit("#update", "update")
 
     def slot_click_update(self):
+        self.ui.btnUpdate.show()
         self.iscanceled = False
-        self.ui.progressBar.reset()
+        # self.ui.progressBar.reset()
         self.set_process_visiable(True)
         self.click_update_source.emit()
 
     def slot_update_status_change(self, percent):
         self.ui.progressBar.setValue(percent)
+        if(percent>=100):
+            self.ui.progressBar.setValue(0)
 
     def slot_update_finish(self):
         self.fill_sourcelist()
@@ -544,11 +600,20 @@ class ConfigWidget(QWidget,Signals):
             self.messageBox.alert_msg("添加的软件源已存在！")
         elif sourceflag == '1':
             if (sourcetext.find('kylinos') == -1):
-                self.messageBox.alert_msg("添加非麒麟软件源完成") 
+                self.messageBox.alert_msg("添加非麒麟软件源完成")
             else:
                 self.messageBox.alert_msg("添加麒麟软件源完成")
+
         else:
             self.messageBox.alert_msg("无效的软件源！")
+
+
+    def slot_click_add_spacail(self, OS):
+        sourcetext = "deb http://archive.kylinos.cn/kylin/KYLIN-ALL" + ' ' + OS + ' ' + "main restricted universe multiverse"
+        sourceflag = -1
+        sourceflag = self.backend.add_source(sourcetext)
+        self.fill_sourcelist()
+
 
     def slot_app_sou(self,sourcetext):
         if self.ui.checkBox_3.isChecked() and (sourcetext.find(' main') == -1):
@@ -563,10 +628,14 @@ class ConfigWidget(QWidget,Signals):
     def slot_le_input(self, text):
         sourcetext = str(text)
         if(sourcetext.strip() == ""):
-            self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;background:url('res/btnadd.png') no-repeat;}")
+            # self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;}")
+            self.ui.btnAdd.setStyleSheet(
+                "QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
             self.ui.btnAdd.setEnabled(False)
         else:
-            self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;background:url('res/btnadd.png') no-repeat;}")
+            # self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;}")
+            self.ui.btnAdd.setStyleSheet(
+                "QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
             self.ui.btnAdd.setEnabled(True)
 
     def slot_checkstate_changed(self):
@@ -598,15 +667,61 @@ class ConfigWidget(QWidget,Signals):
             self.ui.sourceWidget.hide()
             self.ui.userWidget.hide()
             self.ui.passwordWidget.show()
-            self.ui.text8.setText("修改密码(请先登录软件中心):")
-            self.ui.text8.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
-            self.ui.text9.setText("密码找回:")
-            self.ui.text9.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:#444444;}")
+            self.ui.groupBox_success.hide()
+            self.ui.groupBox_recover.hide()
+            self.ui.groupBox_password.show()
+            self.ui.text8.setText("找回密码")
+            # self.ui.groupBox_recover.hide()
+            # self.ui.groupBox_password.hide()
+            # self.ui.groupBox_success.show()
+            self.ui.text8.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
+            #找回密码第一页
+            self.ui.icon1.setStyleSheet("QLabel{background:url('res/step-2.png') no-repeat;}")
+            self.ui.icon_linedit1.setText("输入用户名和邮箱")
+            self.ui.icon_linedit1.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.icon2.setStyleSheet("QLabel{background:url('res/step-3.png') no-repeat;}")
+            self.ui.icon_linedit2.setText("输入新密码")
+            self.ui.icon_linedit2.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.icon3.setStyleSheet("QLabel{background:url('res/step-6.png') no-repeat;}")
+            self.ui.icon_linedit3.setText("完成")
+            self.ui.icon_linedit3.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+            #找回密码第二页
+            self.ui.icon1_1.setStyleSheet("QLabel{background:url('res/step-1.png') no-repeat;}")
+            self.ui.icon_linedit1_1.setText("输入用户名和邮箱")
+            self.ui.icon_linedit1_1.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.icon2_1.setStyleSheet("QLabel{background:url('res/step-4.png') no-repeat;}")
+            self.ui.icon_linedit2_1.setText("输入新密码")
+            self.ui.icon_linedit2_1.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.icon3_1.setStyleSheet("QLabel{background:url('res/step-6.png') no-repeat;}")
+            self.ui.icon_linedit3_1.setText("完成")
+            self.ui.icon_linedit3_1.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            #找回密码第三页
+            self.ui.icon1_2.setStyleSheet("QLabel{background:url('res/step-1.png') no-repeat;}")
+            self.ui.icon_linedit1_2.setText("输入用户名和邮箱")
+            self.ui.icon_linedit1_2.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.icon2_2.setStyleSheet("QLabel{background:url('res/step-3.png') no-repeat;}")
+            self.ui.icon_linedit2_2.setText("输入新密码")
+            self.ui.icon_linedit2_2.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.icon3_2.setStyleSheet("QLabel{background:url('res/step-5.png') no-repeat;}")
+            self.ui.icon_linedit3_2.setText("完成")
+            self.ui.icon_linedit3_2.setStyleSheet("QLabel{font-size:12px;color:#666666}")
+
+            self.ui.text9.setText("找回密码")
+            self.ui.text9.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
             self.ui.text16.setText("用户名:")
-            self.ui.text17.setText("新密码:")
-            self.ui.text18.setText("用户名:")
-            self.ui.text19.setText("邮  箱:")
-            self.ui.text20.setText("新密码:")
+            self.ui.text16.setStyleSheet("QLabel{font-size:12px;}")
+            self.ui.text17.setText("邮    箱:")
+            self.ui.text17.setStyleSheet("QLabel{font-size:12px;}")
+            # self.ui.text18.setText("用户名:")
+            # self.ui.text19.setText("新密码:")
+            # self.ui.text20.setText("新密码:")
         #elif itis == "应用设置":
         #    self.ui.sourceWidget.hide()
         #    self.ui.userWidget.hide()
@@ -642,10 +757,12 @@ class SourceItemWidget(QWidget):
 
         self.sourcetype = QLabel(self)
         self.sourcetype.setGeometry(10, 4, 8, 17)
+        # self.chk = QCheckBox(self)
+        # self.chk.setGeometry(10, 4, 16, 17)
         self.sourcetext = QLabel(self)
-        self.sourcetext.setGeometry(25, 4, 330, 17)
+        self.sourcetext.setGeometry(26, 4, 330, 17)
         self.btnremove = QPushButton(self)
-        self.btnremove.setGeometry(358, 6, 13, 13)
+        self.btnremove.setGeometry(400, 6, 13, 13)
 
         self.btnremove.clicked.connect(self.slot_remove_source)
 
@@ -676,6 +793,23 @@ class SourceItemWidget(QWidget):
         source = str(self.type) + " " + str(self.sourcetext.text())
         self.confw.backend.remove_source(source)
         self.confw.fill_sourcelist()
+
+# class subQSourceItemWidget(QWidget):
+#     def __init__(self, source, parent=None):
+#         QWidget.__init__(self, parent)
+#         self.up_chk=QCheckBox(self)
+#         self.up_chk.setGeometry(10, 4, 16, 17)
+#         self.all_select=QLabel(self)
+#         self.all_select.setText("全选")
+#         self.all_select.setGeometry(35,4,30,17)
+#         self.delete_sourcelist=QPushButton(self)
+#         self.delete_sourcelist.setText("删除")
+#         self.delete_sourcelist.setGeometry(405,4,30,17)
+#         self.delete_sourcelist.setStyleSheet(
+#             "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
+
+
 
 
 def main():

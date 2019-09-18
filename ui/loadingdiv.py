@@ -39,12 +39,12 @@ class LoadingDiv(QWidget):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
 
-        self.switchTimer = QTimer(self)
-        self.switchTimer.timeout.connect(self.slot_switch_animation_step)
+        # self.switchTimer = QTimer(self)
+        # self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
-        self.setWindowTitle("Ubuntu Kylin软件商店")
+        self.setWindowTitle("银河麒麟软件商店")
 
-        self.load_png()
+        # self.load_png()
 
         # launch loading
         if(parent == None):
@@ -58,8 +58,12 @@ class LoadingDiv(QWidget):
         else:
             self.setGeometry(0, 0, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
+
+        self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loadgif.gif")
         self.loadinggif = QLabel(self)
         self.loadinggif.setGeometry(Globals.MAIN_WIDTH / 2 - 350 / 2, Globals.MAIN_HEIGHT / 2 - 350 / 2, 350, 350)
+        self.loadinggif.setMovie(self.gif)
+
 
         # self.loadingtext = QLabel(self)
         # self.loadingtext.setGeometry()
@@ -67,27 +71,34 @@ class LoadingDiv(QWidget):
         self.raise_()
         self.hide()
 
-    def load_png(self):
-        for i in range(1, 41):
-            img = QPixmap("res/loading/" + str(i) + ".png")
-            self.ngif.append(img)
+    # def load_png(self):
+    #     for i in range(1, 18):
+    #         img = QPixmap("res/loading/" + str(i) + ".png")
+    #         self.ngif.append(img)
+    #
+    # def slot_switch_animation_step(self):
+    #     if(self.currentpage == 17):
+    #         self.currentpage = 1
+    #
+    #     self.loadinggif.setPixmap(self.ngif[self.currentpage])
+    #
+    #     self.currentpage = self.currentpage + 1
 
-    def slot_switch_animation_step(self):
-        if(self.currentpage == 40):
-            self.currentpage = 24
-
-        self.loadinggif.setPixmap(self.ngif[self.currentpage])
-
-        self.currentpage = self.currentpage + 1
-
-    def start_loading(self, loadingText):
-        # self.loadingtext.setText(loadingText)
-        self.currentpage = 0
-        self.switchTimer.start(60)
+    # def start_loading(self):
+    #     # self.loadingtext.setText(loadingText)
+    #     self.currentpage = 0
+    #     self.switchTimer.start(200)
+    #     self.show()
+    #
+    # def stop_loading(self):
+    #     self.switchTimer.stop()
+    #     self.hide()
+    def start_loading(self):
+        self.gif.start()
         self.show()
 
     def stop_loading(self):
-        self.switchTimer.stop()
+        self.gif.stop()
         self.hide()
 
 

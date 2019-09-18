@@ -64,6 +64,7 @@ class InstallBackend(QObject,Signals):
 
         self.iface = None
 
+
     def init_dbus_ifaces(self):
         try:
             bus = dbus.SystemBus(mainloop)
@@ -162,7 +163,7 @@ class InstallBackend(QObject,Signals):
     # 安卓环境启动检测dbus接口
     def kydroid_dbus_ifaces(self):
         try:
-            bus = dbus.SystemBus(mainloop)
+            bus = dbus.SystemBus()
         except Exception as e:
             if (Globals.DEBUG_SWITCH):
                 print("could not initiate dbus")

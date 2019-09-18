@@ -46,6 +46,8 @@ class Globals:
     # uksc version number
     UKSC_VERSION = '1.3.10'
 
+    PUBLIC_NET_SOURCE = "deb http://archive.kylinos.cn/kylin/KYLIN-ALL ${OS} main restricted universe multiverse"
+
     # open with local deb file
     LOCAL_DEB_FILE = None
 

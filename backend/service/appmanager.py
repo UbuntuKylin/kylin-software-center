@@ -1038,9 +1038,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.get_ui_adduser_over.emit(res)
 
-    def rset_password(self,new_password):
+    def rset_password(self,ui_username,new_password):
         try:
-            res = self.premoter.rset_user_password(Globals.USER,new_password)
+            res = self.premoter.rset_user_password(ui_username,new_password)
         except:
             res = False
         res = [{'res':res}]

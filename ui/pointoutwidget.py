@@ -113,7 +113,7 @@ class PointOutWidget(QWidget):
 
     def slot_checkstate_changed(self):
         flag = self.ui.cbisshow.isChecked()
-        self.mainw.appmgr.set_pointout_is_show(flag)
+        self.mainw.worker_thread0.appmgr.set_pointout_is_show(flag)
 
     def show_animation(self, flag):
         # add by kobe
@@ -121,7 +121,7 @@ class PointOutWidget(QWidget):
             self.ui.title.setText("安装以下常用软件  提高系统使用体验")
         else:
             self.ui.title.setText("推荐软件已经全部更新")
-        flag = self.mainw.appmgr.get_pointout_is_show_from_db()
+        flag = self.mainw.worker_thread0.appmgr.get_pointout_is_show_from_db()
         self.ui.cbisshow.setChecked(flag)
 
         self.px = self.dwidth

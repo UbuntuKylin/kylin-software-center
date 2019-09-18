@@ -63,13 +63,10 @@ class Ui_MainWindow(object):
         self.btnUp.setObjectName(_fromUtf8("btnUp"))
 
         self.btnUp_num = QLabel(self.navWidget)
-        self.btnUp_num.setGeometry(QtCore.QRect(65, 340, 11, 11))
+        self.btnUp_num.setGeometry(QtCore.QRect(65, 358, 16, 15))
         self.btnUp_num.setText(_fromUtf8(""))
         self.btnUp_num.setObjectName(_fromUtf8("btnUp_num"))
-        self.btnUp_num_long = QLabel(self.navWidget)
-        self.btnUp_num_long.setGeometry(QtCore.QRect(65, 339, 13, 13))
-        self.btnUp_num_long.setText(_fromUtf8(""))
-        self.btnUp_num_long.setObjectName(_fromUtf8("btnUp_num_long"))
+        self.btnUp_num.setAlignment(Qt.AlignCenter)
 
         self.btnUn = QPushButton(self.navWidget)
         self.btnUn.setGeometry(QtCore.QRect(0, 440, 110, 110))

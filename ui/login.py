@@ -55,6 +55,7 @@ class Login(QWidget,Signals):
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.ui.bg.lower()
         self.move(280, 60)
+        self.ui.topWidget.raise_()
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 0))
         brush.setStyle(Qt.SolidPattern)
@@ -84,6 +85,8 @@ class Login(QWidget,Signals):
         self.ui.lesource_3.textChanged.connect(self.slot_le_input3)
         self.ui.lesource_4.textChanged.connect(self.slot_le_input4)
         self.ui.lesource_5.textChanged.connect(self.slot_le_input5)
+
+        self.ui.text10.clicked.connect(self.find_password_suc)
         self.ui.lesource.setMaxLength(22)
         self.ui.lesource_2.setMaxLength(22)
         self.ui.lesource_3.setMaxLength(22)
@@ -109,19 +112,31 @@ class Login(QWidget,Signals):
         #self.ui.text1.setText("登录软件中心:")
         #self.ui.text1.setStyleSheet("color:#ff6600;")
         #self.ui.text1.setStyleSheet("color:1997FAB;")
-        self.ui.text2.setText("用户名:")
-        self.ui.text3.setText("密    码:")
-        self.ui.text4.setText("用户名:")
-        self.ui.text5.setText("密    码:")
-        self.ui.text6.setText("邮    箱:")
+        # self.ui.text2.setText("用户名:")
+        # self.ui.text3.setText("密    码:")
+        # self.ui.text4.setText("用户名:")
+        # self.ui.text5.setText("密    码:")
+        # self.ui.text6.setText("邮    箱:")
         self.ui.text7.setText("是否是开发者")
         self.ui.text8.setText("记住密码")
         self.ui.text9.setText("自动登录")
+        self.ui.text10.setText("找回密码")
+        self.ui.soft_linedit.setText("软件中心")
+        self.ui.spot_linedit.setText("·")
+        self.ui.login_linedit.setText("登录")
+        self.ui.register_newuser.setText("注册新账户")
+        self.ui.register_newuser.hide()
         self.ui.groupBox_2.hide()
+        self.ui.log_png.setStyleSheet("QWidget{background-image:url('res/logo.png');}")
+        self.ui.text10.setStyleSheet("QPushButton{border:opx;font-size:12px;color:#2d8ae1;}")
         #self.ui.sourceWidget.setStyleSheet("QWidget{border:0px solid #c0d3dd;border-radius:2px;color:#0763ba;background:#ebf2f9;}")
         #self.ui.sourceWidget.setStyleSheet("QPushButton{border:1px solid #026c9e;color:#ebf2f9;}")
-        self.ui.topWidget.setStyleSheet("QWidget{background-image:url('res/top.png');}")
+        self.ui.sourceWidget.setStyleSheet(".QWidget{border:1px solid #cccccc;background-color:#ffffff}")
+        self.ui.topWidget.setStyleSheet("QWidget{border:0px;background-color:#eff2f6}")
+
+
         self.ui.clickWidget.setStyleSheet("QWidget{border:0px solid #c0d3dd;border-radius:2px;color:#0763ba;background:#c0d3dd;}")
+
         #self.ui.sourceWidget.setStyleSheet("color:#ebf2f9i;")
         #self.ui.btnAds.setStyleSheet("QPushButton{color:white;border:-2px;background-image:url('res/wincard-run-btn-1.png');}")
         #self.ui.btnAds.setStyleSheet("QPushButton{color:white;border:-2px;background-image:url('res/wincard-un-btn-2.png');}")
@@ -146,27 +161,35 @@ class Login(QWidget,Signals):
         #self.ui.lesource_8.setStyleSheet("QLineEdit{border:1px solid #6BB8DD;border-radius:2px;color:#997FAB;font-size:13px;}")
         #self.ui.lesource_9.setStyleSheet("QLineEdit{border:1px solid #6BB8DD;border-radius:2px;color:#997FAB;font-size:13px;}")
 
-        self.ui.btnAdd_3.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")        
-        self.ui.btnAdd_4.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
+        self.ui.btnAdd_3.setStyleSheet("QPushButton{color:white;border:0px;border-radius:4px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
+        self.ui.btnAdd_4.setStyleSheet("QPushButton{color:white;border:0px;border-radius:4px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
 
         if(Globals.SET_REM):
             self.ui.lesource.setText(Globals.USER)
             self.ui.lesource_2.setText(Globals.PASSWORD)
             self.ui.checkBox_5.setChecked(True)
 
+    def find_password_suc(self):
+        self.find_password.emit()
+
+
     def ui_init(self):
         self.ui = Ui_Login_ui()
         self.ui.setupUi(self)
-        self.show()
+        # self.show()
 
     def slot_click_close(self):
         self.task_stop.emit("#update", "update")
-    def slot_click_login(self):        
+    def slot_click_login(self):
+        self.ui.login_linedit.show()
+        self.ui.register_newuser.hide()
         self.ui.groupBox_2.hide()
         self.ui.groupBox.show()
         self.ui.btnAdd.setStyleSheet("QPushButton{border:1px;color:#0763ba;font-size:14px;no-repeat center left}")
         self.ui.btnAdd_2.setStyleSheet("QPushButton{border:1px;color:#888888;font-size:14px;no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
     def slot_click_adduser(self):
+        self.ui.login_linedit.hide()
+        self.ui.register_newuser.show()
         self.ui.groupBox.hide()
         self.ui.groupBox_2.show()
         self.ui.btnAdd_2.setStyleSheet("QPushButton{border:1px;color:#0763ba;font-size:14px;no-repeat center left}")
