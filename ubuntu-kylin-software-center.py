@@ -893,26 +893,26 @@ class SoftwareCenter(QMainWindow,Signals):
             # show loading and update processbar this moment
 
             if MessageBox.checkbox.isChecked():
-                self.appmgr.set_check_update_false()
+                self.worker_thread0.appmgr.set_check_update_false()
             if MessageBox.button_update == button:
                 if (Globals.DEBUG_SWITCH):
                     LOG.info("update source when first start...")
                 self.updateSinglePB.show()
-                res = self.backend.update_source_first_os()
+                res = self.worker_thread0.backend.update_source_first_os()
                 if "False" == res:
                     self.updateSinglePB.hide()
                     self.messageBox.alert_msg("密码认证失败\n更新源失败")
-                    self.appmgr.init_models()
+                    self.worker_thread0.appmgr.init_models()
                 elif res is None:
                     self.updateSinglePB.hide()
                     self.messageBox.alert_msg("输入密码超时\n更新源失败")
-                    self.appmgr.init_models()
+                    self.worker_thread0.appmgr.init_models()
                 elif "True" != res:
                     self.updateSinglePB.hide()
                     self.messageBox.alert_msg("出现未知错误\n更新源失败")
-                    self.appmgr.init_models()
+                    self.worker_thread0.appmgr.init_models()
             elif MessageBox.button_notupdate == button:
-                self.appmgr.init_models()
+                self.worker_thread0.appmgr.init_models()
             else:
                 sys.exit(0)
         elif (os.path.exists("/etc/apt/sources.list")):
