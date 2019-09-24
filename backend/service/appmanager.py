@@ -134,6 +134,7 @@ class ThreadWorker(threading.Thread):
             self.appmgr.cat_list[c] = cat
 
         Globals.ALL_APPS = {}
+        self.appmgr.cat_list = cat_list
         return cat_list
 
     def get_category_list(self, reload=False, catdir=""):
@@ -326,6 +327,22 @@ class AppManager(QObject,Signals):
         self.backend = InstallBackend()
         self.backend.kydroid_dbus_ifaces()
 
+        self.list = self.db.query_categories()
+        for item in self.list:
+            #c = UnicodeToAscii(item[2])
+            c = item[2]
+            zhcnc = item[3]
+            index = item[4]
+            visible = (item[0]==1)
+
+            icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
+            if(c == 'recommend'):
+                cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+            else:
+                cat = Category(c, zhcnc, index, visible, icon, {})
+            self.cat_list[c] = cat
+
+
 
         #self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
@@ -397,9 +414,9 @@ class AppManager(QObject,Signals):
             self.update_xapiandb(pkgname)
 
     def get_category_list_from_db(self):
-        list = self.db.query_categories()
+        # list = self.db.query_categories()
         cat_list = {}
-        for item in list:
+        for item in self.list:
             #c = UnicodeToAscii(item[2])
             c = item[2]
             zhcnc = item[3]
@@ -418,8 +435,8 @@ class AppManager(QObject,Signals):
         if reload is False:
             return self.cat_list
 
-        cat_list = self.get_category_list_from_db()
-        return cat_list
+        # cat_list = self.get_category_list_from_db()
+        return self.cat_list
 
     def get_category_apps_from_db(self,cat,catdir=""):
         lists = self.db.query_category_apps(cat)

@@ -220,7 +220,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # do not cover the launch loading div
         self.resize(0,0)
 
-        self.setWindowTitle("银河麒麟软件商店")
+        self.setWindowTitle("Ubuntu Kylin软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
         self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
@@ -849,8 +849,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def check_source(self):
         # if(0): #屏蔽检测软件源
-        # #if(self.appmgr.check_source_update() == True and is_livecd_mode() == False):
-
+        if(self.worker_thread0.appmgr.check_source_update() == True and is_livecd_mode() == False):
+            MessageBox = Update_Source_Dialog()
         #     if Globals.LAUNCH_MODE == 'quiet':
         #         MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
         #         MessageBox.exec_()
@@ -883,7 +883,39 @@ class SoftwareCenter(QMainWindow,Signals):
         #         #     pass
         #         else:
         #             sys.exit(0)
-        if (os.path.exists("/etc/apt/sources.list")):
+            MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行>软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
+            MessageBox.exec_()
+            button = MessageBox.clickedButton()
+            # button = MessageBox.question(self,"软件源更新提示",
+            #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
+            #                         "更新", "不更新", "退出", 0, 2)
+
+            # show loading and update processbar this moment
+
+            if MessageBox.checkbox.isChecked():
+                self.appmgr.set_check_update_false()
+            if MessageBox.button_update == button:
+                if (Globals.DEBUG_SWITCH):
+                    LOG.info("update source when first start...")
+                self.updateSinglePB.show()
+                res = self.backend.update_source_first_os()
+                if "False" == res:
+                    self.updateSinglePB.hide()
+                    self.messageBox.alert_msg("密码认证失败\n更新源失败")
+                    self.appmgr.init_models()
+                elif res is None:
+                    self.updateSinglePB.hide()
+                    self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                    self.appmgr.init_models()
+                elif "True" != res:
+                    self.updateSinglePB.hide()
+                    self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                    self.appmgr.init_models()
+            elif MessageBox.button_notupdate == button:
+                self.appmgr.init_models()
+            else:
+                sys.exit(0)
+        elif (os.path.exists("/etc/apt/sources.list")):
             if (os.path.exists(UKSC_CACHE_DIR + '/kylin-software-center.ini')):
                 self.config.read(UKSC_CACHE_DIR + '/kylin-software-center.ini')
                 if ('sourcelist' not in self.config):
@@ -894,7 +926,6 @@ class SoftwareCenter(QMainWindow,Signals):
                     self.start_init_testing()
                 else:
                     if (self.config['sourcelist']['default_sourcelist'] == '1'):
-                        print("111111111111111")
                         if (Globals.LAUNCH_MODE == 'normal'):
                             self.show()
                         self.worker_thread0.appmgr.init_models()
@@ -922,62 +953,60 @@ class SoftwareCenter(QMainWindow,Signals):
             self.worker_thread0.appmgr.init_models()
             return
         else:
-            with open("/etc/apt/sources.list", 'r')as f:
-                f.seek(0)
-                self.lines = f.readline()
-                if (
-                                OS != None and "deb http://archive.kylinos.cn/kylin/KYLIN-ALL main" + ' ' + OS + ' ' + "restricted universe multiverse" not in self.lines):
-                    # if "deb http://archive.kylinos.cn/kylin/KYLIN-ALL main OS restricted universe multiverse"not in self.lines:
-                    if (self.flag == 1):
-                        MessageBox.setText(self.tr("您系统缺少银河麒麟公网软件源，将会影响软件安装\n您是否需要添加？\n勾选不再提醒将不再弹出提示框\n请选择:"))
-                        MessageBox.exec_()
-                        button = MessageBox.clickedButton()
+            self.lines = []
+            f = open("/etc/apt/sources.list", 'r')
+            self.lines = f.readlines()
+            if ("deb http://archive.kylinos.cn/kylin/KYLIN-ALL" + ' ' + OS + ' ' + "main restricted universe multiverse\n" not in self.lines):
+                if (self.flag == 1):
+                    MessageBox.setText(self.tr("您系统缺少银河麒麟公网软件源，将会影响软件安装\n您是否需要添加？\n勾选不再提醒将不再弹出提示框\n请选择:"))
+                    MessageBox.exec_()
+                    button = MessageBox.clickedButton()
 
-                        # button = MessageBox.question(self,"软件源更新提示",
-                        #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
-                        #                         "更新", "不更新", "退出", 0, 2)
+                    # button = MessageBox.question(self,"软件源更新提示",
+                    #                         self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如果不更新，也可以运行软件商店，但部分操作无法执行\n\n请选择:"),
+                    #                         "更新", "不更新", "退出", 0, 2)
 
-                        # show loading and update processbar this moment
-                        self.show()
-                        if MessageBox.checkbox.isChecked():
-                            self.config['sourcelist']['default_sourcelist'] = '1'
-                            with open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w') as configfile:
-                                self.config.write(configfile)
-                            self.worker_thread0.appmgr.set_check_update_false()
-                        if MessageBox.button_update == button:
-                            if (Globals.DEBUG_SWITCH):
-                                LOG.info("update source when first start...")
-                            self.updateSinglePB.show()
-                            res = self.worker_thread0.backend.update_source_first_os()
+                    # show loading and update processbar this moment
+                    self.show()
+                    if MessageBox.checkbox.isChecked():
+                        self.config['sourcelist']['default_sourcelist'] = '1'
+                        with open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w') as configfile:
+                            self.config.write(configfile)
+                        self.worker_thread0.appmgr.set_check_update_false()
+                    if MessageBox.button_update == button:
+                        if (Globals.DEBUG_SWITCH):
+                            LOG.info("update source when first start...")
+                        self.updateSinglePB.show()
+                        res = self.worker_thread0.backend.update_source_first_os()
 
-                            self.configWidget.slot_click_add_spacail(OS)
+                        self.configWidget.slot_click_add_spacail(OS)
 
-                            if "False" == res:
-                                self.updateSinglePB.hide()
-                                self.messageBox.alert_msg("密码认证失败\n更新源失败")
-                                self.worker_thread0.appmgr.init_models()
-                            elif res is None:
-                                self.updateSinglePB.hide()
-                                self.messageBox.alert_msg("输入密码超时\n更新源失败")
-                                self.worker_thread0.appmgr.init_models()
-                            elif "True" != res:
-                                self.updateSinglePB.hide()
-                                self.messageBox.alert_msg("出现未知错误\n更新源失败")
-                                self.worker_thread0.appmgr.init_models()
-                        elif MessageBox.button_notupdate == button:
+                        if "False" == res:
+                            self.updateSinglePB.hide()
+                            self.messageBox.alert_msg("密码认证失败\n更新源失败")
                             self.worker_thread0.appmgr.init_models()
-                        else:
-                            sys.exit(0)
+                        elif res is None:
+                            self.updateSinglePB.hide()
+                            self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                            self.worker_thread0.appmgr.init_models()
+                        elif "True" != res:
+                            self.updateSinglePB.hide()
+                            self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                            self.worker_thread0.appmgr.init_models()
+                    elif MessageBox.button_notupdate == button:
+                        self.worker_thread0.appmgr.init_models()
                     else:
-                        # self.launchLoadingDiv.start_loading("")
-                        if (Globals.LAUNCH_MODE == 'normal'):
-                            self.show()
-                            self.worker_thread0.appmgr.init_models()
+                        sys.exit(0)
                 else:
                     # self.launchLoadingDiv.start_loading("")
                     if (Globals.LAUNCH_MODE == 'normal'):
                         self.show()
-                    self.worker_thread0.appmgr.init_models()
+                        self.worker_thread0.appmgr.init_models()
+            else:
+                # self.launchLoadingDiv.start_loading("")
+                if (Globals.LAUNCH_MODE == 'normal'):
+                    self.show()
+                self.worker_thread0.appmgr.init_models()
 
     def slot_check_source_useable_over(self, bad_source_url_list):
         bad_source_urlstr = '\n'.join(bad_source_url_list)
@@ -3157,7 +3186,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.username.setText(Globals.USER)
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/woman-logo.png')}")
 
-    def slot_rset_password(self,new_password):
+    def slot_rset_password(self,old_username,new_password):
         self.worker_thread0.appmgr.rset_password(old_username,new_password)
 
     def slot_recover_password(self,old_username,old_email,new_password):
