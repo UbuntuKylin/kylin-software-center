@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Kylin Software Center
-Name[zh_CN]=Ubuntu Kylin软件商店
-Comment[zh_CN]=Ubuntu Kylin软件管理工具
+Name[zh_CN]=麒麟软件商店
+Comment[zh_CN]=麒麟软件管理工具
 Comment=Kylin software center
 Exec=/usr/bin/ubuntu-kylin-software-center -quiet
 Icon=ubuntu-kylin-software-center

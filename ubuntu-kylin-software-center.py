@@ -220,7 +220,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # do not cover the launch loading div
         self.resize(0,0)
 
-        self.setWindowTitle("Ubuntu Kylin软件商店")
+        self.setWindowTitle("麒麟软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
         self.ui.adWidget.setFocusPolicy(Qt.NoFocus)

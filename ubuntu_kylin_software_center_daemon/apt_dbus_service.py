@@ -89,7 +89,7 @@ class WorkThread(threading.Thread):
                 time.sleep(0.5)
                 continue
 
-            if is_file_locked(DPKG_PATH) is True or 1 == self.uksc_is_working:
+            if is_file_locked(LIB_PATH+DPKG_PATH) is True or 1 == self.uksc_is_working:
                 time.sleep(0.5)
                 continue
 
@@ -593,7 +593,7 @@ class SoftwarecenterDbusService(dbus.service.Object):
         if len(self.worklist) != 0:
             workitemcount = len(self.worklist)
         self.mutex.release()
-        dpkg_is_running = is_file_locked(DPKG_PATH)
+        dpkg_is_running = is_file_locked(LIB_PATH+DPKG_PATH)
         if dpkg_is_running is True:
             dpkg_is_running = 1
         else:
