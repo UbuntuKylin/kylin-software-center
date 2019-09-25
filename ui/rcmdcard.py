@@ -95,7 +95,7 @@ class RcmdCard(QWidget,Signals):
         # self.setGraphicsEffect(shadowe)
 
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
         self.ui.progressBar_icon.setStyleSheet("QLabel{background-color:transparent;background-image:url('" + iconpath + "')}")
         self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
 

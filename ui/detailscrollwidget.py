@@ -513,7 +513,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.app = self.debfile
         self.ui.debname.setText("软件包名: " + self.debfile.name)
 
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png')}")
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png');background-color:transparent;}")
         # self.ui.name.setText(self.debfile.name)
         setLongTextToElideFormat(self.ui.name, self.debfile.name)
         self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
@@ -628,7 +628,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
 
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
 
         size = app.packageSize
         sizek = size / 1024

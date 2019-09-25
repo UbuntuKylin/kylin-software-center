@@ -64,7 +64,7 @@ class ListItemWidget(QWidget,Signals):
         self.ui.cbSelect.setFocusPolicy(Qt.NoFocus)
 
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-color: transparent;background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-color: transparent;background-image:url('" + iconpath + "');background-color:transparent;}")
 
         self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:transparent;}.QWidget:hover{border:1px solid #2d8ae1}")
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")

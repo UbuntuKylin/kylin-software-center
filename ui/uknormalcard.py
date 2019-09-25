@@ -93,7 +93,7 @@ class Ui_NormalCard(object):
         # self.progressBarname.setObjectName(_fromUtf8("name"))
 
         self.name = QLabel(self.baseWidget)
-        self.name.setGeometry(QtCore.QRect(68, 20, 120, 15))
+        self.name.setGeometry(QtCore.QRect(68, 20, 120, 18))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
 

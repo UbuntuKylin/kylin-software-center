@@ -86,13 +86,13 @@ class WinCard(QWidget,Signals):
 
         img = QPixmap("res/arrowhead.png")
         self.ui.arronicon.setPixmap(img)
-
-        self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.arronicon.setStyleSheet("QLabel{background-color:transparent;}")
+        self.ui.winname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;background-color:transparent;}")
         # self.ui.wintext.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
-        self.ui.winbake.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
-        self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
+        self.ui.winbake.setStyleSheet("QLabel{font-size:13px;color:#888888;background-color:transparent;}")
+        self.ui.name.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;background-color:transparent;}")
         # self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
-        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;}")
+        self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;background-color:transparent;}")
         # self.ui.description.setStyleSheet("QTextEdit{border:0px;font-size:13px;color:#888888;}")
 
         # win frame
@@ -121,10 +121,10 @@ class WinCard(QWidget,Signals):
         if self.app is None:
             if (self.winstat.app_name == 'wine-qq' or self.winstat.app_name == 'ppstream'):
                 iconpath = commontools.get_icon_path(self.winstat.app_name)
-                self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+                self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
         else:
             iconpath = commontools.get_icon_path(self.app.name)
-            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+            self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")

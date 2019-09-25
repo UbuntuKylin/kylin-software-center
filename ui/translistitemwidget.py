@@ -55,7 +55,7 @@ class TransListItemWidget(QWidget,Signals):
         # self.ui.installedsize.setAlignment(Qt.AlignCenter)
         self.ui.btnDetail.setFocusPolicy(Qt.NoFocus)
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-color:transparent;background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-color:transparent;background-image:url('" + iconpath + "');background-color:transparent;}")
 
         self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
         self.ui.btnDetail.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:transparent;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}");

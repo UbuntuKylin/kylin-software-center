@@ -49,7 +49,7 @@ class Ui_WinCard(object):
         self.winbake.setText(_fromUtf8(""))
         self.winbake.setObjectName(_fromUtf8("winbake"))
         self.name = QLabel(self.baseWidget)
-        self.name.setGeometry(QtCore.QRect(313, 20, 77, 15))
+        self.name.setGeometry(QtCore.QRect(313, 20, 77, 18))
         self.name.setText(_fromUtf8(""))
         self.name.setObjectName(_fromUtf8("name"))
         self.icon = QLabel(self.baseWidget)

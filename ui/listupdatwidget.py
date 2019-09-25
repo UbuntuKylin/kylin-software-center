@@ -42,7 +42,7 @@ class ListItemWidget(QWidget,Signals):
         self.ui.cbSelect.setFocusPolicy(Qt.NoFocus)
 
         iconpath = commontools.get_icon_path(self.app.name)
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "')}")
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
 
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
         self.ui.name.setStyleSheet("QLabel{font-size:14px;font-weight:bold;}")
