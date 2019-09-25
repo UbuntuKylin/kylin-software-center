@@ -322,7 +322,7 @@ class AppManager(QObject,Signals):
         
         self.worker_thread1 = ThreadWorker(self)
         self.worker_thread1.setDaemon(True)
-        self.worker_thread1.start()
+        #self.worker_thread1.start()
 
         self.backend = InstallBackend()
         self.backend.kydroid_dbus_ifaces()
@@ -387,6 +387,7 @@ class AppManager(QObject,Signals):
 
     def init_models(self):
         #print "self.appmgr.init_models()"
+        self.worker_thread1.start()
         item = WorkerItem("init_models",None)
         self.mutex.acquire()
         self.worklist.append(item)
@@ -415,7 +416,7 @@ class AppManager(QObject,Signals):
 
     def get_category_list_from_db(self):
         # list = self.db.query_categories()
-        cat_list = {}
+        cat_list = self.cat_list
         for item in self.list:
             #c = UnicodeToAscii(item[2])
             c = item[2]
@@ -424,9 +425,16 @@ class AppManager(QObject,Signals):
             visible = (item[0]==1)
 
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
-            cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
-            cat_list[c] = cat
-        self.cat_list = cat_list
+            if(c == 'recommend'):
+                cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+                while(not cat.apps):
+                    time.sleep(0.2)
+                    cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+                cat_list = self.cat_list
+                cat_list[c] = cat
+
+            #cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+            #cat_list[c] = cat
         Globals.ALL_APPS = {}# zx10.05 To free the all_apps dict after all apps init ready for using less memeory
         return cat_list
 
@@ -435,8 +443,8 @@ class AppManager(QObject,Signals):
         if reload is False:
             return self.cat_list
 
-        # cat_list = self.get_category_list_from_db()
-        return self.cat_list
+        cat_list = self.get_category_list_from_db()
+        return cat_list
 
     def get_category_apps_from_db(self,cat,catdir=""):
         lists = self.db.query_category_apps(cat)

@@ -1,3 +1,9 @@
+ubuntu-kylin-software-center (3.0.4) eoan; urgency=medium
+
+  * Add software source update detection at startup.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Wed, 25 Sep 2019 20:27:35 +0800
+
 ubuntu-kylin-software-center (3.0.3) eoan; urgency=medium
 
   [Wen Bo]
