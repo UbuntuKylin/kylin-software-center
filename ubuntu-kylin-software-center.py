@@ -891,6 +891,8 @@ class SoftwareCenter(QMainWindow,Signals):
             #                         "更新", "不更新", "退出", 0, 2)
 
             # show loading and update processbar this moment
+            if (Globals.LAUNCH_MODE == 'normal'):
+                self.show()
 
             if MessageBox.checkbox.isChecked():
                 self.worker_thread0.appmgr.set_check_update_false()
