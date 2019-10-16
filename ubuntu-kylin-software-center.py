@@ -298,6 +298,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.configWidget.click_update_source.connect(self.slot_click_update_source)
         self.configWidget.task_cancel.connect(self.slot_click_cancel)
 
+
         self.login.find_password.connect(self.configWidget.slot_show_ui)
         # resize corner
         # self.resizeCorner = QPushButton(self.ui.centralwidget)
@@ -544,10 +545,10 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         #self.ui.btnGoto.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
         #self.ui.btnGoto.setText("去宝库看看")
-        self.ui.notaskImg.setStyleSheet("QLabel{background-image:url('res/no-download.png')}")
+        self.ui.notaskImg.setStyleSheet("QLabel{background-image:url('res/no-download.png');background-color:transparent}")
         #暂无下载任务
         self.ui.textbox.setText("暂无下载任务")
-        self.ui.textbox.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#808080;text-align:center;}")
+        self.ui.textbox.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#808080;text-align:center;background-color:transparent}")
 
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         # self.ui.logoName.setText("软件商店")
@@ -600,7 +601,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #elf.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
         self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
+        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;background-color:transparent;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}")
         self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
         self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
         self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
@@ -3031,6 +3032,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_show_config(self):
         self.configWidget.show()
+        self.configWidget.slot_soucelist()
 
     def slot_show_or_hide(self):
         if(self.isHidden()):
@@ -3574,6 +3576,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.beforeLoginWidget.show()
         self.ui.btnLogin.show()
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
+        self.login.clean_user_password()
         Globals.EMAIL = ''
         Globals.USER = ''
         Globals.USER_DISPLAY = ''

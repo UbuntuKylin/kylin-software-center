@@ -30,20 +30,23 @@ class Ui_ConfigWidget(object):
         self.baseWidget = QWidget(ConfigWidget)
         self.baseWidget.setGeometry(QtCore.QRect(0, 0, 620, 430))
         self.baseWidget.setObjectName(_fromUtf8("baseWidget"))
-        self.baseWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:0px}")
+        self.baseWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #666666}")
 
         self.pageListWidget = QListWidget(self.baseWidget)
         self.pageListWidget.setGeometry(QtCore.QRect(0, 0,100,430))
         self.pageListWidget.setObjectName(_fromUtf8("pageListWidget"))
+        self.pageListWidget.setStyleSheet("QWidget{border:0px;}")
+
         # self.pageListWidget.setStyleSheet("border:1px solid red")
         self.sourceWidget = QWidget(self.baseWidget)
-        self.sourceWidget.setGeometry(QtCore.QRect(130,15, 520, 420))
+        self.sourceWidget.setGeometry(QtCore.QRect(130,15, 489, 410))
         self.sourceWidget.setObjectName(_fromUtf8("sourceWidget"))
+        self.sourceWidget.setStyleSheet("QWidget{border:0px;}")
 
         self.passwordWidget = QWidget(self.baseWidget)
-        self.passwordWidget.setGeometry(QtCore.QRect(100, 1, 479, 429))
+        self.passwordWidget.setGeometry(QtCore.QRect(100, 1, 479, 428))
         self.passwordWidget.setObjectName(_fromUtf8("passwordWidget"))
-        # self.passwordWidget.setStyleSheet("QWidget{border:1px solid red}")
+        self.passwordWidget.setStyleSheet("QWidget{border:0px}")
 
         self.groupBox_password = QGroupBox(self.passwordWidget)
         self.groupBox_password.setGeometry(QtCore.QRect(1, 1, 519, 428))
@@ -297,14 +300,14 @@ class Ui_ConfigWidget(object):
         #self.lesource13 = QLineEdit(self.groupBox_recover)
         #self.lesource13.setGeometry(QtCore.QRect(130,160 , 230, 32))
         #self.lesource13.setObjectName(_fromUtf8("lesource13"))
-        
+
 
 
         self.userWidget = QWidget(self.baseWidget)
-        self.userWidget.setGeometry(QtCore.QRect(0, 0, 280, 461))
+        self.userWidget.setGeometry(QtCore.QRect(0, 0, 280, 429))
         self.userWidget.setObjectName(_fromUtf8("userWidget"))
         self.groupBox_user = QGroupBox(self.userWidget)
-        self.groupBox_user.setGeometry(QtCore.QRect(0, 0, 480, 461))
+        self.groupBox_user.setGeometry(QtCore.QRect(0, 0, 480, 429))
         self.text2 = QLabel(self.groupBox_user)
         self.text2.setGeometry(QtCore.QRect(140, 240, 100, 20))
         self.text2.setText(_fromUtf8(""))
@@ -372,10 +375,10 @@ class Ui_ConfigWidget(object):
         self.text4.setText(_fromUtf8(""))
         self.text4.setObjectName(_fromUtf8("text4"))
 
-        self.text1 = QLabel(self.sourceWidget)
-        self.text1.setGeometry(QtCore.QRect(1, 165, 80, 17))
-        self.text1.setText(_fromUtf8(""))
-        self.text1.setObjectName(_fromUtf8("text1"))
+        # self.text1 = QLabel(self.sourceWidget)
+        # self.text1.setGeometry(QtCore.QRect(1, 165, 80, 17))
+        # self.text1.setText(_fromUtf8(""))
+        # self.text1.setObjectName(_fromUtf8("text1"))
         self.splitline = QLabel(self.sourceWidget)
         self.splitline.setGeometry(QtCore.QRect(0, 20, 408, 1))
         self.splitline.setStyleSheet(_fromUtf8(""))
@@ -511,30 +514,30 @@ class Ui_ConfigWidget(object):
         self.progressBar.setTextVisible(False)
 
         self.sourceListWidget = QListWidget(self.groupBox_2)
-        self.sourceListWidget.setGeometry(QtCore.QRect(2, 0, 458, 150))
+        self.sourceListWidget.setGeometry(QtCore.QRect(2, 30, 458, 130))
         self.sourceListWidget.setObjectName(_fromUtf8("sourceListWidget"))
 
 
-    #全选框
-        # self.select_Qwidget=QWidget(self.groupBox_2)
-        # self.select_Qwidget.setGeometry(QtCore.QRect(2, 1, 458, 30))
-        # self.select_Qwidget.setObjectName(_fromUtf8("select_Qwidget"))
-        # self.select_Qwidget.setStyleSheet("QWidget{background-color: #ffffff;border:1px solid #cccccc;}")
-        #
-        # self.up_chk = QCheckBox(self.select_Qwidget)
-        # self.up_chk.setGeometry(14, 6, 16, 17)
-        # self.up_chk.setStyleSheet("QCheckBox{border:0px;}")
-        #
-        # self.all_select=QLabel(self.select_Qwidget)
-        # self.all_select.setText("全选")
-        # self.all_select.setStyleSheet("QLabel{border:0px;}")
-        # self.all_select.setGeometry(35,5,40,17)
-        # self.delete_sourcelist=QPushButton(self.select_Qwidget)
-        # self.delete_sourcelist.setText("删除")
-        # self.delete_sourcelist.setGeometry(405,2,30,25)
-        # self.delete_sourcelist.setStyleSheet("QPushButton{border:0px;}")
-        # self.delete_sourcelist.setStyleSheet(
-        #                  "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+    # 全选框
+        self.select_Qwidget=QWidget(self.groupBox_2)
+        self.select_Qwidget.setGeometry(QtCore.QRect(2, 1, 458, 30))
+        self.select_Qwidget.setObjectName(_fromUtf8("select_Qwidget"))
+        self.select_Qwidget.setStyleSheet("QWidget{background-color: #ffffff;border:1px solid #cccccc;}")
+
+        self.up_chk = QCheckBox(self.select_Qwidget)
+        self.up_chk.setGeometry(14, 6, 16, 17)
+        self.up_chk.setStyleSheet("QCheckBox{border:0px;}")
+
+        self.all_select=QLabel(self.select_Qwidget)
+        self.all_select.setText("全选")
+        self.all_select.setStyleSheet("QLabel{border:0px;}")
+        self.all_select.setGeometry(35,5,40,17)
+        self.delete_sourcelist=QPushButton(self.select_Qwidget)
+        self.delete_sourcelist.setText("删除")
+        self.delete_sourcelist.setGeometry(405,2,30,25)
+        self.delete_sourcelist.setStyleSheet("QPushButton{border:0px;}")
+        self.delete_sourcelist.setStyleSheet(
+                         "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
 
 

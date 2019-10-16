@@ -423,7 +423,7 @@ class Ui_MainWindow(object):
         # self.taskListWidget_complete.setObjectName(_fromUtf8("taskListWidget_complete"))
         # self.taskListWidget_complete.setVisible(False)
         self.btnCloseTask = QPushButton(self.taskWidget)
-        self.btnCloseTask.setGeometry(QtCore.QRect(330, 1, 38, 32))
+        self.btnCloseTask.setGeometry(QtCore.QRect(332, 1, 38, 32))
         #self.btnCloseTask.setGeometry(QtCore.QRect(290, 1, 28, 36))
         self.btnCloseTask.setText(_fromUtf8(""))
         self.btnCloseTask.setObjectName(_fromUtf8("btnCloseTask"))

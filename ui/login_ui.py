@@ -33,8 +33,10 @@ class Ui_Login_ui(object):
         self.topWidget.setGeometry(QtCore.QRect(1, 1, 440,49))
         self.topWidget.setObjectName(_fromUtf8("top"))
 
-
-
+        self.tips_user_password=QLabel(self.sourceWidget)
+        self.tips_user_password.setGeometry(QtCore.QRect(1, 50, 440, 22))
+        self.tips_user_password.setObjectName(_fromUtf8("top"))
+        self.tips_user_password.hide()
 
         self.soft_linedit = QLabel(self.topWidget)
         self.soft_linedit.setGeometry(QtCore.QRect(51, 12, 57, 26))
@@ -82,12 +84,36 @@ class Ui_Login_ui(object):
         self.groupBox.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.groupBox.setTitle(_fromUtf8(""))
         self.groupBox.setObjectName(_fromUtf8("groupBox"))
-        self.lesource = QLineEdit(self.groupBox)
-        self.lesource.setGeometry(QtCore.QRect(70, 85, 302, 32))
+
+
+        #登录用户框
+        self.lesource_parent=QWidget(self.groupBox)
+        self.lesource_parent.setGeometry(QtCore.QRect(70, 85, 302, 35))
+        self.lesource_parent.setObjectName(_fromUtf8("lesource_parent"))
+
+        self.lesource = QLineEdit(self.lesource_parent)
+        self.lesource.setGeometry(QtCore.QRect(36, 1, 265, 33))
         self.lesource.setObjectName(_fromUtf8("lesource"))
-        self.lesource_2 = QLineEdit(self.groupBox)
-        self.lesource_2.setGeometry(QtCore.QRect(70,135 , 302, 32))
+
+        self.usr_icon=QWidget(self.lesource_parent)
+        self.usr_icon.setGeometry(QtCore.QRect(10, 9, 16, 16))
+        self.usr_icon.setObjectName(_fromUtf8("usr_icon"))
+
+
+        #登录密码框
+        self.lesource_2_parent = QWidget(self.groupBox)
+        self.lesource_2_parent.setGeometry(QtCore.QRect(70, 135, 302, 35))
+        self.lesource_2_parent.setObjectName(_fromUtf8("lesource_2"))
+
+
+
+        self.lesource_2 = QLineEdit(self.lesource_2_parent)
+        self.lesource_2.setGeometry(QtCore.QRect(36,1 , 265, 33))
         self.lesource_2.setObjectName(_fromUtf8("lesource_2"))
+
+        self.password_icon = QWidget(self.lesource_2_parent)
+        self.password_icon.setGeometry(QtCore.QRect(10, 9, 16, 16))
+        self.password_icon.setObjectName(_fromUtf8("usr_icon"))
         #self.lesource_8 = QLineEdit(self.groupBox)
         #self.lesource_8.setGeometry(QtCore.QRect(120,150 , 200, 25))
         #self.lesource_8.setObjectName(_fromUtf8("lesource_8"))
@@ -108,7 +134,7 @@ class Ui_Login_ui(object):
         self.text8.setText(_fromUtf8(""))
         self.text8.setObjectName(_fromUtf8("text8"))
         self.text9 = QLabel(self.groupBox)
-        self.text9.setGeometry(QtCore.QRect(230,182, 60, 25))
+        self.text9.setGeometry(QtCore.QRect(224,182, 60, 25))
         self.text9.setText(_fromUtf8(""))
         self.text9.setObjectName(_fromUtf8("text9"))
 
@@ -118,7 +144,7 @@ class Ui_Login_ui(object):
         self.text10.setObjectName(_fromUtf8("text10"))
 
         self.btnAdd_3 = QPushButton(self.groupBox)
-        self.btnAdd_3.setGeometry(QtCore.QRect(106, 232, 230, 32))
+        self.btnAdd_3.setGeometry(QtCore.QRect(71, 232, 300, 32))
         self.btnAdd_3.setText(_fromUtf8(""))
         self.btnAdd_3.setObjectName(_fromUtf8("btnAdd_3"))
         self.groupBox_2 = QGroupBox(self.sourceWidget)
@@ -139,16 +165,47 @@ class Ui_Login_ui(object):
         self.groupBox_2.setFont(font)
         self.groupBox_2.setTitle(_fromUtf8(""))
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
-        self.lesource_3 = QLineEdit(self.groupBox_2)
-        self.lesource_3.setGeometry(QtCore.QRect(70, 75, 302, 32))
-        self.lesource_3.setObjectName(_fromUtf8("lesource_3"))
-        self.lesource_4 = QLineEdit(self.groupBox_2)
 
-        self.lesource_4.setGeometry(QtCore.QRect(70, 117, 302, 32))
+        #注册用户框
+        self.lesource_3_parent = QWidget(self.groupBox_2)
+        self.lesource_3_parent.setGeometry(QtCore.QRect(70, 75, 302, 33))
+        self.lesource_3_parent.setObjectName(_fromUtf8("lesource_2"))
+
+        self.lesource_3 = QLineEdit(self.lesource_3_parent)
+        self.lesource_3.setGeometry(QtCore.QRect(36, 1, 265, 31))
+        self.lesource_3.setObjectName(_fromUtf8("lesource_3"))
+
+        self.creat_usr_icon = QWidget( self.lesource_3_parent)
+        self.creat_usr_icon.setGeometry(QtCore.QRect(10, 7, 16, 16))
+        self.creat_usr_icon.setObjectName(_fromUtf8("usr_icon"))
+
+
+        #注册密码框
+        self.lesource_4_parent = QWidget(self.groupBox_2)
+        self.lesource_4_parent.setGeometry(QtCore.QRect(70, 118, 302, 33))
+        self.lesource_4_parent.setObjectName(_fromUtf8("lesource_2"))
+
+        self.lesource_4 = QLineEdit(self.lesource_4_parent)
+        self.lesource_4.setGeometry(QtCore.QRect(36, 1, 265, 31))
         self.lesource_4.setObjectName(_fromUtf8("lesource_4"))
-        self.lesource_5 = QLineEdit(self.groupBox_2)
-        self.lesource_5.setGeometry(QtCore.QRect(70,159,302,32))
+
+        self.create_password_icon = QWidget(self.lesource_4_parent)
+        self.create_password_icon.setGeometry(QtCore.QRect(10, 7, 16, 16))
+        self.create_password_icon.setObjectName(_fromUtf8("usr_icon"))
+
+
+        #注册邮箱框
+        self.lesource_5_parent = QWidget(self.groupBox_2)
+        self.lesource_5_parent.setGeometry(QtCore.QRect(70, 161, 302, 33))
+        self.lesource_5_parent.setObjectName(_fromUtf8("lesource_2"))
+
+        self.lesource_5 = QLineEdit(self.lesource_5_parent)
+        self.lesource_5.setGeometry(QtCore.QRect(36,1,265,31))
         self.lesource_5.setObjectName(_fromUtf8("lesource_5"))
+
+        self.create_exmail_icon = QWidget(self.lesource_5_parent)
+        self.create_exmail_icon.setGeometry(QtCore.QRect(10, 9, 16, 16))
+        self.create_exmail_icon.setObjectName(_fromUtf8("usr_icon"))
 
         #self.lesource_6 = QLineEdit(self.groupBox_2)
         #self.lesource_6.setGeometry(QtCore.QRect(100,175,200,25))
@@ -184,7 +241,7 @@ class Ui_Login_ui(object):
         self.text7.setText(_fromUtf8(""))
         self.text7.setObjectName(_fromUtf8("text7"))        
         self.btnAdd_4 = QPushButton(self.groupBox_2)
-        self.btnAdd_4.setGeometry(QtCore.QRect(106, 240,230, 32))
+        self.btnAdd_4.setGeometry(QtCore.QRect(71, 240,300, 32))
         self.btnAdd_4.setText(_fromUtf8(""))
         self.btnAdd_4.setObjectName(_fromUtf8("btnAdd_4"))
 
@@ -198,12 +255,12 @@ class Ui_Login_ui(object):
         #self.btnAds.setText(_fromUtf8(""))
         #self.btnAds.setObjectName(_fromUtf8("btnAds"))
 
-        self.btnAdd = QPushButton(self.sourceWidget)
-        self.btnAdd.setGeometry(QtCore.QRect(100,55,70,15))
+        self.btnAdd = QPushButton(self.groupBox_2)
+        self.btnAdd.setGeometry(QtCore.QRect(181,282,80,14))
         self.btnAdd.setText(_fromUtf8(""))
         self.btnAdd.setObjectName(_fromUtf8("btnAdd"))
-        self.btnAdd_2 = QPushButton(self.sourceWidget)
-        self.btnAdd_2.setGeometry(QtCore.QRect(300,55,70,15))
+        self.btnAdd_2 = QPushButton(self.groupBox)
+        self.btnAdd_2.setGeometry(QtCore.QRect(181,274,80,14))
         self.btnAdd_2.setText(_fromUtf8(""))
         self.btnAdd_2.setObjectName(_fromUtf8("btnAdd_2"))
         self.bg = QLabel(Login_ui)
@@ -211,7 +268,7 @@ class Ui_Login_ui(object):
         self.bg.setText(_fromUtf8(""))
         self.bg.setObjectName(_fromUtf8("bg"))
         self.btnClose = QPushButton(self.topWidget)
-        self.btnClose.setGeometry(QtCore.QRect(400, 4, 28, 36))
+        self.btnClose.setGeometry(QtCore.QRect(402, 0, 38, 32))
         self.btnClose.setText(_fromUtf8(""))
 
         self.log_png = QWidget(self.topWidget)

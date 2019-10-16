@@ -74,3 +74,7 @@ class Globals:
     ALL_APPS = {}
 
     APK_EVNRUN = 0
+
+    MAIN_CHECKBOX = 0
+
+    list_chk=[]

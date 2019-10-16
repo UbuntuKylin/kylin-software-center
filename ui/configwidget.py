@@ -29,14 +29,19 @@ from ui.confw import Ui_ConfigWidget
 from models.enums import Signals
 from ui.loadingdiv import MiniLoadingDiv
 from models.globals import Globals
+from ui.login_ui import Ui_Login_ui
 
 from ui.login import Login
+
+
 class ConfigWidget(QWidget,Signals):
     mainw = ''
     iscanceled = ''
     listset = ["","",'']
     listrec = ["","",""]
     listuser = ""
+    flag = []
+    desk=0
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
@@ -103,12 +108,12 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnAdd_3.clicked.connect(self.slot_click_rsetpassword)
         self.ui.btnAdd_4.clicked.connect(self.slot_click_changeidentity)
         self.ui.suc_land.clicked.connect(self.slot_cluck_sucland)
-        self.ui.lesource8.setMaxLength(22)
-        self.ui.lesource9.setMaxLength(22)
+        self.ui.lesource8.setMaxLength(30)
+        self.ui.lesource9.setMaxLength(30)
         # self.ui.lesource11.setMaxLength(22)
-        self.ui.lesource12.setMaxLength(22)
-        self.ui.lesource13.setMaxLength(22)
-        self.ui.lesource14.setMaxLength(22)
+        self.ui.lesource12.setMaxLength(30)
+        self.ui.lesource13.setMaxLength(30)
+        self.ui.lesource14.setMaxLength(30)
 #        self.ui.lesource15.setMaxLength(22)
         self.ui.lesource8.setPlaceholderText("请输入用户名")
         self.ui.lesource9.setPlaceholderText("请输入您的邮箱")
@@ -120,7 +125,7 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnAdd_2.setText("下一步")
         self.ui.btnAdd_3.setText("确定")
         self.ui.btnAdd_4.setText("确定")        
-        self.ui.btnClose.clicked.connect(self.hide)
+        self.ui.btnClose.clicked.connect(self.btnclose_find_password)
         self.ui.btnUpdate.clicked.connect(self.slot_click_update)
         self.ui.btnAdd.clicked.connect(self.slot_click_add)
         self.ui.lesource.textChanged.connect(self.slot_le_input)
@@ -129,11 +134,13 @@ class ConfigWidget(QWidget,Signals):
         # self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
         self.ui.pageListWidget.itemClicked.connect(self.slot_item_clicked)
 
-        # self.ui.up_chk.stateChanged.connect(self.change1)
+        self.ui.up_chk.stateChanged.connect(self.change1)
+
+        self.ui.delete_sourcelist.clicked.connect(self.delete_item)
 
         #去掉软件源
         #self.ui.text2.setText("用户登录信息:")        
-        self.ui.text1.setText("软件源列表")
+        # self.ui.text1.setText("软件源列表")
         self.ui.cbhideubuntu.setText("    隐藏ubuntu源")
 
         self.ui.btnUpdate.setText("更新软件源")
@@ -176,10 +183,10 @@ class ConfigWidget(QWidget,Signals):
         #self.ui.checkBox.setStyleSheet("QCheckBox{border:0px;color:#666666;font-size:13px;background:url('res/btnadd.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")         
         self.ui.sourceListWidget.setStyleSheet("QListWidget{background-color: #ffffff;border:1px solid #cccccc;}QListWidget::item{height:22px;margin-top:-1px;margin-left:-2px;margin-right: -2px;border:1px solid #cccccc;}QListWidget::item:selected{background-color:#E4F1F8;;}")
         self.ui.userWidget.setStyleSheet("QListWidget{border:0px solid #c0d3dd;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
-        self.ui.passwordWidget.setStyleSheet("QListWidget{border:0px solid #c0d3dd;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
-        self.ui.sourceWidget.setStyleSheet(".QListWidget{border:1px;color::#0fa2e8;font-size:13px}")
+        self.ui.passwordWidget.setStyleSheet("QListWidget{border:0px;border-radius:5px;color:#0763ba;background:#c0d3dd;}")
+        self.ui.sourceWidget.setStyleSheet(".QListWidget{border:0px;color::#0fa2e8;font-size:13px}")
         # self.ui.lesource.setStyleSheet("QLineEdit{border-radius:1px;color:#497FAB;font-size:13px;}")
-        self.ui.lesource.setStyleSheet("QLineEdit:pressd{background-color:#ffffff;border 1px solid #2d8ae1}")
+        self.ui.lesource.setStyleSheet("QLineEdit{background-color:#ffffff;border:1px solid #cccccc;}QLineEdit:hover{border:1px solid #2d8ae1;}QLineEdit:pressed{border:1px solid #2d8ae1;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
@@ -217,21 +224,55 @@ class ConfigWidget(QWidget,Signals):
         self.ui.sourceListWidget.setSpacing(4)
 
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+        self.ui.sourceListWidget.clear()
         for one in slist:
             one = one.decode('utf-8')
             item = QListWidgetItem()
             itemw = SourceItemWidget(one, self)
             self.ui.sourceListWidget.addItem(item)
+            self.flag.append(itemw)
             self.ui.sourceListWidget.setItemWidget(item, itemw)
         self.ui.progressBar.setRange(0, 100)
         # self.ui.progressBar.reset()
 
         self.hide()
+    def btnclose_find_password(self):
+        self.hide()
+
+    def change1(self):
+        # self.ui.up_chk.setTristate(False)
+        i = 0
+        slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+        if self.ui.up_chk.checkState() == Qt.Checked:
+            for one in slist:
+                self.flag[i].chk.setChecked(True)
+                i = i + 1
+
+        elif self.ui.up_chk.checkState() == Qt.Unchecked:
+            for one in slist:
+                self.flag[i].chk.setChecked(False)
+                i = i + 1
+        elif self.ui.up_chk.checkState()==Qt.PartiallyChecked:
+            if(Globals.MAIN_CHECKBOX == 0):
+                self.ui.up_chk.click()
+            # pass
+
+        Globals.MAIN_CHECKBOX = 0
 
 
 
 
-
+    def delete_item(self):
+        i = -1
+        slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+        for one in slist:
+            i = i + 1
+            if self.flag[i].chk.isChecked() == True:
+                itemf=self.ui.sourceListWidget.takeItem(0)
+                del itemf
+                self.flag[i].confw.backend.remove_source(one)
+        self.ui.up_chk.setCheckState(Qt.Unchecked)
+        self.fill_sourcelist()
 
     # def sourcelist_selcet(self):
     #
@@ -273,8 +314,19 @@ class ConfigWidget(QWidget,Signals):
         sourcetext = str(text)
         self.listuser = sourcetext
 
+    def slot_soucelist(self):
+        item = QListWidgetItem("软件源设置")
+        self.slot_item_clicked(item)
+        self.ui.pageListWidget.item(0).setSelected(True)
+        self.ui.pageListWidget.item(1).setSelected(False)
+
     def slot_show_ui(self):
         self.show()
+        item=QListWidgetItem("密码修改找回")
+        self.slot_item_clicked(item)
+        self.ui.pageListWidget.item(1).setSelected(True)
+        self.ui.pageListWidget.item(0).setSelected(False)
+
 
     def slot_click_changeidentity(self):
         BC = QMessageBox()
@@ -491,31 +543,18 @@ class ConfigWidget(QWidget,Signals):
             AC.exec_()
 
 
-
-    def change1(self):
-        if self.ui.up_chk.isChecked()==True:
-            slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
-            for one in slist:
-                itemw = SourceItemWidget(one, self)
-                itemw.chk.setChecked(True)
-        elif self.ui.up_chk.isChecked()==False:
-            slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
-            for one in slist:
-                itemw = SourceItemWidget(one, self)
-                itemw.chk.setChecked(False)
-
-
-
     def fill_sourcelist(self):
         self.ui.sourceListWidget.clear()
+        self.flag.clear()
+        Globals.list_chk.clear()
         slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
-
         for one in slist:
             one = one.decode('utf-8')
             item = QListWidgetItem()
-            itemw = SourceItemWidget(one, self)
+            source_itemw = SourceItemWidget(one, self)
+            self.flag.append(source_itemw)
             self.ui.sourceListWidget.addItem(item)
-            self.ui.sourceListWidget.setItemWidget(item, itemw)
+            self.ui.sourceListWidget.setItemWidget(item, source_itemw)
 
     def set_process_visiable(self, flag):
         if(flag == True):
@@ -554,6 +593,7 @@ class ConfigWidget(QWidget,Signals):
             self.ui.progressBar.setValue(0)
 
     def slot_update_finish(self):
+        self.ui.up_chk.setCheckState(Qt.Unchecked)
         self.fill_sourcelist()
         self.set_process_visiable(False)
 
@@ -606,12 +646,14 @@ class ConfigWidget(QWidget,Signals):
 
         else:
             self.messageBox.alert_msg("无效的软件源！")
+        self.ui.lesource.setText("")
 
 
     def slot_click_add_spacail(self, OS):
         sourcetext = "deb http://archive.kylinos.cn/kylin/KYLIN-ALL" + ' ' + OS + ' ' + "main restricted universe multiverse"
         sourceflag = -1
         sourceflag = self.backend.add_source(sourcetext)
+        self.ui.up_chk.setCheckState(Qt.Unchecked)
         self.fill_sourcelist()
 
 
@@ -642,7 +684,7 @@ class ConfigWidget(QWidget,Signals):
         self.fill_sourcelist()
 
     def slot_item_clicked(self, item):
-        itis  = str(item.text())
+        itis=str(item.text())
         #print "ccccccccccccccc",itis
         if itis == "用户设置":
             self.ui.sourceWidget.hide()
@@ -743,7 +785,7 @@ class ConfigWidget(QWidget,Signals):
 class SourceItemWidget(QWidget):
     confw = ''
     type = ''
-
+    chek_lst=[]
     def __init__(self, source, parent=None):
         QWidget.__init__(self,parent)
 
@@ -756,22 +798,25 @@ class SourceItemWidget(QWidget):
         self.setPalette(palette)
 
         self.sourcetype = QLabel(self)
-        self.sourcetype.setGeometry(10, 4, 8, 17)
-        # self.chk = QCheckBox(self)
-        # self.chk.setGeometry(10, 4, 16, 17)
+        self.sourcetype.setGeometry(46, 4, 8, 17)
+        self.chk = QCheckBox(self)
+        self.chk.setGeometry(10, 4, 16, 17)
+        # self.chk.isChecked=False
+        Globals.list_chk.append(self.chk)
         self.sourcetext = QLabel(self)
-        self.sourcetext.setGeometry(26, 4, 330, 17)
-        self.btnremove = QPushButton(self)
-        self.btnremove.setGeometry(400, 6, 13, 13)
-
-        self.btnremove.clicked.connect(self.slot_remove_source)
-
-        self.btnremove.setFocusPolicy(Qt.NoFocus)
+        self.sourcetext.setGeometry(72, 4, 330, 17)
+        # self.btnremove = QPushButton(self)
+        # self.btnremove.setGeometry(400, 6, 13, 13)
+        #
+        # self.btnremove.clicked.connect(self.slot_remove_source)
+        #
+        # self.btnremove.setFocusPolicy(Qt.NoFocus)
 
         self.sourcetype.setStyleSheet("QLabel{font-size:13px;color:#1E66A4;}")
         self.sourcetext.setStyleSheet("QLabel{font-size:13px;color:#5E5B67;}")
-        self.btnremove.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
+        # self.btnremove.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
 
+        self.chk.stateChanged.connect(self.slot_change2)
         slist = source.split()
         self.type = slist[0]
         typestr = ''
@@ -788,25 +833,52 @@ class SourceItemWidget(QWidget):
         compstr = compstr[:-1]
         text = str(slist[1]) + " " + str(slist[2]) + compstr
         self.sourcetext.setText(text)
+    #
+    # def slot_remove_source(self):
+    #     source = str(self.type) + " " + str(self.sourcetext.text())
+    #     self.confw.backend.remove_source(source)
+    #     self.confw.fill_sourcelist()
+    def slot_change2(self):
+        # i=0
+        # while 1:
+        #     if Globals.list_chk[i]!='':
+        #         i=i+1
+        #     else:
+        #         break
+        # Globals.MAIN_CHECKBOX = 0
+        i = -1
+        chk = 0
+        box = 0
+        slist_widget = self.confw.backend.get_sources(self.confw.ui.cbhideubuntu.isChecked())
+        for one in slist_widget:
+            i = i + 1
+            if Globals.list_chk[i].isChecked() == True:
+                chk = 1
+            else:
+                box = 1
+        # print(list_set)
+        #
+        # chk=0
+        # box=0
+        # for i in list_set:
+        #     if i==1:
+        #         chk=1
+        #     else:
+        #         box=1
+        if chk==1 and box==0:
+            Globals.MAIN_CHECKBOX = 1
+            self.confw.ui.up_chk.setCheckState(Qt.Checked)
 
-    def slot_remove_source(self):
-        source = str(self.type) + " " + str(self.sourcetext.text())
-        self.confw.backend.remove_source(source)
-        self.confw.fill_sourcelist()
+        if chk==0 and box==1:
+            Globals.MAIN_CHECKBOX = 1
+            self.confw.ui.up_chk.setCheckState(Qt.Unchecked)
 
-# class subQSourceItemWidget(QWidget):
-#     def __init__(self, source, parent=None):
-#         QWidget.__init__(self, parent)
-#         self.up_chk=QCheckBox(self)
-#         self.up_chk.setGeometry(10, 4, 16, 17)
-#         self.all_select=QLabel(self)
-#         self.all_select.setText("全选")
-#         self.all_select.setGeometry(35,4,30,17)
-#         self.delete_sourcelist=QPushButton(self)
-#         self.delete_sourcelist.setText("删除")
-#         self.delete_sourcelist.setGeometry(405,4,30,17)
-#         self.delete_sourcelist.setStyleSheet(
-#             "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        if chk==1 and box==1:
+            Globals.MAIN_CHECKBOX = 1
+            self.confw.ui.up_chk.setTristate(True)
+            self.confw.ui.up_chk.setCheckState(Qt.PartiallyChecked)
+            Globals.MAIN_CHECKBOX = 0
+
 
 
 
