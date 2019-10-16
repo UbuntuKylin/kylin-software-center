@@ -3,15 +3,9 @@ ubuntu-kylin-software-center (3.0.5) eoan; urgency=medium
   * Software source detection optimization.
   * Setting interface optimization.
 
- -- wenbo <wenbo@ubuntukylin.com>  Wed, 16 Oct 2019 13:38:06 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 16 Oct 2019 14:51:39 +0800
 
 ubuntu-kylin-software-center (3.0.4) eoan; urgency=medium
-
-  * Add software source update detection at startup.
-
- -- wenbo <wenbo@ubuntukylin.com>  Wed, 25 Sep 2019 20:27:35 +0800
-
-ubuntu-kylin-software-center (3.0.3) eoan; urgency=medium
 
   [Wen Bo]
   * Download management interface optimization.
@@ -29,8 +23,9 @@ ubuntu-kylin-software-center (3.0.3) eoan; urgency=medium
   * Optimize booting Android loading problem, separate Android
     software list acquisition and Android interface drawing.
   * Add Android software modules.
+  * Add software source update detection at startup.
 
- -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 11 Sep 2019 10:34:26 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Sun, 29 Sep 2019 16:29:39 +0800
 
 ubuntu-kylin-software-center (1.6.8) eoan; urgency=medium
 
