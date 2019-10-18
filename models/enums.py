@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import *
 from backend.ubuntu_sw import safe_makedirs
 from models.application import Application
 from models.baseinfo import BaseInfo
+from utils.debfile import DebFile
 
 #########################################################
 
@@ -194,7 +195,7 @@ class Signals:
     click_categoy = pyqtSignal(str,bool)
     click_item = pyqtSignal()
     show_app_detail = pyqtSignal(BaseInfo)
-    install_debfile = pyqtSignal(Application)
+    install_debfile = pyqtSignal(DebFile)
     install_app = pyqtSignal(BaseInfo)
     install_app_rcm = pyqtSignal(Application)
     remove_app = pyqtSignal(Application)

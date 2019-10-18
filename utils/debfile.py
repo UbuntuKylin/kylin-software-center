@@ -25,8 +25,9 @@
 from apt.debfile import DebPackage
 import apt.progress.base as apb
 from models.globals import  Globals
+from models.baseinfo import BaseInfo
 
-class DebFile():
+class DebFile(BaseInfo):
 
     # the deb file which user selected
     debfile = ''

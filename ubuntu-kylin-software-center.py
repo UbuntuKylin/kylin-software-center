@@ -850,7 +850,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def check_source(self):
         # if(0): #屏蔽检测软件源
-        if(self.worker_thread0.appmgr.check_source_update() == True and is_livecd_mode() == False):
+        if((self.worker_thread0.appmgr.check_source_update() == True and is_livecd_mode() == False) or (not os.path.exists(UKSC_CACHE_DIR+'/kylin-software-center.ini'))):
             MessageBox = Update_Source_Dialog()
         #     if Globals.LAUNCH_MODE == 'quiet':
         #         MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
@@ -884,6 +884,9 @@ class SoftwareCenter(QMainWindow,Signals):
         #         #     pass
         #         else:
         #             sys.exit(0)
+            if(not os.path.exists(UKSC_CACHE_DIR+'/kylin-software-center.ini')):
+                fp = open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w+')
+                fp.close()
             MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行>软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
             MessageBox.exec_()
             button = MessageBox.clickedButton()
@@ -3121,12 +3124,12 @@ class SoftwareCenter(QMainWindow,Signals):
             if res:
                 # install deb
                 res = self.worker_thread0.backend.install_debfile(debfile.path)
-                if res:
-                    self.add_task_item(debfile, "install_debfile", isdeb=True)
+                # if res:
+                    # self.add_task_item(debfile, "install_debfile", isdeb=True)
         else:
             res = self.worker_thread0.backend.install_debfile(debfile.path)
-            if res:
-                self.add_task_item(debfile, "install_debfile", isdeb=True)
+            # if res:
+            #     self.add_task_item(debfile, "install_debfile", isdeb=True)
 
 
     def slot_click_install(self, app):

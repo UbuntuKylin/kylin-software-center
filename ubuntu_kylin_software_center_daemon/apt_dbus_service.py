@@ -303,10 +303,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
     # -------------------------software-center-------------------------
 
     # install deb file
-    @dbus.service.method(INTERFACE, in_signature='ay', out_signature='b', sender_keyword='sender')
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
     def install_debfile(self, path, sender=None):
         print("####install deb file: ", path)
-        path = "".join([chr(character) for character in path]) # add by zhangxin for chinese .deb path 11.19
+        # path = "".join([chr(character) for character in path]) # add by zhangxin for chinese .deb path 11.19
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
             kwarg = {"appname":path,
@@ -320,10 +320,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
         return True
 
     # install deb file's deps
-    @dbus.service.method(INTERFACE, in_signature='ay', out_signature='b', sender_keyword='sender')
+    @dbus.service.method(INTERFACE, in_signature='s', out_signature='b', sender_keyword='sender')
     def install_deps(self, path, sender=None):
         print("####install deps: ", path)
-        path = "".join([chr(character) for character in path])
+        # path = "".join([chr(character) for character in path])
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
         if not granted:
             kwarg = {"appname":path,

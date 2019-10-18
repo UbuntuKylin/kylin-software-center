@@ -553,13 +553,13 @@ class MultiFunctionBtn(QWidget,Signals):
     def slot_click_btn_install(self):
         # kobe 1106
         self.app.status = PkgStates.INSTALLING
-        self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
         self.switchDirection = 'up'
         self.switch_animation()
         self.start_work()
         if isinstance(self.app,DebFile):# for local deb file
             self.install_debfile.emit(self.app)
         else:# for apt deb file
+            self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
             self.mfb_click_install.emit(self.app)
 
     def slot_click_btn_update(self):

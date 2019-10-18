@@ -1,7 +1,8 @@
-ubuntu-kylin-software-center (3.0.5) eoan; urgency=medium
+ubuntu-kylin-software-center (3.0.6) eoan; urgency=medium
 
   * Software source detection optimization.
   * Setting interface optimization.
+  * Fix installation local deb package error.
 
  -- wenbo <wenbo@ubuntukylin.com>  Wed, 16 Oct 2019 13:38:06 +0800
 

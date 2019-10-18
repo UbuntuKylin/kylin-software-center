@@ -282,9 +282,19 @@ class AptDaemon():
         debfile.check() #do debfile.check for the next to do debfile.missing_deps
         if 0 == len(debfile.missing_deps):
             # try:
-            res = debfile.install(AptProcess(self.dbus_service,pkgName,AppActions.INSTALLDEBFILE))
+            res = debfile.install()
             if res:
                 raise WorkitemError(6, "package manager failed")
+            else:
+                kwarg = {"apt_appname":pkgName,
+                         "apt_percent":str(200),
+                         "action":str(AppActions.INSTALLDEBFILE),
+                         }
+                self.dbus_service.software_apt_signal("apt_finish", kwarg)
+                if pkgName == "ubuntu-kylin-software-center" and AppActions.INSTALLDEBFILE == "upgrade":
+                    pass
+                else:
+                    self.dbus_service.set_uksc_not_working()
         else:
             raise WorkitemError(6, "dependence not be satisfied")
 

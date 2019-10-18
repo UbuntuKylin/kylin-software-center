@@ -79,7 +79,10 @@ class TaskListItemWidget(QWidget,Signals):
 
         if app.status == PkgStates.INSTALLING:#"installing":
             #self.ui.name.setText("安装 "+app.name)
-            self.ui.progressBarsmall.setValue(self.app.percent)
+            try:
+                self.ui.progressBarsmall.setValue(self.app.percent)
+            except AttributeError as e:
+                pass
             text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
             self.uiname = "安装 "+app.name
             self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
@@ -94,7 +97,10 @@ class TaskListItemWidget(QWidget,Signals):
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.REMOVING:#"uninstalling":
             #self.ui.name.setText("卸载 "+app.name)
-            self.ui.progressBarsmall.setValue(self.app.percent)
+            try:
+                self.ui.progressBarsmall.setValue(self.app.percent)
+            except AttributeError as e:
+                pass
             text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
             self.uiname = "卸载 "+app.name
             self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
@@ -108,7 +114,10 @@ class TaskListItemWidget(QWidget,Signals):
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.UPGRADING:#"upgrading":
-            self.ui.progressBarsmall.setValue(self.app.percent)
+            try:
+                self.ui.progressBarsmall.setValue(self.app.percent)
+            except AttributeError as e:
+                pass
             #self.ui.name.setText("升级 "+app.name)
             text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
             self.uiname = "升级 "+app.name
@@ -189,7 +198,10 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.progresslabel.show()
                     self.ui.status.hide()
                     self.ui.progressBar.setValue(percent)
-                    self.ui.progressBarsmall.setValue(self.app.percent)
+                    try:
+                        self.ui.progressBarsmall.setValue(self.app.percent)
+                    except AttributeError as e:
+                        pass
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
             elif(processtype == 'apt'):
@@ -213,7 +225,10 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.status.setText("完成")
                     self.ui.status.show()
                     self.ui.progressBar.setValue(percent)
-                    self.ui.progressBarsmall.setValue(self.app.percent)
+                    try:
+                        self.ui.progressBarsmall.setValue(self.app.percent)
+                    except AttributeError as e:
+                        pass
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
                 else:
@@ -221,7 +236,10 @@ class TaskListItemWidget(QWidget,Signals):
                         self.ui.progresslabel.show()
                         self.ui.status.hide()
                         self.ui.progressBar.setValue(percent)
-                        self.ui.progressBarsmall.setValue(self.app.percent)
+                        try:
+                            self.ui.progressBarsmall.setValue(self.app.percent)
+                        except AttributeError as e:
+                            pass
                         self.ui.progressBar.show()
                         # self.ui.progresslabel.setText(self.ui.progressBar.value())
                         self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
