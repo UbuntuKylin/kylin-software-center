@@ -1,1 +1,0 @@
-ubuntu_kylin_software_center_daemon
