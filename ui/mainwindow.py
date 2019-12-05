@@ -12,7 +12,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
-
+import glob
+from models.enums import (UBUNTUKYLIN_CACHE_SETADS_PATH)
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -83,6 +84,8 @@ class Ui_MainWindow(object):
         self.rightWidget.setGeometry(QtCore.QRect(110, 0, 870, 680))
         self.rightWidget.setObjectName(_fromUtf8("rightWidget"))
         self.rightWidget.setStyleSheet("background-color:#f5f5f5")
+
+
 
 
 
@@ -186,12 +189,38 @@ class Ui_MainWindow(object):
         self.recommendWidget.setGeometry(QtCore.QRect(0, 0, 849, 584))
         self.recommendWidget.setObjectName(_fromUtf8("recommendWidget"))
 
-                #self.adWidget = QWidget(self.rightWidget)
+        # self.adWidget_dat = QWidget(self.recommendWidget)
+        # self.adWidget_dat.setGeometry(QtCore.QRect(2, 0, 826, 180))
+        # self.adWidget_dat.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+
+
+
+
+        # self.adWidget = QWidget(self.rightWidget)
         self.adWidget = QPushButton(self.recommendWidget)
-        self.adWidget.setGeometry(QtCore.QRect(0, 0, 830, 180))
-        # self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-#        self.adWidget.setTitle(_fromUtf8(""))
-        self.adWidget.setObjectName(_fromUtf8("adWidget"))
+        self.adWidget.setGeometry(QtCore.QRect(0, 0, 825, 180))
+        self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+# #        self.adWidget.setTitle(_fromUtf8(""))
+#         self.adWidget.setObjectName(_fromUtf8("adWidget"))
+
+        self.listWidget=QWidget(self.adWidget)
+        self.listWidget.setObjectName(_fromUtf8("listWidget") )
+
+        # CallTipWidget.enterEvent(self.adWidget,event)
+
+
+        self.leftbtn=QPushButton(self.adWidget)
+        self.leftbtn.setGeometry(QtCore.QRect(20, 70, 40, 40))
+        self.leftbtn.setObjectName(_fromUtf8("leftbtn"))
+        self.leftbtn.hide()
+
+        self.rightbtn=QPushButton(self.adWidget)
+        self.rightbtn.setGeometry(QtCore.QRect(772, 70, 40, 40))
+        self.rightbtn.setObjectName(_fromUtf8("righttbtn"))
+        self.rightbtn.hide()
+
+
         # self.adWidget.setStyleSheet("QWidget{background:none;border:none;}")
 
         # self.label_14 = QLabel(self.adWidget)
@@ -263,24 +292,24 @@ class Ui_MainWindow(object):
         #self.hometext1.setText(_fromUtf8(""))
         #self.hometext1.setObjectName(_fromUtf8("hometext1"))
         self.hometext1 = QPushButton(self.recommendWidget)
-        self.hometext1.setGeometry(QtCore.QRect(0, 200, 60, 15))
+        self.hometext1.setGeometry(QtCore.QRect(0, 200, 60, 16))
         self.hometext1.setText(_fromUtf8(""))
-        self.hometext1.setObjectName(_fromUtf8("0, 0, 60, 15"))
+        self.hometext1.setObjectName(_fromUtf8("hometext1"))
 
         #self.hometext8 = QPushButton(self.recommendWidget)
         #self.hometext8.setGeometry(QtCore.QRect(90, 0, 120, 15))
         #self.hometext8.setText(_fromUtf8(""))
         #self.hometext8.setObjectName(_fromUtf8("120, 0, 60, 15"))
         self.hometext8 = QPushButton(self.recommendWidget)
-        self.hometext8.setGeometry(QtCore.QRect(120, 200, 60, 15))
+        self.hometext8.setGeometry(QtCore.QRect(120, 200, 60, 16))
         self.hometext8.setText(_fromUtf8(""))
         self.hometext8.setObjectName(_fromUtf8("hometext8"))
 
 
         self.hometext9 = QPushButton(self.recommendWidget)
-        self.hometext9.setGeometry(QtCore.QRect(240, 200, 60, 15))
+        self.hometext9.setGeometry(QtCore.QRect(240, 200, 60, 16))
         self.hometext9.setText(_fromUtf8(""))
-        self.hometext9.setObjectName(_fromUtf8("240, 0, 60, 15"))
+        self.hometext9.setObjectName(_fromUtf8("hometext9"))
 
         # self.homeline1 = QLabel(self.recommendWidget)
         # self.homeline1.setGeometry(QtCore.QRect(0, 17, 640, 1))
@@ -380,6 +409,8 @@ class Ui_MainWindow(object):
         self.searchWidget = QWidget(self.rightWidget)
         self.searchWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.searchWidget.setObjectName(_fromUtf8("searchWidget"))
+
+        # self.no_search_resualt.hide()
         # self.searchline = QLabel(self.searchWidget)
         # self.searchline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         # self.searchline.setText(_fromUtf8(""))
@@ -403,6 +434,26 @@ class Ui_MainWindow(object):
       # self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
         self.taskWidget.setGeometry(QtCore.QRect(300, 50, 370, 460))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
+
+        self.no_search_resualt = QWidget(self.rightWidget)
+        self.no_search_resualt.setGeometry(QtCore.QRect(251, 160, 347, 268))
+        self.no_search_resualt.setObjectName(_fromUtf8("no_search_resualt"))
+        self.no_search_resualt.setStyleSheet("QWidget{background-image:url('res/no_search.png');background-color:transparent;}")
+        self.no_search_resualt.hide()
+
+        self.prompt1= QLabel(self.rightWidget)
+        self.prompt1.setGeometry(QtCore.QRect(325, 443, 220, 30))
+        self.prompt1.setObjectName(_fromUtf8("prompt1"))
+        self.prompt1.setText("抱歉，没有找到您想要的应用")
+        self.prompt1.setStyleSheet("QLabel{color:#999999;font-size:16px;border:0px}")
+        self.prompt1.hide()
+
+        self.prompt2 = QLabel(self.rightWidget)
+        self.prompt2.setGeometry(QtCore.QRect(300, 490, 280, 25))
+        self.prompt2.setObjectName(_fromUtf8("prompt1"))
+        self.prompt2.setText("您可以在搜索框选择＂全局＂搜索试试")
+        self.prompt2.setStyleSheet("QLabel{color:#999999;font-size:16px;border:0px}")
+        self.prompt2.hide()
 
 
         self.head_manage=QWidget(self.taskWidget)
@@ -522,7 +573,7 @@ class Ui_MainWindow(object):
         self.btnMin.setObjectName(_fromUtf8("btnMin"))
 
         self.btnTask3 = QToolButton(self.headerWidget)
-        self.btnTask3.setGeometry(QtCore.QRect(310, 15, 100, 22))
+        self.btnTask3.setGeometry(QtCore.QRect(365, 15, 100, 22))
         self.btnTask3.setText(_fromUtf8(""))
         self.btnTask3.setObjectName(_fromUtf8("btnTask3"))
 
@@ -543,7 +594,7 @@ class Ui_MainWindow(object):
         self.btnNormal.setText(_fromUtf8(""))
         self.btnNormal.setObjectName(_fromUtf8("btnNormal"))
         self.headercw1 = Searchcw1(self.headerWidget)
-        self.headercw1.setGeometry(QtCore.QRect(0, 0, 285, 38))
+        self.headercw1.setGeometry(QtCore.QRect(0, 0, 365, 38))
         self.headercw1.setObjectName(_fromUtf8("headercw1"))
         self.btnCloseDetail = QPushButton(self.headercw1)
         self.btnCloseDetail.setGeometry(QtCore.QRect(0, 14, 15, 19))
@@ -592,7 +643,7 @@ class Ui_MainWindow(object):
         # self.virtuallabel.setText(_fromUtf8(""))
         # self.virtuallabel.setObjectName(_fromUtf8("virtuallabel"))
         self.detailShellWidget = QWidget(self.rightWidget)
-        self.detailShellWidget.setGeometry(QtCore.QRect(0, 60, 870, 610))
+        self.detailShellWidget.setGeometry(QtCore.QRect(0, 60, 870, 620))
         self.detailShellWidget.setObjectName(_fromUtf8("detailShellWidget"))
 
         self.userAppListWidget = QWidget(self.rightWidget)
@@ -602,6 +653,14 @@ class Ui_MainWindow(object):
         self.ualine.setGeometry(QtCore.QRect(0, 550, 830, 1))
         self.ualine.setText(_fromUtf8(""))
         self.ualine.setObjectName(_fromUtf8("ualine"))
+
+        self.set_lindit = QLabel(self.rightWidget)
+        self.set_lindit.setGeometry(QtCore.QRect(20, 39, 520, 20))
+        self.set_lindit.setObjectName(_fromUtf8("rightWidget"))
+        self.set_lindit.setText("全局搜索:是在软件源下搜索全部应用软件，搜索到软件可能会有不可用或者其他质量问题")
+        self.set_lindit.setStyleSheet("QLabel{color:#ff6f65;font-size:12px;border:0px}")
+        self.set_lindit.hide()
+
         # self.uacw1 = QWidget(self.userAppListWidget)
         # self.uacw1.setGeometry(QtCore.QRect(10, 572, 130, 15))
         # self.uacw1.setObjectName(_fromUtf8("uacw1"))
@@ -654,6 +713,34 @@ class Ui_MainWindow(object):
         self.NoTransItemText.setText(_fromUtf8(""))
         self.NoTransItemText.setObjectName(_fromUtf8("NoTransItemText"))
 
+        num = (len(glob.glob(UBUNTUKYLIN_CACHE_SETADS_PATH + "*.png")))
+        flag=num
+        test=0
+        self.takeads=[]
+        while flag:
+            self.adverwidget=QWidget(self.listWidget)
+            self.adverwidget.setGeometry(QtCore.QRect(test*830,0,830,180))
+            self.adverwidget.setObjectName(_fromUtf8("btnad"))
+            # self.adverwidget.setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
+            self.takeads.append(self.adverwidget)
+            test=test+1
+            flag=flag-1
+
+
+        # self.varlist = []
+        # print("ooooooooooooooooooo", num)
+        # cont=num
+        # i = 0
+        # while num:
+        #     self.btnad = QPushButton( self.adWidget_dat)
+        #     self.btnad.setGeometry(QtCore.QRect(((830 -(cont*8+(cont-1)*10)))/2 + (18 * i), 162, 8, 8))
+        #     self.btnad.setObjectName(_fromUtf8("btnad"))
+        #     self.btnad.setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
+        #     self.varlist.append(self.btnad)
+        #     num = num - 1
+        #     i = i + 1
+        # self.varlist[0].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -668,23 +755,51 @@ class Searchcw1(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.leSearch = QLineEdit(self)
-        self.leSearch.setGeometry(QtCore.QRect(20, 14, 260, 24))
+        self.combox_search=QWidget(self)
+        self.combox_search.setGeometry(QtCore.QRect(20, 13, 340, 24))
+        self.combox_search.setObjectName(_fromUtf8("combox_search"))
+
+
+        self.senior_search=QComboBox(self.combox_search)
+        self.senior_search.setGeometry(QtCore.QRect(0, 0, 50, 24))
+        self.senior_search.setObjectName(_fromUtf8("combox_search"))
+
+        self.leSearch = QLineEdit(self.combox_search)
+        self.leSearch.setGeometry(QtCore.QRect(50, 0, 260, 24))
         self.leSearch.setObjectName(_fromUtf8("leSearch"))
-        self.lebg = QPushButton(self)
-        self.lebg.setGeometry(QtCore.QRect(256, 18, 16, 16))
+
+        self.lebg = QPushButton(self.leSearch)
+        self.lebg.setGeometry(QtCore.QRect(236, 4, 16, 16))
         self.lebg.setText(_fromUtf8(""))
         self.lebg.setObjectName(_fromUtf8("lebg"))
         self.leSearch.stackUnder(self.lebg)
         self.lebg.setFocusPolicy(Qt.NoFocus)
+
+        self.senior_search.setView(QListView())
+
         self.leSearch.setPlaceholderText("请输入您要搜索的软件")
         self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}")
-        self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")
+        self.lebg.setCursor(Qt.PointingHandCursor)
+        self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:12px;}")
+        # self.senior_search.setStyleSheet("QComboBox{background-color:#EEEDF0;color:#999999;font-size:13px;}")
+        self.senior_search.setStyleSheet(
+            "QComboBox{padding-left:5px;border:1px solid #CCCCCC;background-color:#EEEDF0;font-size:12px;color:#999999;}"
+            "QComboBox {combobox-popup: 0;}"
+            "QComboBox QAbstractItemView::item:hover{color:#CCCCCC;background-color:#2d8ae1;font-size:12px;}"
+            "QComboBox QAbstractItemView::item{border:0px;color:#999999;background-color:#ffffff;font-size:12px;}"
+            "QComboBox QAbstractItemView::item { min-height:22px;min-width:30px;}"
+
+            "QComboBox QAbstractItemView{padding-left:0px;background:#ffffff;color:#999999;border:0px;font-size:12px;}"
+
+            "QComboBox::down-arrow{image:url(./res/down.png);height:21px;width:7px;}"
+            "QComboBox::drop-down{width:14px;border-left: 0px;padding-left:5px;}"
+            )
+
 
     def enterEvent(self, QEvent):
         #print "********************"
-        self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-2.png');border:0px;}QPushButton:pressed{background:url('res/search-2.png');}")
+        self.lebg.setStyleSheet("QPushButton{background-color:transparent;background-image:url('res/search-2.png');border:0px;}QPushButton:pressed{background:url('res/search-2.png');}")
         self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
     def leaveEvent(self, QEvent):
-        self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}")
+        self.lebg.setStyleSheet("QPushButton{background-color:transparent;background-image:url('res/search-1.png');border:0px;}")
         self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")

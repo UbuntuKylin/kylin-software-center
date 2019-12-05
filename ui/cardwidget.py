@@ -79,7 +79,6 @@ class CardWidget(QWidget):
 
         cards = self.cardPanel.children()
         self.cardcount = 0
-
         for i in range(self.count()):
             self.add_card(cards[i])
 

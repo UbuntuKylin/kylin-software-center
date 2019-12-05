@@ -82,6 +82,7 @@ class DownloadManager(threading.Thread, QObject):
         if rtn == 1:
             # self.appmgr.normalcard_progress_finish.emit(self.appname)
             self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.INSTALL, 200, 'install apk success')
+
             self.install_icon_desktop()
         else:
             if (Globals.DEBUG_SWITCH):

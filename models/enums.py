@@ -40,8 +40,8 @@ from utils.debfile import DebFile
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-UBUNTUKYLIN_SERVER = "http://192.168.70.129:8001/uksc/"
-#UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+#UBUNTUKYLIN_SERVER = "http://172.22.40.129:8001/uksc/"
+UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
 #KYDROID_SOURCE_SERVER = "ftp://192.168.78.231/kydroid/"
 #KYDROID_SOURCE_SERVER = "http://ports.kylin.com/kylin/kydroid/"
@@ -142,8 +142,16 @@ UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
 #UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
 #safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join("/usr/share/ubuntu-kylin-software-center/data/", "screenshots/")
+UBUNTUKYLIN_RES_SQLITE3_PATH=os.path.join("/usr/share/ubuntu-kylin-software-center/","data/")
+
 
 UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
+
+UBUNTUKYLIN_CACHE_SETADS_PATH =os.path.join(UKSC_CACHE_DIR, "ads/")
+
+UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH=os.path.join(UKSC_CACHE_DIR, "screenshots/")
+
+UBUNTUKYLIN_CACHE_UKSCDB_PATH =os.path.join(UKSC_CACHE_DIR, "uksc.db")
 safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
 
 UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
@@ -173,6 +181,7 @@ class Signals:
     init_models_ready = pyqtSignal(str,str)
 
     myinit_emit = pyqtSignal()
+    myads_icon=pyqtSignal()
 #    chksoftwareover = pyqtSignal()
 #    getallpackagesover = pyqtSignal()
 #    countiover = pyqtSignal()
@@ -197,9 +206,9 @@ class Signals:
     show_app_detail = pyqtSignal(BaseInfo)
     install_debfile = pyqtSignal(DebFile)
     install_app = pyqtSignal(BaseInfo)
-    install_app_rcm = pyqtSignal(Application)
-    remove_app = pyqtSignal(Application)
-    upgrade_app = pyqtSignal(Application)
+    install_app_rcm = pyqtSignal(BaseInfo)
+    remove_app = pyqtSignal(BaseInfo)
+    upgrade_app = pyqtSignal(BaseInfo)
     click_update_source = pyqtSignal()
     update_source = pyqtSignal()
     update_source_cancel = pyqtSignal()
@@ -236,6 +245,8 @@ class Signals:
     submit_review_over = pyqtSignal(list)
     submit_rating = pyqtSignal(str,int)
     submit_rating_over = pyqtSignal(list)
+    submit_download=pyqtSignal(str)
+    submit_download_over= pyqtSignal(list)
     show_login = pyqtSignal()
     get_user_rating = pyqtSignal(int)
     unzip_img = pyqtSignal()
@@ -278,6 +289,10 @@ class Signals:
 
     find_password= pyqtSignal()
 
+    return_db=pyqtSignal()
+
+    #add dengnan 10.29
+    goto_detail=pyqtSignal(str)
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"

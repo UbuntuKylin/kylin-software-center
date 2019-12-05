@@ -55,6 +55,7 @@ class Globals:
     DEBUG_SWITCH = False
 
     # user name
+    OS_USER=''
     USER = ''
     USER_DISPLAY = ''
     PASSWORD = ''
@@ -67,6 +68,8 @@ class Globals:
     SHOW_LOGIN = 0
     TOKEN = ''
 
+    ADVANCED_SEARCH = False
+
     NOWPAGE = -1
 
     UPDATE_HOM = 0
@@ -78,3 +81,9 @@ class Globals:
     MAIN_CHECKBOX = 0
 
     list_chk=[]
+
+    Denot = 0
+    Dleft=0
+    ADS_NUM=0
+
+    # SQLITR_DB=''

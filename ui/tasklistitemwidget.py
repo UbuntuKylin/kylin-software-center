@@ -68,7 +68,7 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.name.setStyleSheet("QLabel{background-color: transparent;font-size:14px;color:#000000}")
 
         #self.ui.status.setStyleSheet("QLabel{font-size:12px;font-weight:bold;background-color:#EAF0F3;}")
-        self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:#ffffff;}")
+        self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:transpare nt;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
         self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
@@ -153,10 +153,12 @@ class TaskListItemWidget(QWidget,Signals):
             size = app.packageSize
             sizek = size / 1024
             sizek = round(sizek,4)
-            if(sizek < 1024):
-                self.ui.size.setText(str(sizek) + " KB")
+            if(sizek == 0):
+                self.ui.size.setText("未知")
+            elif(sizek < 1024):
+                self.ui.size.setText(str('%.1f'%sizek) + " KB")
             else:
-                self.ui.size.setText(str('%.3f'%(sizek/1024.0)) + " MB")
+                self.ui.size.setText(str('%.2f'%(sizek/1024.0)) + " MB")
 
         self.ui.progressBar.setRange(0,100)
         self.ui.progressBar.reset()
@@ -216,6 +218,10 @@ class TaskListItemWidget(QWidget,Signals):
                         self.ui.status.setText("完成")
                     else:
                         self.ui.status.setText("失败")
+                        self.ui.progressBar.setValue(0)
+                        self.ui.progressBarsmall.setValue(0)
+                        self.ui.progressBarsmall.hide()
+                        self.ui.progressBar.hide()
                     self.ui.status.show()
                     self.finish = True
                 elif percent >= 100:
@@ -260,6 +266,7 @@ class TaskListItemWidget(QWidget,Signals):
             self.ui.status.show()
             self.ui.status.setText("完成")
             self.finish = True
+            self.ui.progressBarsmall.hide()
 
     def slot_click_cancel(self):
         if(self.isdeb == True or isinstance(self.app,DebFile)):

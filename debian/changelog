@@ -1,3 +1,26 @@
+ubuntu-kylin-software-center (3.1.7) eoan; urgency=medium
+
+  * Fixed multi-threaded access to sqlite database error.
+  * Optimize the advertisement promotion column to be pushed and
+    scrolled from the server.
+  * Changed main interface recommendations, essentials, and game
+    entertainment to server-controlled updates.
+  * Solve the problem of apk installation and uninstallation, detailed
+    interface version status information update.
+  * Solve the problem of stuttering when switching the homepage.
+  * Resolved an issue where the non-database software details interface
+    would display incorrect comments.
+  * Adjust the software display size.
+  * Add switch to retrieve password cipher text and plain text.
+  * Add the function of scrolling the promotion bar and pushing
+    the promotion content on the server.
+  * Add the statistics of download times of installation software
+    and interface display.
+  * Details interface size adjustment, loading animation position
+    adjustment.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Thu, 05 Dec 2019 18:41:20 +0800
+
 ubuntu-kylin-software-center (3.0.6) eoan; urgency=medium
 
   * Software source detection optimization.

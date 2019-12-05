@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
 from xdg import BaseDirectory as xdg
 from ui.mainwindow import Ui_MainWindow
+# from ui.advertisement import Adversettest
 from ui.categorybar import CategoryBar
 from ui.rcmdcard import RcmdCard
 from ui.normalcard import NormalCard
@@ -53,7 +54,7 @@ from ui.configwidget import ConfigWidget
 from ui.login import Login
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
-from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH,KYDROID_STARTAPP_ENV)
+from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH,KYDROID_STARTAPP_ENV,UBUNTUKYLIN_CACHE_UKSCDB_PATH)
 from backend.search import *
 from backend.service.appmanager import AppManager
 from backend.installbackend import InstallBackend
@@ -61,7 +62,7 @@ from backend.utildbus import UtilDbus
 #from backend.ubuntusso import get_ubuntu_sso_backend
 from backend.service.save_password import password_write, password_read
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
-from models.enums import Signals, setLongTextToElideFormat,KYDROID_SOURCE_SERVER
+from models.enums import Signals, setLongTextToElideFormat,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 from models.apkinfo import ApkInfo
@@ -79,10 +80,8 @@ import platform
 socket.setdefaulttimeout(5)
 from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
-
-import threading
 import configparser
-
+import sqlite3
 #log.init_logger()
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s:%(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -99,6 +98,8 @@ class  initThread(QThread,Signals):
         # init dbus backend
         self.backend = InstallBackend()
         self.appmgr = AppManager()
+
+
         res = self.backend.init_dbus_ifaces()
 
 
@@ -117,7 +118,15 @@ class  initThread(QThread,Signals):
 
 
         self.myinit_emit.emit()
+        #
         self.sleep(1)
+
+class  AD_Thread(QThread,Signals):
+    def __init__(self):
+        super(AD_Thread, self).__init__()
+
+    def run(self):
+        self.myads_icon.emit()
 
 class SoftwareCenter(QMainWindow,Signals):
 
@@ -126,10 +135,10 @@ class SoftwareCenter(QMainWindow,Signals):
     first_start = True
     # pre page
     # prePage = ''
-    # now page
+    # now
     # nowPage = ''
     # his page
-    # hisPage = ''
+    # hisPage                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               = ''
     # search delay timer
     searchDTimer = ''
     # fx(name, taskitem) map
@@ -160,6 +169,9 @@ class SoftwareCenter(QMainWindow,Signals):
     rec_ready = False
 
     apkpagefirst = True
+
+    list=[]
+
     config = configparser.ConfigParser()
 
     def __init__(self, parent=None):
@@ -174,8 +186,12 @@ class SoftwareCenter(QMainWindow,Signals):
         self.launchLoadingDiv.start_loading()
 
         self.worker_thread0 = initThread()
+
         # self.worker_thread0.setDaemon(True)
         self.worker_thread0.start()
+
+
+
 
     # def myinit(self):
         self.auto_l = False
@@ -185,19 +201,23 @@ class SoftwareCenter(QMainWindow,Signals):
         self.flag=0
 
 
-        password_read()
 
+        password_read()
         self.worker_thread0.myinit_emit.connect(self.slot_init)
 
         # data init
         # self.ads_ready = False
         self.rec_ready = False
-        # self.rank_ready = False
 
+        self.worker_thread_ad = AD_Thread()
+        # self.worker_thread_ad.setDaemon(True)
+
+        # self.worker_thread_ad.myads_icon.connect(self.recursion_advertisement)
+
+        # self.rank_ready = False
     def slot_init(self):
         #init main view
         self.init_main_view()
-
         # init main service
         self.init_main_service()
 
@@ -213,17 +233,19 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.kydroid_service = self.kydroid_service
         self.worker_thread0.backend.dbus_apt_process.connect(self.slot_status_change)
 
+        self.worker_thread_ad.start()
+
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        # self.adv = AdverTisement(self.ui.adWidget)
+        # self.srv=Adversettest(self.ui.adWidget)
         # do not cover the launch loading div
         self.resize(0,0)
-
         self.setWindowTitle("麒麟软件商店")
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
-        self.ui.adWidget.setFocusPolicy(Qt.NoFocus)
         #self.ui.adWidget.lower()
         #self.ui.adWidget.raise_()
         # category bar
@@ -277,7 +299,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.loadingDiv = LoadingDiv(self)
         # self.topratedload = MiniLoadingDiv(self.ui.rankView, self.ui.rankView)
         self.userload = MiniLoadingDiv(self.ui.beforeLoginWidget, self.ui.beforeLoginWidget)
-        self.apkpageload = MiniLoadingDiv(self.ui.apkWidget, self.ui.apkWidget)
+        self.apkpageload = MiniLoadingDiv(self.ui.apkWidget, self.ui.apkWidget,-5,-75)
         # self.launchLoadingDiv.start_loading()
         # alert message box
         self.messageBox = MessageBox(self)
@@ -300,6 +322,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
         self.login.find_password.connect(self.configWidget.slot_show_ui)
+
         # resize corner
         # self.resizeCorner = QPushButton(self.ui.centralwidget)
         # self.resizeCorner.resize(15, 15)
@@ -391,6 +414,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnClosesearch.setStyleSheet("QPushButton{background-image:url('res/btn-back-default.png');border:0px;}QPushButton:hover{background:url('res/btn-back-hover.png');}QPushButton:pressed{background:url('res/btn-back-pressed.png');}")
 
         # self.ui.headercw1.leSearch.stackUnder(self.ui.headercw1.lebg)
+
         self.ui.detailShellWidget.raise_()
         self.ui.taskWidget.raise_()
         # self.ui.virtuallabel.raise_()
@@ -416,14 +440,27 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.headercw1.leSearch.setPlaceholderText("请输入您要搜索的软件")
 
         # style by qss
-        self.ui.hometext3.setText("共有")
-        self.ui.hometext3.setAlignment(Qt.AlignLeft)
-        self.ui.hometext4.setAlignment(Qt.AlignLeft)
-        self.ui.homecount.setAlignment(Qt.AlignCenter)
-        self.ui.hometext4.setText("款软件")
-        self.ui.hometext3.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.hometext4.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
-        self.ui.homecount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        # self.ui.hometext3.setText("共有")
+        # self.ui.hometext3.setAlignment(Qt.AlignLeft)
+        # self.ui.hometext4.setAlignment(Qt.AlignLeft)
+        # self.ui.homecount.setAlignment(Qt.AlignCenter)
+        # self.ui.hometext4.setText("款软件")
+        # self.ui.hometext3.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        # self.ui.hometext4.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
+        # self.ui.homecount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
+        
+        self.ui.headercw1.senior_search.setView(QListView())
+        self.items =["全局","精选",]
+        self.ui.headercw1.senior_search.addItems(self.items)
+        # self.ui.headercw1.senior_search.addItem("高级",1)
+        self.ui.headercw1.senior_search.setCurrentIndex(1)
+        # self.ui.headercw1.senior_search.maxVisibleitems()
+
+        self.ui.headercw1.senior_search.currentIndexChanged.connect(self.show_red_search)
+        # self.ui.headercw1.senior_search.highlighted(24)
+        # self.ui.headercw1.senior_search.currentIndexChanged.connect(self.hide_red_search)
+
+        # print("7456456456",self.test)
 
         # self.ui.alltext1.setText("共有")
         # self.ui.alltext1.setAlignment(Qt.AlignLeft)
@@ -510,8 +547,50 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.winlabel2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
         # self.ui.wincountlabel.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
 
+        self.ui.leftbtn.setFocusPolicy(Qt.NoFocus)
+        self.ui.rightbtn.setFocusPolicy(Qt.NoFocus)
+        self.list = []
+        self.test = []
+        self.uk_ads=[]
+        self.ads_sate=0
+        self.setff=''
+        self.advercat=''
+        self.cursor = sqlite3.connect(UBUNTUKYLIN_CACHE_UKSCDB_PATH, timeout=30.0, check_same_thread=False)
+        sctnum_ads = self.cursor.execute("SELECT * from advertisement")
 
-        self.ui.adWidget.setStyleSheet("QPushButton{background-image:url('data/ads/ad2.png');border:none;}")
+        for it in sctnum_ads:
+            self.test.append(it[1])
+            self.list.append(it[2])
+        for i in self.list:
+            if os.path.exists( xdg.xdg_cache_home + "/"+i):
+                self.ads_sate = self.ads_sate+1
+                pass
+            else:
+                self.uk_ads.append(self.ads_sate)
+                self.list.remove(i)
+                self.ads_sate=self.ads_sate+1
+        for i in self.uk_ads:
+            del self.test[int(i)]
+        if self.test==[] or not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH) or not os.listdir(UBUNTUKYLIN_CACHE_SETADS_PATH):
+            self.ui.listWidget.setGeometry(0, 0,830, 180)
+            self.ui.rightbtn.hide()
+            self.ui.leftbtn.hide()
+            self.ui.listWidget.setStyleSheet("QWidget{background-image:url('data/ads/ad0.png');border:none;background-color:transparent;}")
+            self.ui.adWidget.setEnabled(False)
+        else:
+            self.advercat = self.test[0]
+            self.ui.adWidget.setAttribute(Qt.WA_Hover, True)
+            self.ui.adWidget.installEventFilter(self)
+            if not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH):
+                self.ui.listWidget.setGeometry(0, 0, 830, 180)
+                self.ui.rightbtn.hide()
+                self.ui.leftbtn.hide()
+                self.ui.listWidget.setStyleSheet("QWidget{background-image:url('data/ads/ad0.png');border:none;background-color:transparent;}")
+                self.ui.adWidget.setEnabled(False)
+            else:
+                self.ad_display()
+        # self.adWidget.clicked.connect(self.slot_emit_detail)
+        self.ui.adWidget.clicked.connect(self.set_ttest_ads)
         self.ui.loginMenu.setStyleSheet("QMenu{border:1px solid #cccccc;background-color:#ffffff;}QMenu::item{font-size:12px;color:#000000;}QMenu::item:selected{color:#ffffff; color:#2d8ae1;}")
         # self.ui.userLogo.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
         # self.ui.userLogoafter.setStyleSheet("QLabel{background-image:url('res/userlogo.png')}")
@@ -555,8 +634,8 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.logoName.setStyleSheet("QLabel{color:#ffffff;font-size:14px;}")
 
         # add by kobe
-        #self.ui.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
-        #self.ui.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}QLineEdit:hover{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
+        self.ui.headercw1.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}QPushButton:hover{background:url('res/search-2.png');}QPushButton:pressed{background:url('res/search-2.png');}")
+        self.ui.headercw1.leSearch.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:12px;}QLineEdit:hover{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:12px;}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
         self.ui.btnMin.setStyleSheet("QPushButton{background-image:url('res/min-1.png');border:0px;}QPushButton:hover{background-color:#d0d0d0;}QPushButton:pressed{background-color:#ababab;}")
         self.ui.btnMax.setStyleSheet("QPushButton{background-image:url('res/max-1.png');border:0px;}QPushButton:hover{background:url('res/max-2.png');}QPushButton:pressed{background:url('res/max-3.png');}")
@@ -680,6 +759,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.detailScrollWidget.remove_app.connect(self.slot_click_remove)
         self.detailScrollWidget.submit_review.connect(self.slot_submit_review)
         self.detailScrollWidget.submit_rating.connect(self.slot_submit_rating)
+        self.detailScrollWidget.submit_download.connect(self.slot_submit_downloadcount)
+
         #change login
         self.detailScrollWidget.show_login.connect(self.slot_do_login_ui)
         #self.connect(self.detailScrollWidget, show_login, self.slot_do_login_account)
@@ -731,7 +812,66 @@ class SoftwareCenter(QMainWindow,Signals):
         # loading
         if(Globals.LAUNCH_MODE != 'quiet'):
             self.launchLoadingDiv.start_loading()
+    def show_red_search(self):
+        test_linedit = self.ui.headercw1.senior_search.currentText()
+        if test_linedit==self.items[0]:
+            self.ui.set_lindit.show()
+            Globals.ADVANCED_SEARCH=True
+        else:
+            Globals.ADVANCED_SEARCH = False
+            self.ui.set_lindit.hide()
 
+
+    def ad_display(self):
+        self.ui.leftbtn.setStyleSheet("QPushButton{background-image:url('res/ads_left1.png');border:none;background-color:transparent;}QPushButton:hover{background-image:url('res/ads_left2.png');border:none;background-color:transparent;}QPushButton:pressed{background-image:url('res/ads_left2.png');border:none;background-color:transparent;}")
+        self.ui.rightbtn.setStyleSheet("QPushButton{background-image:url('res/ads_right1.png');border:none;background-color:transparent;}QPushButton:hover{background-image:url('res/ads_right2.png');border:none;background-color:transparent;}QPushButton:pressed{background-image:url('res/ads_right2.png');border:none;background-color:transparent;}")
+        self.ui.listWidget.setStyleSheet("QPushButton{background-image:url(" + xdg.xdg_cache_home + "/" + self.list[0] + ");border:none;}")
+        # if not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH) and not os.path.exists("data/ads/"):
+        #     self.ui.leftbtn.hide()
+        #     self.ui.rightbtn.hide()
+        self.ui.listWidget.setGeometry(0, 0, len(self.list) * 830, 180)
+        i = 0
+        while i < len(self.list):
+            self.ui.takeads[i].setStyleSheet("QWidget{background-image:url(" + xdg.xdg_cache_home + "/" + self.list[i] + ");border:none;background-color:transparent;}")
+            i = i + 1
+        self.ui.rightbtn.clicked.connect(self.right_btn_icon)
+        self.ui.leftbtn.clicked.connect(self.left_btn_icon)
+        self.testnum = 0
+        self.adtimer = QTimer(self)
+        self.timernum = QTimer(self)
+        self.left_adstimer=QTimer(self)
+        self.adtimer.timeout.connect(self.recursion_advertisement)
+
+        self.left_adstimer.timeout.connect(self.left_advertisement)
+
+        # self.adtimer.start(5)
+
+        self.timernum.timeout.connect(self.wbtest)
+
+        self.timernum.start(2000)
+
+        # self.ui.adWidget.setMouseTracking(True)
+        self.ui.listWidget.setMouseTracking(True)
+
+    def wbtest(self):
+        self.adtimer.start(6)
+
+
+    def eventFilter(self,QObjcet,event):
+        if QObjcet==self.ui.adWidget :
+            if (event.type() == event.HoverEnter):
+                self.timernum.stop()
+                self.ui.leftbtn.show()
+                self.ui.rightbtn.show()
+            elif event.type() == event.HoverLeave:
+                self.ui.leftbtn.hide()
+                self.ui.rightbtn.hide()
+                self.timernum.start()
+        else:
+           pass
+        return False
+
+        # cmt = len(self.list)
 
     def init_main_service(self):
 
@@ -747,6 +887,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.get_ui_login_over.connect(self.login.slot_get_ui_login_over)
         self.worker_thread0.appmgr.get_ui_adduser_over.connect(self.login.slot_get_ui_adduser_over)
 
+
+
         self.worker_thread0.appmgr.init_models_ready.connect(self.slot_init_models_ready)
         # self.worker_thread0.appmgr.ads_ready.connect(self.slot_advertisement_ready)
         self.worker_thread0.appmgr.recommend_ready.connect(self.slot_recommend_apps_ready)
@@ -757,6 +899,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.apt_cache_update_ready.connect(self.slot_apt_cache_update_ready)
         self.worker_thread0.appmgr.submit_review_over.connect(self.detailScrollWidget.slot_submit_review_over)
         self.worker_thread0.appmgr.submit_rating_over.connect(self.detailScrollWidget.slot_submit_rating_over)
+        self.worker_thread0.appmgr. submit_download_over.connect(self.detailScrollWidget.slot_app_downloadcont)
         self.worker_thread0.appmgr.get_user_applist_over.connect(self.slot_get_user_applist_over)
         self.worker_thread0.appmgr.get_user_transapplist_over.connect(self.slot_get_user_transapplist_over)
         self.worker_thread0.appmgr.submit_translate_appinfo_over.connect(self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
@@ -772,6 +915,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         #预先检测环境初始化APK_EVNRUN
         self.worker_thread0.appmgr.check_kydroid_envrun()
+        # self.worker_ads = threading.Thread(target=self.auto_play_ads)
+        # self.worker_ads.start()
 
     # def init_dbus(self):
     #     self.backend = InstallBackend()
@@ -795,12 +940,149 @@ class SoftwareCenter(QMainWindow,Signals):
     #             LOG.warning("dbus service init failed, you choose to exit.\n\n")
     #             sys.exit(0)
 
+    def recursion_advertisement(self):
+        self.testnum = self.testnum + 1
+        self.ui.listWidget.move(-10* self.testnum, 0)
+        self.timernum.stop()
+        # if self.testnum==(len(self.list)-1)*832:
+        if Globals.ADS_NUM==len(self.list)-1:
+            Globals.ADS_NUM=0
+            Globals.Denot=Globals.ADS_NUM
+            self.testnum=0
+            self.ui.listWidget.move(0, 0)
+            self.adtimer.stop()
+            self.timernum.start()
+        elif (self.testnum)%83==0:
+            if Globals.ADS_NUM<len(self.list)-1:
+                Globals.ADS_NUM=Globals.ADS_NUM+1
+            # Globals.Dleft=Globals.Denot
+            self.adtimer.stop()
+            self.timernum.start()
+            # time.sleep(2)
+        if Globals.ADS_NUM>len(self.list)-1:
+            Globals.ADS_NUM=0
+        Globals.Denot=Globals.ADS_NUM
+        Globals.Dleft=Globals.ADS_NUM
+
+    def left_advertisement(self):
+        if self.testnum==0:
+            # Globals.ADS_NUM=0
+            # self.ui.listWidget.move(-1 * (len(self.list)-1), 0)
+            self.testnum=(len(self.list)-1)*83
+            # self.testnum = (len(self.list)) * 830
+        self.testnum = self.testnum-1
+        self.ui.listWidget.move(-10* self.testnum, 0)
+        # self.timernum.stop()
+        # if self.testnum==(len(self.list)-1)*832:
+        if Globals.ADS_NUM <0:
+            Globals.ADS_NUM = len(self.list)-1
+            Globals.Denot = Globals.ADS_NUM
+            self.testnum = (len(self.list)-1)*83
+            self.ui.listWidget.move(-10*self.testnum, 0)
+        elif (self.testnum) % 83== 0:
+            if Globals.ADS_NUM>0:
+                Globals.ADS_NUM = Globals.ADS_NUM-1
+                Globals.Denot=Globals.ADS_NUM
+            self.left_adstimer.stop()
+        if Globals.ADS_NUM <0:
+            Globals.ADS_NUM =len(self.list)-1
+        Globals.Denot = Globals.ADS_NUM
+        Globals.Dleft = Globals.ADS_NUM
+
+
+
+
+    def right_btn_icon(self):
+        self.timernum.stop()
+        if Globals.Denot >=len(self.list) - 1:
+            Globals.Denot = 0
+            self.testnum=0
+            self.ui.listWidget.move(self.testnum, 0)
+
+            # self.ui.varlist[Globals.Denot].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
+            # self.ui.varlist[len(self.list) - 1].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
+        else:
+            Globals.Denot = Globals.Denot + 1
+            self.adtimer.start(6)
+            # if self.testnum==Globals.Denot*830:
+            #
+            #     self.adtimer.stop()
+            # self.testnum=Globals.Denot*830
+            # self.ui.listWidget.move(-1*self.testnum,0)
+            # for i in range(len(self.ui.varlist)):
+            #     if i==Globals.Denot:
+            #         self.ui.varlist[Globals.Denot].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
+            #     else:
+            #         self.ui.varlist[i].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
+        if Globals.Denot>=len(self.list)-(len(self.list)-1):
+            Globals.ADS_NUM=Globals.Denot-1
+            if Globals.ADS_NUM<0:
+                Globals.ADS_NUM=0
+        else:
+            Globals.ADS_NUM = Globals.Denot
+        dest = self.test[Globals.Denot]
+        self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
+        self.timernum.start()
+
+    def set_ttest_ads(self):
+        if self.test == []:
+            self.ui.adWidget.isEnabled(False)
+            # self.setff = self.worker_thread0.appmgr.get_application_by_name('wps-office')
+        elif not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH):
+            self.ui.adWidget.isEnabled(False)
+            # self.setff = self.worker_thread0.appmgr.get_application_by_name('wps-office')
+        else:
+            dest = self.test [Globals.ADS_NUM]
+            self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
+        if  self.setff is not None and  self.setff.package is not None:
+            self.slot_show_app_detail(self.setff)
+        else:
+            MS = QMessageBox()
+            MS.setWindowTitle('提示')
+            MS.setText('软件源不完整或不包含该软件')
+            MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            MS.exec_()
+        # self.slot_show_app_detail(self.setff)
+
+    def left_btn_icon(self):
+        self.timernum.stop()
+        # print("mmmmmmmmmmmmmmmmmmmmmmmmm", Globals.Dleft)
+        if Globals.ADS_NUM==0:
+            Globals.Dleft = len(self.list) - 1
+            self.testnum=Globals.Dleft*83
+            # # self.ui.adWidget.setStyleSheet(
+            # #     "QPushButton{background-image:url("+xdg.xdg_cache_home+"/" + self.list[Globals.Dleft] + ");border:none;}")
+            self.ui.listWidget.move(-10*self.testnum, 0)
+            # self.ui.varlist[Globals.Dleft].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
+            # self.ui.varlist[0].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
+            Globals.Denot=Globals.Dleft-1
+            Globals.ADS_NUM=Globals.Dleft
+
+        else:
+            self.left_adstimer.start(6)
+            Globals.ADS_NUM=Globals.Dleft
+            # self.ui.adWidget.setStyleSheet(
+            #     "QPushButton{background-image:urlGlobals.Denot=Globals.Dleft-1("+xdg.xdg_cache_home+"/" + self.list[Globals.Dleft] + ");border:none;}")
+            # print("33333333333333333")
+            # self.ui.listWidget.move(-1*self.testnum, 0)
+            # self.ui.varlist[Globals.Dleft].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
+            # self.ui.varlist[Globals.Dleft + 1].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")\
+        # if Globals.Dleft>=len(self.list)-(len(self.list)-1):
+        #     Globals.ADS_NUM=Globals.Dleft-1
+        # else:
+        #     Globals.ADS_NUM=Globals.Dleft
+        dest = self.test[Globals.Dleft]
+        self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
+        # self.timernum.start()
+        Globals.Denot=Globals.Dleft
+
+
+
     def get_os_class(self):
         self.desktop = False
         self.server = False
         self.command = 'dpkg -l | grep kylin-user-guide'
         self.kernel = os.popen(self.command, 'r', 1)
-        print("bbb:", self.kernel)
         if (self.kernel == "kylin-user-guide"):
             self.desktop = True
         self.command = 'dpkg -l | grep kylin-user-guide'
@@ -850,7 +1132,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def check_source(self):
         # if(0): #屏蔽检测软件源
-        if((self.worker_thread0.appmgr.check_source_update() == True and is_livecd_mode() == False) or (not os.path.exists(UKSC_CACHE_DIR+'/kylin-software-center.ini'))):
+        #if((self.worker_thread0.appmgr.check_source_update() == True and is_livecd_mode() == False) or (not os.path.exists(UKSC_CACHE_DIR+'/kylin-software-center.ini'))):
+        if(not os.path.exists(UKSC_CACHE_DIR+'/kylin-software-center.ini')):
             MessageBox = Update_Source_Dialog()
         #     if Globals.LAUNCH_MODE == 'quiet':
         #         MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
@@ -1036,12 +1319,13 @@ class SoftwareCenter(QMainWindow,Signals):
             REINFO.exec_()
 
         #btn = INFO.warning(self,"温馨提示",
-        #                        self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"),
+        #                        self.tr(" 源服务器访问过慢或无法访问 \n  部分软件暂时可能无法安装"),
         #                        QMessageBox.Ok|QMessageBox.Cancel, QMessageBox.Cancel)
         #if btn == QMessageBox.Ok:
         #    INFO.information(self,"温馨提示",
         #                        self.tr(MSG),
         #                        QMessageBox.Ok, QMessageBox.Ok)
+
 
     def check_singleton(self):
         try:
@@ -1123,6 +1407,8 @@ class SoftwareCenter(QMainWindow,Signals):
         if self.kydroid_service.hasKydroid != False:
             self.worker_thread0.appmgr.get_kydroid_apklist()
 
+
+
     # check base init
     def check_init_ready(self, bysignal=False):
         # if ('self.ads_ready' in list(locals().keys()) == False):
@@ -1132,7 +1418,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # base init finished
         if self.rec_ready: # and self.ads_ready and  self.rank_ready:
             (sum_inst,sum_up, sum_all, sum_apk) = self.worker_thread0.appmgr.get_application_count()
-            self.ui.homecount.setText(str(sum_all))
+            # self.ui.homecount.setText(str(sum_all))
             # self.ui.categoryView.setEnabled(True)
             self.ui.btnUp.setEnabled(True)
             self.ui.btnUn.setEnabled(True)
@@ -1149,6 +1435,8 @@ class SoftwareCenter(QMainWindow,Signals):
             if self.first_start is True:
                 self.show_homepage(bysignal)
                 self.show_mainwindow()
+
+
             # self.trayicon.show()
 
             # user clicked local deb file, show info
@@ -1177,6 +1465,8 @@ class SoftwareCenter(QMainWindow,Signals):
         # update cache db
         self.worker_thread0.appmgr.get_newer_application_info()
         self.worker_thread0.appmgr.get_newer_application_icon()
+        self.worker_thread0.appmgr.get_newer_application_ads()
+        self.worker_thread0.appmgr.get_newer_application_screenshots()
         self.worker_thread0.appmgr.get_all_ratings()
         self.worker_thread0.appmgr.get_all_categories()
         self.worker_thread0.appmgr.get_all_rank_and_recommend()
@@ -1240,6 +1530,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     #self.connect(self, trans_card_status, card.slot_change_btn_status)
                 #else:
                     app = self.worker_thread0.appmgr.get_application_by_name(context[0])
+
                     if app is not None and app.package is not None:
                         self.winnum += 1
                         winstat = WinGather(context[0], context[1], context[2], context[3], context[4], category)
@@ -1542,6 +1833,15 @@ class SoftwareCenter(QMainWindow,Signals):
                 # print("show_more_search_result 666",count ,(Globals.SOFTWARE_STEP_NUM + listLen))
                 break
         self.ui.searchcount.setText(str(count))
+        if count==0:
+            self.ui.no_search_resualt.show()
+            self.ui.prompt1.show()
+            self.ui.prompt2.show()
+        else:
+            self.ui.no_search_resualt.hide()
+            self.ui.prompt1.hide()
+            self.ui.prompt2.hide()
+
 
     def show_more_software(self, listWidget):
         # if self.nowPage == "searchpage":
@@ -1550,10 +1850,21 @@ class SoftwareCenter(QMainWindow,Signals):
         else:
             # print self.nowPage
             listLen = listWidget.count()
+
+
             apps = self.worker_thread0.appmgr.get_category_apps(self.category)
 
             count = 0
+            all_list=[]
+            if(Globals.NOWPAGE in (PageStates.UNPAGE,PageStates.UPPAGE)):
+                for apk in self.worker_thread0.appmgr.apk_list:
+                    if apk.is_installed and Globals.NOWPAGE== PageStates.UNPAGE:
+                        all_list.append(apk)
+                    if apk.is_upgradable and Globals.NOWPAGE== PageStates.UPPAGE:
+                        all_list.append(apk)
+
             for pkgname, app in list(apps.items()):
+
                 if app is None or app.package is None:
                     continue
                 if Globals.NOWPAGE == PageStates.UPPAGE:
@@ -1564,11 +1875,12 @@ class SoftwareCenter(QMainWindow,Signals):
                 # if self.nowPage == "unpage" and app.is_installed is False:
                 if Globals.NOWPAGE == PageStates.UNPAGE and app.is_installed is False:
                     continue
+                all_list.append(app)
 
+            for app in all_list:
                 if count < listLen:
                     count = count + 1
                     continue
-
                 card = NormalCard(app, self.messageBox, listWidget.cardPanel)# self.nowPage, self.prePage,
                 listWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
@@ -1781,13 +2093,13 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def reset_nav_bar_focus_one(self):
         self.reset_nav_bar()
-        if(Globals.NOWPAGE in (PageStates.HOMEPAGE, PageStates.ALLPAGE, PageStates.WINPAGE)):
+        if(Globals.NOWPAGE in (PageStates.HOMEPAGE, PageStates.ALLPAGE, PageStates.WINPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE)):
             self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-3.png');border:0px;}")
-        elif(Globals.NOWPAGE == PageStates.APKPAGE):
+        elif(Globals.NOWPAGE in (PageStates.APKPAGE,PageStates.SEARCHAPKPAGE)):
             self.ui.btnApk.setStyleSheet("QPushButton{background-image:url('res/nav-apk-3.png');border:0px;}")
-        elif(Globals.NOWPAGE == PageStates.UPPAGE):
+        elif(Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.SEARCHUPPAGE)):
             self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-3.png');border:0px;}")
-        elif(Globals.NOWPAGE == PageStates.UNPAGE):
+        elif(Globals.NOWPAGE in (PageStates.UNPAGE,PageStates.SEARCHUNPAGE)):
             self.ui.btnUn.setStyleSheet("QPushButton{background-image:url('res/nav-un-3.png');border:0px;}")
         if(Globals.NOWPAGE == PageStates.HOMEPAGE):
             self.ui.btnHomepage.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;background-color:#2d8ae1;}")
@@ -1798,13 +2110,18 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def check_uksc_update(self):
         self.uksc = self.worker_thread0.appmgr.get_application_by_name("ubuntu-kylin-software-center")
+        if self.test==[]:
+            self.setff=self.worker_thread0.appmgr.get_application_by_name('wps-office')
+        if not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH):
+            self.setff = self.worker_thread0.appmgr.get_application_by_name('wps-office')
+        if self.advercat!='':
+            self.setff = self.worker_thread0.appmgr.get_application_by_name(self.advercat)
         if(self.uksc != None):
             if(self.uksc.is_upgradable == True):
                 self.show_mainwindow()
                 cd = ConfirmDialog("软件商店有新版本，是否升级？", self)
                 cd.confirmdialog_ok.connect(self.update_uksc)
                 cd.exec_()
-
     def slot_uninstall_uksc_or_not(self, where):
         cd = ConfirmDialog("您真的要卸载软件商店吗?\n卸载后该应用将会关闭.", self, where)
         cd.confirmdialog_ok.connect(self.to_uninstall_uksc)
@@ -2126,7 +2443,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #     self.slot_change_l_ad()
     #     self.adtimer.start(2000)
 
-    # def slot_change_r_ad(self):
+    #def slot_change_r_ad(self):
     #     self.adm =(self.ui.homepageWidget.width() -880)*0.5
     #     self.ui.adWidget.setGeometry(0, 44, self.ui.homepageWidget.width(), 220)
     #     self.ui.thu.move(0 + self.adm, 30)
@@ -2292,6 +2609,9 @@ class SoftwareCenter(QMainWindow,Signals):
             self.normalcard_progress_cancel.connect(recommend.slot_progress_cancel)
 
             recommend.get_card_status.connect(self.slot_get_normal_card_status)#12.02
+
+            # self.adv.show_app_detail.connect(self.slot_show_app_detail)
+
         if(first):
             self.rec_ready = True
         self.check_init_ready(bysignal)
@@ -2333,6 +2653,9 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_close_detail(self):
         # self.detailScrollWidget.hide()
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
         if Globals.NOWPAGE == 7 or Globals.NOWPAGE == 8 or Globals.NOWPAGE == 9 or Globals.NOWPAGE == 10 or Globals.NOWPAGE == 11:
         #if self.re_cli == 1:
             self.ui.btnClosesearch.setVisible(True)
@@ -2344,6 +2667,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnClosesearch.setVisible(False)
         Globals.NOWPAGE = self.re_page
         self.slot_refresh_page()
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
 
     def slot_close_taskpage(self):
         self.ui.taskWidget.setVisible(False)
@@ -2432,6 +2758,7 @@ class SoftwareCenter(QMainWindow,Signals):
         (inst, up, all, apk) = self.worker_thread0.appmgr.get_application_count(self.category)
 
         # self.ui.allcount.setText(str(all))
+        # ＝
         self.ui.uncount.setText(str(inst))
         self.ui.upcount.setText(str(up))
         self.ui.apkcount.setText(str(apk))
@@ -2450,27 +2777,34 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.ui.btnUp_num.setText(str(up))
 
         # self.ui.wincountlabel.setText(str(self.winnum))
-        if( Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE)):
-            self.ui.homecount.setText(str(all))
-        elif( Globals.NOWPAGE == PageStates.WINPAGE ):
-            self.ui.homecount.setText(str(self.winnum))
+        # if( Globals.NOWPAGE in (PageStates.HOMEPAGE,PageStates.ALLPAGE)):
+            # self.ui.homecount.setText(str(all))
+        # elif( Globals.NOWPAGE == PageStates.WINPAGE ):
+            # self.ui.homecount.setText(str(self.winnum))
 
         # self.reset_nav_bar_focus_one()
 
 
     def slot_goto_homepage(self, bysignal = False):
-        if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
-            self.worker_thread0.appmgr.get_recommend_apps(bysignal)
+        # if bysignal is True or PageStates.HOMEPAGE != Globals.NOWPAGE:
+            # self.worker_thread0.appmgr.get_recommend_apps(bysignal)
             # self.worker_thread0.appmgr.get_ratingrank_apps(bysignal)
-            self.slot_rec_show_recommend()
+            # self.slot_rec_show_recommend()
+            # self.ui.hometext1.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#0F84BC;text-align:left;}")
+            # self.ui.hometext8.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+            # self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         #else:
         self.show_homepage(bysignal)
+
 
     def show_homepage(self, bysignal):
         if bysignal is False:
             self.ui.btnCloseDetail.setVisible(False)
             self.ui.btnClosesearch.setVisible(False)
             self.ui.detailShellWidget.hide()
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
         # else:
         #     self.ui.detailShellWidget.btns.reset_btns.refresh_btn(self.ui.detailShellWidget.app)
         Globals.NOWPAGE = PageStates.HOMEPAGE
@@ -2542,13 +2876,15 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
         self.reset_nav_bar_focus_one()
+
+
         # self.ui.btnAllsoftware.setEnabled(False)
 
     def slot_goto_apkpage(self, bysignal = False):
-        uname_release = platform.release()
-        if("4.4.58" in uname_release):
-            self.messageBox.alert_msg("当前启动项不支持安卓兼容\n请使用默认启动项")
-            return
+        # uname_release = platform.release()
+        # if("4.4.58" in uname_release):
+        #    self.messageBox.alert_msg("当前启动项不支持安卓兼容\n请使用默认启动项")
+        #    return
 
         if self.kydroid_service.hasKydroid == False:
             self.messageBox.alert_msg("未检测到安卓兼容环境\n无法安装安卓APP")
@@ -2591,6 +2927,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.reset_nav_bar_focus_one()
         self.ui.btnApk.setEnabled(False)
 
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
         # self.loadingDiv.start_loading()
         if(self.apkpagefirst):
             if not self.worker_thread0.appmgr.check_kydroid_envrun():
@@ -2615,13 +2954,16 @@ class SoftwareCenter(QMainWindow,Signals):
             self.apkListWidget.clear()
             self.worker_thread0.appmgr.get_kydroid_apklist()
             self.apkpagefirst =False
-            self.worker_thread0.appmgr.apk_page_create()
+            # self.worker_thread0.appmgr.apk_page_create()
             self.worker_thread0.appmgr.get_recommend_apps(False)
             # self.count_application_update.emit()
         else :
             self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
         self.ui.navWidget.setEnabled(True)
         self.ui.headercw1.setEnabled(True)
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
         # self.apkpageload.stop_loading()
         # self.worker_thread0.appmgr.get_recommend_apps(False)
 
@@ -2709,6 +3051,10 @@ class SoftwareCenter(QMainWindow,Signals):
         self.reset_nav_bar_focus_one()
         self.ui.btnUn.setEnabled(False)
 
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
+
     def goto_search_page(self, bysignal = False):
         if bysignal is False:
             self.ui.detailShellWidget.hide()
@@ -2723,7 +3069,7 @@ class SoftwareCenter(QMainWindow,Signals):
         elif Globals.NOWPAGE == PageStates.ALLPAGE:
             Globals.NOWPAGE = PageStates.SEARCHALLPAGE
         elif Globals.NOWPAGE == PageStates.APKPAGE:
-            Globals.NOWPAGE = PageStates.SEARCHALLPAGE
+            Globals.NOWPAGE = PageStates.SEARCHAPKPAGE
         elif Globals.NOWPAGE == PageStates.UPPAGE:
             Globals.NOWPAGE = PageStates.SEARCHUPPAGE
         elif Globals.NOWPAGE == PageStates.UNPAGE:
@@ -2758,7 +3104,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
     def slot_goto_taskpage(self, ishistory=False):
-        self.reset_nav_bar_focus_one()
+        # self.reset_nav_bar_focus_one()
         if(self.ui.taskWidget.isHidden() == True):
             self.ui.taskWidget.setVisible(True)
            # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
@@ -2836,6 +3182,10 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.loadingDiv.start_loading()
         self.worker_thread0.appmgr.get_user_applist()
+
+        self.ui.no_search_resualt.hide()
+        self.ui.prompt1.hide()
+        self.ui.prompt2.hide()
 
     def slot_goto_translatepage(self, bysignal=False):#zx 2015.01.30
         Globals.NOWPAGE = PageStates.TRANSPAGE
@@ -3053,6 +3403,7 @@ class SoftwareCenter(QMainWindow,Signals):
             num = 1
         else:
             num = self.adi +1
+        print("####################",self.adlist[num].name)
         app = self.worker_thread0.appmgr.get_application_by_name(self.adlist[num].name)
         if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
@@ -3133,9 +3484,11 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
     def slot_click_install(self, app):
+
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an install task:%s",app.name)
         self.worker_thread0.appmgr.submit_pingback_app(app.name)
+        self.detailScrollWidget.upload_appname(app.name)
 
         if isinstance(app, ApkInfo):
             self.worker_thread0.appmgr.download_apk(app)
@@ -3220,6 +3573,9 @@ class SoftwareCenter(QMainWindow,Signals):
             LOG.info("submit one rating:%s", str(rating))
         self.worker_thread0.appmgr.submit_rating(app_name, rating)
 
+    def slot_submit_downloadcount(self,app_name):
+        self.worker_thread0.appmgr.submit_downloadcount(app_name)
+
     def slot_click_cancel(self, app, action):
         if hasattr(app, "name"):
             if (Globals.DEBUG_SWITCH):
@@ -3288,21 +3644,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 keyword = st
             reslist = []
             count = 0
-            if(Globals.NOWPAGE == PageStates.APKPAGE):
-                for apk in self.worker_thread0.appmgr.apk_list:
-                    if apk.pkgname:
-                        if keyword in apk.pkgname:
-                            reslist.append(apk.pkgname)
-                            count = count + 1
-                            continue
-                    if apk.displayname:
-                        if keyword in apk.displayname:
-                            count = count + 1
-                            reslist.append(apk.pkgname)
-                self.searchList = reslist
-
-
-            else:
+            if(not (Globals.NOWPAGE == PageStates.APKPAGE or Globals.NOWPAGE == PageStates.SEARCHAPKPAGE)):
                 reslist = self.searchDB.search_software(st)
                 self.searchList = reslist
                 for appname in self.searchList:
@@ -3310,6 +3652,18 @@ class SoftwareCenter(QMainWindow,Signals):
                     if app is None :
                         continue
                     count = count + 1
+
+            for apk in self.worker_thread0.appmgr.apk_list:
+                if apk.pkgname:
+                    if keyword in apk.pkgname:
+                        reslist.append(apk.pkgname)
+                        count = count + 1
+                        continue
+                if apk.displayname:
+                    if keyword in apk.displayname:
+                        count = count + 1
+                        reslist.append(apk.pkgname)
+            self.searchList = reslist
 
             if (Globals.DEBUG_SWITCH):
                 print("search result list: ",reslist)
@@ -3336,7 +3690,9 @@ class SoftwareCenter(QMainWindow,Signals):
 
         app = self.worker_thread0.appmgr.get_application_by_name(name)
 
+
         if action == AppActions.UPDATE:
+            print("dn123",percent)
             if int(percent) < 0:
                 self.messageBox.alert_msg("软件源更新失败")
                 self.configWidget.slot_update_finish()
@@ -3470,8 +3826,24 @@ class SoftwareCenter(QMainWindow,Signals):
             self.normalcard_progress_finish.emit(name)
             # self.del_task_item(name, action, False, True)
 
+            if(app and action == AppActions.INSTALL):
+                if(app.candidate_version):
+                    app.installed_version = app.candidate_version
+                if(not app.is_installed):
+                    app.is_installed = True
+                elif(app.is_upgradable):
+                    app.is_upgradable = False
+            elif(app and action == AppActions.REMOVE):
+                if(app.installed_version):
+                    app.installed_version = ''
+                if(app.is_installed):
+                    app.is_installed = False
+                elif(app.is_upgradable):
+                    app.is_upgradable = False
 
             self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+
+
 
         elif percent < 0:
             if app is not None:

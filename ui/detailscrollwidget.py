@@ -36,6 +36,7 @@ from ui.multifunctionbtn import MultiFunctionBtn
 from ui.loadingdiv import *
 from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
+                        UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH,
                         Signals,
                         AppActions,
                         setLongTextToElideFormat,
@@ -47,6 +48,7 @@ from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
 from backend.remote.piston_remoter import PistonRemoter
+from models.enums import UBUNTUKYLIN_SERVER
 
 class DetailScrollWidget(QScrollArea,Signals):
     mainwindow = ''
@@ -68,7 +70,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.messageBox = messageBox
         self.mainwindow = parent
 
-        self.server=PistonRemoter()
+        self.server=PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 		
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
@@ -625,24 +627,28 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.ui.orig_description_widget.setText(app.orig_description)
         self.ui.debname.setText("软件包名: " + app.name)
         self.ui.installedVersion.setText("当前版本: " + app.installed_version)
-        self.ui.candidateVersion.setText("最新版本: " + app.candidate_version)
+        self.ui.candidateVersion.setText("软件源版本: " + app.candidate_version)
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
+       #add in dengnan 获取下载次数
+        self.upload_appname(self.app.name)
 
         size = app.packageSize
         sizek = size / 1024
-        if(sizek < 1024):
-            self.ui.size.setText("下载大小: " + str(sizek) + " KB")
+        if(sizek == 0):
+            self.ui.size.setText("下载大小: " + "未知")
+        elif(sizek < 1024):
+            self.ui.size.setText("下载大小: " + str('%.1f'%sizek) + " KB")
         else:
             self.ui.size.setText("下载大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
 
-        installedsize = app.installedSize
-        installedsizek = installedsize / 1024
-        if(installedsizek < 1024):
-            self.ui.size_install.setText("安装大小: " + str(installedsizek) + " KB")
-        else:
-            self.ui.size_install.setText("安装大小: " + str('%.2f'%(installedsizek/1024.0)) + " MB")
+        # installedsize = app.installedSize
+        # installedsizek = installedsize / 1024
+        # if(installedsizek < 1024):
+        # self.ui.size_install.setText("下载次数: " + str() + "次")
+        # else:
+        #     self.ui.size_install.setText("安装大小: " + str('%.2f'%(installedsizek/1024.0)) + " MB")
 
         self.ui.gradeText1.setText("我的评分: ")
         self.ui.gradeText2.setText((str(app.ratings_total)) + "人参加评分")
@@ -653,6 +659,7 @@ class DetailScrollWidget(QScrollArea,Signals):
 
         self.smallstar.changeGrade(app.ratings_average)
         self.smallstar.show()
+
 
         #总评分
         self.star.changeGrade(app.ratings_average)
@@ -815,17 +822,30 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.reviewload.start_loading()
         self.sshotload.start_loading()
         # send
-        self.mainwindow.worker_thread0.appmgr.get_application_screenshots(app,UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+        self.screenshot_path=self.screen_select_path()
+        self.mainwindow.worker_thread0.appmgr.get_application_screenshots(app,self.screenshot_path)
         self.mainwindow.worker_thread0.appmgr.get_application_reviews(app.name)
 
 
         if (Globals.USER != ''):
-            my_rating = self.server.get_user_ratings(Globals.USER, self.app.name)
+            try:
+                my_rating = self.server.get_user_ratings(Globals.USER, self.app.name)
+            except:
+                my_rating = []
             if (my_rating == []):
                 self.ui.grade1.setText('')
             else:
                 self.reset_ratings(my_rating)
 
+    def screen_select_path(self):
+        if os.path.exists(UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH):
+            scre=self.app.name+"_thumbnail1.png"
+            set=os.path.exists(UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH+scre)
+            if set:
+                return UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH
+            return UBUNTUKYLIN_RES_SCREENSHOT_PATH
+
+        return UBUNTUKYLIN_RES_SCREENSHOT_PATH
 
 
 
@@ -1118,7 +1138,7 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.ui.promptlabel.hide()
             self.ui.btnSshotBack.show()
             self.ui.btnSshotNext.show()
-            self.ui.btn_change.show()
+            self.ui.btn_change.sdetailScrollWidgethow()
             if self.sshotcount > 0:
                 self.ui.thumbnail.show()
             else:
@@ -1197,8 +1217,11 @@ class DetailScrollWidget(QScrollArea,Signals):
             ratingtotal = res['rating_total']
 
             app_name = self.app.name
-            my_rating=self.server.get_user_ratings(Globals.USER, app_name)
-            if(my_rating!=''):
+            try:
+                my_rating=self.server.get_user_ratings(Globals.USER, app_name)
+            except:
+                my_rating=[]
+            if(my_rating!=[]):
                 self.reset_ratings(my_rating)
             else:
                 pass
@@ -1211,6 +1234,24 @@ class DetailScrollWidget(QScrollArea,Signals):
 
         self.submitratingload.stop_loading()
 
+    def upload_appname(self,app):
+        self.submit_download.emit(app)
+
+
+    def slot_app_downloadcont(self,downlist):
+        count=downlist[0]["download_total"]
+        if count=="异常":
+            self.ui.size_install.setText("下载次数: " +count)
+        else:
+            if count==False:
+                count=0
+            elif count==None:
+                count = 0
+
+            if(count == "非数据库精选软件"):
+                self.ui.size_install.setText("下载次数: " + str(count))
+            else:
+                self.ui.size_install.setText("下载次数: " + str(count) + " 次")
 
     def reset_ratings(self,my_rating):
         my_rating_int=my_rating[0]['rating']

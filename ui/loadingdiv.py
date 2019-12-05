@@ -125,7 +125,7 @@ class MiniLoadingDiv(QWidget):
 
         self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loading.gif")
         self.loadinggif = QLabel(self)
-        self.loadinggif.setGeometry(self.width_ / 2 - 25 + offsetx, self.height_ / 2 - 25 + offsety, 50, 50)
+        self.loadinggif.setGeometry(self.width_ / 2 - 50 + offsetx, self.height_ / 2 - 25 + offsety, 50, 50)
         self.loadinggif.setMovie(self.gif)
         # self.loadingtext = QLabel(self)
         # self.loadingtext.setGeometry(self.loadinggif.x() + 25 - 150, self.loadinggif.y() + 55, 300, 20)

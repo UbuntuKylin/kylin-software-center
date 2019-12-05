@@ -126,10 +126,13 @@ class NormalCard(QWidget,Signals):
         #     self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:#666666;}")
 
         # convert size
-        installedsize = self.app.installedSize
+        # installedsize = self.app.installedSize
+        installedsize = self.app.packageSize
         installedsizek = installedsize / 1024
-        if(installedsizek < 1024):
-            self.ui.size.setText(str(installedsizek) + " KB")
+        if(installedsizek == 0):
+            self.ui.size.setText("未知")
+        elif(installedsizek < 1024):
+            self.ui.size.setText(str('%.1f'%installedsizek) + " KB")
         else:
             self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
@@ -222,7 +225,7 @@ class NormalCard(QWidget,Signals):
             # self.star.hide()
 
         else:
-            if(Globals.NOWPAGE in ( PageStates.ALLPAGE,PageStates.HOMEPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE) ):
+            if(Globals.NOWPAGE in ( PageStates.ALLPAGE,PageStates.HOMEPAGE,PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):
                 if(self.app.is_installed):
                     # add by kobe
                     # self.star.hide()
@@ -252,7 +255,7 @@ class NormalCard(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
             # apk
-            elif Globals.NOWPAGE == PageStates.APKPAGE:
+            elif (Globals.NOWPAGE in (PageStates.APKPAGE,PageStates.SEARCHAPKPAGE)):
                 if self.app.is_installed:
                     if self.app.is_upgradable:
                         self.app.status = PkgStates.UPDATE
@@ -595,7 +598,7 @@ class NormalCard(QWidget,Signals):
         if self.app.name == pkgname:
             if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
                 if(Globals.NOWPAGE in (PageStates.UNPAGE,PageStates.SEARCHUNPAGE)):
-                    # self.star.show()
+                    # self.star.show()e
                     # self.ui.isInstalled.setVisible(False)
                     self.app.status = PkgStates.UNINSTALL
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
@@ -760,7 +763,7 @@ class NormalCard(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
-                elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE)):#zx11.27
+                elif(Globals.NOWPAGE in (PageStates.SEARCHHOMEPAGE,PageStates.SEARCHALLPAGE,PageStates.SEARCHWINPAGE,PageStates.SEARCHUAPAGE,PageStates.SEARCHTRANSPAGE,PageStates.SEARCHAPKPAGE)):#zx11.27
                     if(self.app.is_installed):
                         # self.star.hide()
                         # self.ui.isInstalled.setVisible(True)

@@ -139,10 +139,13 @@ class WinCard(QWidget,Signals):
                 # self.ui.description.setText(self.winstat.description)
         else:
             # convert size
-            installedsize = self.app.installedSize
+            # installedsize = self.app.installedSize
+            installedsize = self.app.packageSize
             installedsizek = installedsize / 1024
-            if(installedsizek < 1024):
-                self.ui.size.setText(str(installedsizek) + " KB")
+            if(installedsizek == 0):
+                self.ui.size.setText("未知")
+            elif(installedsizek < 1024):
+                self.ui.size.setText(str('%.1f'%installedsizek) + " KB")
             else:
                 self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 

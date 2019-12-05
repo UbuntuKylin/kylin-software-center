@@ -77,8 +77,8 @@ class ThreadWorker(threading.Thread):
         self.appmgr = appmgr
         #self = appmgr
         self.apt_cache = None
-        self.db = Database()
-        #self.appmgr.db = self.db 
+        self.db=Database()
+        # self.appmgr.db = self.db
         self.cat_list = {}
     def run(self):
         fl = 1
@@ -120,7 +120,7 @@ class ThreadWorker(threading.Thread):
         exit()
 
     def get_category_list_from_db(self):
-        lists = self.db.query_categories()
+        lists = self.appmgr.db.query_categories()
         cat_list = {}
         for item in lists:
             c = item[2]
@@ -132,8 +132,7 @@ class ThreadWorker(threading.Thread):
             cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             cat_list[c] = cat
             self.appmgr.cat_list[c] = cat
-
-        Globals.ALL_APPS = {}
+        # Globals.ALL_APPS = {}
         self.appmgr.cat_list = cat_list
         return cat_list
 
@@ -146,7 +145,7 @@ class ThreadWorker(threading.Thread):
         return cat_list
 
     def get_category_apps_from_db(self,cat,catdir=""):
-        lists = self.db.query_category_apps(cat)
+        lists = self.appmgr.db.query_category_apps(cat)
         apps = {}
         for item in lists:
             #pkgname = UnicodeToAscii(item[0])
@@ -167,13 +166,15 @@ class ThreadWorker(threading.Thread):
                     app.orig_summary = app.summary
                     app.orig_description = app.description
 
-                    appinfo = self.db.query_application(pkgname)
+                    appinfo = self.appmgr.db.query_application(pkgname)
+
                     app.displayname = appinfo[0]
                     app.summary = appinfo[1]
                     app.description = appinfo[2]
                     rating_average = appinfo[3]
                     rating_total = appinfo[4]
                     review_total = appinfo[5]
+                    app.downloadcount = appinfo[7]
                     # rank = appinfo[6]
 
                     # #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
@@ -191,6 +192,7 @@ class ThreadWorker(threading.Thread):
                         # if rank is not None:
                         #     app.rank = int(rank)
                     apps[pkgname] = app
+
                     Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
         return apps
 
@@ -301,6 +303,7 @@ class AppManager(QObject,Signals):
 #        self.login_in()
         self.name = "Ubuntu Kylin Software Center"
         self.apt_cache = None
+        self.apkenvrunfrist = False
         self.cat_list = {}
         self.rnrStatList = {}
         self.language = 'zh_CN'      #'any' for all
@@ -313,7 +316,6 @@ class AppManager(QObject,Signals):
         self.silent_process = SilentProcess(self.squeue)
         self.silent_process.daemon = True
         self.silent_process.start()
-
         self.worklist = []
         self.mutex = threading.RLock()
         self.worker_thread = ThreadWorkerDaemon(self)
@@ -334,17 +336,17 @@ class AppManager(QObject,Signals):
             zhcnc = item[3]
             index = item[4]
             visible = (item[0]==1)
-
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
             if(c == 'recommend'):
                 cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             else:
+
                 cat = Category(c, zhcnc, index, visible, icon, {})
             self.cat_list[c] = cat
 
 
-
         #self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+
 
     def login_in(self):
         if Globals.AUTO_LOGIN == "1":
@@ -427,22 +429,22 @@ class AppManager(QObject,Signals):
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
             if(c == 'recommend'):
                 cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
-                while(not cat.apps):
-                    time.sleep(0.2)
-                    cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
+
+                # while(not cat.apps):
+                #     time.sleep(0.2)
+                #     cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
                 cat_list = self.cat_list
                 cat_list[c] = cat
 
             #cat = Category(c, zhcnc, index, visible, icon, self.get_category_apps_from_db(c))
             #cat_list[c] = cat
-        Globals.ALL_APPS = {}# zx10.05 To free the all_apps dict after all apps init ready for using less memeory
+        # Globals.ALL_APPS = {}# zx10.05 To free the all_apps dict after all apps init ready for using less memeory
         return cat_list
 
     # get category list
     def get_category_list(self, reload=False, catdir=""):
         if reload is False:
             return self.cat_list
-
         cat_list = self.get_category_list_from_db()
         return cat_list
 
@@ -475,6 +477,7 @@ class AppManager(QObject,Signals):
                     rating_average = appinfo[3]
                     rating_total = appinfo[4]
                     review_total = appinfo[5]
+                    app.downloadcount = appinfo[7]
                     # rank = appinfo[6]
 
                     # #                if CheckChineseWords(app.summary) is False and CheckChineseWordsForUnicode(summary) is True:
@@ -548,26 +551,28 @@ class AppManager(QObject,Signals):
         if self.cat_list is None:
             return None
         #
+        # print("self.cat_list111",self.cat_list)
         for (catname, cat) in list(self.cat_list.items()): #get app in cat which init in uksc startup
             app = cat.get_application_byname(pkgname)
             if app is not None and app.package is not None:
                 return app
 
-        pkg = self.get_package_by_name(pkgname)
-        if pkg is not None and pkg.candidate is not None: #get app from cache and add it to cat  when app not in cat
-            displayname_cn = pkgname
-            app = Application(pkgname, displayname_cn, cat, self.apt_cache)
-            app.orig_name = app.name
-            app.orig_summary = app.summary
-            app.orig_description = app.description
-            app.displayname = app.name
-            app.summary = app.summary
-            app.description = app.description
-            app.from_ukscdb = False
-            if("Accessories" in self.cat_list.keys()):
-                cat = self.cat_list["Accessories"]
-                cat.apps[pkgname] = app
-            return app
+        if(Globals.ADVANCED_SEARCH):
+            pkg = self.get_package_by_name(pkgname)
+            if pkg is not None and pkg.candidate is not None: #get app from cache and add it to cat  when app not in cat
+                displayname_cn = pkgname
+                app = Application(pkgname, displayname_cn, cat, self.apt_cache)
+                app.orig_name = app.name
+                app.orig_summary = app.summary
+                app.orig_description = app.description
+                app.displayname = app.name
+                app.summary = app.summary
+                app.description = app.description
+                app.from_ukscdb = False
+                # if("Accessories" in self.cat_list.keys()):
+                #     cat = self.cat_list["Accessories"]
+                #     cat.apps[pkgname] = app
+                return app
 
         return None
 
@@ -628,7 +633,11 @@ class AppManager(QObject,Signals):
                 #                sum_inst = sum_inst + inst
                 #                sum_up = sum_up + up
                 #                sum_all = sum_all + all
-
+        for apk in self.apk_list:
+            if apk.is_installed:
+                sum_inst = sum_inst + 1
+            if apk.is_upgradable:
+                sum_up = sum_up + 1
         return (sum_inst,sum_up, sum_all, sum_apk)
 
     def get_application_rnrstat(self,pkgname):
@@ -701,11 +710,14 @@ class AppManager(QObject,Signals):
             self.mutex.release()
 
     #get screenshots
-    def get_application_screenshots(self, app, cachedir=UBUNTUKYLIN_RES_SCREENSHOT_PATH, callback=None):
+    def get_application_screenshots(self, app, cachedir,callback=None):
         #LOG.debug("request to get screenshots:%s",pkgname)
         #app = self.get_application_by_name(pkgname)
         if app is None :
             return False
+
+        scre=app.name+"_thumbnail1.png"
+        app.thumbnailfile = cachedir+scre
 
         kwargs = {"packagename": app.pkgname,
                   "thumbnail":app.thumbnail,
@@ -715,6 +727,7 @@ class AppManager(QObject,Signals):
                   "version": app.version,
                   "cachedir": cachedir, #result directory
         }
+
         item = WorkerItem("get_screenshots",kwargs)
 
         if app.screenshots:
@@ -725,7 +738,6 @@ class AppManager(QObject,Signals):
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()
-
         return []
 
     def dispatchWorkerResult(self,item,reslist):
@@ -821,6 +833,20 @@ class AppManager(QObject,Signals):
         item = SilentWorkerItem("get_newer_application_icon", kwargs)
         self.squeue.put_nowait(item)
 
+
+    def get_newer_application_ads(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_newer_application_ads", kwargs)
+        self.squeue.put_nowait(item)
+
+    def get_newer_application_screenshots(self):
+        kwargs = {}
+
+        item = SilentWorkerItem("get_newer_application_screenshots", kwargs)
+        self.squeue.put_nowait(item)
+
+
     def get_all_categories(self):
         kwargs = {}
 
@@ -842,6 +868,7 @@ class AppManager(QObject,Signals):
 
     def submit_pingback_app(self, app_name, isrcm=False):
 #        pass
+        self.db.update_app_downloadtotal(app_name)
         kwargs = {"app_name": app_name,
                 "isrcm": isrcm,
                 "user": Globals.USER,
@@ -863,17 +890,21 @@ class AppManager(QObject,Signals):
         
     # get recommend apps
     def get_recommend_apps(self, bysignal=False, first=True):
-        recommends = self.db.get_recommend_apps()
+        # recommends = self.db.get_recommend_apps()
+        recommends = self.get_category_apps_from_db("recommend")
         applist = []
         for rec in recommends:
-            app = self.get_application_by_name(rec[0])
+            # app = self.get_application_by_name(rec[0])
+            app = recommends[rec]
             if(app is not None):
-                app.recommendrank = rec[1]
+                # app.recommendrank = rec[1]
                 applist.append(app)
+        list = self.db.query_category_apps("recommend")
+        for rec in list:
             if(self.kydroid_check != False):
                 apk = self.get_apk_by_name(rec[0])
                 if(apk is not None):
-                    apk.recommendrank = rec[1]
+                    # apk.recommendrank = rec[1]
                     applist.append(apk)
 
         if Globals.UPDATE_HOM == 0:
@@ -881,25 +912,41 @@ class AppManager(QObject,Signals):
 
      # get game apps
     def get_game_apps(self, bysignal=False,sig = False):
-        recommends = self.db.get_game_apps()
+        # recommends = self.db.get_game_apps()
+        recommends = self.get_category_apps_from_db("rmdgames")
         applist = []
         for rec in recommends:
-            app = self.get_application_by_name(rec[0])
+            app = recommends[rec]
             if(app is not None):
-                app.recommendrank = rec[1]
+                # app.recommendrank = rec[1]
                 applist.append(app)
+        list = self.db.query_category_apps("rmdgames")
+        for rec in list:
+            if(self.kydroid_check != False):
+                apk = self.get_apk_by_name(rec[0])
+                if(apk is not None):
+                    # apk.recommendrank = rec[1]
+                    applist.append(apk)
         if sig == True:
             self.recommend_ready.emit(applist, bysignal, True)
 
      # get necessary apps
     def get_necessary_apps(self, bysignal=False,sig = False):
-        recommends = self.db.get_necessary_apps()
+        # recommends = self.db.get_necessary_apps()
+        recommends = self.get_category_apps_from_db("necessary")
         applist = []
         for rec in recommends:
-            app = self.get_application_by_name(rec[0])
+            app =  recommends[rec]
             if(app is not None):
-                app.recommendrank = rec[1]
+                # app.recommendrank = rec[1]
                 applist.append(app)
+        list = self.db.query_category_apps("necessary")
+        for rec in list:
+            if(self.kydroid_check != False):
+                apk = self.get_apk_by_name(rec[0])
+                if(apk is not None):
+                    # apk.recommendrank = rec[1]
+                    applist.append(apk)
         if sig == True:
             self.recommend_ready.emit(applist, bysignal, True)
 
@@ -972,6 +1019,24 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.submit_rating_over.emit(res)
 
+    def submit_downloadcount(self,app_name):
+        try:
+            res = self.premoter.get_Amount_Downloads(app_name)
+            self.db.update_app_downloadtotal(app_name,res[0]['download_total'])
+        except:
+            try:
+                res = self.db.get_app_downloadtotal(app_name)
+                count = res[0][0]
+                res = [{"download_total":count}]
+            except:
+                res = False
+            # res[0]['download_total']=0
+        if res ==False:
+            res=[{"download_total":"非数据库精选软件"}]
+        self.submit_download_over.emit(res)
+
+
+
     # update app ratingavg in cache db after user do rating app
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
         self.db.update_app_ratingavg(app_name, ratingavg, ratingtotal)
@@ -995,7 +1060,8 @@ class AppManager(QObject,Signals):
     def apprui_first_login(self,ui_username,ui_password):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
         res = self.premoter.log_in_appinfo(ui_username,ui_password)
-        #print "ccccccccccccccccccccccccc",res
+        #print
+        # "ccccccccccccccccccccccccc",res
         try:
             if res == 1 or res == None:
                 #数据异常
@@ -1228,10 +1294,12 @@ class AppManager(QObject,Signals):
             sum += 1
             flag = self.check_kydroid_envrun()
             time.sleep(1)
-            if sum > 120*3:  # 3分钟环境还没启动，判断为超时！
+            if sum > 120*5:  # 5分钟环境还没启动，判断为超时！
                 if (Globals.DEBUG_SWITCH):
                     print("安卓环境启动超时")
                 ret = 0
+                break
+        self.apkenvrunfrist = True
         self.kydroid_envrun_over.emit(ret)
 
 
@@ -1276,6 +1344,9 @@ class AppManager(QObject,Signals):
 
             # self.download_apk_source_over.emit(True)
             # self.get_recommend_apps(False)
+            if self.apkenvrunfrist:
+                self.download_apk_source_over.emit(True)
+                self.apkenvrunfrist = False
 
     def merge_apk_list(self, app_dict):
         for apk in self.apk_list:

@@ -60,7 +60,7 @@ class Application(BaseInfo):
         self.cache = apt_cache
         self.thumbnail_url = None
         self.screenshot_url = None
-        self.thumbnailfile = enums.UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_thumbnail.png"
+        self.thumbnailfile = enums.UBUNTUKYLIN_RES_SCREENSHOT_PATH+ pkgname + "_thumbnail.png"
         self.screenshotfile = enums.UBUNTUKYLIN_RES_SCREENSHOT_PATH + pkgname + "_screenshot.png"
         self.iconfile = enums.UBUNTUKYLIN_RES_ICON_PATH + pkgname + ".png"
         self.screenshots = []
@@ -76,6 +76,7 @@ class Application(BaseInfo):
         self.ratingrank = 32767
         self.pointoutrank = 32767
         self.recommendrank = 32767
+        self.downloadcount = 0
 
         self.install_date = ''  # the date first install this app, get from server
 

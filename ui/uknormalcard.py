@@ -38,9 +38,6 @@ class Ui_NormalCard(object):
         self.icon.setText(_fromUtf8(""))
         self.icon.setObjectName(_fromUtf8("icon"))
 
-
-
-
         self.size = QLabel(self.baseWidget)
         self.size.setGeometry(QtCore.QRect(68, 45, 120, 15))
         self.size.setText(_fromUtf8(""))
@@ -71,8 +68,6 @@ class Ui_NormalCard(object):
         # self.description.setFocusPolicy(Qt.NoFocus)
         # self.description.setGeometry(QtCore.QRect(6, 18, 205, 40))
         # self.description.setObjectName(_fromUtf8("description"))
-
-
 
         # wb:
         self.progressBar = QProgressBar(self.baseWidget)

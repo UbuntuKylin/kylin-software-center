@@ -36,7 +36,7 @@ def password_read():
         if line != " ":                        
             Globals.SET_REM = line[0].strip()
             Globals.AUTO_LOGIN = line[1].strip()
-            Globals.USER = line[2].strip()
+            Globals.OS_USER = line[2].strip()
             Globals.PASSWORD = line[3].strip()
         file_object.close( )
 

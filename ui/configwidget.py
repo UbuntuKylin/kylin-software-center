@@ -42,6 +42,8 @@ class ConfigWidget(QWidget,Signals):
     listuser = ""
     flag = []
     desk=0
+
+    show_password=0
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
         self.ui_init()
@@ -83,6 +85,7 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnAdd_2.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAdd_3.setFocusPolicy(Qt.NoFocus)
         self.ui.btnAdd_4.setFocusPolicy(Qt.NoFocus)
+        self.ui.show_password.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox.setChecked(True)
         self.ui.checkBox_2.setChecked(False)
         self.ui.checkBox_3.setChecked(True)
@@ -137,6 +140,8 @@ class ConfigWidget(QWidget,Signals):
         self.ui.up_chk.stateChanged.connect(self.change1)
 
         self.ui.delete_sourcelist.clicked.connect(self.delete_item)
+
+        self.ui.show_password.clicked.connect(self.show_setpassword)
 
         #去掉软件源
         #self.ui.text2.setText("用户登录信息:")        
@@ -203,10 +208,13 @@ class ConfigWidget(QWidget,Signals):
         self.ui.lesource9.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
         # self.ui.lesource11.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
         self.ui.lesource12.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
+        self.ui.lesource12.setEchoMode(QLineEdit.Password)
         self.ui.lesource13.setStyleSheet("QLineEdit{border:1px solid #bec2cc;border-radius:2px;color:#997FAB;font-size:12px;}")
+        self.ui.lesource13.setEchoMode(QLineEdit.Password)
         self.ui.btnAdd_3.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
         self.ui.btnAdd_2.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
         self.ui.btnAdd_4.setStyleSheet("QPushButton{background-color:#ad8ae1;border:0px;background-image:url('res/click-up-btn-2.png');}QPushButton:hover{border:0px;background-image:url('res/click-up-btn-3.png');}QPushButton:pressed{border:0px;background-image:url('res/click-up-btn-1.png');}")
+        self.ui.show_password.setStyleSheet("QPushButton{background-image:url('res/hide-password.png');border:0px;background-color:transparent}")
 
 
 
@@ -236,7 +244,24 @@ class ConfigWidget(QWidget,Signals):
         # self.ui.progressBar.reset()
 
         self.hide()
+
+    def show_setpassword(self):
+        if self.show_password==0:
+            self.ui.lesource12.setEchoMode(QLineEdit.Normal)
+            self.ui.lesource13.setEchoMode(QLineEdit.Normal)
+            self.ui.show_password.setStyleSheet("QPushButton{background-image:url('res/show-password.png');border:0px;background-color:transparent}")
+            self.show_password=1
+        else:
+            self.ui.lesource12.setEchoMode(QLineEdit.Password)
+            self.ui.lesource13.setEchoMode(QLineEdit.Password)
+            self.show_password=0
+            self.ui.show_password.setStyleSheet("QPushButton{background-image:url('res/hide-password.png');border:0px;background-color:transparent}")
+
     def btnclose_find_password(self):
+        self.ui.lesource8.clear()
+        self.ui.lesource9.clear()
+        self.ui.lesource12.clear()
+        self.ui.lesource13.clear()
         self.hide()
 
     def change1(self):
@@ -263,17 +288,19 @@ class ConfigWidget(QWidget,Signals):
 
 
     def delete_item(self):
-        i = -1
-        slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
-        for one in slist:
-            i = i + 1
-            if self.flag[i].chk.isChecked() == True:
-                itemf=self.ui.sourceListWidget.takeItem(0)
-                del itemf
-                self.flag[i].confw.backend.remove_source(one)
-        self.ui.up_chk.setCheckState(Qt.Unchecked)
-        self.fill_sourcelist()
-
+        if self.ui.up_chk.isChecked() ==False:
+            return
+        else:
+            i = -1
+            slist = self.backend.get_sources(self.ui.cbhideubuntu.isChecked())
+            for one in slist:
+                i = i + 1
+                if self.flag[i].chk.isChecked() == True:
+                    itemf=self.ui.sourceListWidget.takeItem(i)
+                    del itemf
+                    self.flag[i].confw.backend.remove_source(one)
+            self.ui.up_chk.setCheckState(Qt.Unchecked)
+            self.fill_sourcelist()
     # def sourcelist_selcet(self):
     #
     #     up_item = QListWidgetItem()
@@ -361,6 +388,10 @@ class ConfigWidget(QWidget,Signals):
             BC.exec_()
 
     def slot_cluck_sucland(self):
+        self.ui.lesource8.clear()
+        self.ui.lesource9.clear()
+        self.ui.lesource12.clear()
+        self.ui.lesource13.clear()
         self.hide()
         self.goto_login.emit()
 
@@ -444,7 +475,8 @@ class ConfigWidget(QWidget,Signals):
             #BR.information(self,"提示","请输入登录帐号用户名",QMessageBox.Yes)
             BR.setText('请输入登录帐号用户名')
             BR.exec_()
-
+        # self.ui.lesource8.setText("")
+        # self.ui.lesource9.setText("")
     def slot_rset_password_over(self,res):
         res = res[0]['res']
         AR = QMessageBox()
@@ -480,17 +512,22 @@ class ConfigWidget(QWidget,Signals):
         BC = QMessageBox()
         BC.setWindowTitle('提示')
         BC.addButton(QPushButton('确定'), QMessageBox.YesRole)
-        print(self.listrec[0])
         if self.listrec[0] != "" and self.listrec[1] != "":
-            try:
-                self.rset_password.emit(self.listset[0],self.listrec[0])
+            if self.listrec[0] == self.listrec[1]:
+                try:
+                    self.rset_password.emit(self.listset[0],self.listrec[0])
 
-            except:
-                if (Globals.DEBUG_SWITCH):
-                    print("######","修改失败")
-                #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
-                BC.setText('服务器异常')
+                except:
+                    if (Globals.DEBUG_SWITCH):
+                        print("######","修改失败")
+                    #BC.information(self,"提示","服务器异常",QMessageBox.Yes)
+                    BC.setText('服务器异常')
+                    BC.exec_()
+            else:
+                BC.setText('两次输入的密码不相同，请重新输入')
                 BC.exec_()
+                self.ui.lesource12.clear()
+                self.ui.lesource13.clear()
         elif self.listrec[0] == "":
 
             #BC.information(self,"提示","用户名为空",QMessageBox.Yes)
@@ -515,9 +552,9 @@ class ConfigWidget(QWidget,Signals):
         AC.addButton(QPushButton('确定'), QMessageBox.YesRole)
         if res == 0:
             if (Globals.DEBUG_SWITCH):
-                print("######","找回成功")
+                print("######","网络错误")
             #AC.information(self,"提示","找回成功",QMessageBox.Yes)
-            AC.setText('找回成功')
+            AC.setText('网络异常，请检查网络重试')
             AC.exec_()
         elif res == 1 or res == None:
             #数据异常
@@ -596,6 +633,9 @@ class ConfigWidget(QWidget,Signals):
         self.ui.up_chk.setCheckState(Qt.Unchecked)
         self.fill_sourcelist()
         self.set_process_visiable(False)
+        self.ui.progressBar.setValue(0)
+        # self.ui.progressBar.hide()
+
 
     def slot_click_add(self):
         sourcetext = str(self.ui.lesource.text())

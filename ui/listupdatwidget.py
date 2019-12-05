@@ -60,10 +60,13 @@ class ListItemWidget(QWidget,Signals):
         else:
             self.ui.summary.setText(self.app.orig_summary)
 
-        installedsize = app.installedSize
+        # installedsize = app.installedSize
+        installedsize = app.packageSize
         installedsizek = installedsize / 1024
-        if(installedsizek < 1024):
-            self.ui.installedsize.setText(str(installedsizek) + " KB")
+        if(installedsizek == 0):
+            self.ui.installedsize.setText("未知")
+        elif(installedsizek < 1024):
+            self.ui.installedsize.setText(str('%.1f'%installedsizek) + " KB")
         else:
             self.ui.installedsize.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 

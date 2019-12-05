@@ -126,6 +126,12 @@ class Ui_ConfigWidget(object):
         self.lesource13.setGeometry(QtCore.QRect(175, 157, 230, 23))
         self.lesource13.setObjectName(_fromUtf8("lesource12"))
 
+
+        self.show_password=QPushButton(self.groupBox_recover)
+        self.show_password.setGeometry(QtCore.QRect(410, 119, 22, 22))
+        self.show_password.setObjectName(_fromUtf8("show_password"))
+
+
         # self.text18 = QLabel(self.groupBox_recover)
         # self.text18.setGeometry(QtCore.QRect(150, 55, 50, 20))
         # self.text18.setText(_fromUtf8(""))

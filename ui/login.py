@@ -193,7 +193,7 @@ class Login(QWidget,Signals):
         self.ui.text10.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#2d8ae1;}QPushButton:hover{border:0px;font-size:13px;color:#2d8ae1;}QPushButton:pressed{border:0px;font-size:13px;color:#2d8ae1;}")
         self.ui.text10.setFocusPolicy(Qt.NoFocus)
         if(Globals.SET_REM):
-            self.ui.lesource.setText(Globals.USER)
+            self.ui.lesource.setText(Globals.OS_USER)
             self.ui.lesource_2.setText(Globals.PASSWORD)
             self.ui.checkBox_5.setChecked(True)
 

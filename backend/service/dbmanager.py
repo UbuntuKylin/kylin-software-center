@@ -68,7 +68,7 @@ class Database:
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
-        self.connect = sqlite3.connect(destFile, check_same_thread=False)
+        self.connect = sqlite3.connect(destFile, timeout=30.0, check_same_thread=False)
         self.cursor = self.connect.cursor()
         self.cat_list = []
 
@@ -124,6 +124,7 @@ class Database:
             lock.release()
         cateid = ''
         for i in res:
+
             cateid = i[0]
 
         sql = "select id,categories from application"
@@ -148,7 +149,7 @@ class Database:
                     al += ','
 
         al = al[:-1]
-        sql = "select app_name,display_name_cn from application where id in (%s) order by rating_total DESC"
+        sql = "select app_name,display_name_cn from application where id in (%s) order by rating_avg DESC"
         try:
             lock.acquire(True)
             self.cursor.execute(sql % al)
@@ -158,7 +159,6 @@ class Database:
 
         # for a in res:
         #     print a[0],"    ",a[1]
-
         return res
 
     #return as (display_name, summary, description, rating_average,rating_total,review_total,download_total)
@@ -213,7 +213,7 @@ class Database:
     def is_cachedb_need_update(self):
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
 
-        connectsrc = sqlite3.connect(srcFile, check_same_thread=False)
+        connectsrc = sqlite3.connect(srcFile, timeout=30.0, check_same_thread=False)
         cursorsrc = connectsrc.cursor()
 
         try:
@@ -313,7 +313,8 @@ class Database:
         aid = ''
         for item in res:
             aid = str(item[0])
-
+        if not aid:
+            return []
         # get review count
         try:
             lock.acquire(True)
@@ -322,9 +323,9 @@ class Database:
         finally:
             lock.release()
         count = ''
+
         for item in res:
             count = item[0]
-
         if(page == 1):
             # empty cache, download page 1
             if(count == 0):
@@ -460,6 +461,7 @@ class Database:
 
         # all download check over, return reviews to show
         limit = (page - 1) * 10
+
         try:
             lock.acquire(True)
             self.cursor.execute("select id, aid_id, content, user_display, date, language, up_total, down_total from review where aid_id=? order by date DESC limit ?,10", (aid,limit))
@@ -655,6 +657,26 @@ class Database:
             self.connect.commit()
         finally:
             lock.release()
+
+    def update_app_downloadtotal(self, app_name,download_total=''):
+        try:
+            lock.acquire(True)
+            if(download_total):
+                self.cursor.execute("update application set download_total=? where app_name=?", (download_total,app_name))
+            else:
+                self.cursor.execute("update application set download_total=download_total+1 where app_name=?", (app_name,))
+            self.connect.commit()
+        finally:
+            lock.release()
+
+    def get_app_downloadtotal(self, app_name):
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select download_total from application where app_name=?", (app_name,))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
+        return res
 
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):

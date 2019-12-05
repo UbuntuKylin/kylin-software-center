@@ -125,10 +125,13 @@ class RcmdCard(QWidget,Signals):
         #     self.ui.name.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:#666666;}")
 
         # convert size
-        installedsize = self.app.installedSize
+        # installedsize = self.app.installedSize
+        installedsize = self.app.packageSize
         installedsizek = installedsize / 1024
-        if(installedsizek < 1024):
-            self.ui.size.setText(str(installedsizek) + " KB")
+        if(installedsizek == 0):
+            self.ui.size.setText("未知")
+        elif(installedsizek < 1024):
+            self.ui.size.setText(str('%.1f'%installedsizek) + " KB")
         else:
             self.ui.size.setText(str('%.2f'%(installedsizek/1024.0)) + " MB")
 
@@ -169,7 +172,7 @@ class RcmdCard(QWidget,Signals):
             #     self.ui.btn.setText("正在安装")
             # else:
             #     self.ui.btn.setText("等待安装")
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+            self.ui.progressBar.setQPushButtonStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#d5e8f9;}")
             self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#2d8ae1;}")
@@ -236,7 +239,7 @@ class RcmdCard(QWidget,Signals):
         if isinstance(self.app, ApkInfo):
             if not Globals.APK_EVNRUN:
                 self.ui.btn.setText("启动安卓环境")
-        self.ui.btn.clicked.connect(self.slot_btn_click)
+        self.connect = self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
         # self.connect(self.mainwin,apt_process_finish,self.slot_work_finished)
         # self.connect(self.mainwin,apt_process_cancel,self.slot_work_cancel)

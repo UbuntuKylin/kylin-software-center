@@ -40,7 +40,7 @@ from utils.debfile import DebFile
 from models.globals import Globals
 
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
+from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_CACHE_SETADS_PATH,UBUNTUKYLIN_CACHE_UKSCDB_PATH,UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH
 # from models.http import HttpDownLoad
 
 
@@ -50,7 +50,6 @@ lock = threading.Lock()
 # lock = Lock()
 
 XAPIAN_DB_PATH = os.path.join(UKSC_CACHE_DIR, "xapiandb")
-
 
 class SilentProcess(multiprocessing.Process):
 
@@ -62,7 +61,7 @@ class SilentProcess(multiprocessing.Process):
         self.squeue = squeue
 
         self.destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
-        self.connect = sqlite3.connect(self.destFile, check_same_thread=False)
+        self.connect = sqlite3.connect(self.destFile, timeout=30.0, check_same_thread=False)
         self.cursor = self.connect.cursor()
 
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
@@ -97,6 +96,10 @@ class SilentProcess(multiprocessing.Process):
                     self.get_newer_application_icon()
                 elif item.funcname == "update_xapiandb":
                     self.update_xapiandb(item.kwargs)
+                elif item.funcname == "get_newer_application_ads":
+                    self.get_newer_application_ads()
+                elif item.funcname == "get_newer_application_screenshots":
+                    self.get_newer_application_screenshots()
             except Exception as e:
                 if (Globals.DEBUG_SWITCH):
                     print("silent process exception:", e)
@@ -372,7 +375,132 @@ class SilentProcess(multiprocessing.Process):
         else:
             if (Globals.DEBUG_SWITCH):
                 print("Failed to get  newer application icon")
-        
+
+
+
+    def get_newer_application_screenshots(self):
+        last_update_date = ''
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key='appscreenshots_updatetime'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
+        for item in res:
+            last_update_date = item[0]
+
+        reslist = self.premoter.get_newer_application_screenshots(last_update_date)
+        if False != reslist:
+            size = len(reslist)
+
+            if (size > 0):
+                # update application icon to cache icons/
+                for app in reslist:
+                    app_name = app['name']
+                    app_path = app['path']
+                    iconfile = UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH + app_name
+                    try:
+                        icon_rul = UK_APP_ICON_URL % {
+                            'pkgname': app_path,
+                        }
+                        urlFile = urllib.request.urlopen(icon_rul)
+                        rawContent = urlFile.read()
+                        if rawContent:
+                            if not os.path.exists(UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH):
+                                os.mkdir(UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH)
+                            localFile = open(iconfile, "wb")
+                            localFile.write(rawContent)
+                            localFile.close()
+
+                    except urllib.error.HTTPError as e:
+                        if (Globals.DEBUG_SWITCH):
+                            print(e.code)
+                    except urllib.error.URLError as e:
+                        if (Globals.DEBUG_SWITCH):
+                            print(str(e))
+
+                # set application info last update date
+                new_update_time = reslist[0]['modify_time']
+                try:
+                    lock.acquire(True)
+                    self.cursor.execute("update dict set value=? where key=?", (new_update_time, 'appscreenshots_updatetime'))
+                    self.connect.commit()
+                finally:
+                    lock.release()
+                if (Globals.DEBUG_SWITCH):
+                    print("all newer application icon update over : ", len(reslist))
+        else:
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to get  newer application screenshots")
+
+
+
+    def get_newer_application_ads(self):
+        last_update_date = ''
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select value from dict where key='appads_updatetime'")
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
+        for item in res:
+            last_update_date = item[0]
+        reslist = self.premoter.get_newer_application_ads(last_update_date)
+
+        if False != reslist:
+            sql = "delete from advertisement"
+            self.cursor.execute(sql)
+            size = len(reslist)
+            if (size > 0):
+                # update application icon to cache icons/
+                for app in reslist:
+                    app_name = app['name']
+                    app_path = app['path']
+                    ads_id=app['id']
+                    iconfile = UBUNTUKYLIN_CACHE_SETADS_PATH + app_name+'.png'
+                    try:
+                        icon_rul = UK_APP_ICON_URL % {
+                            'pkgname': app_path,
+                        }
+                        # print("3333333333333333333333333:",icon_rul)
+                        urlFile = urllib.request.urlopen(icon_rul)
+                        # print("2222222222222222222222222:",urlFile)
+                        rawContent = urlFile.read()
+                        if rawContent:
+                            if not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH):
+                                os.mkdir(UBUNTUKYLIN_CACHE_SETADS_PATH)
+                            if "uksc/ads/" in app_path:
+                                localFile = open(iconfile, "wb")
+                                localFile.write(rawContent)
+                                localFile.close()
+                            else:
+                                pass
+                    except urllib.error.HTTPError as e:
+                        if (Globals.DEBUG_SWITCH):
+                            print(e.code)
+                    except urllib.error.URLError as e:
+                        if (Globals.DEBUG_SWITCH):
+                            print(str(e))
+                    if "uksc/ads/" in app_path:
+                        self.cursor.execute("insert into advertisement values(?,?,?)",(ads_id,app_name,app_path))
+                    # self.cursor.execute("insert or ignore into review values(?,?,'',?,?,?,'zh_CN','',0,0)",
+                    #                     (id, aid, content, user_display, date))
+
+                # set application info last update date
+                new_update_time = reslist[0]['modify_time']
+                try:
+                    lock.acquire(True)
+                    self.cursor. execute("update dict set    value=? where key=?", (new_update_time, 'appads_updatetime'))
+                    self.connect.commit()
+
+                finally:
+                    lock.release()
+                if (Globals.DEBUG_SWITCH):
+                    print("all newer application icon update over : ",len(reslist))
+        else:
+            if (Globals.DEBUG_SWITCH):
+                print("Failed to get  newer application icon")
+
     #*************************update for xapiandb***********************************#
     def update_xapiandb(self, kwargs):
         database = xapian.WritableDatabase(XAPIAN_DB_PATH, xapian.DB_OPEN)

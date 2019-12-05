@@ -99,7 +99,7 @@ class PistonRemoter(PistonAPI):
     default_service_forecast3d = 'forecast3d'
     default_content_type = 'application/x-www-form-urlencoded'
     default_service_root = UBUNTUKYLIN_SERVER
-    default_timeout = 5
+    default_timeout = 2
 
     @returns_json
     def get_all_ratings(self):
@@ -119,6 +119,16 @@ class PistonRemoter(PistonAPI):
         if (Globals.DEBUG_SWITCH):
             print(get_ratings)
         return get_ratings
+
+    @returns_json
+    def get_Amount_Downloads(self,app_name):
+        get_Downcont=self._get('downloadcontrol/?app_name=%s' % (app_name),scheme="http")
+        if (isinstance(get_Downcont,bytes)):
+            get_Downcont = get_Downcont.decode(encoding='utf-8')
+        if (Globals.DEBUG_SWITCH):
+            print(get_Downcont)
+        return get_Downcont
+
 
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
@@ -158,6 +168,8 @@ class PistonRemoter(PistonAPI):
         postdata.app_name = app_name
         postdata.machine = machine
         postdata.isrcm = isrcm
+        if(not user):
+            user = "User_is_Null"
         postdata.user = user
         gets = self._post('pingbackapp20141014/', data=postdata, scheme='http', content_type='application/json')
         if (Globals.DEBUG_SWITCH):
@@ -201,7 +213,27 @@ class PistonRemoter(PistonAPI):
         if (Globals.DEBUG_SWITCH):
             print("get_newer_application_icon")
         return gets
-        
+
+    @returns_json
+    def get_newer_application_ads(self, last_update_date):
+        gets = self._get('getnewads/?modify_time=%s' % last_update_date, scheme="http")
+        if (isinstance(gets, bytes)):
+            gets = gets.decode(encoding='utf-8')
+        if (Globals.DEBUG_SWITCH):
+            print("get_newer_application_icon")
+        return gets
+
+    @returns_json
+    def get_newer_application_screenshots(self, last_update_date):
+        gets = self._get ('getsmallscreenshots/?modify_time=%s' % last_update_date, scheme="http")
+
+        if (isinstance(gets, bytes)):
+            gets = gets.decode(encoding='utf-8')
+        if (Globals.DEBUG_SWITCH):
+            print("get_newer_application_screenshots")
+        return gets
+
+
     @returns_json
     def allapp_forxapianupdate(self):
         gets = self._get('allappforxapianupdate/?', scheme="http")

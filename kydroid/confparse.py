@@ -33,7 +33,6 @@ def getApks():
     apklist = []
     for pkgname in lists_header:
         apkinfo = ApkInfo(pkgname, config[pkgname]['name'], config[pkgname]['version'], config[pkgname]['size'], config[pkgname]['file'], config[pkgname]['summary'])
-
         apkinfo.from_ukscdb = False
         apklist.append(apkinfo)
 
