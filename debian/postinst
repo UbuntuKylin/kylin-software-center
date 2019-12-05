@@ -22,6 +22,20 @@ set -e
 #        fi
 #    fi
 #fi
+
+for user in `ls /home/`
+do
+    path="/home/"$user"/.cache/uksc/uksc.db"
+    if [ -f "$path" ]; then
+        rm $path
+    fi
+done
+
+autostar="/etc/xdg/autostart/ubuntu-kylin-software-center-autostart.desktop"
+if [ -f "$autostar" ]; then
+    rm $autostar
+fi
+
 chmod 775 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/start_systemdbus.py
 chmod 777 /usr/share/ubuntu-kylin-software-center/backend/service/password.txt
 
