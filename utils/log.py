@@ -28,22 +28,18 @@ import logging
 import logging.handlers
 from datetime import datetime
 from models.enums import UKSC_CACHE_DIR
-
-# HOME_DIR = os.path.expanduser('~')
-# LOG_PATH = HOME_DIR + "/.uksc/log/"
+#模块未找到使用，视为已废弃
 LOG_PATH = "/var/log/uksc/"
-#LOG_FILE = str(datetime.now().date()) + ".log"
-
-UKSC_LOG_FILE = os.path.join(UKSC_CACHE_DIR, "uksc.log")
+UKSC_LOG_FILE = os.path.join(UKSC_CACHE_DIR, "uksc-%s.log"% str(datetime.now().date()))#格式化日志名为uksc-YYYY-MM-DD.log,如果出问题了容易查找日志，不会累积
 
 def init_logger():
     uksc_handler = logging.handlers.RotatingFileHandler(UKSC_LOG_FILE, maxBytes=1024*1024, backupCount=5)# 实例化handler
     fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(levelname)s - %(message)s'
-    formatter = logging.Formatter(fmt)   # 实例化formatter
-    uksc_handler.setFormatter(formatter)      # 为handler添加formatter
-    uksc_logger = logging.getLogger("uksc")    # 获取名为tst的logger
-    uksc_logger.addHandler(uksc_handler)           # 为logger添加handler
-    uksc_logger.setLevel(logging.WARNING)
+    formatter = logging.Formatter(fmt)# 实例化formatter
+    uksc_handler.setFormatter(formatter)# 为handler添加formatter
+    uksc_logger = logging.getLogger("uksc")# 获取名为tst的logger
+    uksc_logger.addHandler(uksc_handler)# 为logger添加handler
+    uksc_logger.setLevel(logging.WARNING)#设置日志登记为warning
 
 
 def info(message):

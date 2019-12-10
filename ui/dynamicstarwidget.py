@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.uksw import Ui_StarWidget
-from models.enums import Signals
+from models.signals import Signals
 
 
 class DynamicStarWidget(QWidget,Signals):

@@ -62,8 +62,9 @@ from backend.utildbus import UtilDbus
 #from backend.ubuntusso import get_ubuntu_sso_backend
 from backend.service.save_password import password_write, password_read
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
-from models.enums import Signals, setLongTextToElideFormat,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
+from models.enums import  setLongTextToElideFormat,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
 from models.globals import Globals
+from models.signals import Signals 
 from models.http import HttpDownLoad, unzip_resource
 from models.apkinfo import ApkInfo
 from apt.debfile import DebPackage
@@ -89,7 +90,7 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='w'
                     )
 LOG = logging.getLogger("uksc")
-
+#线程初始化
 class  initThread(QThread,Signals):
     def __init__(self):
         super(initThread, self).__init__()
@@ -98,11 +99,7 @@ class  initThread(QThread,Signals):
         # init dbus backend
         self.backend = InstallBackend()
         self.appmgr = AppManager()
-
-
         res = self.backend.init_dbus_ifaces()
-
-
         while res == False:
             button=QMessageBox.question(self,"初始化提示",
                                     self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
@@ -118,7 +115,7 @@ class  initThread(QThread,Signals):
 
 
         self.myinit_emit.emit()
-        #
+        #触发myinit_emit信号,对应的槽会被触发
         self.sleep(1)
 
 class  AD_Thread(QThread,Signals):
@@ -127,6 +124,7 @@ class  AD_Thread(QThread,Signals):
 
     def run(self):
         self.myads_icon.emit()
+        #触发myads_icon信号，对应的槽会被触发
 
 class SoftwareCenter(QMainWindow,Signals):
 
@@ -152,7 +150,7 @@ class SoftwareCenter(QMainWindow,Signals):
     ua_exists = 0
     task_number = 0
     list_number = 0
-    category = ""
+    category = ""#分类
     add_list = ""
     add_text = ""
     #force_update = 0    
@@ -172,7 +170,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     list=[]
 
-    config = configparser.ConfigParser()
+    config = configparser.ConfigParser()#读取配置
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
@@ -182,16 +180,13 @@ class SoftwareCenter(QMainWindow,Signals):
         #     self.move((QApplication.desktop().screenGeometry(0).width()-self.width())/2,(QApplication.desktop().screenGeometry(0).height()-self.height())/2)
         #     QMessageBox.information(self, "软件商店启动权限异常", "请用当前系统用户权限启动软件商店！",QMessageBox.Ok)
         #     sys.exit(0)
-        self.launchLoadingDiv = LoadingDiv(None)
+        self.launchLoadingDiv = LoadingDiv(None)#启动动画
         self.launchLoadingDiv.start_loading()
 
-        self.worker_thread0 = initThread()
+        self.worker_thread0 = initThread()#工作线程初始化
 
         # self.worker_thread0.setDaemon(True)
-        self.worker_thread0.start()
-
-
-
+        self.worker_thread0.start()#开启线程
 
     # def myinit(self):
         self.auto_l = False
@@ -200,10 +195,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.check_singleton()
         self.flag=0
 
-
-
         password_read()
-        self.worker_thread0.myinit_emit.connect(self.slot_init)
+        self.worker_thread0.myinit_emit.connect(self.slot_init)#把信号和槽链接起来
 
         # data init
         # self.ads_ready = False
@@ -215,26 +208,24 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.worker_thread_ad.myads_icon.connect(self.recursion_advertisement)
 
         # self.rank_ready = False
+        #槽方法，初始化
     def slot_init(self):
         #init main view
-        self.init_main_view()
+        self.init_main_view()#初始化主视图
         # init main service
-        self.init_main_service()
-
-
+        self.init_main_service()#初始化主服务
 
         # check ukid
-        self.check_user()
+        self.check_user()#检查用户
         # check apt source and update it
-        self.check_source()
+        self.check_source()#检查资源
         # check has kydroid
-        self.kydroid_service = KydroidService()
-        self.kydroid_service.check_has_kydroid()
+        self.kydroid_service = KydroidService()#kydroid服务
+        self.kydroid_service.check_has_kydroid()#检查是否有kydroid
         self.worker_thread0.appmgr.kydroid_service = self.kydroid_service
         self.worker_thread0.backend.dbus_apt_process.connect(self.slot_status_change)
 
-        self.worker_thread_ad.start()
-
+        self.worker_thread_ad.start()#开启ads_icon资源线程
 
     def init_main_view(self):
         self.ui = Ui_MainWindow()
@@ -320,7 +311,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.configWidget.click_update_source.connect(self.slot_click_update_source)
         self.configWidget.task_cancel.connect(self.slot_click_cancel)
 
-
         self.login.find_password.connect(self.configWidget.slot_show_ui)
 
         # resize corner
@@ -381,7 +371,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnApk.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp_num.setFocusPolicy(Qt.NoFocus)
-
 
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
@@ -4095,7 +4084,7 @@ def check_local_deb_file(url):
 
 def quit(signum, frame):
     if (Globals.DEBUG_SWITCH):
-        print('You choose to stop software-center.')
+        LOG.debug('You choose to stop software-center.')
     sys.exit()
 def windows():
     window = QMainWindow()

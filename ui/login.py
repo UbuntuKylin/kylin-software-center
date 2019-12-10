@@ -27,12 +27,12 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from .login_ui import Ui_Login_ui
-from models.enums import Signals
+from models.signals import Signals 
 from backend.remote.piston_remoter import PistonRemoter
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
 from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
-                        Signals,
+                    
                         AppActions,
                         setLongTextToElideFormat,
                         PkgStates,

@@ -27,7 +27,7 @@ import sqlite3
 import os
 import re
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii
+from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_UKSCDB_PATH,UBUNTUKYLIN_DATA_UKSCDB_PATH,LOG
 from backend.remote.piston_remoter import PistonRemoter
 
 from shutil import copytree, ignore_patterns, rmtree
@@ -35,20 +35,25 @@ DB_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
 XAPIAN_DB_SOURCE_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,"xapiandb")
 from models.globals import Globals
 #DB_PATH = "../data/uksc.db"
-
-QUERY_CATEGORY = "select * from category where name='%s'"
+#首先改为单例模式，把所有的数据库操作都交给这个类
+#1、改为自动提交测试性能，
+# 2、改为自动提交仅在更新的时候加锁，或直接就不加，依靠自动提交来处理，mysql底层的update操作就是串行，但是应该是针对的同一批数据，加锁执行，此处暂时无解，把更新变为全部串行
+# 3、或者是用线程单独模拟生产者和消费者队列来消耗update（复杂度上升一个台阶）
+#数据库可否压缩或者使用sql来减少软件的体积，目前软件体积太大
+QUERY_CATEGORY = "select * from category where name='%s'"#根据分类名字查询
 QUERY_APP = "select display_name, summary,description,rating_avg,rating_total,review_total,rank,download_total \
-               from application where app_name='%s'"
-QUERY_APPS = "select display_name_cn, app_name from application"
+               from application where app_name='%s'"#根据APP名字查询
+QUERY_APPS = "select display_name_cn, app_name from application"#查询所有APP
 UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, review_total=%d, \
-        download_total=%d where app_name='%s'"
-QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
+        download_total=%d where app_name='%s'" #根据app名字来更新
+QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"#呃。。。。。。。，没看懂字段名
 
 QUERY_NAME_CATEGORIES = "select id,app_name,categories,windows_app_name from xp order by priority asc"
 QUERY_APP_ACCORD_CATEGORIES = "select app_name,display_name,windows_app_name,display_name_windows,description from xp where categories='%s'"
 UPDATE_EXISTS = "update xp set exists_valid='%d' where id='%d'"
 
 import threading
+import logging
 lock = threading.Lock()
 # from multiprocessing import Process,Lock
 # lock = Lock()
@@ -57,14 +62,14 @@ class Database:
 
     def __init__(self):
         self.updatecount = 0
-        srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
-        destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
+        srcFile = UBUNTUKYLIN_DATA_UKSCDB_PATH#源数据库
+        destFile = UBUNTUKYLIN_CACHE_UKSCDB_PATH#目标数据库
 
         # no cache file, copy
         if not os.path.exists(destFile):
             if not os.path.exists(srcFile):
                 if (Globals.DEBUG_SWITCH):
-                    print("error with db file")
+                    LOG.error("error with db file")
                 return
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
@@ -88,18 +93,18 @@ class Database:
         if not os.path.exists(xapian_destFile):
             if not os.path.exists(xapian_srcFile):
                 if (Globals.DEBUG_SWITCH):
-                    print("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
+                    LOG.error("No xapiandb source in /usr/share/ubuntu-kylin-software-center/data/,please reinstall it")
                 return
             copytree(xapian_srcFile,xapian_destFile)
             if (Globals.DEBUG_SWITCH):
-                print("Xapiandb has been copy to cache")
+                LOG.debug("Xapiandb has been copy to cache")
 
         # cache xapiandb need update, copy
         if self.is_xapiancachedb_need_update():
             rmtree(xapian_destFile)
             copytree(xapian_srcFile,xapian_destFile)
             if (Globals.DEBUG_SWITCH):
-                print("cache xapiandb versin updated")
+                LOG.debug("cache xapiandb versin updated")
 
 
     def query_categories(self):
@@ -211,7 +216,7 @@ class Database:
 
     # check the ~/.cache/uksc/uksc.db version, and copy /usr/share/u../data/uksc.db to replace it
     def is_cachedb_need_update(self):
-        srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+        srcFile = UBUNTUKYLIN_DATA_UKSCDB_PATH
 
         connectsrc = sqlite3.connect(srcFile, timeout=30.0, check_same_thread=False)
         cursorsrc = connectsrc.cursor()
@@ -746,13 +751,13 @@ class Database:
             return []
         else:
             return res
-
+DBManager=Database()
 if __name__ == "__main__":
-    db = Database()
+    
 
     # print db.get_pagecount_by_pkgname('gimp')
     #if (Globals.DEBUG_SWITCH):
-    print((db.is_cachedb_need_update()))
+    print((DBManager.is_cachedb_need_update()))
 
     # res = db.get_review_by_pkgname('gedit',2)
     # for item in res:

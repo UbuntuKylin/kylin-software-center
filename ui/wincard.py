@@ -32,7 +32,8 @@ from utils import run
 from utils import commontools
 import webbrowser
 from models.enums import (UBUNTUKYLIN_RES_WIN_PATH, ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_HTTP_WIN_RES_PATH,AppActions)
-from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
+from models.enums import  setLongTextToElideFormat, PkgStates, PageStates
+from models.signals import Signals 
 from models.globals import Globals
 
 class WinCard(QWidget,Signals):

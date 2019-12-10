@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.confw import Ui_ConfigWidget
-from models.enums import Signals
+from models.signals import Signals 
 from ui.loadingdiv import MiniLoadingDiv
 from models.globals import Globals
 from ui.login_ui import Ui_Login_ui
