@@ -27,6 +27,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.enums import UBUNTUKYLIN_RES_PATH
 from models.globals import Globals
+import os
 
 class LoadingDiv(QWidget):
 
@@ -59,7 +60,7 @@ class LoadingDiv(QWidget):
             self.setGeometry(0, 0, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
 
-        self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loadgif.gif")
+        self.gif = QMovie(os.path.join( UBUNTUKYLIN_RES_PATH , "loadgif.gif"))#启动界面的动画
         self.loadinggif = QLabel(self)
         self.loadinggif.setGeometry(Globals.MAIN_WIDTH / 2 - 350 / 2, Globals.MAIN_HEIGHT / 2 - 350 / 2, 350, 350)
         self.loadinggif.setMovie(self.gif)

@@ -31,7 +31,8 @@ from ui.starwidget import StarWidget
 from utils import run
 from utils import commontools
 from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
-from models.enums import Signals, setLongTextToElideFormat, PkgStates
+from models.enums import  setLongTextToElideFormat, PkgStates
+from models.signals import Signals 
 from models.globals import Globals
 
 class PointCard(QWidget,Signals):

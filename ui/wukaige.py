@@ -33,7 +33,7 @@ from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
 #UBUNTUKYLIN_RES_AD_PATH = data+ "ads/"
 import time
 import sys  
-from models.enums import Signals
+from models.signals import Signals 
 
 class ADWidget(QWidget):
     # ad width

@@ -27,7 +27,7 @@ import subprocess
 import shutil
 from PyQt5.QtCore import *
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest
-from models.enums import Signals
+from models.signals import Signals 
 from models.globals import Globals
 HOME_PATH = os.path.expandvars('$HOME')
 

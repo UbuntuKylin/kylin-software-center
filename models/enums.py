@@ -31,27 +31,123 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from backend.ubuntu_sw import safe_makedirs
-from models.application import Application
-from models.baseinfo import BaseInfo
-from utils.debfile import DebFile
+import logging
 
+
+
+##              moshengren提示语：原路径都是手动拼接的，现在改成了os模块拼接
 #########################################################
+##           常量
+########################################网址类###########################
+UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"#麒麟的服务器地址
 
-UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
-UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-#UBUNTUKYLIN_SERVER = "http://172.22.40.129:8001/uksc/"
-UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
-
-#KYDROID_SOURCE_SERVER = "ftp://192.168.78.231/kydroid/"
 #KYDROID_SOURCE_SERVER = "http://ports.kylin.com/kylin/kydroid/"
-KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"
-#KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-1000-kylin/data/local/tmp"
-KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-" + str(os.getuid()) + "-" + str(pwd.getpwuid(os.getuid())[0]) + "/data/local/tmp"
-KYDROID_STARTAPP_ENV = "/usr/bin/startapp start_kydroid"
+
+
+KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"#kydroid的服务器地址
+
+
+# ported from ubuntu-software-center to support Ubuntu-kylin-SSO
+# UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
+
+
+UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
+
+###########################################缓存路径###############################
+###缓存
+UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")#缓存路径
+safe_makedirs(UKSC_CACHE_DIR)#创建缓存的主目录
+
+UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")#缓存的icons路径
+
+UBUNTUKYLIN_CACHE_SETADS_PATH =os.path.join(UKSC_CACHE_DIR, "ads/")
+
+UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH=os.path.join(UKSC_CACHE_DIR, "screenshots/")
+
+UBUNTUKYLIN_CACHE_UKSCDB_PATH =os.path.join(UKSC_CACHE_DIR, "uksc.db")#缓存的数据库路径
+safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
+
+HOME_PATH = os.path.expandvars('$HOME')#拿到家目录路径，不知道别的地方有没有在用，保留，确认没有即可删除
+
+UBUNTUKYLIN_HTTP_WIN_RES_PATH = os.path.join(UKSC_CACHE_DIR,"uk-win/")#未知
+
+###############################安装的目录下####################
+UBUNTUKYLIN_SOFTWARE_CENTER_ROOT_PATH=os.path.abspath(os.path.curdir)#安装的根目录
+
+UBUNTUKYLIN_RES_PATH = os.path.join(UBUNTUKYLIN_SOFTWARE_CENTER_ROOT_PATH,"res/")#资源路径
+
+UBUNTUKYLIN_DATA_PATH = os.path.join(UBUNTUKYLIN_SOFTWARE_CENTER_ROOT_PATH, "data/")#数据目录
+UBUNTUKYLIN_DATA_UKSCDB_PATH=os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
+
+#UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"
+#UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
+
+
+UBUNTUKYLIN_DATA_CAT_PATH =  os.path.join(UBUNTUKYLIN_DATA_PATH,"category/")#分类路径
+
+
+#UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
+#safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
+
+
+UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH, "screenshots/")#数据目录下的截图
+
+UBUNTUKYLIN_RES_ICON_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,  "icons/")
+
+UBUNTUKYLIN_RES_AD_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH,  "ads/")
+
+UBUNTUKYLIN_RES_WIN_PATH = os.path.join(UBUNTUKYLIN_DATA_PATH, "winicons/")
+
+
+PISTON_GENERIC_HELPER = "piston_generic_helper.py"
+
+KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-%s-%s/data/local/tmp"%( str(os.getuid()) , str(pwd.getpwuid(os.getuid())[0]) )#下载目录，使用格式化会更清楚一点
+
+
+#####################系统接口###################
+
+UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"#服务的路径
+
+UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"#接口路径
+
+#########################样式###############
+
+ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s);background-color:transparent;}")
+
+RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
+
+RECOMMEND_BUTTON_STYLE = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
+
+HEADER_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+
+LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:white;font-size:14px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+
+AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
+
+###################字符串###############
+
+SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
+
+SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录银河软件中心。'
 
 Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
 
+datadir = "./utils/"
+
+
+
+##############################华丽的分割线#######################################
+
+KYDROID_STARTAPP_ENV = "/usr/bin/startapp start_kydroid"
+
+if "KYLIN_DEV" in os.environ:
+    UBUNTUKYLIN_SERVER = "http://172.22.40.129:8001/uksc/"#如果有这个环境变量代表是开发时的环境，不用自己切换了
+    KYDROID_SOURCE_SERVER = "ftp://192.168.78.231/kydroid/"#这个时候会不会导致中间人攻击？？，需要思考一下
+    
+LOG_LEVEL=logging.DEBUG#日志等级
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+LOG=logging.getLogger('uksc')#设置日志
 
 # add by kobe to format long text
 def setLongTextToElideFormat(label, text):
@@ -125,175 +221,9 @@ class TransactionTypes:
     APPLY = "apply_changes"
     REPAIR = "repair_dependencies"
 
-UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
-safe_makedirs(UKSC_CACHE_DIR)
-
-HOME_PATH = os.path.expandvars('$HOME')
-UBUNTUKYLIN_HTTP_WIN_RES_PATH = HOME_PATH + "/.cache/uksc/uk-win/"
-
-#UBUNTUKYLIN_ROOT_PATH,filename = (os.path.split(os.path.realpath(__file__)))
-UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
-UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
-
-#UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"
-#UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
-UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
-
-#UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
-#safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join("/usr/share/ubuntu-kylin-software-center/data/", "screenshots/")
-UBUNTUKYLIN_RES_SQLITE3_PATH=os.path.join("/usr/share/ubuntu-kylin-software-center/","data/")
-
-
-UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
-
-UBUNTUKYLIN_CACHE_SETADS_PATH =os.path.join(UKSC_CACHE_DIR, "ads/")
-
-UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH=os.path.join(UKSC_CACHE_DIR, "screenshots/")
-
-UBUNTUKYLIN_CACHE_UKSCDB_PATH =os.path.join(UKSC_CACHE_DIR, "uksc.db")
-safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
-
-UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
-UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
-UBUNTUKYLIN_RES_WIN_PATH = UBUNTUKYLIN_DATA_PATH + "winicons/"
-
-ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s);background-color:transparent;}")
-RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
-RECOMMEND_BUTTON_STYLE = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
-HEADER_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
-
-LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:white;font-size:14px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
-
-AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
-
-# ported from ubuntu-software-center to support Ubuntu-kylin-SSO
-# UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
-UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
-SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
-SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录银河软件中心。'
-datadir = "./utils/"
-PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
 
 
-class Signals:
-    init_models_ready = pyqtSignal(str,str)
-
-    myinit_emit = pyqtSignal()
-    myads_icon=pyqtSignal()
-#    chksoftwareover = pyqtSignal()
-#    getallpackagesover = pyqtSignal()
-#    countiover = pyqtSignal()
-#    countuover = pyqtSignal()
-    task_remove = pyqtSignal(int,Application)
-    task_cancel = pyqtSignal(str,str)
-    task_cancel_tliw = pyqtSignal(Application,str)
-    task_stop = pyqtSignal(str,str)
-    #add
-    task_reinstall = pyqtSignal()
-    task_upgrade = pyqtSignal()
-    # ads_ready = pyqtSignal(list,bool)
-    recommend_ready = pyqtSignal(list,bool,bool)
-    # ratingrank_ready = pyqtSignal(list,bool)
-    toprated_ready = pyqtSignal(list)
-    rating_reviews_ready = pyqtSignal(list)
-    app_reviews_ready = pyqtSignal(list)
-    app_screenshots_ready = pyqtSignal(str)
-    count_application_update = pyqtSignal()
-    click_categoy = pyqtSignal(str,bool)
-    click_item = pyqtSignal()
-    show_app_detail = pyqtSignal(BaseInfo)
-    install_debfile = pyqtSignal(DebFile)
-    install_app = pyqtSignal(BaseInfo)
-    install_app_rcm = pyqtSignal(BaseInfo)
-    remove_app = pyqtSignal(BaseInfo)
-    upgrade_app = pyqtSignal(BaseInfo)
-    click_update_source = pyqtSignal()
-    update_source = pyqtSignal()
-    update_source_cancel = pyqtSignal()
-
-    click_usecdrom = pyqtSignal()
-    usecdrom = pyqtSignal()
-    dbus_fail_to_usecdrom = pyqtSignal()
-    dbus_no_cdrom_mount = pyqtSignal()
-    dbus_usecdrom_success = pyqtSignal()
-
-    #dbus_apt_process = pyqtSignal(str,str,str,int,str)
-    apt_process_finish = pyqtSignal(str,str)
-    apt_process_cancel = pyqtSignal(str,str)
-    apt_cache_update_ready = pyqtSignal(str,str)
-    get_all_ratings_ready = pyqtSignal()
-    get_user_applist_over = pyqtSignal(list)
-    get_user_transapplist_over = pyqtSignal(list) #zx 2015.01.30
-#add
-    recover_password_over = pyqtSignal(list)
-    recover_password = pyqtSignal(str,str,str)
-    rset_password = pyqtSignal(str,str)
-    rset_password_over = pyqtSignal(list)
-    change_user_identity_over = pyqtSignal(list)
-    change_identity = pyqtSignal()
-    get_ui_first_login_over = pyqtSignal(list)
-    get_ui_login_over = pyqtSignal(list)
-    ui_login_success = pyqtSignal()
-    ui_uksc_update = pyqtSignal()
-    get_ui_adduser_over = pyqtSignal(list)
-    ui_adduser = pyqtSignal(str,str,str,str)
-    ui_login = pyqtSignal(str,str)
-
-    submit_review = pyqtSignal(str,str)
-    submit_review_over = pyqtSignal(list)
-    submit_rating = pyqtSignal(str,int)
-    submit_rating_over = pyqtSignal(list)
-    submit_download=pyqtSignal(str)
-    submit_download_over= pyqtSignal(list)
-    show_login = pyqtSignal()
-    get_user_rating = pyqtSignal(int)
-    unzip_img = pyqtSignal()
-    mfb_click_run = pyqtSignal()
-    mfb_click_install = pyqtSignal(BaseInfo)
-    mfb_click_update = pyqtSignal(BaseInfo)
-    mfb_click_uninstall = pyqtSignal(BaseInfo)
-    get_card_status = pyqtSignal(str,int)
-    trans_card_status = pyqtSignal(str,int)
-    submit_translate_appinfo = pyqtSignal(str,str,str,str,str,str,str,str,str,str) #zx 2015.01.26
-    submit_translate_appinfo_over = pyqtSignal(list)
-    uninstall_uksc_or_not = pyqtSignal(str)
-    uninstall_uksc = pyqtSignal(str)
-    cancel_uninstall_uksc = pyqtSignal(str)
-    refresh_page = pyqtSignal()
-    check_source_useable_over = pyqtSignal(list)
-    click_find_up_server = pyqtSignal()
-    dbus_find_up_server_result = pyqtSignal()
-    restart_uksc_now = pyqtSignal()
-#add 20180904
-    confirmdialog_ok = pyqtSignal(str)
-    confirmdialog_no = pyqtSignal(str)
-    ad_signal = pyqtSignal(int)
-
-    #wb 2015.06.26
-    normalcard_progress_change = pyqtSignal(str,float,str)
-    listitem_progress_change=pyqtSignal(str,float,str)
-    normalcard_progress_finish = pyqtSignal(str)
-    normalcard_progress_cancel = pyqtSignal(str)
-    click_task = pyqtSignal(str)
-
-    # check and download kydroid apk source list
-    download_apk_source_over = pyqtSignal(bool)
-    apk_process = pyqtSignal(str, str, str, int, str)
-    kydroid_envrun_over = pyqtSignal(bool)
-    rcmdcard_kydroid_envrun = pyqtSignal()
-    normalcard_kydroid_envrun = pyqtSignal()
-
-    goto_login = pyqtSignal()
-
-    find_password= pyqtSignal()
-
-    return_db=pyqtSignal()
-
-    #add dengnan 10.29
-    goto_detail=pyqtSignal(str)
-# application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"
     INSTALLDEBFILE = "install_debfile"
@@ -386,3 +316,26 @@ def CheckChineseWordsForUnicode(uniSrc):
         return True
     else:
         return False
+
+#把需要特殊处理的包文件放到这里，用键值对存放省去多个if的判断
+PKG_NAME={
+    "wps-office": "wps-office-wps",
+    "uget": "uget-gtk",
+    "eclipse-platform": "eclipse",
+    "software-center": "ubuntu-software-center",
+    "mathwar": "MathWar",
+    "gnome-disk-utility": "gnome-disks",
+    "kino": "Kino",
+    "monajat-applet": "monajat",
+    "system-config-printer-applet": "system-config-printer",
+    "xterm": "debian-uxterm",
+    "virtualbox-qt": "virtualbox",
+    "lovewallpaper": "love-wallpaper",
+    "steam-launcher": "steam",
+    "obs-studio": "obs",
+    "google-chrome-stable": "google-chrome",
+    "youker-assistant": "kylin-assistant",
+    "crossover:i386": "/opt/cxoffice/bin/crossover",#crossover:i386
+    "gnome-screenshot":  "org.gnome.Screenshot",
+    "gnome-mines":  "gnomine",
+}

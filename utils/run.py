@@ -30,11 +30,10 @@ import re
 import subprocess
 import xdg.DesktopEntry
 import time
-#from models.enums import Specials
+from models.enums import Specials,PKG_NAME
 from models.globals import Globals
 import subprocess
 
-Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
 
 def RemoveArgs(Execline):
     NewExecline = []
@@ -78,53 +77,13 @@ def Execute(cmd):
 
 def get_run_command(pkgname):
     # 对一些特殊软件单独处理
-    if pkgname == 'wps-office':
-        pkgname = 'wps-office-wps'
-    elif pkgname == 'uget':
-        pkgname = 'uget-gtk'
-    elif pkgname == 'eclipse-platform':
-        pkgname = 'eclipse'
-    elif pkgname == 'software-center':
-        pkgname = 'ubuntu-software-center'
-    elif pkgname == "mathwar":
-        pkgname = "MathWar"
-    elif pkgname == "gnome-disk-utility":
-        pkgname = "gnome-disks"
-    elif pkgname == "kino":
-        pkgname = "Kino"
-    elif pkgname == "monajat-applet":
-        pkgname = "monajat"
-    elif pkgname == "system-config-printer-applet":
-        pkgname = "system-config-printer"
-    elif pkgname == "xterm":
-        pkgname = "debian-uxterm"
-    elif pkgname == "virtualbox-qt":
-        pkgname = "virtualbox"
-    elif pkgname == "lovewallpaper":
-        pkgname = "love-wallpaper"
-    elif pkgname == "steam-launcher":
-        pkgname = "steam"
-    elif pkgname == "obs-studio":
-        pkgname = "obs"
-    elif pkgname == "google-chrome-stable":
-        pkgname = "google-chrome"
-    elif pkgname == "youker-assistant":
-        pkgname = "kylin-assistant"
-#crossover:i386
-    elif pkgname == "crossover:i386":
-        pkgname = "/opt/cxoffice/bin/crossover"
-
-    # fd = os.popen('find /usr/share/applications/ -name "%s.desktop" | xargs grep "Exec"' %pkgname)
-    # exc = fd.read()
-    # fd.close()
+    
+    #需要特殊处理的软件被键值对包裹，通过判断是否存在键来确定要不要重新赋值，不影响下边的逻辑，并且可以删除大量的if语句
     fullcmd = ""
+    if pkgname in PKG_NAME:
+        pkgname=PKG_NAME[pkgname]
     desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
-    if not os.path.exists(desktopfile):
-        if pkgname == "gnome-screenshot":
-            pkgname = "org.gnome.Screenshot"
-        if pkgname == "gnome-mines":
-            pkgname = "gnomine"
-        desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
+   
     if os.path.exists(desktopfile):
         DeskTopEntry = xdg.DesktopEntry.DesktopEntry(desktopfile)
         fullcmd = DeskTopEntry.getExec()
@@ -166,9 +125,6 @@ def run_app(pkgname):
     # #p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
     # os.system(cmd[0] + "&")#fixed bug 1402953
 
-def run_appa():
-    p = subprocess.Popen(["eog", "/home/shine/Downloads/009-01.png"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
-
 
 def judge_app_run_or_not(pkgname):
     result = 0
@@ -181,7 +137,7 @@ def judge_app_run_or_not(pkgname):
     return result
 
 def main():
-    run_appa()
+     p = subprocess.Popen(["eog", "/home/shine/Downloads/009-01.png"], stdin = subprocess.PIPE, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = False)
 
 if __name__ == '__main__':
     main()
