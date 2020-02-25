@@ -62,7 +62,8 @@ from backend.utildbus import UtilDbus
 #from backend.ubuntusso import get_ubuntu_sso_backend
 from backend.service.save_password import password_write, password_read
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
-from models.enums import Signals, setLongTextToElideFormat,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
+from models.enums import  setLongTextToElideFormat,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
+from models.signals import Signals 
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 from models.apkinfo import ApkInfo

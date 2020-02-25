@@ -28,7 +28,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
-from models.enums import Signals,AptActionMsg,PkgStates
+from models.enums import AptActionMsg,PkgStates
+from models.signals import Signals 
 from models.enums import UBUNTUKYLIN_RES_ICON_PATH
 from models.enums import setLongTextToElideFormat
 from utils import commontools

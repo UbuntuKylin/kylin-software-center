@@ -31,7 +31,8 @@ from ui.starwidget import StarWidget
 from utils import run
 from utils import commontools
 from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions,KYDROID_STARTAPP_ENV)
-from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates
+from models.enums import setLongTextToElideFormat, PkgStates, PageStates
+from models.signals import Signals 
 from models.globals import Globals
 from models.apkinfo import ApkInfo
 

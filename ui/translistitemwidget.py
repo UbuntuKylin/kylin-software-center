@@ -36,8 +36,8 @@ from models.enums import (ITEM_LABEL_STYLE,
                           UBUNTUKYLIN_RES_PATH,
                           RECOMMEND_BUTTON_STYLE,
                           AppActions,
-                          Signals,
                           PkgStates)
+from models.signals import Signals 
 
 class TransListItemWidget(QWidget,Signals):
     app = ''

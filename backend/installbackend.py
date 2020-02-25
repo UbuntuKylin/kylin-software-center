@@ -39,11 +39,10 @@ from PyQt5 import QtDBus
 from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
                           UBUNTUKYLIN_INTERFACE_PATH,
                           AppActions,
-                          Signals,
                           AptActionMsg,
                           AptProcessMsg,
                           UnicodeToAscii)
-
+from models.signals import Signals 
 import multiprocessing
 
 from dbus.mainloop.glib import DBusGMainLoop

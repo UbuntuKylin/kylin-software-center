@@ -49,8 +49,8 @@ from utils.machine import *
 from utils.debfile import DebFile
 from models.globals import Globals
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-from models.enums import Signals,UnicodeToAscii,KYDROID_SOURCE_SERVER
-
+from models.enums import UnicodeToAscii,KYDROID_SOURCE_SERVER
+from models.signals import Signals 
 #from backend.remote.piston_remoter import PistonRemoterAuth
 
 import aptsources.sourceslist

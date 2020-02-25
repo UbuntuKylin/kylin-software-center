@@ -27,7 +27,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.loadingdiv import MiniLoadingDiv
 from ui.multifuncbtn import Ui_MultiFuncBtn
-from models.enums import Signals,PkgStates,PageStates
+from models.enums import PkgStates,PageStates
+from models.signals import Signals 
 from models.globals import Globals
 from utils import run
 from utils.debfile import DebFile

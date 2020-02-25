@@ -37,11 +37,11 @@ from ui.loadingdiv import *
 from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         UBUNTUKYLIN_RES_SCREENSHOT_PATH,
                         UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH,
-                        Signals,
                         AppActions,
                         setLongTextToElideFormat,
                         PkgStates,
                         PageStates)
+from models.signals import Signals 
 from PyQt5 import QtGui
 from utils import run
 from utils import commontools

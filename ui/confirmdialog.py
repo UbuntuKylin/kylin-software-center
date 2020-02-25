@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.enums import UBUNTUKYLIN_RES_PATH
-from models.enums import Signals
+from models.signals import Signals 
 
 class ConfirmDialog(QDialog,Signals):
 

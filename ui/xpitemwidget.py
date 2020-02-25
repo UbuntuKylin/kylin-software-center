@@ -13,8 +13,8 @@ from models.enums import (ITEM_LABEL_STYLE,
                           LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
                           RECOMMEND_BUTTON_STYLE,
-                          AppActions,
-                          Signals)
+                          AppActions)
+from models.signals import Signals 
 
 class XpItemWidget(QWidget,Signals):
     app = ''

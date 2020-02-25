@@ -28,7 +28,8 @@ import stat
 import shutil
 from urllib import request
 from PyQt5.QtCore import *
-from models.enums import KYDROID_SOURCE_SERVER, KYDROID_DOWNLOAD_PATH, Signals, AppActions
+from models.enums import KYDROID_SOURCE_SERVER, KYDROID_DOWNLOAD_PATH,  AppActions
+from models.signals import Signals 
 import threading
 from models.globals import Globals
 
