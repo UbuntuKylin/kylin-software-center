@@ -1,5 +1,8 @@
-ubuntu-kylin-software-center (3.1.7) eoan; urgency=medium
+ubuntu-kylin-software-center (3.1.7) focal; urgency=medium
 
+  * Software source detection optimization.
+  * Setting interface optimization.
+  * Fix installation local deb package error.
   * Fixed multi-threaded access to sqlite database error.
   * Optimize the advertisement promotion column to be pushed and
     scrolled from the server.
@@ -19,15 +22,13 @@ ubuntu-kylin-software-center (3.1.7) eoan; urgency=medium
   * Details interface size adjustment, loading animation position
     adjustment.
 
- -- wenbo <wenbo@ubuntukylin.com>  Thu, 05 Dec 2019 18:41:20 +0800
+ -- handsome_feng <jianfengli@ubuntukylin.com>  Tue, 25 Feb 2020 21:58:59 +0800
 
-ubuntu-kylin-software-center (3.0.6) eoan; urgency=medium
+ubuntu-kylin-software-center (3.0.4build1) focal; urgency=medium
 
-  * Software source detection optimization.
-  * Setting interface optimization.
-  * Fix installation local deb package error.
+  * No-change rebuild to build with python3.8.
 
- -- handsome_feng <jianfengli@ubuntukylin.com>  Wed, 16 Oct 2019 14:51:39 +0800
+ -- Matthias Klose <doko@ubuntu.com>  Sat, 25 Jan 2020 04:40:37 +0000
 
 ubuntu-kylin-software-center (3.0.4) eoan; urgency=medium
 
