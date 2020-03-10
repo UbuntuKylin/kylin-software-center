@@ -9,6 +9,10 @@
 
 from PyQt5 import QtCore, QtGui
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -52,5 +56,6 @@ class Ui_UKrcmdw(object):
 
     def retranslateUi(self, UKrcmdw):
         UKrcmdw.setWindowTitle(_translate("UKrcmdw", "Form", None))
-        self.btn.setText(_translate("UKrcmdw", "下载", None))
+        #self.btn.setText(_translate("UKrcmdw", "下载", None))
+        self.btn.setText(_translate("UKrcmdw", _("Download"), None))
 

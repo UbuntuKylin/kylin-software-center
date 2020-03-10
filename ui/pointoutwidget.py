@@ -30,6 +30,9 @@ from models.globals import Globals
 from ui.cardwidget import CardWidget
 import sys
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class PointOutWidget(QWidget):
 
@@ -50,7 +53,8 @@ class PointOutWidget(QWidget):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.setWindowTitle("推荐安装")
+        #self.setWindowTitle("推荐安装")
+        self.setWindowTitle(_("Recommended installation"))
 
         self.mainw = parent
 
@@ -77,8 +81,10 @@ class PointOutWidget(QWidget):
         self.pointoutGOE = QGraphicsOpacityEffect()
         self.setGraphicsEffect(self.pointoutGOE)
 
-        self.ui.cbisshow.setText("下次启动提示")
-        self.ui.title.setText("安装以下常用软件  提高系统使用体验")
+        #self.ui.cbisshow.setText("下次启动提示")
+        self.ui.cbisshow.setText(_("Tips for next startup"))
+       # self.ui.title.setText("安装以下常用软件  提高系统使用体验")
+        self.ui.title.setText(_("Install the following common software to improve the user experience"))
 
         # self.ui.title.setFocusPolicy(Qt.NoFocus)
         self.ui.btnClose.setFocusPolicy(Qt.NoFocus)
@@ -118,9 +124,11 @@ class PointOutWidget(QWidget):
     def show_animation(self, flag):
         # add by kobe
         if flag:
-            self.ui.title.setText("安装以下常用软件  提高系统使用体验")
+            #self.ui.title.setText("安装以下常用软件  提高用户使用体验")
+            self.ui.title.setText(_("Install the following common software to improve the user experience"))
         else:
-            self.ui.title.setText("推荐软件已经全部更新")
+            #self.ui.title.setText("推荐软件已经全部更新")
+            self.ui.title.setText(_("Recommended software has all been updated"))
         flag = self.mainw.worker_thread0.appmgr.get_pointout_is_show_from_db()
         self.ui.cbisshow.setChecked(flag)
 

@@ -25,7 +25,11 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from models.globals import Globals
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 class SingleProcessBar(QWidget):
 
     def __init__(self, parent=None):
@@ -35,14 +39,19 @@ class SingleProcessBar(QWidget):
 
         self.updatelabel = QLabel(self)
         self.updatelabel.setGeometry(12, 10, 125, 35)
-        self.updatelabel.setText("正在更新软件源...")
+        #self.updatelabel.setText("正在更新软件源...")
+        self.updatelabel.setText(_("Updating software source..."))
+
         self.updatelabel.setAlignment(Qt.AlignCenter)
 
         self.progressBar = QProgressBar(self)
         self.progressBar.setGeometry(0, 45, 149, 17)
         self.progressBar.setRange(0, 100)
         self.progressBar.reset()
-        self.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg2.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
+        if(Globals.MIPS64):
+            self.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg2.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}")
+        else:
+            self.progressBar.setStyleSheet("QProgressBar{background-image:url('res/progressbg2.png');border:0px;border-radius:0px;text-align:center;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-image:url('res/progress2.png');}")
 
         self.hide()

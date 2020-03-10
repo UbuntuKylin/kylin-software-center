@@ -39,18 +39,18 @@ class Ui_Login_ui(object):
         self.tips_user_password.hide()
 
         self.soft_linedit = QLabel(self.topWidget)
-        self.soft_linedit.setGeometry(QtCore.QRect(51, 12, 57, 26))
+        self.soft_linedit.setGeometry(QtCore.QRect(51, 12, 75, 26))
         self.soft_linedit.setObjectName(_fromUtf8("soft_linedit"))
 
         self.spot_linedit = QLabel(self.topWidget)
-        self.spot_linedit.setGeometry(QtCore.QRect(116, 24, 10, 8))
+        self.spot_linedit.setGeometry(QtCore.QRect(126, 24, 10, 8))
         self.spot_linedit.setObjectName(_fromUtf8("spot_linedit"))
 
         self.login_linedit = QLabel(self.topWidget)
-        self.login_linedit.setGeometry(QtCore.QRect(136, 12, 30, 26))
+        self.login_linedit.setGeometry(QtCore.QRect(146, 12, 45, 26))
 
         self.register_newuser=QLabel(self.topWidget)
-        self.register_newuser.setGeometry(QtCore.QRect(136, 12, 70, 26))
+        self.register_newuser.setGeometry(QtCore.QRect(136, 12, 110, 26))
 
 
         self.clickWidget = QWidget(Login_ui)
@@ -237,7 +237,7 @@ class Ui_Login_ui(object):
         # self.text6.setObjectName(_fromUtf8("text6"))
 
         self.text7 = QLabel(self.groupBox_2)
-        self.text7.setGeometry(QtCore.QRect(100, 198, 80, 25))
+        self.text7.setGeometry(QtCore.QRect(100, 198, 120, 25))
         self.text7.setText(_fromUtf8(""))
         self.text7.setObjectName(_fromUtf8("text7"))        
         self.btnAdd_4 = QPushButton(self.groupBox_2)
@@ -256,11 +256,11 @@ class Ui_Login_ui(object):
         #self.btnAds.setObjectName(_fromUtf8("btnAds"))
 
         self.btnAdd = QPushButton(self.groupBox_2)
-        self.btnAdd.setGeometry(QtCore.QRect(181,282,80,14))
+        self.btnAdd.setGeometry(QtCore.QRect(163,282,120,20))
         self.btnAdd.setText(_fromUtf8(""))
         self.btnAdd.setObjectName(_fromUtf8("btnAdd"))
         self.btnAdd_2 = QPushButton(self.groupBox)
-        self.btnAdd_2.setGeometry(QtCore.QRect(181,274,80,14))
+        self.btnAdd_2.setGeometry(QtCore.QRect(171,274,100,18))
         self.btnAdd_2.setText(_fromUtf8(""))
         self.btnAdd_2.setObjectName(_fromUtf8("btnAdd_2"))
         self.bg = QLabel(Login_ui)

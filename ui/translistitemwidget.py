@@ -30,14 +30,11 @@ from ui.uktransliw import Ui_Uktransliw
 from ui.starwidget import StarWidget
 from utils import run
 from utils import commontools
-from models.enums import (ITEM_LABEL_STYLE,
-                          UBUNTUKYLIN_RES_ICON_PATH,
-                          LIST_BUTTON_STYLE,
-                          UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_BUTTON_STYLE,
-                          AppActions,
-                          Signals,
-                          PkgStates)
+from models.enums import (Signals,)
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class TransListItemWidget(QWidget,Signals):
     app = ''
@@ -49,7 +46,8 @@ class TransListItemWidget(QWidget,Signals):
         self.app = app
         self.messageBox = messageBox
         self.parent = parent
-        self.ui.btnDetail.setText("详细信息")
+        #self.ui.btnDetail.setText("详细信息")
+        self.ui.btnDetail.setText(_("details"))
 
         self.ui.btnDetail.raise_()
         # self.ui.installedsize.setAlignment(Qt.AlignCenter)
@@ -72,11 +70,16 @@ class TransListItemWidget(QWidget,Signals):
             self.ui.name.setText(self.app.displayname_cn)
         else:
             self.ui.name.setText(self.app.displayname)
-        self.ui.translatedsection.setText("翻译过")
-        self.ui.transstatu.setText("状    态")
-        self.ui.appname.setText("软件名")
-        self.ui.appsummary.setText("简    介")
-        self.ui.appdescription.setText("描    述")
+        #self.ui.translatedsection.setText("翻译过")
+        self.ui.translatedsection.setText(_("Translated"))
+        #self.ui.transstatu.setText("状    态")
+        self.ui.transstatu.setText(_("status"))
+        #self.ui.appname.setText("软件名")
+        self.ui.appname.setText(_("Software name"))
+        #self.ui.appsummary.setText("简    介")
+        self.ui.appsummary.setText(_("Introduction"))
+       # self.ui.appdescription.setText("描    述")
+        self.ui.appdescription.setText(_("description"))
         self.ui.appname.hide()
         self.ui.appsummary.hide()
         self.ui.appdescription.hide()
@@ -95,38 +98,47 @@ class TransListItemWidget(QWidget,Signals):
             self.ui.appname.show()
             if app.transnamestatu is True:
                 if app.transnameenable is True:
-                    self.ui.namestatu.setText("已采纳")
+                    #self.ui.namestatu.setText("已采纳")
+                    self.ui.namestatu.setText(_("Adopted"))
                     self.ui.namestatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:green;}")
                 else:
-                    self.ui.namestatu.setText("未采纳")
+                    #self.ui.namestatu.setText("未采纳")
+                    self.ui.namestatu.setText(_("Not adopted"))
                     self.ui.namestatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:#7E8B97;}")
             else:
-                self.ui.namestatu.setText("待审核")
+                #self.ui.namestatu.setText("待审核")
+                self.ui.namestatu.setText(_("Unreviewed"))
                 self.ui.namestatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
         if hasattr(app,"transsummary"):
             self.ui.appsummary.show()
             if app.transsummarystatu is True:
                 if app.transsummaryenable is True:
-                    self.ui.summarystatu.setText("已采纳")
+                    #self.ui.summarystatu.setText("已采纳")
+                    self.ui.summarystatu.setText(_("Adopted"))
                     self.ui.summarystatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:green;}")
                 else:
-                    self.ui.summarystatu.setText("未采纳")
+                    #self.ui.summarystatu.setText("未采纳")
+                    self.ui.summarystatu.setText(_("Not adopted"))
                     self.ui.summarystatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:#7E8B97;}")
             else:
-                self.ui.summarystatu.setText("待审核")
+                #self.ui.summarystatu.setText("待审核")
+                self.ui.summarystatu.setText(_("Unreviewed"))
                 self.ui.summarystatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
 
         if hasattr(app,"transdescription"):
             self.ui.appdescription.show()
             if app.transdescriptionstatu is True:
                 if app.transdescriptionenable is True:
-                    self.ui.descriptionstatu.setText("已采纳")
+                    #self.ui.descriptionstatu.setText("已采纳")
+                    self.ui.descriptionstatu.setText(_("Adopted"))
                     self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:green;}")
                 else:
-                    self.ui.descriptionstatu.setText("未采纳")
+                    #self.ui.descriptionstatu.setText("未采纳")
+                    self.ui.descriptionstatu.setText(_("Not adopted"))
                     self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:#7E8B97;}")
             else:
-                self.ui.descriptionstatu.setText("待审核")
+                #self.ui.descriptionstatu.setText("待审核")
+                self.ui.descriptionstatu.setText(_("Unreviewed"))
                 self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
 
 

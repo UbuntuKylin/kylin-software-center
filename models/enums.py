@@ -29,26 +29,94 @@ import pwd
 from xdg import BaseDirectory as xdg
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
 from backend.ubuntu_sw import safe_makedirs
-from models.application import Application
+
 from models.baseinfo import BaseInfo
 from utils.debfile import DebFile
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 #########################################################
+
+# moshengren organize and comment
+
+########################################网址类###########################
 
 UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
 UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
-#UBUNTUKYLIN_SERVER = "http://172.22.40.129:8001/uksc/"
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
-#KYDROID_SOURCE_SERVER = "ftp://192.168.78.231/kydroid/"
 #KYDROID_SOURCE_SERVER = "http://ports.kylin.com/kylin/kydroid/"
 KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"
+
+UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
+
+###############################缓存路径###############################
+
 #KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-1000-kylin/data/local/tmp"
 KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-" + str(os.getuid()) + "-" + str(pwd.getpwuid(os.getuid())[0]) + "/data/local/tmp"
 KYDROID_STARTAPP_ENV = "/usr/bin/startapp start_kydroid"
+
+UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
+safe_makedirs(UKSC_CACHE_DIR)
+
+HOME_PATH = os.path.expandvars('$HOME')
+UBUNTUKYLIN_HTTP_WIN_RES_PATH = os.path.join(UKSC_CACHE_DIR,"uk-win/")
+
+#UBUNTUKYLIN_ROOT_PATH,filename = (os.path.split(os.path.realpath(__file__)))
+
+UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
+
+UBUNTUKYLIN_CACHE_SETADS_PATH =os.path.join(UKSC_CACHE_DIR, "ads/")
+
+UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH=os.path.join(UKSC_CACHE_DIR, "screenshots/")
+
+UBUNTUKYLIN_CACHE_UKSCDB_PATH =os.path.join(UKSC_CACHE_DIR, "uksc.db")
+safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
+
+
+
+###############################安装的目录####################
+
+UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
+UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
+
+UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
+
+UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join("/usr/share/ubuntu-kylin-software-center/data/", "screenshots/")
+#UBUNTUKYLIN_RES_SQLITE3_PATH=os.path.join("/usr/share/ubuntu-kylin-software-center/","data/")
+
+UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
+UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
+UBUNTUKYLIN_RES_WIN_PATH = UBUNTUKYLIN_DATA_PATH + "winicons/"
+
+#商业版系统默认图标路径
+KYLIN_SYSTEM_ICON_48_PATH = "/usr/share/icons/kylin-icon-theme/48x48/apps/"
+#社区版系统默认图标路径
+UK_SYSTEM_ICON_48_PATH = "/usr/share/icons/ukui-icon-theme-default/48x48/apps/"
+
+###############################样式###############
+ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s);background-color:transparent;}")
+RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
+RECOMMEND_BUTTON_STYLE = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
+HEADER_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+
+LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:white;font-size:14px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
+
+AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
+
+# ported from ubuntu-software-center to support Ubuntu-kylin-SSO
+
+SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
+#SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录银河软件中心。'
+SOFTWARE_CENTER_SSO_DESCRIPTION = _("Log in to Galaxy Software Center with your Youke account.")
+
+datadir = "./utils/"
+PISTON_GENERIC_HELPER = "piston_generic_helper.py"
+
 
 Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
 
@@ -125,59 +193,10 @@ class TransactionTypes:
     APPLY = "apply_changes"
     REPAIR = "repair_dependencies"
 
-UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
-safe_makedirs(UKSC_CACHE_DIR)
-
-HOME_PATH = os.path.expandvars('$HOME')
-UBUNTUKYLIN_HTTP_WIN_RES_PATH = HOME_PATH + "/.cache/uksc/uk-win/"
-
-#UBUNTUKYLIN_ROOT_PATH,filename = (os.path.split(os.path.realpath(__file__)))
-UBUNTUKYLIN_RES_PATH = (os.path.abspath(os.path.curdir) + "/res/")
-UBUNTUKYLIN_DATA_PATH = (os.path.abspath(os.path.curdir) + "/data/")
-
-#UBUNTUKYLIN_RES_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/res/"
-#UBUNTUKYLIN_DATA_PATH = "/home/maclin/Develop/launchpad-branch/ubuntu-kylin-software-center/data/"
-UBUNTUKYLIN_DATA_CAT_PATH = UBUNTUKYLIN_DATA_PATH + "category/"
-
-#UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join(UKSC_CACHE_DIR, "screenshots/")
-#safe_makedirs(UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-UBUNTUKYLIN_RES_SCREENSHOT_PATH = os.path.join("/usr/share/ubuntu-kylin-software-center/data/", "screenshots/")
-UBUNTUKYLIN_RES_SQLITE3_PATH=os.path.join("/usr/share/ubuntu-kylin-software-center/","data/")
-
-
-UBUNTUKYLIN_CACHE_ICON_PATH = os.path.join(UKSC_CACHE_DIR, "icons/")
-
-UBUNTUKYLIN_CACHE_SETADS_PATH =os.path.join(UKSC_CACHE_DIR, "ads/")
-
-UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH=os.path.join(UKSC_CACHE_DIR, "screenshots/")
-
-UBUNTUKYLIN_CACHE_UKSCDB_PATH =os.path.join(UKSC_CACHE_DIR, "uksc.db")
-safe_makedirs(UBUNTUKYLIN_CACHE_ICON_PATH)
-
-UBUNTUKYLIN_RES_ICON_PATH = UBUNTUKYLIN_DATA_PATH + "icons/"
-UBUNTUKYLIN_RES_AD_PATH = UBUNTUKYLIN_DATA_PATH + "ads/"
-UBUNTUKYLIN_RES_WIN_PATH = UBUNTUKYLIN_DATA_PATH + "winicons/"
-
-ITEM_LABEL_STYLE = ("QLabel{background-image:url(%s);background-color:transparent;}")
-RECOMMEND_BUTTON_BK_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:#497FAB;}")
-RECOMMEND_BUTTON_STYLE = ("QPushButton{border:0px;color:white;font-size:14px;background-image:url(%s)}QPushButton:hover{background-image:url(%s)}QPushButton:pressed{background-image:url(%s)}")
-HEADER_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
-
-LIST_BUTTON_STYLE = ("QPushButton{background-image:url(%s);border:0px;color:white;font-size:14px;}QPushButton:hover{background:url(%s);}QPushButton:pressed{background:url(%s);}")
-
-AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
-
-# ported from ubuntu-software-center to support Ubuntu-kylin-SSO
-# UBUNTU_SSO_SERVICE = 'http://login.ubuntukylin.com:8001/api/1.0'#'http://0.0.0.0:8000/api/1.0'
-UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
-SOFTWARE_CENTER_NAME_KEYRING = "Youker ID"
-SOFTWARE_CENTER_SSO_DESCRIPTION = '使用优客账号登录银河软件中心。'
-datadir = "./utils/"
-PISTON_GENERIC_HELPER = "piston_generic_helper.py"
-
 
 
 class Signals:
+    # from models.application import Application
     init_models_ready = pyqtSignal(str,str)
 
     myinit_emit = pyqtSignal()
@@ -186,9 +205,9 @@ class Signals:
 #    getallpackagesover = pyqtSignal()
 #    countiover = pyqtSignal()
 #    countuover = pyqtSignal()
-    task_remove = pyqtSignal(int,Application)
+    task_remove = pyqtSignal(int,BaseInfo)
     task_cancel = pyqtSignal(str,str)
-    task_cancel_tliw = pyqtSignal(Application,str)
+    task_cancel_tliw = pyqtSignal(BaseInfo,str)
     task_stop = pyqtSignal(str,str)
     #add
     task_reinstall = pyqtSignal()
@@ -313,28 +332,72 @@ class AppActions:
     FIND_UP_SERVER = "find_up_server"
 
 
+#AptActionMsg = {
+    #"install_deps":"安装依赖包",
+    #"install_debfile":"安装本地包",
+    #"install":"软件安装",
+    #"remove":"软件卸载",
+#     "upgrade":"软件升级",
+#     "update":"源更新",
+#     "update_first":"源初始化",
+# }
 AptActionMsg = {
-    "install_deps":"安装依赖包",
-    "install_debfile":"安装本地包",
-    "install":"软件安装",
-    "remove":"软件卸载",
-    "upgrade":"软件升级",
-    "update":"源更新",
-    "update_first":"源初始化",
+    "install_deps":_("Install dependencies"),
+    "install_debfile":_("Install local package"),
+    "install":_("Software Installation"),
+    "remove":_("Software uninstall"),
+    "upgrade":_("Software upgrade"),
+    "update":_("Source update"),
+    "update_first":_("Source initialization")
+}
+# AptProcessMsg = {
+#     "apt_start":"开始...",
+#     "apt_finish":"完成!",
+#     "apt_error":"失败!",
+#     "apt_pulse":"进行中",
+#     "down_start":"下载开始",
+#     "down_stop":"下载停止",
+#     "down_done":"下载完成",
+#     "down_fail":"下载失败",
+#     "down_fetch":"单项下载完成",
+#     "down_pulse":"下载进行中...",
+#     "down_cancel":"下载取消",
+# }
+AptProcessMsg = {
+    "apt_start":_("Start..."),
+    "apt_finish":_("Perfection!"),
+    "apt_error":_("Failure!"),
+    "apt_pulse":_("Processing"),
+    "down_start":_("Download begins"),
+    "down_stop":_("Download stopped"),
+    "down_done":_("Download completed"),
+    "down_fail":_("download failed"),
+    "down_fetch":_("Single download completed"),
+    "down_pulse":_("Download in progress"),
+    "down_cancel":_("Download canceled"),
 }
 
-AptProcessMsg = {
-    "apt_start":"开始...",
-    "apt_finish":"完成!",
-    "apt_error":"失败!",
-    "apt_pulse":"进行中",
-    "down_start":"下载开始",
-    "down_stop":"下载停止",
-    "down_done":"下载完成",
-    "down_fail":"下载失败",
-    "down_fetch":"单项下载完成",
-    "down_pulse":"下载进行中...",
-    "down_cancel":"下载取消",
+# moshengren add
+PKG_NAME = {
+    "wps-office": "wps-office-wps",
+    "uget": "uget-gtk",
+    "eclipse-platform": "eclipse",
+    "software-center": "ubuntu-software-center",
+    "mathwar": "MathWar",
+    "gnome-disk-utility": "gnome-disks",
+    "kino": "Kino",
+    "monajat-applet": "monajat",
+    "system-config-printer-applet": "system-config-printer",
+    "xterm": "debian-uxterm",
+    "virtualbox-qt": "virtualbox",
+    "lovewallpaper": "love-wallpaper",
+    "steam-launcher": "steam",
+    "obs-studio": "obs",
+    "google-chrome-stable": "google-chrome",
+    "youker-assistant": "kylin-assistant",
+    "crossover:i386": "/opt/cxoffice/bin/crossover",#crossover:i386
+    "gnome-screenshot":  "org.gnome.Screenshot",
+    "gnome-mines":  "gnomine",
 }
 
 class ErrorCode:

@@ -32,6 +32,9 @@ from models.globals import Globals
 from utils import run
 from utils.debfile import DebFile
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 # class WorkType:
 #     RUN = "run"
@@ -91,25 +94,31 @@ class MultiFunctionBtn(QWidget,Signals):
         if(flag == True):
             btn.show()
             if(btn.whatsThis() == "run"):
-                btn.setText("启动")
+                #btn.setText("启动")
+                btn.setText(_("Start"))
             if(btn.whatsThis() == "install"):
-                btn.setText("安装")
+                #btn.setText("安装")
+                btn.setText(_("Install"))
             if(btn.whatsThis() == "update"):
-                btn.setText("升级")
+                #btn.setText("升级")
+                btn.setText(_("Upgrade"))
             if(btn.whatsThis() == "uninstall"):
-                btn.setText("卸载")
-
+                #btn.setText("卸载")
+                btn.setText(_("Uninstall"))
         else:
             btn.hide()
             if(btn.whatsThis() == "run"):
-                btn.setText("无法启动")
+                #btn.setText("无法启动")
+                btn.setText(_("Unable to start"))
             if(btn.whatsThis() == "install"):
-                btn.setText("无法安装")
+                #btn.setText("无法安装")
+                btn.setText(_("Unable to install"))
             if(btn.whatsThis() == "update"):
-                btn.setText("无法升级")
+                #btn.setText("无法升级")
+                btn.setText(_("Unable to upgrade"))
             if(btn.whatsThis() == "uninstall"):
-                btn.setText("无法卸载")
-
+                #btn.setText("无法卸载")
+                btn.setText(_("Unable to uninstall"))
 
     # confirm which btn on top, confirm the status of each btn
     def reset_btns(self, app, type, debfile=None):#zx11.27

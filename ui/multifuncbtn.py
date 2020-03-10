@@ -9,6 +9,10 @@
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import *
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -45,8 +49,11 @@ class Ui_MultiFuncBtn(object):
 
     def retranslateUi(self, MultiFuncBtn):
         MultiFuncBtn.setWindowTitle(_translate("MultiFuncBtn", "Form", None))
-        self.btnRun.setText(_translate("MultiFuncBtn", "启动", None))
-        self.btnInstall.setText(_translate("MultiFuncBtn", "安装", None))
-        self.btnUpdate.setText(_translate("MultiFuncBtn", "升级", None))
-        self.btnUninstall.setText(_translate("MultiFuncBtn", "卸载", None))
-
+       # self.btnRun.setText(_translate("MultiFuncBtn", "启动", None))
+        self.btnRun.setText(_translate("MultiFuncBtn", _("Start"), None))
+       # self.btnInstall.setText(_translate("MultiFuncBtn", "安装", None))
+        self.btnInstall.setText(_translate("MultiFuncBtn", _("Install"), None))
+       # self.btnUpdate.setText(_translate("MultiFuen", "升级", None))
+        self.btnUpdate.setText(_translate("MultiFuncBtn", _("upgrade"), None))
+       # self.btnUninstall.setText(_translate("MultiFuncBtn", "卸载", None))
+        self.btnUninstall.setText(_translate("MultiFuncBtn", _("Uninstall"), None))

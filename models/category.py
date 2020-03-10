@@ -29,6 +29,10 @@ import apt
 from models.globals import Globals
 from .application import Application
 
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 #This class is the abstraction of a 
 class Category:
 
@@ -76,7 +80,10 @@ class Category:
         except:
             app = None
         else:
-            if app.package is None or app.package.candidate is None:
+            try:
+                if app.package is None or app.package.candidate is None:
+                    app = None
+            except:
                 app = None
         return app
 
@@ -104,7 +111,8 @@ if __name__ == "__main__":
     if (Globals.DEBUG_SWITCH):
         print((len(cache)))
 
-    cat1 = Category("devel","开发工具","",[])
+    #cat1 = Category("devel","开发工具","",[])
+    cat1 = Category("devel", _("Development tools"), "", [])
     if (Globals.DEBUG_SWITCH):
         print((cat1.name))
         print((cat1.apps))

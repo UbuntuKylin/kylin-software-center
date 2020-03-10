@@ -1,4 +1,5 @@
 #!/usr/bin/make -f
+export NO_PKG_MANGLE=1
 
 %:
 	dh ${@} --with python3 --buildsystem=pybuild

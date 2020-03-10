@@ -25,8 +25,11 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-from models.enums import UBUNTUKYLIN_RES_PATH
-from models.enums import Signals
+from models.enums import UBUNTUKYLIN_RES_PATH,Signals
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class ConfirmDialog(QDialog,Signals):
 
@@ -53,12 +56,14 @@ class ConfirmDialog(QDialog,Signals):
         self.text.setAlignment(Qt.AlignCenter)
         self.text.setStyleSheet("QLabel{font-size:14px;}")
         self.btnok = QPushButton(self.centerwidget)
-        self.btnok.setText("确定")
+        #self.btnok.setText("确定")
+        self.btnok.setText(_('Determine'))
         self.btnok.setGeometry(144, 100, 64, 22)
         self.btnok.clicked.connect(self.slot_ok)
         self.btnok.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/btn4-1.png')}QPushButton:hover{background-image:url('res/btn4-2.png')}QPushButton:pressed{background-image:url('res/btn4-3.png')}")
         self.btncancel = QPushButton(self.centerwidget)
-        self.btncancel.setText("取消")
+        #self.btncancel.setText("取消")
+        self.btncancel.setText(_("cancel"))
         self.btncancel.setGeometry(57, 100, 64, 22)
         self.btncancel.clicked.connect(self.slot_cancel)
         self.btncancel.setStyleSheet("QPushButton{border:0px;background-image:url('res/btn-notenable.png')}")
@@ -108,12 +113,17 @@ class Update_Source_Dialog(QMessageBox):
 
     def __init__(self, parent=None):
         QMessageBox.__init__(self, parent)
-        self.setWindowTitle("软件源更新提示")
-        self.checkbox = QCheckBox(self.tr("不再提醒"),self)
+        #self.setWindowTitle("软件源更新提示")
+        self.setWindowTitle(_("Software source update tips"))
+        #self.checkbox = QCheckBox(self.tr("不再提醒"),self)
+        self.checkbox = QCheckBox(self.tr(_("Never remind")), self)
         self.checkbox.isCheckable()
         self.checkbox.setGeometry(QRect(35, 120, 90, 20))
-        self.button_update = self.addButton(self.tr("更新"), QMessageBox.ActionRole)
-        self.button_notupdate = self.addButton(self.tr("不更新"), QMessageBox.ActionRole)
-        self.button_exit = self.addButton(self.tr("退出"), QMessageBox.ActionRole)
+        #self.button_update = self.addButton(self.tr("更新"), QMessageBox.ActionRole)
+        self.button_update = self.addButton(self.tr(_("Update")), QMessageBox.ActionRole)
+        #self.button_notupdate = self.addButton(self.tr("不更新"), QMessageBox.ActionRole)
+        self.button_notupdate = self.addButton(self.tr(_("Don't update")), QMessageBox.ActionRole)
+        #self.button_exit = self.addButton(self.tr("退出"), QMessageBox.ActionRole)
+        self.button_exit = self.addButton(self.tr(_("Quit")), QMessageBox.ActionRole)
         self.button_exit.hide()
         self.setEscapeButton(self.button_exit)

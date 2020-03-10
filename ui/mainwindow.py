@@ -14,6 +14,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import glob
 from models.enums import (UBUNTUKYLIN_CACHE_SETADS_PATH)
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -164,7 +168,8 @@ class Ui_MainWindow(object):
 
         self.btnHomepage = QPushButton(self.specialcategoryWidget)
         self.btnHomepage.setGeometry(QtCore.QRect(0, 0, 65, 22))
-        self.btnHomepage.setText(_fromUtf8("热门推荐"))
+        #self.btnHomepage.setText(_fromUtf8("热门推荐"))
+        self.btnHomepage.setText(_fromUtf8(_("Hot Reco")))
         self.btnHomepage.setObjectName(_fromUtf8("btnHomepage"))
 
         self.btnvline = QLabel(self.specialcategoryWidget)
@@ -173,12 +178,14 @@ class Ui_MainWindow(object):
 
         self.btnAllsoftware = QPushButton(self.specialcategoryWidget)
         self.btnAllsoftware.setGeometry(QtCore.QRect(76, 0, 65, 22))
-        self.btnAllsoftware.setText(_fromUtf8("全部软件"))
+        #self.btnAllsoftware.setText(_fromUtf8("全部软件"))
+        self.btnAllsoftware.setText(_fromUtf8(_("All soft")))
         self.btnAllsoftware.setObjectName(_fromUtf8("btnAllsoftware"))
 
         self.btnWin = QPushButton(self.specialcategoryWidget)
         self.btnWin.setGeometry(QtCore.QRect(142, 0, 65, 22))
-        self.btnWin.setText(_fromUtf8("win替换"))
+        #self.btnWin.setText(_fromUtf8("win替换"))
+        self.btnWin.setText(_fromUtf8(_("Win sub")))
         self.btnWin.setObjectName(_fromUtf8("btnWin"))
 
         self.homepageWidget = QWidget(self.rightWidget)
@@ -199,7 +206,7 @@ class Ui_MainWindow(object):
 
         # self.adWidget = QWidget(self.rightWidget)
         self.adWidget = QPushButton(self.recommendWidget)
-        self.adWidget.setGeometry(QtCore.QRect(0, 0, 825, 180))
+        self.adWidget.setGeometry(QtCore.QRect(0, 0, 830, 180))
         self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 # #        self.adWidget.setTitle(_fromUtf8(""))
 #         self.adWidget.setObjectName(_fromUtf8("adWidget"))
@@ -301,7 +308,7 @@ class Ui_MainWindow(object):
         #self.hometext8.setText(_fromUtf8(""))
         #self.hometext8.setObjectName(_fromUtf8("120, 0, 60, 15"))
         self.hometext8 = QPushButton(self.recommendWidget)
-        self.hometext8.setGeometry(QtCore.QRect(120, 200, 60, 16))
+        self.hometext8.setGeometry(QtCore.QRect(120,200,60, 16))
         self.hometext8.setText(_fromUtf8(""))
         self.hometext8.setObjectName(_fromUtf8("hometext8"))
 
@@ -347,23 +354,26 @@ class Ui_MainWindow(object):
 
         # self.alipayAct = QAction(QIcon('icon/alipay.ico'),'支付宝支付', self)
 
-        self.btnAppList = QAction(QIcon('res/btnapplist-1.png'),'安装历史',self.afterLoginWidget)
+        #self.btnAppList = QAction(QIcon('res/btnapplist-1.png'),'安装历史',self.afterLoginWidget)
+        self.btnAppList = QAction(QIcon('res/btnapplist-1.png'), _('Installation history'), self.afterLoginWidget)
         # self.btnAppList.setGeometry(QtCore.QRect(150, 20, 60, 15))
         self.btnAppList.setText(_fromUtf8(""))
         self.btnAppList.setObjectName(_fromUtf8("btnAppList"))
 
-        self.btnTransList = QAction(QIcon('res/btntranslist-1.png'),'我翻译的软件',self.afterLoginWidget)
+        #self.btnTransList = QAction(QIcon('res/btntranslist-1.png'),'我翻译的软件',self.afterLoginWidget)
+        self.btnTransList = QAction(QIcon('res/btntranslist-1.png'), 'My Translationed Software', self.afterLoginWidget)
         # self.btnTransList.setGeometry(QtCore.QRect(220, 20, 65, 15))
         self.btnTransList.setText(_fromUtf8(""))
         self.btnTransList.setObjectName(_fromUtf8("btnTransList"))
 
-        self.btnLogout = QAction(QIcon('res/btnlogout-1.png'),'退出',self.afterLoginWidget)
+        #self.btnLogout = QAction(QIcon('res/btnlogout-1.png'),'退出',self.afterLoginWidget)
+        self.btnLogout = QAction(QIcon('res/btnlogout-1.png'), 'Quit', self.afterLoginWidget)
         # self.btnLogout.setGeometry(QtCore.QRect(290, 20, 45, 15))
         self.btnLogout.setText(_fromUtf8(""))
         self.btnLogout.setObjectName(_fromUtf8("btnLogout"))
 
         self.loginMenu.addAction(self.btnAppList)
-        self.loginMenu.addAction(self.btnTransList)
+        #self.loginMenu.addAction(self.btnTransList)
         self.loginMenu.addAction(self.btnLogout)
         self.username.setMenu(self.loginMenu)
 
@@ -444,14 +454,16 @@ class Ui_MainWindow(object):
         self.prompt1= QLabel(self.rightWidget)
         self.prompt1.setGeometry(QtCore.QRect(325, 443, 220, 30))
         self.prompt1.setObjectName(_fromUtf8("prompt1"))
-        self.prompt1.setText("抱歉，没有找到您想要的应用")
+        #self.prompt1.setText("抱歉，没有找到您想要的应用")
+        self.prompt1.setText(_("Sorry, no application found"))
         self.prompt1.setStyleSheet("QLabel{color:#999999;font-size:16px;border:0px}")
         self.prompt1.hide()
 
         self.prompt2 = QLabel(self.rightWidget)
-        self.prompt2.setGeometry(QtCore.QRect(300, 490, 280, 25))
+        self.prompt2.setGeometry(QtCore.QRect(300, 490, 340, 25))
         self.prompt2.setObjectName(_fromUtf8("prompt1"))
-        self.prompt2.setText("您可以在搜索框选择＂全局＂搜索试试")
+        #self.prompt2.setText("您可以在搜索框选择＂全局＂搜索试试")
+        self.prompt2.setText(_("You can select Global search in the search box"))
         self.prompt2.setStyleSheet("QLabel{color:#999999;font-size:16px;border:0px}")
         self.prompt2.hide()
 
@@ -655,9 +667,10 @@ class Ui_MainWindow(object):
         self.ualine.setObjectName(_fromUtf8("ualine"))
 
         self.set_lindit = QLabel(self.rightWidget)
-        self.set_lindit.setGeometry(QtCore.QRect(20, 39, 520, 20))
+        self.set_lindit.setGeometry(QtCore.QRect(20, 39, 800,20))
         self.set_lindit.setObjectName(_fromUtf8("rightWidget"))
-        self.set_lindit.setText("全局搜索:是在软件源下搜索全部应用软件，搜索到软件可能会有不可用或者其他质量问题")
+        #self.set_lindit.setText("全局搜索:是在软件源下搜索全部应用软件，搜索到软件可能会有不可用或者其他质量问题")
+        self.set_lindit.setText(_("Global search: It searches all application software under the software source. The search software may be unavailable or other quality problems."))
         self.set_lindit.setStyleSheet("QLabel{color:#ff6f65;font-size:12px;border:0px}")
         self.set_lindit.hide()
 
@@ -714,7 +727,7 @@ class Ui_MainWindow(object):
         self.NoTransItemText.setObjectName(_fromUtf8("NoTransItemText"))
 
         num = (len(glob.glob(UBUNTUKYLIN_CACHE_SETADS_PATH + "*.png")))
-        flag=num
+        flag=num+2
         test=0
         self.takeads=[]
         while flag:
@@ -749,7 +762,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.cbSelectAll.setText(_translate("MainWindow", "全选/取消全选", None))
+        #self.cbSelectAll.setText(_translate("MainWindow", "全选/取消全选", None))
+        self.cbSelectAll.setText(_translate("MainWindow", _("Select All / Unselect All"), None))
 
 class Searchcw1(QWidget):
 
@@ -777,8 +791,9 @@ class Searchcw1(QWidget):
 
         self.senior_search.setView(QListView())
 
-        self.leSearch.setPlaceholderText("请输入您要搜索的软件")
-        self.lebg.setStyleSheet("QPushButton{background-image:url('res/search-1.png');border:0px;}")
+        #self.leSearch.setPlaceholderText("请输入您要搜索的软件")
+        self.leSearch.setPlaceholderText(_("Please enter search software"))
+        self.lebg.setStyleSheet("QPushButton{background-color:transparent;background-image:url('res/search-1.png');border:1px;}")
         self.lebg.setCursor(Qt.PointingHandCursor)
         self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:12px;}")
         # self.senior_search.setStyleSheet("QComboBox{background-color:#EEEDF0;color:#999999;font-size:13px;}")

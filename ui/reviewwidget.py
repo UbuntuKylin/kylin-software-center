@@ -23,7 +23,6 @@
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.ukcmtw import Ui_CommentWidget
 from ui.starwidget import StarWidget

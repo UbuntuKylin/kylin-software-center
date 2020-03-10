@@ -24,12 +24,16 @@
 
 
 import os
-from models.enums import UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH
+from models.enums import UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH,KYLIN_SYSTEM_ICON_48_PATH,UK_SYSTEM_ICON_48_PATH
 from models.globals import Globals
 
 
 def get_icon_path(app_name):
-    if(os.path.isfile(UBUNTUKYLIN_CACHE_ICON_PATH + str(app_name) + ".png")):
+    if(os.path.isfile(KYLIN_SYSTEM_ICON_48_PATH + str(app_name) + ".png")):
+        return KYLIN_SYSTEM_ICON_48_PATH + str(app_name) + ".png"
+    elif(os.path.isfile(UK_SYSTEM_ICON_48_PATH + str(app_name) + ".png")):
+        return UK_SYSTEM_ICON_48_PATH + str(app_name) + ".png"
+    elif(os.path.isfile(UBUNTUKYLIN_CACHE_ICON_PATH + str(app_name) + ".png")):
         return UBUNTUKYLIN_CACHE_ICON_PATH + str(app_name) + ".png"
     elif(os.path.isfile(UBUNTUKYLIN_CACHE_ICON_PATH + str(app_name) + ".jpg")):
         return UBUNTUKYLIN_CACHE_ICON_PATH + str(app_name) + ".jpg"

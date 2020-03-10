@@ -823,8 +823,7 @@ def make_string_from_list(base_str, item_list):
         # TRANSLATORS: this is a generic list delimit char, e.g. "foo, bar"
         list_str = _(", ").join(item_list[:-1])
         # TRANSLATORS: this is the last part of a list, e.g. "foo, bar and baz"
-        list_str = _("%s and %s") % (list_str,
-                                     item_list[-1])
+        list_str =_("%s and %s") % (list_str,item_list[-1])
     s = base_str % list_str
     return s
 

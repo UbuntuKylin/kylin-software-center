@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+ #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -8,27 +8,34 @@ from setuptools import setup
 import DistUtilsExtra.command.build_extra
 import DistUtilsExtra.command.build_i18n
 import DistUtilsExtra.command.clean_i18n
-
+from subprocess import call
 #from DistUtilsExtra.command import build_extra
 #import build_i18n_ext as build_i18n
 
+
+PO_DIR = 'po'
+
+for po in glob.glob(os.path.join(PO_DIR, '*.po')):
+    lang = os.path.basename(po[:-3])
+    mo = os.path.join(PO_DIR, 'ubuntu-kylin-software-center.mo')
+    target_dir = os.path.dirname(mo)
+    if not os.path.isdir(target_dir):
+        os.makedirs(target_dir)
+    try:
+        return_code = call(['msgfmt', '-o', mo, po])
+    except OSError:
+        print('Translation not available, please install gettext')
+        break
+    if return_code:
+        raise Warning('Error when building locales')
 cmdclass ={
             "build" : DistUtilsExtra.command.build_extra.build_extra,
             "build_i18n" :  DistUtilsExtra.command.build_i18n.build_i18n,
             "clean": DistUtilsExtra.command.clean_i18n.clean_i18n,
 }
 
-setup(name="ubuntu-kylin-software-center",
-    version="1.3.10",
-    author="Ubuntu Kylin Team",
-    author_email="ubuntukylin-members@list.launchpad.net",
-    url="https://launchpad.net/ubuntu-kylin-software-center",
-    license="GNU General Public License (GPL)",
-    packages = [ 'ubuntu_kylin_software_center_daemon',],
-    package_dir = {
-        '': '.',
-    },
-    data_files=[
+
+data_files=[
     ('bin/', ['ubuntu-kylin-software-center']),
     ('../etc/dbus-1/system.d/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.conf']),
     ('share/dbus-1/system-services/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.service']),
@@ -63,8 +70,32 @@ setup(name="ubuntu-kylin-software-center",
     ('share/ubuntu-kylin-software-center/kydroid/', glob.glob('kydroid/*')),
     ('share/ubuntu-kylin-software-center/',['ubuntu-kylin-software-center.py']),
     # ('../etc/xdg/autostart/',['ubuntu-kylin-software-center-autostart.desktop']),
-    ],
+    ]
+
+def find_mo_files():
+    data_files = []
+    for mo in glob.glob(os.path.join(PO_DIR, '*', 'ubuntu-kylin-software-center.mo')):
+        lang = os.path.basename(os.path.dirname(mo))
+        dest = os.path.join('share', 'locale', lang, 'LC_MESSAGES')
+        data_files.append((dest, [mo]))
+    return data_files
+
+data_files.extend(find_mo_files())
+
+
+
+setup(name="ubuntu-kylin-software-center",
+    version="1.3.10",
+    author="Ubuntu Kylin Team",
+    author_email="ubuntukylin-members@list.launchpad.net",
+    url="https://launchpad.net/ubuntu-kylin-software-center",
+    license="GNU General Public License (GPL)",
+    packages = [ 'ubuntu_kylin_software_center_daemon',],
+    package_dir = {
+        '': '.',
+    },
     install_requires = [ 'setuptools', ],
     cmdclass = cmdclass,
+    data_files=data_files,
 )
 

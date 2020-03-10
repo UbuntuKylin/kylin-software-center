@@ -51,6 +51,10 @@ class UtilDbus(dbus.service.Object):
     def show_deb_file(self, path):
         self.parent.slot_show_deb_detail(str(path))
 
+    @dbus.service.method('com.ubuntukylin.utiliface', in_signature='s', out_signature='')
+    def show_remove_soft(self, name):
+        self.parent.slot_show_remove_soft(str(name))
+
     @dbus.service.method('com.ubuntukylin.utiliface')
     def show_loading_div(self):
         self.parent.slot_show_loading_div()

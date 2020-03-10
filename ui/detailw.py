@@ -10,6 +10,10 @@
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import *
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -58,15 +62,17 @@ class Ui_DetailWidget(object):
         self.transDescriptionStatus.setObjectName(_fromUtf8("transDescriptionStatus"))
 
         self.splitText1 = QLabel(DetailWidget)
-        self.splitText1.setGeometry(QtCore.QRect(25, 124, 66, 17))
+        self.splitText1.setGeometry(QtCore.QRect(25, 124, 160, 17))
         self.splitText1.setObjectName(_fromUtf8("splitText1"))
 
         self.promptlabel = QLabel(DetailWidget)
         self.promptlabel.setGeometry(QtCore.QRect(95, 124, 280, 17))
         self.promptlabel.setText(_fromUtf8(""))
         self.promptlabel.setObjectName(_fromUtf8("promptlabel"))
-        self.promptlabel.setToolTip("在翻译或查询软件时,当点击鼠标,焦点不能进入输入框\n"
-                                    "时请按下键盘左下角Alt键,然后在点击输入框进行输入")
+        # self.promptlabel.setToolTip("在翻译或查询软件时,当点击鼠标,焦点不能进入输入框\n"
+        #                             "时请按下键盘左下角Alt键,然后在点击输入框进行输入")
+        self.promptlabel.setToolTip(_("When translating or querying software, when clicking the mouse, the focus cannot enter the input box\n"
+                                    "Please press the Alt key in the lower left corner of the keyboard, and then click in the input box to enter"))
 
         self.summary = QTextEdit(DetailWidget)
         self.summary.setGeometry(QtCore.QRect(40, 150, 810, 50))
@@ -87,7 +93,7 @@ class Ui_DetailWidget(object):
         self.btnSshotNext.setText(_fromUtf8(""))
         self.btnSshotNext.setObjectName(_fromUtf8("btnSshotNext"))
         self.splitText3 = QLabel(DetailWidget)
-        self.splitText3.setGeometry(QtCore.QRect(25, 660, 66, 17))
+        self.splitText3.setGeometry(QtCore.QRect(25, 660, 120, 17))
         self.splitText3.setObjectName(_fromUtf8("splitText3"))
         self.reviewListWidget = QListWidget(DetailWidget)
         self.reviewListWidget.setGeometry(QtCore.QRect(40, 810, 810, 85))
@@ -155,7 +161,7 @@ class Ui_DetailWidget(object):
 
 
         self.splitText2 = QLabel(DetailWidget)
-        self.splitText2.setGeometry(QtCore.QRect(25, 490, 66, 17))
+        self.splitText2.setGeometry(QtCore.QRect(25, 490, 120, 17))
         self.splitText2.setObjectName(_fromUtf8("splitText2"))
         self.btnUpdate = QPushButton(DetailWidget)
         self.btnUpdate.setGeometry(QtCore.QRect(700, 24, 148, 40))
@@ -179,7 +185,7 @@ class Ui_DetailWidget(object):
         self.gradeText2.setAlignment(QtCore.Qt.AlignCenter)
         self.gradeText2.setObjectName(_fromUtf8("gradeText2"))
         self.gradeText1 = QLabel(self.gradeBG)
-        self.gradeText1.setGeometry(QtCore.QRect(520, 20, 90, 17))
+        self.gradeText1.setGeometry(QtCore.QRect(520, 20, 90, 22))
         self.gradeText1.setText(_fromUtf8(""))
         self.gradeText1.setObjectName(_fromUtf8("gradeText1"))
         self.grade = QLabel(self.gradeBG)
@@ -199,12 +205,12 @@ class Ui_DetailWidget(object):
 
         #add in dengnan
         self.grade1 = QLabel(self.gradeBG)
-        self.grade1.setGeometry(QtCore.QRect(640, 13, 60, 41))
+        self.grade1.setGeometry(QtCore.QRect(600, 13, 60, 41))
         self.grade1.setText(_fromUtf8(""))
         self.grade1.setAlignment(QtCore.Qt.AlignCenter)
         self.grade1.setObjectName(_fromUtf8("grade1"))
         self.gradetitle1= QLabel(self.gradeBG)
-        self.gradetitle1.setGeometry(QtCore.QRect(700, 35, 31, 21))
+        self.gradetitle1.setGeometry(QtCore.QRect(660, 35, 31, 21))
         self.gradetitle1.setText(_fromUtf8(""))
         self.gradetitle1.setAlignment(QtCore.Qt.AlignCenter)
         self.gradetitle1.setObjectName(_fromUtf8("gradetitle1"))
@@ -243,15 +249,20 @@ class Ui_DetailWidget(object):
         self.btn_change.setGeometry(QtCore.QRect(700, 106, 148, 40))
         self.btn_change.setText(_fromUtf8(""))
         self.btn_change.setObjectName(_fromUtf8("change_name"))
-        self.btn_change.setToolTip("  点击此按钮翻译或完善\n"
-                                   "【软件名】【软件介绍】")
+        # self.btn_change.setToolTip("  点击此按钮翻译或完善\n"
+        #                            "【软件名】【软件介绍】")
+        self.btn_change.setToolTip("  Click this button to translate or improve\n"
+                                   "[Software Name] [Software Introduction]")
+        self.btn_change.hide()
 
         self.change_submit = QPushButton(DetailWidget)#zx 2015.01.26
         self.change_submit.setGeometry(QtCore.QRect(700, 106, 74, 40))
         self.change_submit.setText(_fromUtf8(""))
         self.change_submit.setObjectName(_fromUtf8("change_submit"))
-        self.change_submit.setToolTip("提交的内容被采纳后\n"
-                                      "才能被应用到客户端！！")
+        # self.change_submit.setToolTip("提交的内容被采纳后\n"
+        #                               "才能被应用到客户端！！")
+        self.change_submit.setToolTip("After the submission is accepted\n"
+                                      "To be applied to the client！！")
 
         self.change_cancel = QPushButton(DetailWidget)#zx 2015.01.26
         self.change_cancel.setGeometry(QtCore.QRect(774, 106, 74, 40))
@@ -318,7 +329,10 @@ class Ui_DetailWidget(object):
 
     def retranslateUi(self, DetailWidget):
         DetailWidget.setWindowTitle(_translate("DetailWidget", "Form", None))
-        self.splitText1.setText(_translate("DetailWidget", "软件介绍", None))
-        self.splitText3.setText(_translate("DetailWidget", "用户评论", None))
-        self.splitText2.setText(_translate("DetailWidget", "软件评分", None))
+        #self.splitText1.setText(_translate("DetailWidget", "软件介绍", None))
+        self.splitText1.setText(_translate("DetailWidget", _("Software Introduction"), None))
+        #self.splitText3.setText(_translate("DetailWidget", "用户评论", None))
+        self.splitText3.setText(_translate("DetailWidget",_("user comment"), None))
+       # self.splitText2.setText(_translate("DetailWidget", "软件评分", None))
+        self.splitText2.setText(_translate("DetailWidget",_("Software Rating"), None))
 

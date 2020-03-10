@@ -25,38 +25,23 @@
 
 import apt
 import pwd
-import locale
-import os
-import time
 
 import logging
-import threading
-import multiprocessing
-import queue
-from piston_mini_client import auth
-
-from PyQt5.QtCore import *
 
 from models.category import Category
 from models.application import Application
 from models.apkinfo import ApkInfo
 from models.advertisement import Advertisement
-from backend.reviewratingspawn import SpawnProcess, RatingSortMethods,ReviewRatingStat
 from backend.service.dbmanager import Database
-from backend.installbackend import InstallBackend
 from utils.silentprocess import *
 from utils.machine import *
-from utils.debfile import DebFile
 from models.globals import Globals
-from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH, UBUNTUKYLIN_DATA_CAT_PATH, UBUNTUKYLIN_RES_SCREENSHOT_PATH)
-from models.enums import Signals,UnicodeToAscii,KYDROID_SOURCE_SERVER
+from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH,Signals, KYDROID_SOURCE_SERVER)
 
 #from backend.remote.piston_remoter import PistonRemoterAuth
 
 import aptsources.sourceslist
-from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
-from ftplib import FTP
 
 from kydroid import downloadmanager
 from kydroid.downloadmanager import DownloadManager
@@ -65,6 +50,11 @@ from kydroid import confparse
 from kydroid.kydroid_service import KydroidService
 
 LOG = logging.getLogger("uksc")
+
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class WorkerItem:
      def __init__(self, funcname, kwargs):
@@ -296,10 +286,12 @@ class AppManager(QObject,Signals):
     kydroid = KydroidService()
     kydroid_check = kydroid.check_has_kydroid()
 
-    def __init__(self):
+    def __init__(self, backend):
         #super(AppManager, self).__init__()
         QObject.__init__(self)
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
+
+        self.backend = backend
 #        self.login_in()
         self.name = "Ubuntu Kylin Software Center"
         self.apt_cache = None
@@ -326,7 +318,7 @@ class AppManager(QObject,Signals):
         self.worker_thread1.setDaemon(True)
         #self.worker_thread1.start()
 
-        self.backend = InstallBackend()
+        # self.backend = InstallBackend()
         self.backend.kydroid_dbus_ifaces()
 
         self.list = self.db.query_categories()
@@ -573,7 +565,6 @@ class AppManager(QObject,Signals):
                 #     cat = self.cat_list["Accessories"]
                 #     cat.apps[pkgname] = app
                 return app
-
         return None
 
     #get package object by appname
@@ -601,6 +592,35 @@ class AppManager(QObject,Signals):
         for oneapp in self.apk_list:
             if oneapp.pkgname == pkgname:
                 return oneapp
+        return None
+
+    def get_remove_soft_by_name(self,pkgname):
+        #print "get_application_by_name:", pkgname
+
+        if not pkgname:
+            return None
+        if self.cat_list is None:
+            return None
+        for (catname, cat) in list(self.cat_list.items()): #get app in cat which init in uksc startup
+            app = cat.get_application_byname(pkgname)
+            if app is not None and app.package is not None:
+                return app
+
+        pkg = self.get_package_by_name(pkgname)
+        if pkg is not None and pkg.candidate is not None: #get app from cache and add it to cat  when app not in cat
+            displayname_cn = pkgname
+            app = Application(pkgname, displayname_cn, cat, self.apt_cache)
+            app.orig_name = app.name
+            app.orig_summary = app.summary
+            app.orig_description = app.description
+            app.displayname = app.name
+            app.summary = app.summary
+            app.description = app.description
+            app.from_ukscdb = False
+            # if("Accessories" in self.cat_list.keys()):
+            #     cat = self.cat_list["Accessories"]
+            #     cat.apps[pkgname] = app
+            return app
         return None
 
     def get_application_count(self,cat_name=""):
@@ -701,13 +721,13 @@ class AppManager(QObject,Signals):
         if app is not None:
             reviews = app.get_reviews(page)
         # force == True means need get review from server immediately
-        if reviews is not None and force == False:
-            self.dispatchWorkerResult(item,reviews)
-            return reviews
-        else:
-            self.mutex.acquire()
-            self.worklist.append(item)
-            self.mutex.release()
+            if reviews is not None and force == False:
+                self.dispatchWorkerResult(item,reviews)
+                return reviews
+            else:
+                self.mutex.acquire()
+                self.worklist.append(item)
+                self.mutex.release()
 
     #get screenshots
     def get_application_screenshots(self, app, cachedir,callback=None):
@@ -804,7 +824,9 @@ class AppManager(QObject,Signals):
         elif item.funcname == "init_models":
             if (Globals.DEBUG_SWITCH):
                 LOG.debug("init models ready")
-            self.init_models_ready.emit("ok","获取分类信息完成")
+            #self.init_models_ready.emit("ok","获取分类信息完成")
+            self.init_models_ready.emit("ok",_("Complete classification information acquisition"))
+
             print("init models后台运行中")
 
     def update_rating_reviews(self,rnrStats):
@@ -893,12 +915,6 @@ class AppManager(QObject,Signals):
         # recommends = self.db.get_recommend_apps()
         recommends = self.get_category_apps_from_db("recommend")
         applist = []
-        for rec in recommends:
-            # app = self.get_application_by_name(rec[0])
-            app = recommends[rec]
-            if(app is not None):
-                # app.recommendrank = rec[1]
-                applist.append(app)
         list = self.db.query_category_apps("recommend")
         for rec in list:
             if(self.kydroid_check != False):
@@ -906,6 +922,13 @@ class AppManager(QObject,Signals):
                 if(apk is not None):
                     # apk.recommendrank = rec[1]
                     applist.append(apk)
+        for rec in recommends:
+            # app = self.get_application_by_name(rec[0])
+            app = recommends[rec]
+            if(app is not None):
+                # app.recommendrank = rec[1]
+                applist.append(app)
+
 
         if Globals.UPDATE_HOM == 0:
             self.recommend_ready.emit(applist, bysignal,first)
@@ -915,11 +938,6 @@ class AppManager(QObject,Signals):
         # recommends = self.db.get_game_apps()
         recommends = self.get_category_apps_from_db("rmdgames")
         applist = []
-        for rec in recommends:
-            app = recommends[rec]
-            if(app is not None):
-                # app.recommendrank = rec[1]
-                applist.append(app)
         list = self.db.query_category_apps("rmdgames")
         for rec in list:
             if(self.kydroid_check != False):
@@ -927,6 +945,12 @@ class AppManager(QObject,Signals):
                 if(apk is not None):
                     # apk.recommendrank = rec[1]
                     applist.append(apk)
+        for rec in recommends:
+            app = recommends[rec]
+            if(app is not None):
+                # app.recommendrank = rec[1]
+                applist.append(app)
+
         if sig == True:
             self.recommend_ready.emit(applist, bysignal, True)
 
@@ -935,11 +959,6 @@ class AppManager(QObject,Signals):
         # recommends = self.db.get_necessary_apps()
         recommends = self.get_category_apps_from_db("necessary")
         applist = []
-        for rec in recommends:
-            app =  recommends[rec]
-            if(app is not None):
-                # app.recommendrank = rec[1]
-                applist.append(app)
         list = self.db.query_category_apps("necessary")
         for rec in list:
             if(self.kydroid_check != False):
@@ -947,6 +966,12 @@ class AppManager(QObject,Signals):
                 if(apk is not None):
                     # apk.recommendrank = rec[1]
                     applist.append(apk)
+        for rec in recommends:
+            app =  recommends[rec]
+            if(app is not None):
+                # app.recommendrank = rec[1]
+                applist.append(app)
+
         if sig == True:
             self.recommend_ready.emit(applist, bysignal, True)
 
@@ -1033,6 +1058,7 @@ class AppManager(QObject,Signals):
             # res[0]['download_total']=0
         if res ==False:
             res=[{"download_total":"非数据库精选软件"}]
+            res=[{"download_total":_("Non-database select software")}]
         self.submit_download_over.emit(res)
 
 
@@ -1353,7 +1379,7 @@ class AppManager(QObject,Signals):
             if apk.name == app_dict['package_name']:
                 apk.is_installed = True
                 apk.installed_version = app_dict['version_name']
-                if str(apk.candidate_version) > str(apk.installed_version):
+                if apt.apt_pkg.version_compare(apk.candidate_version,apk.installed_version) == 1:
                     apk.is_upgradable = True
                 return True
 
@@ -1366,14 +1392,30 @@ class AppManager(QObject,Signals):
         return False
 
     def download_apk(self, apkInfo):
-        dm = DownloadManager(self, apkInfo)
-        if (Globals.DEBUG_SWITCH):
-            print("apkinfo : ",apkInfo.__dict__)
-        dm.start()
+        try:
+            if(self.backend.call_kydroid_policykit()):
+                dm = DownloadManager(self, apkInfo)
+                if (Globals.DEBUG_SWITCH):
+                    print("apkinfo : ",apkInfo.__dict__)
+                dm.start()
+                return True
+            else:
+                self.apk_process.emit(apkInfo.name, 'apt', "install", -3, 'auth failed')
+                return False
+        except:
+            return False
 
     def uninstall_app(self, apkInfo):
-        um = UninstallManager(self, apkInfo.name)
-        um.start()
+        try:
+            if(self.backend.call_kydroid_policykit()):
+                um = UninstallManager(self, apkInfo.name)
+                um.start()
+                return True
+            else:
+                self.apk_process.emit(apkInfo.name, 'apt', "remove", -3, 'auth failed')
+                return False
+        except:
+            return False
 
 
 def _reviews_ready_callback(str_pkgname, reviews_data, my_votes=None,

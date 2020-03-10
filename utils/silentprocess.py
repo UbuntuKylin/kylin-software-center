@@ -40,8 +40,7 @@ from utils.debfile import DebFile
 from models.globals import Globals
 
 from models.review import Review
-from models.enums import UBUNTUKYLIN_SERVER,UBUNTUKYLIN_DATA_PATH,UKSC_CACHE_DIR,UnicodeToAscii,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH,UBUNTUKYLIN_CACHE_SETADS_PATH,UBUNTUKYLIN_CACHE_UKSCDB_PATH,UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH
-# from models.http import HttpDownLoad
+from models.enums import UBUNTUKYLIN_SERVER,UKSC_CACHE_DIR,UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_CACHE_SETADS_PATH,UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH
 
 
 import threading
@@ -62,6 +61,7 @@ class SilentProcess(multiprocessing.Process):
 
         self.destFile = os.path.join(UKSC_CACHE_DIR,"uksc.db")
         self.connect = sqlite3.connect(self.destFile, timeout=30.0, check_same_thread=False)
+        self.connect.execute('pragma journal_mode=wal;')
         self.cursor = self.connect.cursor()
 
         self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
