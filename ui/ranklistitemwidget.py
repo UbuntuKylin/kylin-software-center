@@ -30,6 +30,9 @@ from utils import commontools
 from models.enums import setLongTextToElideFormat
 from ui.ukrliw import Ui_RankListWidget
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class RankListItemWidget(QWidget):
 
@@ -54,9 +57,11 @@ class RankListItemWidget(QWidget):
         self.ui.number.setAlignment(Qt.AlignCenter)
 
         if(self.app.is_installed):
-            self.ui.appstatus.setText("已安装")
+           # self.ui.appstatus.setText("已安装")
+            self.ui.appstatus.setText(_("Already installed"))
         else:
-            self.ui.appstatus.setText("未安装")
+            #self.ui.appstatus.setText("未安装")
+            self.ui.appstatus.setText(_("Not Installed"))
 
         self.ui.name.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
         self.ui.number.setStyleSheet("QLabel{font-size:15px;font-style:italic;color:#999999;}")

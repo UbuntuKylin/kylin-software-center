@@ -25,8 +25,14 @@
 
 
 import os
+import platform
 
 class Globals:
+
+    if(platform.machine() == 'mips64'):
+        MIPS64 = True
+    else:
+        MIPS64 = False
     # mainwindow size
     MAIN_WIDTH_NORMAL = 980
     MAIN_HEIGHT_NORMAL = 680
@@ -80,10 +86,16 @@ class Globals:
 
     MAIN_CHECKBOX = 0
 
+    SOURCE_ITEMWIDTH=0
+
+    SOURCE_LIST=[]
+
     list_chk=[]
 
     Denot = 0
     Dleft=0
     ADS_NUM=0
+
+    REMOVE_SOFT = None
 
     # SQLITR_DB=''

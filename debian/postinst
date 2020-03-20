@@ -23,11 +23,12 @@ set -e
 #    fi
 #fi
 
+# Clean up the old database
 for user in `ls /home/`
 do
     path="/home/"$user"/.cache/uksc/uksc.db"
     if [ -f "$path" ]; then
-        rm $path
+        rm $path*
     fi
 done
 

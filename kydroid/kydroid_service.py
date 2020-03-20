@@ -28,6 +28,10 @@ import os
 import xdg.DesktopEntry
 from models.globals import Globals
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 class KydroidService:
 
     libKydroid = None
@@ -53,7 +57,8 @@ class KydroidService:
         #获取desktop文件路径
         user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
         if(os.path.exists(user_desktop_path) == False):
-            user_desktop_path = os.path.join(os.path.expanduser("~"), '桌面')
+            #user_desktop_path = os.path.join(os.path.expanduser("~"), '桌面')
+            user_desktop_path = os.path.join(os.path.expanduser("~"),_("Desktop"))
 
         desktopfile = user_desktop_path + "/" + pkgname + ".desktop"
 

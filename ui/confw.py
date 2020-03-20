@@ -22,6 +22,11 @@ except AttributeError:
     def _translate(context, text, disambig):
         return QApplication.translate(context, text, disambig)
 
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 class Ui_ConfigWidget(object):
     def setupUi(self, ConfigWidget):
         ConfigWidget.setObjectName(_fromUtf8("ConfigWidget"))
@@ -64,7 +69,7 @@ class Ui_ConfigWidget(object):
         self.icon1.setObjectName(_fromUtf8("icon1"))
 
         self.icon_linedit1 = QLabel(self.groupBox_password)  ##
-        self.icon_linedit1.setGeometry(QtCore.QRect(54, 65, 100, 16))
+        self.icon_linedit1.setGeometry(QtCore.QRect(54, 65, 130, 16))
         self.icon_linedit1.setText(_fromUtf8(""))
         self.icon_linedit1.setObjectName(_fromUtf8("icon_linedit1"))
 
@@ -74,7 +79,7 @@ class Ui_ConfigWidget(object):
         self.icon2.setObjectName(_fromUtf8("icon1"))
 
         self.icon_linedit2 = QLabel(self.groupBox_password)  ##
-        self.icon_linedit2.setGeometry(QtCore.QRect(238, 65, 80, 16))
+        self.icon_linedit2.setGeometry(QtCore.QRect(238, 65, 125, 16))
         self.icon_linedit2.setText(_fromUtf8(""))
         self.icon_linedit2.setObjectName(_fromUtf8("icon_linedit2"))
 
@@ -101,11 +106,11 @@ class Ui_ConfigWidget(object):
         self.lesource9.setGeometry(QtCore.QRect(162,157 , 230, 23))
         self.lesource9.setObjectName(_fromUtf8("lesource9"))
         self.text16 = QLabel(self.groupBox_password)
-        self.text16.setGeometry(QtCore.QRect(107, 121, 40, 16))
+        self.text16.setGeometry(QtCore.QRect(97, 121, 50, 16))
         self.text16.setText(_fromUtf8(""))
         self.text16.setObjectName(_fromUtf8("text16"))
         self.text17 = QLabel(self.groupBox_password)
-        self.text17.setGeometry(QtCore.QRect(107, 160, 40, 16))
+        self.text17.setGeometry(QtCore.QRect(97, 160, 50, 16))
         self.text17.setText(_fromUtf8(""))
         self.text17.setObjectName(_fromUtf8("text17"))
 
@@ -140,13 +145,15 @@ class Ui_ConfigWidget(object):
         self.text19.setGeometry(QtCore.QRect(107, 121, 55, 16))
         self.text19.setText(_fromUtf8(""))
         self.text19.setObjectName(_fromUtf8("text16"))
-        self.text19.setText("新 密 码:")
+        #self.text19.setText("新  密  码:")
+        self.text19.setText(_("NEW PW:"))
         self.text19.setStyleSheet("QLabel{font-size:12px;}")
         self.text20 = QLabel(self.groupBox_recover)
         self.text20.setGeometry(QtCore.QRect(107, 160, 55, 16))
         self.text20.setText(_fromUtf8(""))
         self.text20.setObjectName(_fromUtf8("text17"))
-        self.text20.setText("确认密码:")
+        # self.text20.setText("确认密码:")
+        self.text20.setText(_("CF     PW:"))
         self.text20.setStyleSheet("QLabel{font-size:12px;}")
 
         self.text9 = QLabel(self.groupBox_recover)
@@ -160,7 +167,7 @@ class Ui_ConfigWidget(object):
         self.icon1_1.setObjectName(_fromUtf8("icon1"))
 
         self.icon_linedit1_1 = QLabel(self.groupBox_recover)  ##
-        self.icon_linedit1_1.setGeometry(QtCore.QRect(54, 65, 100, 16))
+        self.icon_linedit1_1.setGeometry(QtCore.QRect(54, 65, 130, 16))
         self.icon_linedit1_1.setText(_fromUtf8(""))
         self.icon_linedit1_1.setObjectName(_fromUtf8("icon_linedit1"))
 
@@ -170,7 +177,7 @@ class Ui_ConfigWidget(object):
         self.icon2_1.setObjectName(_fromUtf8("icon1"))
 
         self.icon_linedit2_1 = QLabel(self.groupBox_recover)  ##
-        self.icon_linedit2_1.setGeometry(QtCore.QRect(238, 65, 80, 16))
+        self.icon_linedit2_1.setGeometry(QtCore.QRect(238, 65, 125, 16))
         self.icon_linedit2_1.setText(_fromUtf8(""))
         self.icon_linedit2_1.setObjectName(_fromUtf8("icon_linedit2"))
 
@@ -200,7 +207,7 @@ class Ui_ConfigWidget(object):
         self.icon1_2.setObjectName(_fromUtf8("icon1"))
 
         self.icon_linedit1_2 = QLabel(self.groupBox_success)  ##
-        self.icon_linedit1_2.setGeometry(QtCore.QRect(54, 65, 100, 16))
+        self.icon_linedit1_2.setGeometry(QtCore.QRect(54, 65, 130, 16))
         self.icon_linedit1_2.setText(_fromUtf8(""))
         self.icon_linedit1_2.setObjectName(_fromUtf8("icon_linedit1"))
 
@@ -210,7 +217,7 @@ class Ui_ConfigWidget(object):
         self.icon2_2.setObjectName(_fromUtf8("icon1"))
 
         self.icon_linedit2_2 = QLabel(self.groupBox_success)  ##
-        self.icon_linedit2_2.setGeometry(QtCore.QRect(238, 65, 80, 16))
+        self.icon_linedit2_2.setGeometry(QtCore.QRect(238, 65, 125, 16))
         self.icon_linedit2_2.setText(_fromUtf8(""))
         self.icon_linedit2_2.setObjectName(_fromUtf8("icon_linedit2"))
 
@@ -225,7 +232,7 @@ class Ui_ConfigWidget(object):
         self.icon_linedit3_2.setObjectName(_fromUtf8("icon_linedit3"))
 
         self.icon_success= QLabel(self.groupBox_success)
-        self.icon_success.setGeometry(QtCore.QRect(130, 139, 23, 16))
+        self.icon_success.setGeometry(QtCore.QRect(90, 139, 23, 16))
         self.icon_success.setText(_fromUtf8(""))
         self.icon_success.setObjectName(_fromUtf8("icon_successs"))
         self.icon_success.setStyleSheet("QLabel{background:url('res/success.png') no-repeat;}")
@@ -234,24 +241,27 @@ class Ui_ConfigWidget(object):
         self.text10.setGeometry(QtCore.QRect(30, 30, 60, 20))
         self.text10.setText(_fromUtf8(""))
         self.text10.setObjectName(_fromUtf8("text10"))
-        self.text10.setText("找回密码")
+        #self.text10.setText("找回密码")
+        self.text10.setText(_("Rpwd"))
         self.text10.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
 
 
         #您的新密码设置成功
         self.success_password=QLabel(self.groupBox_success)
-        self.success_password.setGeometry(QtCore.QRect(156, 131, 160, 32))
+        self.success_password.setGeometry(QtCore.QRect(116, 131, 280, 32))
         self.success_password.setText(_fromUtf8(""))
         self.success_password.setObjectName(_fromUtf8("successs_password"))
-        self.success_password.setText("您的新密码设置成功")
-        self.success_password.setStyleSheet("QLabel{font-size:16px;color:#06a909}")
+        #self.success_password.setText("您的新密码设置成功")
+        self.success_password.setText(_("Your new password is set successfully"))
+        self.success_password.setStyleSheet("QLabel{font-size:16px;color:#06a909;border:1px color red}")
 
         #今后将使用新密码登录软件中心，请牢记
         self.suc_remind=QLabel(self.groupBox_success)
-        self.suc_remind.setGeometry(QtCore.QRect(156, 178, 230, 20))
+        self.suc_remind.setGeometry(QtCore.QRect(40, 178, 520, 20))
         self.suc_remind.setText(_fromUtf8(""))
         self.suc_remind.setObjectName(_fromUtf8("suc_remind"))
-        self.suc_remind.setText("今后将使用新密码登录软件中心，请牢记")
+        #self.suc_remind.setText("今后将使用新密码登录软件中心，请牢记")
+        self.suc_remind.setText(_("Remember to log in to the Software Center with a new password in the future"))
         self.suc_remind.setStyleSheet("QLabel{font-size:12px;color:#000000}")
 
         #您现在可以
@@ -259,15 +269,17 @@ class Ui_ConfigWidget(object):
         self.suc_now.setGeometry(QtCore.QRect(156, 223, 70, 20))
         self.suc_now.setText(_fromUtf8(""))
         self.suc_now.setObjectName(_fromUtf8("suc_now"))
-        self.suc_now.setText("您现在可以：")
+        #self.suc_now.setText("您现在可以：")
+        self.suc_now.setText(_("You can now:"))
         self.suc_now.setStyleSheet("QLabel{font-size:12px;color:#000000}")
 
         #立即登录
         self.suc_land=QPushButton(self.groupBox_success)
-        self.suc_land.setGeometry(QtCore.QRect(230, 223, 50, 20))
+        self.suc_land.setGeometry(QtCore.QRect(230, 223, 120, 20))
         self.suc_land.setText(_fromUtf8(""))
         self.suc_land.setObjectName(_fromUtf8("suc_land"))
-        self.suc_land.setText("立即登录")
+        #self.suc_land.setText("立即登录")
+        self.suc_land.setText(_("log in immediately"))
         self.suc_land.setStyleSheet(
             "QPushButton{border:0px;font-size:12px;color:#0396DC;text-align:center;} QPushButton:hover{border:0px;font-size:13px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:13px;color:#0F84BC;}")
 
@@ -484,9 +496,9 @@ class Ui_ConfigWidget(object):
         self.btnAdd.setGeometry(QtCore.QRect(390, 128, 70, 25))
         self.btnAdd.setText(_fromUtf8(""))
         self.btnAdd.setObjectName(_fromUtf8("btnAdd"))
+
         self.groupBox_2 = QGroupBox(self.sourceWidget)
         self.groupBox_2.setGeometry(QtCore.QRect(0, 183, 460, 231))
-        self.groupBox_2.setStyleSheet(" QGroupBox{border:1px sollid red}")
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(148, 144, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -503,7 +515,7 @@ class Ui_ConfigWidget(object):
         self.groupBox_2.setFont(font)
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.btnUpdate = QPushButton(self.groupBox_2)
-        self.btnUpdate.setGeometry(QtCore.QRect(370, 180, 90, 20))
+        self.btnUpdate.setGeometry(QtCore.QRect(300, 180, 150, 20))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         # self.processwidget = QWidget(self.groupBox_2)
@@ -519,8 +531,9 @@ class Ui_ConfigWidget(object):
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.progressBar.setTextVisible(False)
 
+
         self.sourceListWidget = QListWidget(self.groupBox_2)
-        self.sourceListWidget.setGeometry(QtCore.QRect(2, 30, 458, 130))
+        self.sourceListWidget.setGeometry(QtCore.QRect(2, 30, 458, 140))
         self.sourceListWidget.setObjectName(_fromUtf8("sourceListWidget"))
 
 
@@ -535,15 +548,15 @@ class Ui_ConfigWidget(object):
         self.up_chk.setStyleSheet("QCheckBox{border:0px;}")
 
         self.all_select=QLabel(self.select_Qwidget)
-        self.all_select.setText("全选")
+        #self.all_select.setText("全选")
+        self.all_select.setText(_("Select all"))
         self.all_select.setStyleSheet("QLabel{border:0px;}")
-        self.all_select.setGeometry(35,5,40,17)
+        self.all_select.setGeometry(35,5,60,17)
         self.delete_sourcelist=QPushButton(self.select_Qwidget)
-        self.delete_sourcelist.setText("删除")
-        self.delete_sourcelist.setGeometry(405,2,30,25)
-        self.delete_sourcelist.setStyleSheet("QPushButton{border:0px;}")
-        self.delete_sourcelist.setStyleSheet(
-                         "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        # self.delete_sourcelist.setText("删除")
+        self.delete_sourcelist.setText(_("delete"))
+        self.delete_sourcelist.setGeometry(385,2,45,25)
+        self.delete_sourcelist.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
 
 
@@ -580,7 +593,8 @@ class Ui_ConfigWidget(object):
 
     def retranslateUi(self, ConfigWidget):
         ConfigWidget.setWindowTitle(_translate("ConfigWidget", "Form", None))
-        self.groupBox.setTitle(_translate("ConfigWidget", "软件源配置", None))
+        #self.groupBox.setTitle(_translate("ConfigWidget", "软件源配置", None))
+        self.groupBox.setTitle(_translate("ConfigWidget", _("Software source configuration"), None))
         self.checkBox.setText(_translate("ConfigWidget", "deb", None))
         self.checkBox_2.setText(_translate("ConfigWidget", "deb-src", None))
         self.checkBox_3.setText(_translate("ConfigWidget", "main", None))

@@ -28,6 +28,10 @@ from models.enums import AppActions
 import threading
 from models.globals import Globals
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 class UninstallManager(threading.Thread, QObject):
     appname = ""
     appmgr = None
@@ -51,7 +55,8 @@ class UninstallManager(threading.Thread, QObject):
 
             user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
             if(os.path.exists(user_desktop_path) == False):
-                user_desktop_path = os.path.join(os.path.expanduser("~"), '桌面')
+               # user_desktop_path = os.path.join(os.path.expanduser("~"), '桌面')
+                user_desktop_path = os.path.join(os.path.expanduser("~"), _("Desktop"))
             installed_desktop_file_path = user_desktop_path + "/" + appname + ".desktop"
             # 如果文件存在则删除文件
             if os.path.exists(installed_desktop_file_path):

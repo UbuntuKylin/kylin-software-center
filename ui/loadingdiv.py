@@ -28,6 +28,10 @@ from PyQt5.QtCore import *
 from models.enums import UBUNTUKYLIN_RES_PATH
 from models.globals import Globals
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 class LoadingDiv(QWidget):
 
     ngif = []
@@ -42,7 +46,8 @@ class LoadingDiv(QWidget):
         # self.switchTimer = QTimer(self)
         # self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
-        self.setWindowTitle("麒麟软件商店")
+        #self.setWindowTitle("银河麒麟软件商店")
+        self.setWindowTitle(_("Galaxy kylin softare store"))
 
         # self.load_png()
 

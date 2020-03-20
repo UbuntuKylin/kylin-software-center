@@ -36,6 +36,9 @@ socket.setdefaulttimeout(30)
 
 import locale
 
+#apt安装和更新缺少依赖时apt不会返回异常，且会继续触发安装的回调函数，人为处理异常，FLAG做为全局标识
+FLAG = 1
+
 # application actions, should sync with definition in models.enums
 class AppActions:
     INSTALLDEPS = "install_deps"
@@ -131,6 +134,8 @@ class FetchProcess(apb.AcquireProgress):
 
     def start(self):
         # Reset all our values.
+        global FLAG
+        FLAG = 1
         self.current_bytes = 0.0
         self.current_cps = 0.0
         self.current_items = 0
@@ -148,6 +153,7 @@ class FetchProcess(apb.AcquireProgress):
         self.dbus_service.software_fetch_signal("down_start", kwarg)
 
     def stop(self):
+        global FLAG
         kwarg = {"download_appname":self.appname,
                  "download_percent":str(200),
                  "action":str(self.action),
@@ -160,6 +166,11 @@ class FetchProcess(apb.AcquireProgress):
             self.dbus_service.set_uksc_not_working()
             if self.total_items > 0 and (self.current_items / self.total_items) < 1:
                 kwarg["download_percent"] = str(-15)
+        #apt安装和更新缺少依赖时apt不会返回异常，人为处理异常，通过下载停止来判断
+        if kwarg["download_percent"] == '0' and (self.action == "install" or self.action == "upgrade" or self.action == "install_deps"):
+            kwarg["download_percent"] = str(-99)
+            FLAG = 0
+            self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
@@ -178,12 +189,16 @@ class AptProcess(apb.InstallProgress):
 
     def error(self, pkg, errormsg):
 #        print "AptProcess, error:", self.appname, pkg, errormsg
+        global FLAG
         kwarg = {"apt_appname":self.appname,
                  "apt_percent":str(self.percent),
                  "action":str(self.action),
                  }
         self.dbus_service.set_uksc_not_working()
-        self.dbus_service.software_apt_signal("apt_error", kwarg)
+        if FLAG:
+            self.dbus_service.software_apt_signal("apt_error", kwarg)
+        else:
+            FLAG =1
 
     def start_update(self):
 #        print 'apt process start work', self.appname
@@ -193,15 +208,20 @@ class AptProcess(apb.InstallProgress):
                  }
         if(self.action == AppActions.INSTALLDEBFILE):
             kwarg["apt_percent"] = "50"
-        self.dbus_service.software_apt_signal("apt_start", kwarg)
+        if FLAG:
+            self.dbus_service.software_apt_signal("apt_start", kwarg)
 
     def finish_update(self):
+        global FLAG
 #        print 'apt process finished', self.appname
         kwarg = {"apt_appname":self.appname,
                  "apt_percent":str(200),
                  "action":str(self.action),
                  }
-        self.dbus_service.software_apt_signal("apt_finish", kwarg)
+        if FLAG:
+            self.dbus_service.software_apt_signal("apt_finish", kwarg)
+        else:
+            FLAG = 1
         if self.appname == "ubuntu-kylin-software-center" and self.action == "upgrade":
             pass
         else:
@@ -221,8 +241,8 @@ class AptProcess(apb.InstallProgress):
                  }
 
 #        print "####status_change:", kwarg
-
-        self.dbus_service.software_apt_signal("apt_pulse", kwarg)
+        if FLAG:
+            self.dbus_service.software_apt_signal("apt_pulse", kwarg)
 
 
 #class AptDaemon(threading.Thread):

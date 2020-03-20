@@ -72,7 +72,20 @@ class DownloadManager(threading.Thread, QObject):
         filename = apkpath.split('/')[-1]
         apklocal = os.path.join(KYDROID_DOWNLOAD_PATH, filename)
         # print("1111",apkurl,apklocal,self.download_schedule)
-        request.urlretrieve(apkurl, apklocal, self.download_schedule)
+
+        try: # 防止出现下载中断的情况
+            request.urlretrieve(apkurl, apklocal, self.download_schedule)
+        except:
+            count = 1
+            while count <= 5:
+                try:
+                    request.urlretrieve(apkurl, apklocal, self.download_schedule)
+                    break
+                except:
+                    count += 1
+            if count > 5:
+                self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.INSTALL, -2, 'download apk failed')
+                return
 
         if (Globals.DEBUG_SWITCH):
             print("APK download finished, start install.")

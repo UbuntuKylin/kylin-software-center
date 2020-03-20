@@ -28,14 +28,15 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.uktliw import Ui_TaskLIWidget
-from models.enums import AptActionMsg,PkgStates
-from models.signals import Signals 
-from models.enums import UBUNTUKYLIN_RES_ICON_PATH
-from models.enums import setLongTextToElideFormat
+from models.enums import Signals,PkgStates,UBUNTUKYLIN_RES_ICON_PATH,setLongTextToElideFormat
 from utils import commontools
 from utils.debfile import DebFile
 from models.application import Application
+from models.globals import Globals
 
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class TaskListItemWidget(QWidget,Signals):
     app = ''
@@ -59,7 +60,7 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.status.setWordWrap(True)
         self.ui.progressBar.lower()
         self.ui.size.setFocusPolicy(Qt.NoFocus)
-        self.ui.size.setStyleSheet("QLabel{background-color: transparent;font-size:12px; }")
+        self.ui.size.setStyleSheet("QLabel{background-color:transparent;font-size:12px; }")
 
 
         self.ui.progresslabel.setFocusPolicy(Qt.NoFocus)
@@ -69,9 +70,12 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.name.setStyleSheet("QLabel{background-color: transparent;font-size:14px;color:#000000}")
 
         #self.ui.status.setStyleSheet("QLabel{font-size:12px;font-weight:bold;background-color:#EAF0F3;}")
-        self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:transpare nt;}")
+        self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:transparent;}")
         self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
-        self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
+        if(Globals.MIPS64):
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
+        else:
+            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                           "QProgressBar:chunk{background-color:#5DC4FE;}")#text-align:right;
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
@@ -84,16 +88,24 @@ class TaskListItemWidget(QWidget,Signals):
                 self.ui.progressBarsmall.setValue(self.app.percent)
             except AttributeError as e:
                 pass
-            text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
-            self.uiname = "安装 "+app.name
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
+            #text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
+            text = setLongTextToElideFormat(self.ui.name, _("Install") + app.name)
+            #self.uiname = "安装 "+app.name
+            self.uiname = _("Install") + app.name
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:rgba(45,138,225,20%);}")
-            self.ui.progresslabel.setStyleSheet("QLabel{background-color:#ffffff;color:#2d8ae1;}")
-            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
-                "QProgressBar:chunk{background-color:#2d8ae1;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                                            "QProgressBar:chunk{background-color:#2d8ae1;}")
+            self.ui.progresslabel.setStyleSheet("QLabel{background-color:transparent;color:#2d8ae1;}")
+
             self.ui.progressBar.setWindowOpacity(0.8)
             if str(text).endswith("…") is True:
-                self.ui.name.setToolTip("安装 "+app.name)
+                #self.ui.name.setToolTip("安装 "+app.name)
+                self.ui.name.setToolTip(_("Install") + app.name)
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.REMOVING:#"uninstalling":
@@ -102,16 +114,24 @@ class TaskListItemWidget(QWidget,Signals):
                 self.ui.progressBarsmall.setValue(self.app.percent)
             except AttributeError as e:
                 pass
-            text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
-            self.uiname = "卸载 "+app.name
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
+                #text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
+            text = setLongTextToElideFormat(self.ui.name, _("Uninstall") + app.name)
+            #self.uiname = "卸载 "+app.name
+            self.uiname = _("Uninstall") + app.name
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:rgba(233,83,33,20%);}")
-            self.ui.progresslabel.setStyleSheet("QLabel{background-color:#ffffff;color:#e95421;}")
-            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
-                "QProgressBar:chunk{background-color:#e95421;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                                            "QProgressBar:chunk{background-color:#e95421;}")
+            self.ui.progresslabel.setStyleSheet("QLabel{background-color:transparent;color:#e95421;}")
+
 
             if str(text).endswith("…") is True:
-                self.ui.name.setToolTip("卸载 "+app.name)
+                #self.ui.name.setToolTip("卸载 "+app.name)
+                self.ui.name.setToolTip(_("Uninstall") + app.name)
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.UPGRADING:#"upgrading":
@@ -120,16 +140,24 @@ class TaskListItemWidget(QWidget,Signals):
             except AttributeError as e:
                 pass
             #self.ui.name.setText("升级 "+app.name)
-            text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
-            self.uiname = "升级 "+app.name
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
+            #text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
+            text = setLongTextToElideFormat(self.ui.name, _("Upgrade") + app.name)
+            #self.uiname = "升级 "+app.name
+            self.uiname = _("Upgrade") + app.name
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:rgba(7,195,11,20%);}")
-            self.ui.progresslabel.setStyleSheet("QLabel{background-color:#ffffff;color:#07c30b;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                                            "QProgressBar:chunk{background-color:#07c30b;}")
+            self.ui.progresslabel.setStyleSheet("QLabel{background-color:transparent;color:#07c30b;}")
 
-            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
-                "QProgressBar:chunk{background-color:#07c30b;}")
+
             if str(text).endswith("…") is True:
-                self.ui.name.setToolTip("升级 "+app.name)
+                #self.ui.name.setToolTip("升级 "+app.name)
+                self.ui.name.setToolTip(_("Upgrade") + app.name)
             else:
                 self.ui.name.setToolTip("")
 
@@ -155,7 +183,8 @@ class TaskListItemWidget(QWidget,Signals):
             sizek = size / 1024
             sizek = round(sizek,4)
             if(sizek == 0):
-                self.ui.size.setText("未知")
+                #self.ui.size.setText("未知")
+                self.ui.size.setText(_("Unknown"))
             elif(sizek < 1024):
                 self.ui.size.setText(str('%.1f'%sizek) + " KB")
             else:
@@ -164,12 +193,16 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.progressBar.setRange(0,100)
         self.ui.progressBar.reset()
         self.ui.progresslabel.setText("")
-        self.ui.status.setText("等待中")
+        #self.ui.status.setText("等待中")
+        self.ui.status.setText(_("Waiting"))
         if(dftext):
             self.ui.status.setText(dftext)
         if(uiname):
             text = setLongTextToElideFormat(self.ui.name, uiname)
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}"
                                             "QProgressBar:chunk{background-color:#FDD99A;}")
             self.ui.name.setToolTip(uiname)
         # self.ui.progressBar.hide()
@@ -185,8 +218,10 @@ class TaskListItemWidget(QWidget,Signals):
         if(self.finish == False):
             text = ''
             if(processtype == 'fetch'):
-                text = "正在下载: "
-                self.ui.name.setText( "下载 " + self.app.name)
+                #text = "正在下载: "
+                text = _("downloading")
+                #self.ui.name.setText( "下载 " + self.app.name)
+                self.ui.name.setText(_("download") + self.app.name)
                 if percent >= 100:
                     #text = "下载完成，开始安装..."
                     self.ui.progressBar.reset()
@@ -194,31 +229,39 @@ class TaskListItemWidget(QWidget,Signals):
                     # self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     self.ui.status.show()
-                    self.ui.status.setText("正在安装")
+                    #self.ui.status.setText("正在安装")
+                    self.ui.status.setText(_("Installing"))
                     return
                 else:
-                    self.ui.progressBar.show()
                     self.ui.progresslabel.show()
                     self.ui.status.hide()
+                    self.ui.progressBar.hide()
                     self.ui.progressBar.setValue(percent)
                     try:
                         self.ui.progressBarsmall.setValue(self.app.percent)
                     except AttributeError as e:
                         pass
+                    self.ui.progressBar.show()
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
             elif(processtype == 'apt'):
-                text = "正在执行: "
-                if "下载" in self.ui.name.text():
-                    self.ui.name.setText("安装 " + self.app.name)
+                #text = "正在执行: "
+                text = _("Running")
+                #if "下载" in self.ui.name.text():
+                if _("download") in self.ui.name.text():
+                    #self.ui.name.setText("安装 " + self.app.name)
+                    self.ui.name.setText(_("Install") + self.app.name)
                 if percent < float(0.0):
                     #print percent
                     # self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     if int(percent) == int(-7):
-                        self.ui.status.setText("完成")
+                        #self.ui.status.setText("完成")
+                        self.ui.status.setText(_("perfection"))
                     else:
-                        self.ui.status.setText("失败")
+                        #self.ui.status.setText("失败")
+                        self.ui.status.setText(_("failure"))
+
                         self.ui.progressBar.setValue(0)
                         self.ui.progressBarsmall.setValue(0)
                         self.ui.progressBarsmall.hide()
@@ -226,10 +269,14 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.status.show()
                     self.finish = True
                 elif percent >= 100:
-                    text = "安装完成"
+                    #text = "安装完成"
+                    text = _("The installation is complete")
+
                     # self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
-                    self.ui.status.setText("完成")
+                    #self.ui.status.setText("完成")
+                    self.ui.status.setText(_("perfection"))
+
                     self.ui.status.show()
                     self.ui.progressBar.setValue(percent)
                     try:
@@ -239,9 +286,12 @@ class TaskListItemWidget(QWidget,Signals):
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
                 else:
-                    if (self.ui.status.text() != '完成'):
+#                    if (self.ui.status.text() != '完成'):
+                    if (self.ui.status.text() != _("perfection")):
+
                         self.ui.progresslabel.show()
                         self.ui.status.hide()
+                        self.ui.progressBar.hide()
                         self.ui.progressBar.setValue(percent)
                         try:
                             self.ui.progressBarsmall.setValue(self.app.percent)
@@ -265,7 +315,9 @@ class TaskListItemWidget(QWidget,Signals):
             # self.ui.progressBar.hide()
             self.ui.progresslabel.hide()
             self.ui.status.show()
-            self.ui.status.setText("完成")
+            #self.ui.status.setText("完成")
+            self.ui.status.setText(_("perfection"))
+
             self.finish = True
             self.ui.progressBarsmall.hide()
 

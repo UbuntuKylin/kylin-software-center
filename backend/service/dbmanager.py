@@ -69,6 +69,8 @@ class Database:
             open(destFile, "wb").write(open(srcFile, "rb").read())
 
         self.connect = sqlite3.connect(destFile, timeout=30.0, check_same_thread=False)
+        self.connect.execute('pragma journal_mode=wal;')
+        self.connect.cursor()
         self.cursor = self.connect.cursor()
         self.cat_list = []
 
@@ -100,7 +102,6 @@ class Database:
             copytree(xapian_srcFile,xapian_destFile)
             if (Globals.DEBUG_SWITCH):
                 print("cache xapiandb versin updated")
-
 
     def query_categories(self):
         try:
@@ -176,6 +177,8 @@ class Database:
         else:
             return res[0]
 
+
+
     #return as (display_name, app_name)
     def query_applications(self):
         try:
@@ -214,6 +217,7 @@ class Database:
         srcFile = os.path.join(UBUNTUKYLIN_DATA_PATH,"uksc.db")
 
         connectsrc = sqlite3.connect(srcFile, timeout=30.0, check_same_thread=False)
+        self.connect.execute('pragma journal_mode=wal;')
         cursorsrc = connectsrc.cursor()
 
         try:
@@ -678,6 +682,15 @@ class Database:
             lock.release()
         return res
 
+    def get_advertisement(self):
+        try:
+            lock.acquire(True)
+            res = self.cursor.execute("SELECT * from advertisement")
+        finally:
+            lock.release()
+        return res
+
+
     #------------add by kobe for windows replace------------
     def search_name_and_categories_record(self):
         try:
@@ -737,7 +750,7 @@ class Database:
     def query_apk_applications(self):
         try:
             lock.acquire(True)
-            self.cursor.execute("select app_name,display_name_cn,summary,description,rating_avg,rating_total,review_total from application where id > 3410 and categories = '17'")
+            self.cursor.execute("select app_name,display_name_cn,summary,description,rating_avg,rating_total,review_total from application where id > 3410 and categories LIKE '%17%'")
             res = self.cursor.fetchall()
         finally:
             lock.release()

@@ -40,15 +40,19 @@ from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         AppActions,
                         setLongTextToElideFormat,
                         PkgStates,
-                        PageStates)
-from models.signals import Signals 
+                        PageStates,
+                        UBUNTUKYLIN_SERVER)
 from PyQt5 import QtGui
 from utils import run
 from utils import commontools
 from utils.debfile import DebFile
 from models.globals import Globals
 from backend.remote.piston_remoter import PistonRemoter
-from models.enums import UBUNTUKYLIN_SERVER
+
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class DetailScrollWidget(QScrollArea,Signals):
     mainwindow = ''
@@ -91,14 +95,18 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.bigsshot = ScreenShotBig()
         # self.ui.btnCloseDetail.setText("返回")
         self.ui.btn_change.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
-        self.ui.change_cancel.setText("取消")#zx 2015.01.26
+        #self.ui.change_cancel.setText("取消")#zx 2015.01.26
+        self.ui.change_cancel.setText(_("cancel"))  # zx 2015.01.26
         self.ui.change_cancel.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
-        self.ui.change_submit.setText("提交")#zx 2015.01.26
+        #self.ui.change_submit.setText("提交")#zx 2015.01.26
+        self.ui.change_submit.setText(_("Submit"))  # zx 2015.01.26
         self.ui.change_submit.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:1px solid #0F84BC;color:white;}QPushButton:hover{background-color:#14ACF5;border:1px solid #0F84BC;color:white;}QPushButton:pressed{background-color:#0B95D7;border:1px solid #0479B1;color:white;}")
 
-        self.ui.promptlabel.setText("* 从顶部往下三栏依次为[软件名] [简介] [描述] *")
+        #self.ui.promptlabel.setText("* 从顶部往下三栏依次为[软件名] [简介] [描述] *")
+        self.ui.promptlabel.setText(_("* The three columns from the top are [Software Name] [Introduction] [Description] *"))
         self.ui.promptlabel.setStyleSheet("QLabel{font-size:12px;font-weight:bold;color:black;}")
-        self.ui.show_orig_description.setText("原软件介绍")
+        #self.ui.show_orig_description.setText("原软件介绍")
+        self.ui.show_orig_description.setText(_("Introduction of the original software"))
         self.ui.show_orig_description.setStyleSheet("QLabel{font-size:14px;font-weight:bold;color:black;}")
         self.ui.orig_summary_widget.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:black;}")#color:#666666
         self.ui.orig_description_widget.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:black;}")#color:666666
@@ -158,7 +166,8 @@ class DetailScrollWidget(QScrollArea,Signals):
 
         self.verticalScrollBar().valueChanged.connect(self.slot_scroll_end)
 
-        self.ui.bntSubmit.setText("提交")
+        #self.ui.bntSubmit.setText("提交")
+        self.ui.bntSubmit.setText(_("Submit"))
         # self.ui.reviewText.setEnabled(True)
         self.ui.reviewText.setFocus(Qt.MouseFocusReason)
 
@@ -200,9 +209,12 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.scoretitle.setStyleSheet("QLabel{font-size:13px;color:#666666;}")
         self.ui.scorelabel.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#f97150;}")
         self.ui.fen.setStyleSheet("QLabel{font-size:12px;color:#666666;}")
-        self.ui.scoretitle.setText("软件评分:")
-        self.ui.fen.setText("分")
-        self.ui.gradetitle.setText("分")
+        #self.ui.scoretitle.setText("软件评分:")
+        self.ui.scoretitle.setText(_("Soft Rt:"))
+        #self.ui.fen.setText("分")
+        self.ui.fen.setText(_("Ft"))
+        #self.ui.gradetitle.setText("分")
+        self.ui.gradetitle.setText(_("Ft"))
         self.ui.grade.setStyleSheet("QLabel{border-width:0px;font-size:42px;color:#f97150;}")
         self.ui.gradeText1.setStyleSheet("QLabel{border-width:0px;font-size:16px;color:#666666;}")
         self.ui.gradeText2.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#666666;}")
@@ -298,8 +310,6 @@ class DetailScrollWidget(QScrollArea,Signals):
 #previous picture
     def slot_click_back(self):
         a = self.app.thumbnailfile
-
-
         if self.now_shot == 1:
             self.app.thumbnailfile = self.app.thumbnailfile.replace('thumbnail1','thumbnail' + str(self.ntm))
         else:
@@ -513,23 +523,31 @@ class DetailScrollWidget(QScrollArea,Signals):
 
         self.debfile = DebFile(path)
         self.app = self.debfile
-        self.ui.debname.setText("软件包名: " + self.debfile.name)
+        #self.ui.debname.setText("软件包名: " + self.debfile.name)
+        self.ui.debname.setText(_("Package name:") + self.debfile.name)
 
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png');background-color:transparent;}")
         # self.ui.name.setText(self.debfile.name)
         setLongTextToElideFormat(self.ui.name, self.debfile.name)
-        self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
+        #self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
+        self.ui.installedVersion.setText(_("Software version") + self.debfile.version)
         sizek = self.debfile.installedsize
         if(sizek <= 1024):
-            self.ui.size.setText("安装大小: " + str(sizek) + " KB")
+            # self.ui.size.setText("安装大小: " + str(sizek) + " KB")
+            if(sizek == 0):
+                self.ui.size.setText(_("Installation size") + _("unknown"))
+            else:
+                self.ui.size.setText(_("Installation size") + str(sizek) + " KB")
         else:
-            self.ui.size.setText("安装大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
+            #self.ui.size.setText("安装大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
+            self.ui.size.setText(_("Installation size") + str('%.2f' % (sizek / 1024.0)) + " MB")
         self.ui.description.setText(self.debfile.description)
 
         deps = self.debfile.get_missing_deps()
         if (deps == []):
             deps = ""
-        self.ui.summary.setText("需要安装的依赖包: " + str(deps))
+            #self.ui.summary.setText("需要安装的依赖包: " + str(deps))
+        self.ui.summary.setText(_("Dependencies to be installed") + str(deps))
 
         if(self.debfile.is_installable):
             self.ui.status.hide()
@@ -543,7 +561,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             if (Globals.DEBUG_SWITCH):
                 print("it can not be installed......")
             self.btns.reset_btns(self.app, PkgStates.INSTALL, self.debfile)
-            self.messageBox.alert_msg("无法安装该软件包")
+            #self.messageBox.alert_msg("无法安装该软件包")
+            self.messageBox.alert_msg(_("Unable to install the package"))
             # self.ui.btnInstall.setText("无法安装")
             # self.ui.btnInstall.setEnabled(False)
         # self.show()
@@ -602,7 +621,7 @@ class DetailScrollWidget(QScrollArea,Signals):
             print("reset_btns111111",self.app, self.app.status)
         self.btns.reset_btns(self.app, self.app.status)
 
-        self.ui.btn_change.show()#zx2015.01.26
+        #self.ui.btn_change.show()#zx2015.01.26
         self.ui.btn_change.setEnabled(True)
         self.ui.change_submit.hide()
         self.ui.change_submit.setEnabled(False)
@@ -625,9 +644,12 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.ui.orig_description_widget.setText(app.description)
         else:
             self.ui.orig_description_widget.setText(app.orig_description)
-        self.ui.debname.setText("软件包名: " + app.name)
-        self.ui.installedVersion.setText("当前版本: " + app.installed_version)
-        self.ui.candidateVersion.setText("软件源版本: " + app.candidate_version)
+            #self.ui.debname.setText("软件包名: " + app.name)
+        self.ui.debname.setText(_("Package name:") + app.name)
+        # self.ui.installedVersion.setText("当前版本: " + app.installed_version)
+        self.ui.installedVersion.setText(_("current version:") + app.installed_version)
+        #self.ui.candidateVersion.setText("软件源版本: " + app.candidate_version)
+        self.ui.candidateVersion.setText(_("Software source version:") + app.candidate_version)
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
@@ -637,11 +659,14 @@ class DetailScrollWidget(QScrollArea,Signals):
         size = app.packageSize
         sizek = size / 1024
         if(sizek == 0):
-            self.ui.size.setText("下载大小: " + "未知")
+            #self.ui.size.setText("下载大小: " + "未知")
+            self.ui.size.setText(_("Download size:") + _("unknown"))
         elif(sizek < 1024):
-            self.ui.size.setText("下载大小: " + str('%.1f'%sizek) + " KB")
+            # self.ui.size.setText("下载大小: " + str('%.1f'%sizek) + " KB")
+            self.ui.size.setText(_("Download size:") + str('%.1f' % sizek) + " KB")
         else:
-            self.ui.size.setText("下载大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
+            #self.ui.size.setText("下载大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
+            self.ui.size.setText(_("Download size:") + str('%.2f' % (sizek / 1024.0)) + " MB")
 
         # installedsize = app.installedSize
         # installedsizek = installedsize / 1024
@@ -650,8 +675,10 @@ class DetailScrollWidget(QScrollArea,Signals):
         # else:
         #     self.ui.size_install.setText("安装大小: " + str('%.2f'%(installedsizek/1024.0)) + " MB")
 
-        self.ui.gradeText1.setText("我的评分: ")
-        self.ui.gradeText2.setText((str(app.ratings_total)) + "人参加评分")
+        #self.ui.gradeText1.setText("我的评分: ")
+        self.ui.gradeText1.setText(_("My rating:"))
+        #self.ui.gradeText2.setText((str(app.ratings_total)) + "人参加评分")
+        self.ui.gradeText2.setText((str(app.ratings_total)) + _("  People in rating"))
 
         averate_rate = str('%.1f' % app.ratings_average)
         self.ui.scorelabel.setText(averate_rate)
@@ -738,7 +765,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             self.btns.start_work()
 
         if Globals.NOWPAGE == PageStates.TRANSPAGE:
-            self.ui.btn_change.setText("完善翻译")
+            #self.ui.btn_change.setText("完善翻译")
+            self.ui.btn_change.setText(_("Improve translation"))
             if hasattr(self.app,"transname"):
                 self.ui.name.setText(app.transname)
                 if self.app.transnamestatu is True:
@@ -808,9 +836,11 @@ class DetailScrollWidget(QScrollArea,Signals):
                 self.ui.description.setText(app.orig_description)
 
             if str(self.ui.name.text()) == self.app.displayname and str(self.ui.summary.toPlainText()) == self.app.orig_summary and str(self.ui.description.toPlainText()) == self.app.orig_description:
-                self.ui.btn_change.setText("翻译软件")
+                #self.ui.btn_change.setText("翻译软件")
+                self.ui.btn_change.setText(_("translation software"))
             else:
-                self.ui.btn_change.setText("完善翻译")
+                #self.ui.btn_change.setText("完善翻译")
+                self.ui.btn_change.setText(_("Improve translation"))
 
         self.init_name = str(self.ui.name.text()).strip()
         self.init_summary = str(self.ui.summary.toPlainText()).strip()
@@ -1034,7 +1064,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.summary.setText(self.init_summary)
         self.ui.description.setText(self.init_description)
         self.ui.name.setStyleSheet("QLineEdit{background-color:transparent;font-size:28px;font-weight:bold;color:#666666;}")
-        self.ui.btn_change.show()
+        #self.ui.btn_change.show()
         self.ui.name.setReadOnly(True)
         self.ui.btn_change.setEnabled(True)
         self.ui.change_submit.hide()
@@ -1081,7 +1111,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.summary = str(self.ui.summary.toPlainText()).strip()
         self.description = str(self.ui.description.toPlainText()).strip()
         if(self.appname == '' or self.summary == '' or self.description == ''):
-            self.mainwindow.messageBox.alert_msg("软件名或软件介绍不能为空")
+            #self.mainwindow.messageBox.alert_msg("软件名或软件介绍不能为空")
+            self.mainwindow.messageBox.alert_msg(_("Software name or software description cannot be empty"))
         else:
             if self.appname != self.init_name:
                 self.ui.transNameStatus.hide()
@@ -1108,7 +1139,8 @@ class DetailScrollWidget(QScrollArea,Signals):
                 description = "<1_1>"
 
             if(self.appname == self.init_name  and self.summary == self.init_summary  and  self.description == self.init_description):
-                self.mainwindow.messageBox.alert_msg("您未翻译或修改任何部分")
+                #self.mainwindow.messageBox.alert_msg("您未翻译或修改任何部分")
+                self.mainwindow.messageBox.alert_msg(_("You have not translated or modified any part"))
             else:
                 self.submit_translate_appinfo.emit(self.app.name, self.type_appname, self.type_summary, self.type_description, self.app.displayname, self.app.orig_summary, orig_description, appname, summary, description)
 
@@ -1144,21 +1176,29 @@ class DetailScrollWidget(QScrollArea,Signals):
             else:
                 self.ui.thumbnail.hide()
             self.scrollToTop()
-            self.mainwindow.messageBox.alert_msg("翻译已提交")
+            # self.mainwindow.messageBox.alert_msg("翻译已提交")
+            self.mainwindow.messageBox.alert_msg(_("Translation submitted"))
         elif(res == 1):
-            self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")
+            # self.mainwindow.messageBox.alert_msg("提交过于频繁，请稍后再试")
+            self.mainwindow.messageBox.alert_msg(_("Submissions are too frequent, please try again later"))
         elif(res == 3):
-            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行翻译")
+            #self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行翻译")
+            self.messageBox.alert_msg(_("Non-database software\nThis software cannot be translated temporarily"))
         elif(res == "False"):
-            self.messageBox.alert_msg("连接服务器出错\n"
-                                        "提交翻译失败")
+            #self.messageBox.alert_msg("连接服务器出错\n"
+            #                            "提交翻译失败")
+            self.messageBox.alert_msg(_("Error connecting to the server\n"
+                                        "Submit translation failed"))
         else:
-            self.mainwindow.messageBox.alert_msg("翻译的字数过多\n"
-                                                 "或其它未知错误")
+            #self.mainwindow.messageBox.alert_msg("翻译的字数过多\n"
+            #                                    "或其它未知错误")
+            self.mainwindow.messageBox.alert_msg(_("Too many words translated \n"
+                                                   "Or other unknown errors"))
 
     def slot_submit_review(self):
         if self.app.from_ukscdb is not True:
-            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行评论")
+            #self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件进行评论")
+            self.messageBox.alert_msg(_("Non-database software \ nCan't comment on this software temporarily"))
             return
         if(Globals.USER != ''):
             content = str(self.ui.reviewText.toPlainText())
@@ -1167,7 +1207,8 @@ class DetailScrollWidget(QScrollArea,Signals):
                 self.ui.bntSubmit.setEnabled(False)
                 self.submit_review.emit(self.app.name, content)
             else:
-                self.mainwindow.messageBox.alert_msg("不能发表空评论")
+                #self.mainwindow.messageBox.alert_msg("不能发表空评论")
+                self.mainwindow.messageBox.alert_msg(_("Can't post empty comments"))
         else:
             self.show_login.emit()
 
@@ -1179,7 +1220,8 @@ class DetailScrollWidget(QScrollArea,Signals):
 
         if(res == 0):
             self.ui.reviewText.clear()
-            self.mainwindow.messageBox.alert_msg("评论已提交")
+            #self.mainwindow.messageBox.alert_msg("评论已提交")
+            self.mainwindow.messageBox.alert_msg(_("Comment submitted"))
             self.reviewpage = 1
             self.currentreviewready = False
             self.ui.reviewListWidget.clear()
@@ -1188,19 +1230,25 @@ class DetailScrollWidget(QScrollArea,Signals):
             # send request force get review from server
             self.mainwindow.worker_thread0.appmgr.get_application_reviews(self.app.name,force=True)
         elif(res == 1):
-            self.mainwindow.messageBox.alert_msg("话唠了吧，喝口茶休息一下")
+            # self.mainwindow.messageBox.alert_msg("话唠了吧，喝口茶休息一下")
+            self.mainwindow.messageBox.alert_msg(_("Tired, take some tea and rest"))
         elif(res == 2):
-            self.mainwindow.messageBox.alert_msg("对本软件评论过于频繁")
+            #self.mainwindow.messageBox.alert_msg("对本软件评论过于频繁")
+            self.mainwindow.messageBox.alert_msg(_("Too frequent reviews of this software"))
         elif(res == 3):
-            self.mainwindow.messageBox.alert_msg("对本软件评论次过多")
+            #self.mainwindow.messageBox.alert_msg("对本软件评论次过多")
+            self.mainwindow.messageBox.alert_msg(_("Too many comments on this software"))
         elif(res == 5):
-            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评论")
+            #self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评论")
+            self.messageBox.alert_msg(_("Non-database software \ nCan't comment on this software temporarily"))
         else:
-            self.mainwindow.messageBox.alert_msg("服务器连接失败")
+            #self.mainwindow.messageBox.alert_msg("服务器连接失败")
+            self.mainwindow.messageBox.alert_msg(_("Server connection failed"))
 
     def slot_submit_rating(self, rating):
         if self.app.from_ukscdb is not True:
-            self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
+            # self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
+            self.messageBox.alert_msg(_("Non-database software \ nCan't comment on this software temporarily"))
             if (Globals.DEBUG_SWITCH):
                 print("ignore submit rating")
             return
@@ -1228,9 +1276,11 @@ class DetailScrollWidget(QScrollArea,Signals):
 
             self.mainwindow.worker_thread0.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
             self.reset_rating_text(ratingavg, ratingtotal)
-            self.mainwindow.messageBox.alert_msg("评分已提交")
+            #self.mainwindow.messageBox.alert_msg("评分已提交")
+            self.mainwindow.messageBox.alert_msg(_("Rating submitted"))
         else:
-            self.mainwindow.messageBox.alert_msg("评分失败")
+            #self.mainwindow.messageBox.alert_msg("评分失败")
+            self.mainwindow.messageBox.alert_msg(_("Scoring failed"))
 
         self.submitratingload.stop_loading()
 
@@ -1240,18 +1290,23 @@ class DetailScrollWidget(QScrollArea,Signals):
 
     def slot_app_downloadcont(self,downlist):
         count=downlist[0]["download_total"]
-        if count=="异常":
-            self.ui.size_install.setText("下载次数: " +count)
+        #if count=="异常":
+        if count == _("aberrant"):
+            #self.ui.size_install.setText("下载次数: " +count)
+            self.ui.size_install.setText(_("download times： ") + count)
         else:
             if count==False:
                 count=0
             elif count==None:
                 count = 0
 
-            if(count == "非数据库精选软件"):
-                self.ui.size_install.setText("下载次数: " + str(count))
+            #if(count == "非数据库精选软件"):
+            if (count == _("Non-database select software")):
+                # self.ui.size_install.setText("下载次数: " + str(count))
+                self.ui.size_install.setText(_("download times： ") + str(count))
             else:
-                self.ui.size_install.setText("下载次数: " + str(count) + " 次")
+                # self.ui.size_install.setText("下载次数: " + str(count) + " 次")
+                self.ui.size_install.setText(_("download times: ") + str(count) + _(" Times"))
 
     def reset_ratings(self,my_rating):
         my_rating_int=my_rating[0]['rating']
@@ -1259,7 +1314,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         #my_rating_int= self.ratingstar.getUserGrade()
         my_rating_int=str(my_rating_int)
         self.ui.grade1.setText(my_rating_int)
-        self.ui.gradetitle1.setText("分")
+        #self.ui.gradetitle1.setText("分")
+        self.ui.gradetitle1.setText(_("Ft"))
 
 
 
@@ -1273,7 +1329,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.star.changeGrade(ratingavg)
         self.ui.scorelabel.setText(str(ratingavg))
         self.ui.grade.setText(str(ratingavg))
-        self.ui.gradeText2.setText(str(self.app.ratings_total) + "人参加评分")
+        #self.ui.gradeText2.setText(str(self.app.ratings_total) + "人参加评分")
+        self.ui.gradeText2.setText(str(self.app.ratings_total) + _("  People in rating"))
 
     def slot_work_finished(self, pkgname, action):
         #add this to prevent slot received from other signal before show_detail is not called

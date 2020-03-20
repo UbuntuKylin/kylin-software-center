@@ -8,13 +8,13 @@ from PyQt5.QtCore import *
 from ui.ukxp import Ui_Ukxp
 from utils import run
 import webbrowser
-from models.enums import (ITEM_LABEL_STYLE,
-                          UBUNTUKYLIN_RES_ICON_PATH,
-                          LIST_BUTTON_STYLE,
+from models.enums import (LIST_BUTTON_STYLE,
                           UBUNTUKYLIN_RES_PATH,
-                          RECOMMEND_BUTTON_STYLE,
-                          AppActions)
-from models.signals import Signals 
+                          AppActions,
+                          Signals)
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class XpItemWidget(QWidget,Signals):
     app = ''
@@ -32,18 +32,23 @@ class XpItemWidget(QWidget,Signals):
         self.ui.btn.setVisible(True)
         if self.app is None:
             if (self.appname == 'wine-qq' or self.appname == 'ppstream'):
-                self.ui.btn.setText("安装")
+                #self.ui.btn.setText("安装")
+                self.ui.btn.setText(_("Install"))
             else:
-                self.ui.btn.setText("无效")
+                #self.ui.btn.setText("无效")
+                self.ui.btn.setText(_("invalid"))
         else:
             if(app.is_installed):
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
+                    #self.ui.btn.setText("已安装")
+                    self.ui.btn.setText(_("Aldy install"))
                     self.ui.btn.setEnabled(False)
                 else:
-                    self.ui.btn.setText("启动")
+                    #self.ui.btn.setText("启动")
+                    self.ui.btn.setText(_("Start"))
             else:
-                self.ui.btn.setText("安装")
+                #self.ui.btn.setText("安装")
+                self.ui.btn.setText(_("Install"))
 
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.parent.apt_process_finish.connect(self.slot_work_finished)
@@ -61,11 +66,13 @@ class XpItemWidget(QWidget,Signals):
         elif self.appname == 'ppstream':# and self.app is None:
             webbrowser.open_new_tab('http://dl.pps.tv/pps_linux_download.html')
         else:
-            if(self.ui.btn.text() == "启动"):
+            #if(self.ui.btn.text() == "启动"):
+            if (self.ui.btn.text() == _("Start")):
                 self.app.run()
             else:
                 self.ui.btn.setEnabled(False)
-                self.ui.btn.setText("请稍候")
+                #self.ui.btn.setText("请稍候")
+                self.ui.btn.setText(_("Please wait"))
                 self.install_app.emit(self.app)
 
     def slot_work_finished(self, pkgname, action):
@@ -73,31 +80,39 @@ class XpItemWidget(QWidget,Signals):
             self.ui.btn.setEnabled(True)
             if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
+                    #self.ui.btn.setText("已安装")
+                    self.ui.btn.setText(_("Aldy install"))
                     self.ui.btn.setEnabled(False)
                 else:
-                    self.ui.btn.setText("启动")
+                    #self.ui.btn.setText("启动")
+                    self.ui.btn.setText(_("Start"))
             elif action == AppActions.REMOVE:
-                self.ui.btn.setText("安装")
+                #self.ui.btn.setText("安装")
+                self.ui.btn.setText(_("Install"))
             elif action == AppActions.UPGRADE:
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
+                    #self.ui.btn.setText("已安装")
+                    self.ui.btn.setText(_("Aldy install"))
                     self.ui.btn.setEnabled(False)
                 else:
-                    self.ui.btn.setText("启动")
+                    #self.ui.btn.setText("启动")
+                    self.ui.btn.setText(_("Start"))
 
 
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             self.ui.btn.setEnabled(True)
             if action == AppActions.INSTALL:
-                self.ui.btn.setText("安装")
+                #self.ui.btn.setText("安装")
+                self.ui.btn.setText(_("Install"))
             elif action == AppActions.REMOVE:
                 if(run.get_run_command(self.app.name) == ""):
-                    self.ui.btn.setText("已安装")
+                    #self.ui.btn.setText("已安装")
+                    self.ui.btn.setText(_("Aldy install"))
                     self.ui.btn.setEnabled(False)
                 else:
-                    self.ui.btn.setText("启动")
+                    #self.ui.btn.setText("启动")
+                    self.ui.btn.setText(_("Start"))
             # elif action == AppActions.UPGRADE:
             #     self.ui.btn.setText("升级")
 

@@ -50,7 +50,7 @@ from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
 from ui.confirmdialog import ConfirmDialog, TipsDialog, Update_Source_Dialog
-from ui.configwidget import ConfigWidget
+from ui.confwidget import ConfigWidget
 from ui.login import Login
 from ui.pointoutwidget import PointOutWidget
 from ui.singleprocessbar import SingleProcessBar
@@ -68,7 +68,7 @@ from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 from models.apkinfo import ApkInfo
 from apt.debfile import DebPackage
-
+from utils import run
 from utils.commontools import *
 #from utils import log
 import threading, time, signal
@@ -83,6 +83,12 @@ from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 import configparser
 import sqlite3
+
+import gettext
+gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 #log.init_logger()
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s:%(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -98,15 +104,20 @@ class  initThread(QThread,Signals):
     def run(self):
         # init dbus backend
         self.backend = InstallBackend()
-        self.appmgr = AppManager()
+        self.appmgr = AppManager(self.backend)
 
 
         res = self.backend.init_dbus_ifaces()
 
 
         while res == False:
-            button=QMessageBox.question(self,"初始化提示",
-                                    self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+            # button=QMessageBox.question(self,"初始化提示",
+            #                         self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+            #                         QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
+
+            button=QMessageBox.question(self,_("Initialization prompt"),
+                                    self.tr(_("Initialization failed (DBus service)\nPlease confirm whether\nit is installed"
+                                              "correctly, ignore the software installation and \nother operations will not workPlease select:")),
                                     QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
             if button == QMessageBox.Retry:
                 res = self.backend.init_dbus_ifaces()
@@ -177,6 +188,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
+        self.check_singleton()
         # userlog = os.getlogin()
         # uid = pwd.getpwuid(os.getuid())[0]
         # if(uid != userlog):
@@ -191,17 +203,11 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.worker_thread0.setDaemon(True)
         self.worker_thread0.start()
 
-
-
-
     # def myinit(self):
         self.auto_l = False
         # singleton check
 
-        self.check_singleton()
         self.flag=0
-
-
 
         password_read()
         self.worker_thread0.myinit_emit.connect(self.slot_init)
@@ -221,8 +227,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.init_main_view()
         # init main service
         self.init_main_service()
-
-
 
         # check ukid
         self.check_user()
@@ -244,7 +248,8 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.srv=Adversettest(self.ui.adWidget)
         # do not cover the launch loading div
         self.resize(0,0)
-        self.setWindowTitle("麒麟软件商店")
+        #self.setWindowTitle(_("银河麒麟软件商店"))
+        self.setWindowTitle(_("Galaxy Kylin Software Store"))
         self.setWindowFlags(Qt.FramelessWindowHint)
         # init components
         #self.ui.adWidget.lower()
@@ -257,7 +262,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # point out widget
         self.pointout = PointOutWidget(self)
         self.pointListWidget = CardWidget(200, 115, 4, self.pointout.ui.contentliw)
-        self.pointListWidget.setGeometry(0, 0, 512 + 6 + (20 - 6) / 2, 260)
+        self.pointListWidget.setGeometry(0, 0, 512 + 6 + int((20 - 6) / 2), 260)
         self.pointListWidget.calculate_data()
         # recommend card widget
         self.recommendListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.recommendWidget)
@@ -265,35 +270,35 @@ class SoftwareCenter(QMainWindow,Signals):
         self.recommendListWidget.calculate_data()
         # all card widget
         self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.allWidget)
-        self.allListWidget.setGeometry(0, 0, 830 + 6 + (20 - 6) / 2, 585)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.allListWidget.setGeometry(0, 0, 830 + 6 + int((20 - 6) / 2), 585)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.allListWidget.calculate_data()
         # apk card widget
         self.apkListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.apkWidget)
-        self.apkListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.apkListWidget.setGeometry(0, 30, 830 + 6 + int((20 - 6) / 2), 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.apkListWidget.calculate_data()
         # up card widget
         self.upListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.upWidget)
-        self.upListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.upListWidget.setGeometry(0, 30, 830 + 6 + int((20 - 6) / 2), 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.upListWidget.calculate_data()
         # un card widget
         self.unListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.unWidget)
-        self.unListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.unListWidget.setGeometry(0, 30, 830 + 6 + int((20 - 6) / 2), 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.unListWidget.calculate_data()
         # search card widget
         self.searchListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.searchWidget)
-        self.searchListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.searchListWidget.setGeometry(0, 30, 830 + 6 + int((20 - 6) / 2), 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.searchListWidget.calculate_data()
         # user applist widget
         self.userAppListWidget = CardWidget(830, 88, 5, self.ui.userAppListWidget)
-        self.userAppListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 520)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.userAppListWidget.setGeometry(0, 30, 830 + 6 + int((20 - 6) / 2), 520)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.userAppListWidget.calculate_data()
         #user translateapplist widget zx 2015.01.30
         self.userTransAppListWidget = CardWidget(830, 88, 5, self.ui.userTransListWidget)
-        self.userTransAppListWidget.setGeometry(0, 30, 830 + 6 + (20 - 6) / 2, 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
+        self.userTransAppListWidget.setGeometry(0, 30, 830 + 6 + int((20 - 6) / 2), 580)   # 6 + (20 - 6) / 2 is verticalscrollbar space
         self.userTransAppListWidget.calculate_data()
         # win card widget
         self.winListWidget = CardWidget(410, 115, 6, self.ui.winpageWidget)
-        self.winListWidget.setGeometry(0, 0, 830 + 6 + (20 - 6) / 2, 585)
+        self.winListWidget.setGeometry(0, 0, 830 + 6 + int((20 - 6) / 2), 585)
         self.winListWidget.calculate_data()
         # loading div
         # self.launchLoadingDiv = LoadingDiv(None)
@@ -425,16 +430,23 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.rankView.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         # self.ui.rankView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
-        self.ui.btnLogin.setText("登录")
+        #self.ui.btnLogin.setText(_("登录"))
+        self.ui.btnLogin.setText(_("Login"))
         #self.ui.btnReg.setText("去注册")
         # self.ui.welcometext.setText("欢迎您")
-        self.ui.btnAppList.setText("安装历史")
-        self.ui.btnTransList.setText("我翻译的软件")#zx.2015.01.30
-        self.ui.btnLogout.setText("退出")
+        #self.ui.btnAppList.setText(_("安装历史"))
+        self.ui.btnAppList.setText(_("Installation History"))
+        #self.ui.btnTransList.setText(_("我翻译的软件"))#zx.2015.01.30
+        self.ui.btnTransList.setText(_("My Translationed Software"))  # zx.2015.01.30
+        #self.ui.btnLogout.setText(_("退出"))
+        self.ui.btnLogout.setText(_("Quit"))
 
-        self.ui.hometext1.setText("推荐软件")
-        self.ui.hometext8.setText("必备软件")
-        self.ui.hometext9.setText("游戏娱乐")
+        #self.ui.hometext1.setText(_("推荐软件"))
+        self.ui.hometext1.setText(_("Rcd soft"))
+        #self.ui.hometext8.setText(_("必备软件"))
+        self.ui.hometext8.setText(_("Preq soft"))
+        #self.ui.hometext9.setText(_("游戏娱乐"))
+        self.ui.hometext9.setText(_("Game ent"))
 
         #self.ui.hometext2.setText("评分排行")
         # self.ui.hometext2.setText("热门排行")
@@ -451,7 +463,8 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.homecount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
         
         self.ui.headercw1.senior_search.setView(QListView())
-        self.items =["全局","精选",]
+        #self.items =[_("全局"),_("精选")]
+        self.items = [_("ALL"), _("Chc")]
         self.ui.headercw1.senior_search.addItems(self.items)
         # self.ui.headercw1.senior_search.addItem("高级",1)
         self.ui.headercw1.senior_search.setCurrentIndex(1)
@@ -473,9 +486,11 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.alltext2.setStyleSheet("QLabel{color:#666666;font-size:13px;}")
         # self.ui.allcount.setStyleSheet("QLabel{color:#FA7053;font-size:14px;}")
 
-        self.ui.apktext1.setText("有")
+        #self.ui.apktext1.setText("有")
+        self.ui.apktext1.setText(_("Ha"))
         self.ui.apktext1.setAlignment(Qt.AlignLeft)
-        self.ui.apktext2.setText("款安卓软件")
+        #self.ui.apktext2.setText("款安卓软件")
+        self.ui.apktext2.setText(_("Android Software"))
         self.ui.apktext2.setAlignment(Qt.AlignLeft)
         self.ui.apkcount.setAlignment(Qt.AlignCenter)
         # self.ui.apkline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
@@ -483,39 +498,48 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.apktext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.apkcount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
-        self.ui.uptext1.setText("有")
+        #self.ui.uptext1.setText("有")
+        self.ui.uptext1.setText(_("Ha"))
         self.ui.uptext1.setAlignment(Qt.AlignLeft)
         self.ui.uptext2.setAlignment(Qt.AlignLeft)
         self.ui.upcount.setAlignment(Qt.AlignCenter)
-        self.ui.uptext2.setText("款软件可以升级")
+        #self.ui.uptext2.setText("款软件可以升级")
+        self.ui.uptext2.setText(_("Soft can upgr"))
         # self.ui.upline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.uptext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.uptext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.upcount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
-        self.ui.untext1.setText("已经安装了")
+        #self.ui.untext1.setText("已经安装了")
+        self.ui.untext1.setText(_("Aldy Install"))
         self.ui.untext1.setAlignment(Qt.AlignLeft)
         self.ui.untext2.setAlignment(Qt.AlignLeft)
         self.ui.uncount.setAlignment(Qt.AlignCenter)
-        self.ui.untext2.setText("款软件")
+        #self.ui.untext2.setText("款软件")
+        self.ui.untext2.setText(_("Soft"))
         # self.ui.unline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.untext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.untext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.uncount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
-        self.ui.searchtext1.setText("搜索到")
+        #self.ui.searchtext1.setText("搜索到")
+        self.ui.searchtext1.setText(_("Search"))
         self.ui.searchtext1.setAlignment(Qt.AlignLeft)
         self.ui.searchtext2.setAlignment(Qt.AlignLeft)
         self.ui.searchcount.setAlignment(Qt.AlignCenter)
-        self.ui.searchtext2.setText("款软件")
+       # self.ui.searchtext2.setText("款软件")
+        self.ui.searchtext2.setText(_("Soft"))
         # self.ui.searchline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.searchtext1.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.searchtext2.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.searchcount.setStyleSheet("QLabel{color:#2d8ae1;font-size:13px;}")
 
-        self.ui.uatitle.setText("云端保存的安装历史")
-        self.ui.btnInstallAll.setText("一键安装")
-        self.ui.uaNoItemText.setText("您登录后安装的软件会被记录在这里，目前暂无记录")
+        #self.ui.uatitle.setText("云端保存的安装历史")
+        self.ui.uatitle.setText(_("Cloud Saved Installation History"))
+        #self.ui.btnInstallAll.setText("一键安装")
+        self.ui.btnInstallAll.setText(_("A Key Installation"))
+        #self.ui.uaNoItemText.setText("您登录后安装的软件会被记录在这里，目前暂无记录")
+        self.ui.uaNoItemText.setText(_("The software installed after you log in will be recorded here, there is no record at this time "))
         self.ui.uaNoItemText.setAlignment(Qt.AlignCenter)
         self.ui.uaNoItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
         self.ui.uaNoItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
@@ -524,9 +548,11 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.cbSelectAll.setStyleSheet("QCheckBox{color:#666666;font-size:13px;}QCheckBox:hover{background-color:rgb(238, 237, 240);}")
         self.ui.btnInstallAll.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
 
-        self.ui.transtitle.setText("云端保存的翻译历史")#zx 2015.01.30
+        #self.ui.transtitle.setText("云端保存的翻译历史")#zx 2015.01.30
+        self.ui.transtitle.setText(_("cloud saved Translation history "))
         #self.ui.btnInstallAll.setText("一键安装")
-        self.ui.NoTransItemText.setText("您登录后翻译的软件会被记录在这里，目前暂无记录")
+        #self.ui.NoTransItemText.setText("您登录后翻译的软件会被记录在这里，目前暂无记录")
+        self.ui.NoTransItemText.setText(_(" The software translated after you log in will be recorded here, there is no record at this time "))
         self.ui.NoTransItemText.setAlignment(Qt.AlignCenter)
         self.ui.NoTransItemText.setStyleSheet("QLabel{color:#0F84BC;font-size:16px;}")
         self.ui.NoTransItemWidget.setStyleSheet("QWidget{background-image:url('res/uanoitem.png');}")
@@ -556,22 +582,23 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ads_sate=0
         self.setff=''
         self.advercat=''
-        self.cursor = sqlite3.connect(UBUNTUKYLIN_CACHE_UKSCDB_PATH, timeout=30.0, check_same_thread=False)
-        sctnum_ads = self.cursor.execute("SELECT * from advertisement")
+        sctnum_ads = self.worker_thread0.appmgr.db.get_advertisement()
 
         for it in sctnum_ads:
             self.test.append(it[1])
             self.list.append(it[2])
+        temp_list=[]
         for i in self.list:
-            if os.path.exists( xdg.xdg_cache_home + "/"+i):
-                self.ads_sate = self.ads_sate+1
-                pass
-            else:
-                self.uk_ads.append(self.ads_sate)
-                self.list.remove(i)
-                self.ads_sate=self.ads_sate+1
+            if not os.path.exists( xdg.xdg_cache_home + "/"+i):
+                temp_list.append(i)
+                i=i.split('/')
+                chk=i[2].split('.')
+                self.uk_ads.append(chk[0])
+
+        for i in temp_list:
+            self.list.remove(i)
         for i in self.uk_ads:
-            del self.test[int(i)]
+            self.test.remove(i)
         if self.test==[] or not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH) or not os.listdir(UBUNTUKYLIN_CACHE_SETADS_PATH):
             self.ui.listWidget.setGeometry(0, 0,830, 180)
             self.ui.rightbtn.hide()
@@ -627,7 +654,8 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.ui.btnGoto.setText("去宝库看看")
         self.ui.notaskImg.setStyleSheet("QLabel{background-image:url('res/no-download.png');background-color:transparent}")
         #暂无下载任务
-        self.ui.textbox.setText("暂无下载任务")
+        #self.ui.textbox.setText("暂无下载任务")
+        self.ui.textbox.setText(_("No DL Tasks"))
         self.ui.textbox.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#808080;text-align:center;background-color:transparent}")
 
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
@@ -664,7 +692,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #      QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
         # self.ui.taskListWidget_complete.setSpacing(1)
         # self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
-        # self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
+        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         # self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
         #self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         #self.ui.tasklabel.setText("任务列表")
@@ -725,7 +753,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
         self.ui.btnTask3.setIconSize(QSize(22, 22))
-        self.ui.btnTask3.setText("下载管理")
+        #self.ui.btnTask3.setText("下载管理")
+        self.ui.btnTask3.setText(_("DL MGT"))
         self.ui.btnTask3.setStyleSheet("QToolButton{border:0px;font-size:12px;color:#2d8ae1;text-align:center;} QToolButton:hover{border:0px;font-size:13px;color:#0396DC;} QToolButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         self.ui.btnTask3.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         self.ui.btnTask3.setAutoRaise(True)
@@ -780,7 +809,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         # 清除按钮
         self.ui.clean_button.setFocusPolicy(Qt.NoFocus)
-        self.ui.clean_button.setText("清空已下载")
+        #self.ui.clean_button.setText("清空已下载")
+        self.ui.clean_button.setText(_("Clean DL"))
         self.ui.clean_button.setStyleSheet(
             "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         # 清除按钮的下划线
@@ -788,7 +818,8 @@ class SoftwareCenter(QMainWindow,Signals):
         # 清空已经下载的软件
         self.ui.clean_button.pressed.connect(self.delete_all_finished_taskwork)
 
-        self.ui.dow_manage.setText("下载管理")
+        #self.ui.dow_manage.setText("下载管理")
+        self.ui.dow_manage.setText(_("DL MGT"))
         self.ui.dow_manage.setStyleSheet("QWidget{background-color: #ffffff;border:0px;font-size:13px;color:#808080;text-align:center;}")
 
 
@@ -830,10 +861,15 @@ class SoftwareCenter(QMainWindow,Signals):
         # if not os.path.exists(UBUNTUKYLIN_CACHE_SETADS_PATH) and not os.path.exists("data/ads/"):
         #     self.ui.leftbtn.hide()
         #     self.ui.rightbtn.hide()
-        self.ui.listWidget.setGeometry(0, 0, len(self.list) * 830, 180)
+        self.ui.listWidget.setGeometry(0, 0, (len(self.list) +2)* 830, 180)
         i = 0
-        while i < len(self.list):
-            self.ui.takeads[i].setStyleSheet("QWidget{background-image:url(" + xdg.xdg_cache_home + "/" + self.list[i] + ");border:none;background-color:transparent;}")
+        while i < len(self.list)+2:
+            if i==0:
+                self.ui.takeads[i].setStyleSheet("QWidget{background-image:url(" + xdg.xdg_cache_home + "/" + self.list[len(self.list)-1] + ");border:none;background-color:transparent;}")
+            elif i==len(self.list)+1:
+                self.ui.takeads[i].setStyleSheet("QWidget{background-image:url(" + xdg.xdg_cache_home + "/" + self.list[0] + ");border:none;background-color:transparent;}")
+            else:
+                self.ui.takeads[i].setStyleSheet("QWidget{background-image:url(" + xdg.xdg_cache_home + "/" + self.list[i-1] + ");border:none;background-color:transparent;}")
             i = i + 1
         self.ui.rightbtn.clicked.connect(self.right_btn_icon)
         self.ui.leftbtn.clicked.connect(self.left_btn_icon)
@@ -842,6 +878,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.timernum = QTimer(self)
         self.left_adstimer=QTimer(self)
         self.adtimer.timeout.connect(self.recursion_advertisement)
+        self.adtimer.stop()
 
         self.left_adstimer.timeout.connect(self.left_advertisement)
 
@@ -946,21 +983,21 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.listWidget.move(-10* self.testnum, 0)
         self.timernum.stop()
         # if self.testnum==(len(self.list)-1)*832:
-        if Globals.ADS_NUM==len(self.list)-1:
-            Globals.ADS_NUM=0
+        if Globals.ADS_NUM==len(self.list)+1:
+            Globals.ADS_NUM=1
             Globals.Denot=Globals.ADS_NUM
-            self.testnum=0
-            self.ui.listWidget.move(0, 0)
-            self.adtimer.stop()
-            self.timernum.start()
+            self.testnum=83
+            # self.ui.listWidget.move(830*len(self.list)-2, 0)
+            # self.adtimer.stop()
+            # self.timernum.start()
         elif (self.testnum)%83==0:
-            if Globals.ADS_NUM<len(self.list)-1:
+            if Globals.ADS_NUM<len(self.list)+1:
                 Globals.ADS_NUM=Globals.ADS_NUM+1
             # Globals.Dleft=Globals.Denot
             self.adtimer.stop()
             self.timernum.start()
             # time.sleep(2)
-        if Globals.ADS_NUM>len(self.list)-1:
+        if Globals.ADS_NUM>len(self.list)+1:
             Globals.ADS_NUM=0
         Globals.Denot=Globals.ADS_NUM
         Globals.Dleft=Globals.ADS_NUM
@@ -969,16 +1006,16 @@ class SoftwareCenter(QMainWindow,Signals):
         if self.testnum==0:
             # Globals.ADS_NUM=0
             # self.ui.listWidget.move(-1 * (len(self.list)-1), 0)
-            self.testnum=(len(self.list)-1)*83
+            self.testnum=(len(self.list)+1)*83
             # self.testnum = (len(self.list)) * 830
         self.testnum = self.testnum-1
         self.ui.listWidget.move(-10* self.testnum, 0)
         # self.timernum.stop()
         # if self.testnum==(len(self.list)-1)*832:
         if Globals.ADS_NUM <0:
-            Globals.ADS_NUM = len(self.list)-1
+            Globals.ADS_NUM = len(self.list)+1
             Globals.Denot = Globals.ADS_NUM
-            self.testnum = (len(self.list)-1)*83
+            self.testnum = (len(self.list)+1)*83
             self.ui.listWidget.move(-10*self.testnum, 0)
         elif (self.testnum) % 83== 0:
             if Globals.ADS_NUM>0:
@@ -986,20 +1023,24 @@ class SoftwareCenter(QMainWindow,Signals):
                 Globals.Denot=Globals.ADS_NUM
             self.left_adstimer.stop()
         if Globals.ADS_NUM <0:
-            Globals.ADS_NUM =len(self.list)-1
+            Globals.ADS_NUM =len(self.list)+1
+        if Globals.ADS_NUM==0:
+            self.testnum=len(self.list)*83
+            Globals.ADS_NUM=len(self.list)
         Globals.Denot = Globals.ADS_NUM
         Globals.Dleft = Globals.ADS_NUM
 
 
 
 
+
     def right_btn_icon(self):
         self.timernum.stop()
-        if Globals.Denot >=len(self.list) - 1:
+        if Globals.Denot ==len(self.list)+2:
             Globals.Denot = 0
-            self.testnum=0
-            self.ui.listWidget.move(self.testnum, 0)
-
+            self.testnum=83
+            self.ui.listWidget.move(-830, 0)
+            self.ui.listWidget.move(830 * len(self.list) + 1, 0)
             # self.ui.varlist[Globals.Denot].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
             # self.ui.varlist[len(self.list) - 1].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
         else:
@@ -1014,14 +1055,21 @@ class SoftwareCenter(QMainWindow,Signals):
             #     if i==Globals.Denot:
             #         self.ui.varlist[Globals.Denot].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
             #     else:
-            #         self.ui.varlist[i].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
+        #     #         self.ui.varlist[i].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
         if Globals.Denot>=len(self.list)-(len(self.list)-1):
             Globals.ADS_NUM=Globals.Denot-1
             if Globals.ADS_NUM<0:
                 Globals.ADS_NUM=0
         else:
             Globals.ADS_NUM = Globals.Denot
-        dest = self.test[Globals.Denot]
+
+        if Globals.Denot > len(self.list):
+            ads_num = 0
+        elif Globals.Denot == 0:
+            ads_num = len(self.list) - 1
+        else:
+            ads_num = Globals.Denot - 1
+        dest = self.test[ads_num]
         self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
         self.timernum.start()
 
@@ -1033,31 +1081,45 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.adWidget.isEnabled(False)
             # self.setff = self.worker_thread0.appmgr.get_application_by_name('wps-office')
         else:
-            dest = self.test [Globals.ADS_NUM]
+            if Globals.ADS_NUM>len(self.list):
+                ads_num=0
+            elif Globals.ADS_NUM==0:
+                ads_num=len(self.list)-1
+            else:
+                ads_num=Globals.ADS_NUM-1
+            dest = self.test [ads_num]
             self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
         if  self.setff is not None and  self.setff.package is not None:
             self.slot_show_app_detail(self.setff)
         else:
             MS = QMessageBox()
-            MS.setWindowTitle('提示')
-            MS.setText('软件源不完整或不包含该软件')
-            MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            #MS.setWindowTitle('提示')
+            MS.setWindowTitle(_('Prompt'))
+            #MS.setText('软件源不完整或不包含该软件')
+            MS.setText(_('Software source is incomplete or does not contain the software'))
+            #MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            MS.addButton(QPushButton(_('Determine')), QMessageBox.YesRole)
             MS.exec_()
         # self.slot_show_app_detail(self.setff)
 
     def left_btn_icon(self):
         self.timernum.stop()
+        # if Globals.Dleft==0:
+        #     # Globals.Dleft = len(self.list)-1
+        #     # self.testnum = Globals.Dleft * 83
+        #     self.ui.listWidget.move(830*5, 0)
         # print("mmmmmmmmmmmmmmmmmmmmmmmmm", Globals.Dleft)
-        if Globals.ADS_NUM==0:
-            Globals.Dleft = len(self.list) - 1
+        if Globals.ADS_NUM<0:
+            Globals.Dleft = len(self.list)
             self.testnum=Globals.Dleft*83
             # # self.ui.adWidget.setStyleSheet(
             # #     "QPushButton{background-image:url("+xdg.xdg_cache_home+"/" + self.list[Globals.Dleft] + ");border:none;}")
-            self.ui.listWidget.move(-10*self.testnum, 0)
+            # self.ui.listWidget.move(-10*self.testnum, 0)
             # self.ui.varlist[Globals.Dleft].setStyleSheet("QPushButton{background-image:url('data/ads/now.png');border:none;background-color:transparent;}")
             # self.ui.varlist[0].setStyleSheet("QPushButton{background-image:url('data/ads/default.png');border:none;background-color:transparent;}")
             Globals.Denot=Globals.Dleft-1
-            Globals.ADS_NUM=Globals.Dleft
+            Globals.ADS_NUM=Globals.Dleft+1
+
 
         else:
             self.left_adstimer.start(6)
@@ -1072,7 +1134,14 @@ class SoftwareCenter(QMainWindow,Signals):
         #     Globals.ADS_NUM=Globals.Dleft-1
         # else:
         #     Globals.ADS_NUM=Globals.Dleft
-        dest = self.test[Globals.Dleft]
+
+        if Globals.Dleft>len(self.list):
+            ads_num=0
+        elif Globals.Dleft==0:
+            ads_num=len(self.list)-1
+        else:
+            ads_num=Globals.Dleft-1
+        dest = self.test[ads_num]
         self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
         # self.timernum.start()
         Globals.Denot=Globals.Dleft
@@ -1080,6 +1149,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
     def get_os_class(self):
+
         self.desktop = False
         self.server = False
         self.command = 'dpkg -l | grep kylin-user-guide'
@@ -1104,28 +1174,36 @@ class SoftwareCenter(QMainWindow,Signals):
                     print("4.0.2-desktop")
                     self.flag = 1
                     return ("4.0.2-desktop")
-                if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2SP1"):
+                elif (self.lines.strip() == "DISTRIB_RELEASE=4.0-2SP1"):
                     print("4.0.2sp1-desktop")
                     self.flag = 1
                     return ("4.0.2sp1-desktop")
-                if (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP2"):
+                elif (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP2"):
                     print("4.0.2sp2-desktop")
                     self.flag = 1
                     return ("4.0.2sp2-desktop")
+                elif (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP3"):
+                    print("4.0.2sp3-desktop")
+                    self.flag = 1
+                    return ("4.0.2sp3-desktop")
 
             if (self.server):
                 if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2"):
                     print("4.0.2-server")
                     self.flag = 1
                     return ("4.0.2-server")
-                if (self.lines.strip() == "DISTRIB_RELEASE=4.0-2SP1"):
+                elif (self.lines.strip() == "DISTRIB_RELEASE=4.0-2SP1"):
                     print("4.0.2sp1-server")
                     self.flag = 1
                     return ("4.0.2sp1-server")
-                if (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP2"):
+                elif (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP2"):
                     print("4.0.2sp2-server")
                     self.flag = 1
                     return ("4.0.2sp2-server")
+                elif (self.lines.strip() == "DISTRIB_KYLIN_RELEASE=4.0-2SP3"):
+                    print("4.0.2sp3-server")
+                    self.flag = 1
+                    return ("4.0.2sp3-server")
             self.lines = self.file.readline()
         if (self.server == True):
             if (self.IS_server_2000 != ""):
@@ -1171,7 +1249,12 @@ class SoftwareCenter(QMainWindow,Signals):
             if(not os.path.exists(UKSC_CACHE_DIR+'/kylin-software-center.ini')):
                 fp = open(UKSC_CACHE_DIR + '/kylin-software-center.ini', 'w+')
                 fp.close()
-            MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行>软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
+            #MessageBox.setText(self.tr("您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行>软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"))
+            MessageBox.setText(self.tr(_("This is the first time you have entered the system or the software source is abnormal. \n "
+                                         "To install / uninstall / upgrade software in the system, you need to connect to the network to update the software source \n"
+                                         " If you do not have an internet or do not want to update, you can trigger this by running> Software Store next time Features \n "
+                                         "Tick no more reminders will no longer pop up prompts \n Please select:")))
+
             MessageBox.exec_()
             button = MessageBox.clickedButton()
             # button = MessageBox.question(self,"软件源更新提示",
@@ -1191,15 +1274,18 @@ class SoftwareCenter(QMainWindow,Signals):
                 res = self.worker_thread0.backend.update_source_first_os()
                 if "False" == res:
                     self.updateSinglePB.hide()
-                    self.messageBox.alert_msg("密码认证失败\n更新源失败")
+                    #self.messageBox.alert_msg("密码认证失败\n更新源失败")
+                    self.messageBox.alert_msg(_("Password authentication failed\nFailed to update source"))
                     self.worker_thread0.appmgr.init_models()
                 elif res is None:
                     self.updateSinglePB.hide()
-                    self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                    #self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                    self.messageBox.alert_msg(_("Enter password timeout\nFailed to update source"))
                     self.worker_thread0.appmgr.init_models()
                 elif "True" != res:
                     self.updateSinglePB.hide()
-                    self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                    #self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                    self.messageBox.alert_msg(_("An unknown error occurred\nFailed to update the source"))
                     self.worker_thread0.appmgr.init_models()
             elif MessageBox.button_notupdate == button:
                 self.worker_thread0.appmgr.init_models()
@@ -1235,6 +1321,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def start_init_testing(self):
         MessageBox = Update_Source_Dialog()
+        MessageBox.checkbox.setGeometry(QRect(35, 110, 90, 20))
         OS = self.get_os_class()
         if (OS == None):
             # self.launchLoadingDiv.start_loading("")
@@ -1248,7 +1335,12 @@ class SoftwareCenter(QMainWindow,Signals):
             self.lines = f.readlines()
             if ("deb http://archive.kylinos.cn/kylin/KYLIN-ALL" + ' ' + OS + ' ' + "main restricted universe multiverse\n" not in self.lines):
                 if (self.flag == 1):
-                    MessageBox.setText(self.tr("您系统缺少银河麒麟公网软件源，将会影响软件安装\n您是否需要添加？\n勾选不再提醒将不再弹出提示框\n请选择:"))
+                    #MessageBox.setText(self.tr("您系统缺少银河麒麟公网软件源，将会影响软件安装\n您是否需要添加？\n勾选不再提醒将不再弹出提示框\n请选择："))
+                    MessageBox.setText(self.tr(_("Your system lacks the Galaxy Kirin public network software source,"
+                                                 " which will affect the software installation \n"
+                                                 "Do you need to add and update it? \nTick no more reminders and "
+                                                 "no prompt box will pop up \nPlease select:")))
+
                     MessageBox.exec_()
                     button = MessageBox.clickedButton()
 
@@ -1266,22 +1358,27 @@ class SoftwareCenter(QMainWindow,Signals):
                     if MessageBox.button_update == button:
                         if (Globals.DEBUG_SWITCH):
                             LOG.info("update source when first start...")
+                        self.configWidget.slot_click_add_spacail(OS)
+
                         self.updateSinglePB.show()
                         res = self.worker_thread0.backend.update_source_first_os()
 
-                        self.configWidget.slot_click_add_spacail(OS)
+
 
                         if "False" == res:
                             self.updateSinglePB.hide()
-                            self.messageBox.alert_msg("密码认证失败\n更新源失败")
+                            #self.messageBox.alert_msg("密码认证失败\n更新源失败")
+                            self.messageBox.alert_msg("Password authentication failed\nFailed to update source")
                             self.worker_thread0.appmgr.init_models()
                         elif res is None:
                             self.updateSinglePB.hide()
-                            self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                            #self.messageBox.alert_msg("输入密码超时\n更新源失败")
+                            self.messageBox.alert_msg("Enter password timeout\nFailed to update source")
                             self.worker_thread0.appmgr.init_models()
                         elif "True" != res:
                             self.updateSinglePB.hide()
-                            self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                            #self.messageBox.alert_msg("出现未知错误\n更新源失败")
+                            self.messageBox.alert_msg("An unknown error occurred\nFailed to update the source")
                             self.worker_thread0.appmgr.init_models()
                     elif MessageBox.button_notupdate == button:
                         self.worker_thread0.appmgr.init_models()
@@ -1300,23 +1397,30 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_check_source_useable_over(self, bad_source_url_list):
         bad_source_urlstr = '\n'.join(bad_source_url_list)
-        MSG = " 以下软件源访问过慢或者暂时无法访问:\n" + bad_source_urlstr
+        #MSG = " 以下软件源访问过慢或者暂时无法访问:\n" + bad_source_urlstr
+        MSG = _("The following software sources are too slow or temporarily inaccessible:\n") + bad_source_urlstr
         INFO = QMessageBox()
         REINFO = QMessageBox()
 
-        INFO.setWindowTitle('温馨提示')
-        INFO.setText(self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"))
+        #INFO.setWindowTitle('温馨提示')
+        INFO.setWindowTitle(_('Warm reminder'))
+        #INFO.setText(self.tr(" 源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"))
+        INFO.setText(self.tr(_("The source server is too slow or inaccessible\nSome software may not be installed temporarily")))
         INFO.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         buttonY = INFO.button(QMessageBox.Yes)
-        buttonY.setText('确认')
+        #buttonY.setText('确认')
+        buttonY.setText(_('Confirm'))
         buttonN = INFO.button(QMessageBox.No)
-        buttonN.setText('取消')
+        #buttonN.setText('取消')
+        buttonN.setText(_('cancel'))
         INFO.exec_()
 
         if INFO.clickedButton() == buttonY:
-            REINFO.setWindowTitle('温馨提示')
+         #   REINFO.setWindowTitle('温馨提示')
+            REINFO.setWindowTitle(_('Warm reminder'))
             REINFO.setText(self.tr(MSG))
-            REINFO.addButton(QPushButton('确定'), QMessageBox.YesRole)
+          #  REINFO.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            REINFO.addButton(QPushButton(_('Determine')), QMessageBox.YesRole)
             REINFO.exec_()
 
         #btn = INFO.warning(self,"温馨提示",
@@ -1343,8 +1447,10 @@ class SoftwareCenter(QMainWindow,Signals):
 
             # user clicked local deb file, show info
             if(Globals.LOCAL_DEB_FILE != None):
-                iface.show_loading_div()
                 iface.show_deb_file(Globals.LOCAL_DEB_FILE)
+                Globals.UPDATE_HOM = 1
+            elif(Globals.REMOVE_SOFT != None):
+                iface.show_remove_soft(Globals.REMOVE_SOFT)
                 Globals.UPDATE_HOM = 1
             sys.exit(0)
 
@@ -1443,6 +1549,9 @@ class SoftwareCenter(QMainWindow,Signals):
             # user clicked local deb file, show info
             if Globals.LOCAL_DEB_FILE != None and self.first_start is True:
                 self.slot_show_deb_detail(Globals.LOCAL_DEB_FILE)
+
+            if Globals.REMOVE_SOFT != None and self.first_start is True:
+                self.slot_show_remove_soft(Globals.REMOVE_SOFT)
 
             if(Globals.LAUNCH_MODE == 'quiet'):
                 self.hide()
@@ -1752,12 +1861,12 @@ class SoftwareCenter(QMainWindow,Signals):
     def check_apk_sources(self):
         url = KYDROID_SOURCE_SERVER
         try:
-            r = requests.get(url, timeout=5)
+            r = requests.get(url, timeout=1)
             code = r.status_code
 
             if code == 200:
                 if (Globals.DEBUG_SWITCH):
-                    print("OK apk源问正常")
+                    print("OK apk源访问正常")
                 return 0
             else:
                 if (Globals.DEBUG_SWITCH):
@@ -2120,11 +2229,13 @@ class SoftwareCenter(QMainWindow,Signals):
         if(self.uksc != None):
             if(self.uksc.is_upgradable == True):
                 self.show_mainwindow()
-                cd = ConfirmDialog("软件商店有新版本，是否升级？", self)
+                #cd = ConfirmDialog("软件商店有新版本，是否升级?", self)
+                cd = ConfirmDialog(_("Software store has new version, whether to upgrade?"), self)
                 cd.confirmdialog_ok.connect(self.update_uksc)
                 cd.exec_()
     def slot_uninstall_uksc_or_not(self, where):
-        cd = ConfirmDialog("您真的要卸载软件商店吗?\n卸载后该应用将会关闭.", self, where)
+        #cd = ConfirmDialog("您真的要卸载软件商店吗?\n卸载后该应用将会关闭.", self, where)
+        cd = ConfirmDialog(_("Do you really want to uninstall the software store?\nthe app will close after uninstalling.", self, where))
         cd.confirmdialog_ok.connect(self.to_uninstall_uksc)
         cd.confirmdialog_no.connect(self.to_cancel_uninstall_uksc)
         cd.exec_()
@@ -2204,7 +2315,7 @@ class SoftwareCenter(QMainWindow,Signals):
         windowWidth = QApplication.desktop().screenGeometry(0).width()
         windowHeight = QApplication.desktop().screenGeometry(0).height()
         if True == self.first_start:
-            self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+            self.move(int((windowWidth - self.width()) / 2), int((windowHeight - self.height()) / 2))
 
     #-------------------------------------------------slots-------------------------------------------------
     def slot_rec_show_necessary(self):
@@ -2280,7 +2391,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_change_task(self, category):
        # if category == "正在处理":
-         if category == "下载管理":
+         #if category == "下载管理":
+         if category == _("DL MGT"):
             self.ui.btnClearTask.hide()
             self.ui.taskListWidget.setVisible(True)
             #self.ui.taskListWidget_complete.setVisible(False)
@@ -2730,7 +2842,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 break
             item = self.ui.taskListWidget.item(top)
             taskitem = self.ui.taskListWidget.itemWidget(item)
-            if (taskitem.ui.status.text() == "完成"or taskitem.ui.status.text()=="失败"):
+            #if (taskitem.ui.status.text() == "完成"or taskitem.ui.status.text()=="失败"):
+            if (taskitem.ui.status.text() == _("perfection") or taskitem.ui.status.text() == _("failure")):
                 delitem = self.ui.taskListWidget.takeItem(top)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem
@@ -2887,15 +3000,23 @@ class SoftwareCenter(QMainWindow,Signals):
         #    self.messageBox.alert_msg("当前启动项不支持安卓兼容\n请使用默认启动项")
         #    return
 
+        #kunpeng 检测，临时使用
+        #if os.popen("lscpu|grep -i kunpeng").read() != '':
+        #    self.messageBox.alert_msg("鲲鹏安卓兼容优化中\n敬请期待！")
+        #    return
+
         if self.kydroid_service.hasKydroid == False:
-            self.messageBox.alert_msg("未检测到安卓兼容环境\n无法安装安卓APP")
+            #self.messageBox.alert_msg("未检测到安卓兼容环境\n无法安装安卓APP")
+            self.messageBox.alert_msg(_("Missing environment \nUnable to install APP"))
             return
         else:
             ret = self.check_apk_sources()
             if ret == 1:
-                self.messageBox.alert_msg("未找到安卓软件源或\n软件源连接异常！")
+                #self.messageBox.alert_msg("未找到安卓软件源或\n软件源连接异常！")
+                self.messageBox.alert_msg(_("Android software source not found or\nThe software source connection is abnormal！"))
             elif ret == 2:
-                self.messageBox.alert_msg("安卓软件源无法连接\n请检查系统网络！")
+                #self.messageBox.alert_msg("安卓软件源无法连接\n请检查系统网络！")
+                self.messageBox.alert_msg(_("The Android software source cannot be connected \ nPlease check the system network！"))
         self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
@@ -2959,7 +3080,8 @@ class SoftwareCenter(QMainWindow,Signals):
             self.worker_thread0.appmgr.get_recommend_apps(False)
             # self.count_application_update.emit()
         else :
-            self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
+            #self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
+            self.messageBox.alert_msg(_("Android environment starts abnormally, operation fails！"))
         self.ui.navWidget.setEnabled(True)
         self.ui.headercw1.setEnabled(True)
         self.ui.no_search_resualt.hide()
@@ -3253,8 +3375,10 @@ class SoftwareCenter(QMainWindow,Signals):
         reslist = reslist[0]['res']
         self.userAppListWidget.clear()
         if False == reslist:
-            self.messageBox.alert_msg("网络连接出错\n"
-                                      "从服务器获取信息失败")
+           # self.messageBox.alert_msg("网络连接出错\n"
+            #                          "从服务器获取信息失败")
+            self.messageBox.alert_msg(_("Network connection error\n"
+                                      "failed to get information from server"))
         else:
             if(len(reslist) > 0):
                 self.ui.uaNoItemText.hide()
@@ -3345,15 +3469,18 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.ui.NoTransItemWidget.show()
                 self.userTransAppListWidget.hide()
         else:
-            self.messageBox.alert_msg("网络连接出错\n"
-                                      "从服务器获取信息失败")
+            #self.messageBox.alert_msg("网络连接出错\n"
+            #                         "从服务器获取信息失败")
+            self.messageBox.alert_msg(_("Network connection error\n"
+                                        "failed to get information from server"))
         self.loadingDiv.stop_loading()
 
     def slot_close(self):
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
         try:
             if self.worker_thread0.backend.check_dbus_workitem()[0] > 0 or self.worker_thread0.backend.check_uksc_is_working() == 1:
-                cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
+                #cd = ConfirmDialog("正在安装或者卸载软件\n现在退出可能导致软件中心异常", self)
+                cd = ConfirmDialog(_("Installing or uninstalling software\nExiting now may cause software center exceptions"), self)
                 cd.confirmdialog_ok.connect(self.slot_exit_uksc)
                 cd.exec_()
             else:
@@ -3410,9 +3537,12 @@ class SoftwareCenter(QMainWindow,Signals):
             self.slot_show_app_detail(app)
         else:
             MS = QMessageBox()
-            MS.setWindowTitle('提示')
-            MS.setText('软件源不完整或不包含该软件')
-            MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            #MS.setWindowTitle('提示')
+            MS.setWindowTitle(_('Prompt'))
+            #MS.setText('软件源不完整或不包含该软件')
+            MS.setText(_('Software source is incomplete or does not contain the software'))
+            #MS.addButton(QPushButton('确定'), QMessageBox.YesRole)
+            MS.addButton(QPushButton(_('Determine')), QMessageBox.YesRole)
             MS.exec_()
             #MS.information(self,"提示","软件源不完整或不包含该软件",QMessageBox.Yes)
 
@@ -3427,6 +3557,17 @@ class SoftwareCenter(QMainWindow,Signals):
     #     else:
     #         if (Globals.DEBUG_SWITCH):
     #             LOG.debug("rank item does not have according app...")
+
+    def slot_show_remove_soft(self, appname):
+        app = self.worker_thread0.appmgr.get_apk_by_name(appname)
+        if app is None:
+            app = self.worker_thread0.appmgr.get_remove_soft_by_name(appname)
+        if app is None:
+            return
+        app.status = PkgStates.UNINSTALL
+        self.slot_goto_unpage()
+        self.slot_show_app_detail(app)
+
 
     def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
@@ -3452,16 +3593,17 @@ class SoftwareCenter(QMainWindow,Signals):
             LOG.info("add an update task:%s","###")
         #self.backend.update_source(quiet)
         res = self.worker_thread0.backend.update_source(quiet)
-        # print 'wb111111111111:',res
         if res == "False":
             self.configWidget.set_process_visiable(False)
         elif res == "Locked":
             self.configWidget.set_process_visiable(False)
-            cd = TipsDialog("无法获得锁 /var/lib/apt/lists/lock\n 请稍后再尝试更新源", self.configWidget)
+            #cd = TipsDialog("无法获得锁 /var/lib/apt/lists/lock\n 请稍后再尝试更新源", self.configWidget)
+            cd = TipsDialog(_("Unable to obtain lock /var/lib/apt/lists/lock\n please try to update source later", self.configWidget))
             cd.exec_()
         elif res == None:
             self.configWidget.set_process_visiable(False)
-            cd = TipsDialog("更新软件源出现异常\n请稍后再尝试更新源", self.configWidget)
+            #cd = TipsDialog("更新软件源出现异常\n请稍后再尝试更新源", self.configWidget)
+            cd = TipsDialog(_("An error occurred while updating the software source\nPlease try to update the source later"), self.configWidget)
             cd.exec_()
 
     def slot_click_update_source(self):
@@ -3488,16 +3630,20 @@ class SoftwareCenter(QMainWindow,Signals):
 
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an install task:%s",app.name)
-        self.worker_thread0.appmgr.submit_pingback_app(app.name)
-        self.detailScrollWidget.upload_appname(app.name)
+
 
         if isinstance(app, ApkInfo):
-            self.worker_thread0.appmgr.download_apk(app)
-            self.add_task_item(app, AppActions.INSTALL)
+            res = self.worker_thread0.appmgr.download_apk(app)
+            if res:
+                self.add_task_item(app, AppActions.INSTALL)
+                self.worker_thread0.appmgr.submit_pingback_app(app.name)
+                self.detailScrollWidget.upload_appname(app.name)
         else:
             res = self.worker_thread0.backend.install_package(app.name)
             if res:
                 self.add_task_item(app, AppActions.INSTALL)
+                self.worker_thread0.appmgr.submit_pingback_app(app.name)
+                self.detailScrollWidget.upload_appname(app.name)
 
     def slot_click_install_rcm(self, app):
         if (Globals.DEBUG_SWITCH):
@@ -3518,8 +3664,9 @@ class SoftwareCenter(QMainWindow,Signals):
             #     if not envrun :
             #         self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
             #         return
-            self.worker_thread0.appmgr.download_apk(app)
-            self.add_task_item(app, AppActions.INSTALL)
+            res = self.worker_thread0.appmgr.download_apk(app)
+            if res:
+                self.add_task_item(app, AppActions.INSTALL)
         else:
             res = self.worker_thread0.backend.upgrade_package(app.name)
             if res:
@@ -3530,8 +3677,9 @@ class SoftwareCenter(QMainWindow,Signals):
             LOG.info("add a remove task:%s",app.name)
 
         if isinstance(app, ApkInfo):
-            self.worker_thread0.appmgr.uninstall_app(app)
-            self.add_task_item(app, AppActions.REMOVE)
+            res = self.worker_thread0.appmgr.uninstall_app(app)
+            if res:
+                self.add_task_item(app, AppActions.REMOVE)
         else:
             res = self.worker_thread0.backend.remove_package(app.name)
             if res:
@@ -3591,7 +3739,8 @@ class SoftwareCenter(QMainWindow,Signals):
             if isinstance(app, str) and action == AppActions.UPDATE:
                 self.configWidget.slot_update_finish()
                 if(self.configWidget.iscanceled == True):
-                    self.messageBox.alert_msg("已取消更新软件源")
+                    #self.messageBox.alert_msg("已取消更新软件源")
+                    self.messageBox.alert_msg("Software source update cancelled")
             else:
                 app.percent = 0
                 if action == AppActions.INSTALL:
@@ -3693,34 +3842,47 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
         if action == AppActions.UPDATE:
-            print("dn123",percent)
             if int(percent) < 0:
-                self.messageBox.alert_msg("软件源更新失败")
+                #self.messageBox.alert_msg("软件源更新失败")
+                self.messageBox.alert_msg(_("Software source update failed"))
                 self.configWidget.slot_update_finish()
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
-            elif int(percent) >= 100 and "下载停止" == msg:
+            #elif int(percent) >= 100 and "下载停止" == msg:
+            elif int(percent) >= 100 and _("Download stopped") == msg:
                 self.configWidget.slot_update_status_change(percent)
                 self.configWidget.slot_update_finish()
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
-                self.messageBox.alert_msg("更新软件源完成")
-            elif int(percent) == 0.0 and "下载停止" == msg:
-                self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
-                self.messageBox.alert_msg("软件源列表为空")
+                #self.messageBox.alert_msg("更新软件源完成")
+                self.messageBox.alert_msg(_("Update software source completed"))
+            #elif int(percent) == 0.0 and "下载停止" == msg:
+            elif int(percent) == 0.0 and _("Download stopped") == msg:
+                #self.messageBox.alert_msg("软件源列表为空")
+                self.messageBox.alert_msg(_("Software source list is empty"))
                 self.configWidget.slot_update_finish()
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
             else:
                 self.configWidget.slot_update_status_change(percent)
         elif action == AppActions.UPDATE_FIRST:
             # print "--------------------",percent
-            if int(percent) >= 100 and "下载停止" == msg:
+            #if int(percent) >= 100 and "下载停止" == msg:
+            if int(percent) >= 100 and _("Download stopped") == msg:
                 self.updateSinglePB.value_change(100)
-                self.updateSinglePB.set_updatelabel_text("源更新完成")
+                #self.updateSinglePB.set_updatelabel_text("源更新完成")
+                self.updateSinglePB.set_updatelabel_text(_("Source update completed"))
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE_FIRST,"")
+            #elif int(percent) == 0.0 and "下载停止" == msg:
+            elif int(percent) == 0.0 and _("Download stopped") == msg:
+                self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
+                self.worker_thread0.appmgr.update_models(AppActions.UPDATE_FIRST,"")
+                #self.messageBox.alert_msg("源列表为空")
+                self.messageBox.alert_msg(_("Source list is empty"))
             elif int(percent) < 0:
                 # self.updateSinglePB.value_change(0)
                 # self.updateSinglePB.set_updatelabel_text("更新源失败")
                 self.updateSinglePB.setStyleSheet("QWidget{color:red;}")
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE_FIRST,"")
-                self.messageBox.alert_msg("软件源更新失败")
+                #self.messageBox.alert_msg("软件源更新失败")
+                self.messageBox.alert_msg(_("Software source update failed"))
             else:
                 self.updateSinglePB.value_change(percent)
         else:
@@ -3748,12 +3910,36 @@ class SoftwareCenter(QMainWindow,Signals):
                     # (install debfile deps finish) is not the (install debfile task) finish
                     if app is not None and app.package is not None:
                         app.percent = 0
+                        # 提前更新一次app.status值，防止apt_process_finish.emit失败导致status值不对。
+                        if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
+                            if(Globals.NOWPAGE in (PageStates.UNPAGE,PageStates.SEARCHUNPAGE)):
+                                app.status = PkgStates.UNINSTALL
+                            elif(Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.SEARCHUPPAGE)):
+                                if(run.get_run_command(app.name) == ""):
+                                    app.status = PkgStates.NORUN
+                                else:
+                                    app.status = PkgStates.RUN
+                            else:
+                                if(Globals.NOWPAGE in (PageStates.APKPAGE,PageStates.SEARCHAPKPAGE)):
+                                    app.status = PkgStates.RUN
+                                elif(run.get_run_command(app.name) == ""):
+                                    app.status = PkgStates.NORUN
+                                else:
+                                    app.status = PkgStates.RUN
+                        elif action == AppActions.REMOVE:
+                            app.status = PkgStates.INSTALL
+                        elif action == AppActions.UPGRADE:
+                            if(run.get_run_command(app.name) == ""):
+                                app.status = PkgStates.NORUN
+                            else:
+                                app.status = PkgStates.RUN
                     self.apt_process_finish.emit(name, action)
                     self.normalcard_progress_finish.emit(name)
                     # self.del_task_item(name, action, False, True)
                     if name == "ubuntu-kylin-software-center":
                         if action == AppActions.UPGRADE:
-                            cd = ConfirmDialog("软件中心升级完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
+                            #cd = ConfirmDialog("软件中心升级完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
+                            cd = ConfirmDialog(_("Software Center upgrade completed\nClick the [OK] button to restart Software Center\nRestart will cancel the waiting task"), self)
                             cd.confirmdialog_ok.connect(self.restart_uksc)
                             cd.confirmdialog_no.connect(self.worker_thread0.backend.set_uksc_not_working) #if uksc upgrade itself,  the uksc will keep working status untill using func set_uksc_not_working
                             cd.exec_()
@@ -3763,11 +3949,13 @@ class SoftwareCenter(QMainWindow,Signals):
                             self.dbusControler.stop()
                             sys.exit(0)
                         else:
-                            cd = ConfirmDialog("软件中心安装完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
+                            #cd = ConfirmDialog("软件中心安装完成\n点击【确认】按钮重启软件中心\n重启将取消处于等待状态的任务", self)
+                            cd = ConfirmDialog(_("Software Center installation is complete\nClick the [OK] button to restart the Software Center\nRestart will cancel the waiting task"), self)
                             cd.confirmdialog_ok.connect(self.restart_uksc)
                             cd.exec_()
                     else:
-                        self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+                        #self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+                        self.messageBox.alert_msg(AptActionMsg[action] + _("perfection"))
 
                 elif percent < 0:
                     if app is not None and app.package is not None:
@@ -3777,29 +3965,41 @@ class SoftwareCenter(QMainWindow,Signals):
                     for i in range(count):
                         item = self.ui.taskListWidget.item(i)
                         taskitem = self.ui.taskListWidget.itemWidget(item)
-                        if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                        #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                        if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                             taskitem.status_change(processtype, percent, msg)
                     # self.del_task_item(name, action, False, True)
 
                     if int(percent) == int(-9):
                         self.slot_cancel_for_work_filed(name, action)
                         self.worker_thread0.appmgr.update_models(action, name)
-                        buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
+                        #buttom = QMessageBox.information(self, "升级软件包出错", "找不到对应的升级包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
+                        buttom = QMessageBox.information(self, _("Upgrade package error"),
+                                                         _("Cannot find the corresponding upgrade package:") + name + "\n"+_("During the software center operation, you may have used the apt, dpkg commands in the terminal to operate the software or the software source of the system！\n"),
+                                                         QMessageBox.Yes)
                     elif int(percent) == int(-1):
                         self.slot_cancel_for_work_filed(name, action)
                         self.worker_thread0.appmgr.update_models(action, name)
-                        buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
+                        #buttom = QMessageBox.information(self, "安装软件包出错", "找不到对应的安装包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
+                        buttom = QMessageBox.information(self, _("Error installing package"),
+                                                         _("Cannot find the corresponding installation package:") + name + "\n"+_("During the software center operation, you may have used the apt, dpkg commands in the terminal to operate the software or the software source of the system！\n"),
+                                                         QMessageBox.Yes)
                     elif int(percent) == int(-11):
                         self.slot_cancel_for_work_filed(name, action)
                         self.worker_thread0.appmgr.update_models(action, name)
-                        buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
+                        #buttom = QMessageBox.information(self, "卸载软件包出错", "找不到对应的软件包:" + name + "\n在软件中心运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n",QMessageBox.Yes)
+                        buttom = QMessageBox.information(self, _("Error uninstalling package"),
+                                                         _("No corresponding package found:") + name + "\n"+_("During the software center operation, you may have used the apt, dpkg commands in the terminal to operate the software or the software source of the system！\n"),
+                                                         QMessageBox.Yes)
                     elif int(percent) == int(-7):
-                        self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+                        #self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+                        self.messageBox.alert_msg(AptActionMsg[action] + _("perfection"))
                         self.apt_process_finish.emit(name, action)
                         self.normalcard_progress_finish.emit(name)
                     else:
                         self.slot_cancel_for_work_filed(name, action)
-                        self.messageBox.alert_msg(AptActionMsg[action] + "失败")
+                        #self.messageBox.alert_msg(AptActionMsg[action] + "失败")
+                        self.messageBox.alert_msg(AptActionMsg[action] + _("failure"))
                         self.worker_thread0.appmgr.update_models(action, name)
 
                 else:
@@ -3809,7 +4009,8 @@ class SoftwareCenter(QMainWindow,Signals):
                     for i in range(count):
                         item = self.ui.taskListWidget.item(i)
                         taskitem = self.ui.taskListWidget.itemWidget(item)
-                        if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                        #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                        if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                             taskitem.status_change(processtype, percent, msg)
                     self.trans_card_status.emit(name, action)
                     self.normalcard_progress_change.emit(name, percent, action)
@@ -3842,7 +4043,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 elif(app.is_upgradable):
                     app.is_upgradable = False
 
-            self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+            #self.messageBox.alert_msg(AptActionMsg[action] + "完成")
+            self.messageBox.alert_msg(AptActionMsg[action] + _("perfection"))
 
 
 
@@ -3854,19 +4056,34 @@ class SoftwareCenter(QMainWindow,Signals):
             for i in range(count):
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
-                if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                     taskitem.status_change(processtype, percent, msg)
             # self.del_task_item(name, action, False, True)
 
             if int(percent) == int(-1):
                 self.slot_cancel_for_work_filed(name, action)
-                buttom = QMessageBox.information(self, "安装APP出错", "安装APP出错:" + name + "\n", QMessageBox.Yes)
+                #self.messageBox.alert_msg("安装软件出错:" )
+                self.messageBox.alert_msg(_("Error installing software:"))
+                # buttom = QMessageBox.information(self, "安装APP出错", "安装APP出错:" + name + "\n", QMessageBox.Yes)
+            elif int(percent) == int(-2):
+                self.slot_cancel_for_work_filed(name, action)
+                #self.messageBox.alert_msg("下载软件出错:" )
+                self.messageBox.alert_msg(_("Error downloading software:"))
+                # buttom = QMessageBox.information(self, "下载APP出错", "下载APP出错:" + name + "\n", QMessageBox.Yes)
+            elif int(percent) == int(-3):
+                self.slot_cancel_for_work_filed(name, action)
+                #self.messageBox.alert_msg("权限认证失败")
+                self.messageBox.alert_msg(_("Authorization authentication failed"))
             elif int(percent) == int(-11):
                 self.slot_cancel_for_work_filed(name, action)
-                buttom = QMessageBox.information(self, "卸载APP出错", "卸载APP出错:" + name + "\n", QMessageBox.Yes)
+                #self.messageBox.alert_msg("卸载软件出错:")
+                self.messageBox.alert_msg(_("Error uninstalling software:"))
+                # buttom = QMessageBox.information(self, "卸载APP出错", "卸载APP出错:" + name + "\n", QMessageBox.Yes)
             else:
                 self.slot_cancel_for_work_filed(name, action)
-                self.messageBox.alert_msg(AptActionMsg[action] + "失败")
+                #self.messageBox.alert_msg(AptActionMsg[action] + "失败")
+                self.messageBox.alert_msg(AptActionMsg[action] + _("failure"))
 
             self.worker_thread0.appmgr.get_kydroid_apklist()
 
@@ -3877,7 +4094,8 @@ class SoftwareCenter(QMainWindow,Signals):
             for i in range(count):
                 item = self.ui.taskListWidget.item(i)
                 taskitem = self.ui.taskListWidget.itemWidget(item)
-                if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
+                if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                     taskitem.status_change(processtype, percent, msg)
             self.normalcard_progress_change.emit(name, percent, action)
 
@@ -4082,7 +4300,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.cbSelectAll.setChecked(False)
 
         if 0 == count:
-            self.messageBox.alert_msg("请先选取要安装的软件")
+            #self.messageBox.alert_msg("请先选取要安装的软件")
+            self.messageBox.alert_msg(_("Please select the software to be installed first"))
 
         # count = len(items)
         # if(count > 0):
@@ -4146,6 +4365,12 @@ def main():
         arg = sys.argv[1]
         if(arg == '-quiet'):
             Globals.LAUNCH_MODE = 'quiet'
+        elif(arg == '-remove'):
+            if(sys.argv[2]):
+                Globals.LAUNCH_MODE = 'normal'
+                Globals.REMOVE_SOFT = sys.argv[2]
+            else:
+                sys.exit(0)
         else:
             Globals.LAUNCH_MODE = 'normal'
             if(check_local_deb_file(arg)):
@@ -4157,7 +4382,7 @@ def main():
     # mw.set_sources_list()
     signal.signal(signal.SIGINT, quit)
     signal.signal(signal.SIGTERM, quit)
-    
+
     sys.exit(app.exec_())
 
 

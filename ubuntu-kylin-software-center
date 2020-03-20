@@ -1,21 +1,27 @@
 #!/bin/sh
+
+ps -ef|grep ubuntu-kylin-software-center.py|grep -v grep|cut -c 9-15|xargs kill -9
+
 if [ $# = 0 ]; then
 	echo "normal start"
 	cd /usr/share/ubuntu-kylin-software-center
-	python3 ubuntu-kylin-software-center.py
+	exec ./ubuntu-kylin-software-center.py
 elif [ $1 = "restart" ]; then
         echo "restart"
         ps -ef|grep ubuntu-kylin-software-center.py|grep -v grep|cut -c 9-15|xargs kill -9
         sleep 1
         cd /usr/share/ubuntu-kylin-software-center
-        python3 ubuntu-kylin-software-center.py
+        exec ./ubuntu-kylin-software-center.py
 else
 	if [ $1 = "-quiet" ]; then
 		echo "quiet start"
 		cd /usr/share/ubuntu-kylin-software-center
-		python3 ubuntu-kylin-software-center.py -quiet
+		exec ./ubuntu-kylin-software-center.py -quiet
+        elif [ $1 = "-remove" ]; then
+                cd /usr/share/ubuntu-kylin-software-center
+                exec ./ubuntu-kylin-software-center.py $1 $2
 	else
 		cd /usr/share/ubuntu-kylin-software-center
-		python3 ubuntu-kylin-software-center.py $1
+		exec ./ubuntu-kylin-software-center.py $1
 	fi
 fi

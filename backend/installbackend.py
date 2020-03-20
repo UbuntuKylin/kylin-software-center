@@ -28,7 +28,7 @@
 
 import dbus
 import os
-
+import shutil
 import locale
 
 import logging
@@ -50,6 +50,11 @@ mainloop = DBusGMainLoop(set_as_default=True)
 from models.globals import Globals
 #from dbus.mainloop.qt import DBusQtMainLoop
 #mainloop = DBusQtMainLoop()
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+
 LOG = logging.getLogger("uksc")
 
 
@@ -71,7 +76,8 @@ class InstallBackend(QObject,Signals):
             if (Globals.DEBUG_DEBUG_SWITCH):
                 print("could not initiate dbus")
             LOG.error("dbus exception:%s" % str(e))
-            self.init_models_ready.emit("fail","初始化失败!")
+            #self.init_models_ready.emit("fail","初始化失败!")
+            self.init_models_ready.emit("fail", _("Initialization failed"))
             return False
 
         try:
@@ -89,7 +95,8 @@ class InstallBackend(QObject,Signals):
         except dbus.DBusException as e:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
-            self.init_models_ready.emit("fail","初始化失败!")
+#           self.init_models_ready.emit("fail","初始化失败!")
+            self.init_models_ready.emit("fail",_("Initialization failed"))
             LOG.error("dbus exception:%s" % str(e))
             if(Globals.DEBUG_SWITCH):
                 print("dbus.DBusException error: ",str(e))
@@ -134,7 +141,8 @@ class InstallBackend(QObject,Signals):
 #             percent = -1
         if type == "down_fetch":
             if (Globals.DEBUG_SWITCH):
-                print("正在下载：",kwarg["uri"])
+                #print("正在下载：",kwarg["uri"])
+                print(_("downloading"), kwarg["uri"])
 
         self.dbus_apt_process.emit(appname,sendType,action,percent,sendMsg)
 
@@ -152,7 +160,8 @@ class InstallBackend(QObject,Signals):
 
         sendType = "auth"
         appname = str(kwarg['appname'])
-        sendMsg  = "操作取消"
+        #sendMsg  = "操作取消"
+        sendMsg = _("Operation canceled")
         action = str(kwarg['action'])
         if type == "auth_cancel":
             sendType = "cancel"
@@ -167,7 +176,8 @@ class InstallBackend(QObject,Signals):
             if (Globals.DEBUG_SWITCH):
                 print("could not initiate dbus")
             LOG.error("dbus exception:%s" % str(e))
-            self.init_models_ready.emit("fail","安卓dbus初始化失败!")
+            #self.init_models_ready.emit("fail","安卓dbus初始化失败!")
+            self.init_models_ready.emit("fail", _("Android dbus initialization failed"))
             return False
 
         try:
@@ -184,7 +194,8 @@ class InstallBackend(QObject,Signals):
         except dbus.DBusException as e:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
-            self.init_models_ready.emit("fail","安卓dbus初始化失败!")
+#           self.init_models_ready.emit("fail","安卓dbus初始化失败!")
+            self.init_models_ready.emit("fail",_("Android dbus initialization failed"))
             LOG.error("dbus exception:%s" % str(e))
             if(Globals.DEBUG_SWITCH):
                 print("dbus.DBusException error: ",str(e))
@@ -217,7 +228,14 @@ class InstallBackend(QObject,Signals):
         return self.call_dbus_iface(AppActions.INSTALLDEPS, path)
 
     def install_debfile(self, path):
-        return self.call_dbus_iface(AppActions.INSTALLDEBFILE, path)
+        debcache_dir = os.path.join(os.path.expanduser("~"), ".cache", "uksc", "debfile")
+        if(os.path.exists(debcache_dir) == False):
+            os.makedirs(debcache_dir)
+        if(os.path.exists(path)):
+            shutil.copy(path, debcache_dir)
+        debcache_path = os.path.join(debcache_dir,os.path.split(path)[1])
+
+        return self.call_dbus_iface(AppActions.INSTALLDEBFILE, debcache_path)
 
     def install_package(self,pkgname):
         return self.call_dbus_iface(AppActions.INSTALL,pkgname)
@@ -261,6 +279,9 @@ class InstallBackend(QObject,Signals):
     def check_dpkg_statu(self):
         self.call_dbus_iface("check_dpkg_statu")
 
+    def call_kydroid_policykit(self):
+        return self.call_dbus_iface("kydroid_policykit")
+
     def get_sources(self,except_ubuntu):
         list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
         resList = []
@@ -283,7 +304,8 @@ def main():
     app = QApplication(sys.argv)
 
     w = QWidget()
-    w.setWindowTitle("测试")
+    #w.setWindowTitle("测试")
+    w.setWindowTitle(_("test")  )
     w.setMaximumSize(320,240)
     w.setMinimumSize(320,240)
     w.resize(320,240)

@@ -364,6 +364,10 @@ class SoftwarecenterDbusService(dbus.service.Object):
         print("####remove: ",pkgName)
 
         granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION)
+
+        # file=open("/home/prisoner/list.txt","w+")
+        # file.write(str(granted))
+        # file.close()
         if not granted:
             kwarg = {"appname":pkgName,
                      "action":AppActions.REMOVE,
@@ -626,6 +630,15 @@ class SoftwarecenterDbusService(dbus.service.Object):
     @dbus.service.method(INTERFACE, in_signature='', out_signature='')
     def check_dpkg_statu(self):
         os.system("dpkg --configure -a")
+
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='b', sender_keyword='sender')
+    def kydroid_policykit(self,sender=None):
+        granted = self.auth_with_policykit(sender,UBUNTUKYLIN_SOFTWARECENTER_ACTION,"安卓软件操作")
+        if not granted:
+            return False
+        else:
+            return True
+
 
 if __name__ == '__main__':
     os.environ["TERM"] = "xterm"

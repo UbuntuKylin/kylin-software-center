@@ -28,12 +28,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.advertisement import Advertisement
 from models.globals import Globals
-from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH)
-#AD_BUTTON_STYLE = ("QPushButton{background-image:url('%s');border:0px;}")
-#UBUNTUKYLIN_RES_AD_PATH = data+ "ads/"
-import time
-import sys  
-from models.signals import Signals 
+from models.enums import Signals
 
 class ADWidget(QWidget):
     # ad width

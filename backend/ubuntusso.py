@@ -43,13 +43,13 @@ from backend.piston.ubuntusso_pristine import (
     UbuntuSsoAPI as PristineUbuntuSsoAPI,
 )
 # patch default_service_root to the one we use
-from models.enums import UBUNTU_SSO_SERVICE
 # *Don't* append /api/1.0, as it's already included in UBUNTU_SSO_SERVICE
 PristineUbuntuSsoAPI.default_service_root = UBUNTU_SSO_SERVICE
 
 from models.enums import (
     SOFTWARE_CENTER_NAME_KEYRING,
     SOFTWARE_CENTER_SSO_DESCRIPTION,
+    UBUNTU_SSO_SERVICE,
 )
 
 from .utils import clear_token_from_ubuntu_sso_sync

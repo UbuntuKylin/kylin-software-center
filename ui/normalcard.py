@@ -30,11 +30,13 @@ from ui.uknormalcard import Ui_NormalCard
 from ui.starwidget import StarWidget
 from utils import run
 from utils import commontools
-from models.enums import (ITEM_LABEL_STYLE,UBUNTUKYLIN_RES_ICON_PATH,AppActions)
-from models.enums import setLongTextToElideFormat, PkgStates, PageStates
-from models.signals import Signals 
+from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates,AppActions
 from models.globals import Globals
 from models.apkinfo import ApkInfo
+
+import gettext
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
 
 class NormalCard(QWidget,Signals):
 
@@ -131,7 +133,8 @@ class NormalCard(QWidget,Signals):
         installedsize = self.app.packageSize
         installedsizek = installedsize / 1024
         if(installedsizek == 0):
-            self.ui.size.setText("未知")
+            #self.ui.size.setText("未知")
+            self.ui.size.setText(_("unknown"))
         elif(installedsizek < 1024):
             self.ui.size.setText(str('%.1f'%installedsizek) + " KB")
         else:
@@ -176,9 +179,13 @@ class NormalCard(QWidget,Signals):
                 # self.star.show()
 
                 # self.ui.isInstalled.setVisible(False)
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#d5e8f9;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#2d8ae1;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
                 # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
@@ -195,9 +202,13 @@ class NormalCard(QWidget,Signals):
                 # else:
                     # self.star.hide()
                     # self.ui.isInstalled.setVisible(True)
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#ffe0d6;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#e95421;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#e95421;background-color:transparent;}")
                 # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
@@ -215,9 +226,13 @@ class NormalCard(QWidget,Signals):
                 # else:
                     # self.star.hide()
                     # self.ui.isInstalled.setVisible(True)
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#d1f8d1;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#07c30b;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#07c30b;background-color:transparent;}")
                 # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
@@ -234,7 +249,8 @@ class NormalCard(QWidget,Signals):
                     if(run.get_run_command(self.app.name) == ""):
                         # init app.status
                         self.app.status = PkgStates.NORUN
-                        self.ui.btn.setText("已安装")
+                        #self.ui.btn.setText("已安装")
+                        self.ui.btn.setText(_("Aldy install"))
                         self.ui.btn.setEnabled(False)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}")
                         # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
@@ -242,7 +258,8 @@ class NormalCard(QWidget,Signals):
                     else:
                         # init app.status
                         self.app.status = PkgStates.RUN
-                        self.ui.btn.setText("启动")
+                        # self.ui.btn.setText("启动")
+                        self.ui.btn.setText(_("Start"))
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                         # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
@@ -251,7 +268,8 @@ class NormalCard(QWidget,Signals):
                     self.app.status = PkgStates.INSTALL
                     # self.star.show()
                     # self.ui.isInstalled.setVisible(False)
-                    self.ui.btn.setText("安装")
+                    #self.ui.btn.setText("安装")
+                    self.ui.btn.setText(_("Install"))
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -262,7 +280,8 @@ class NormalCard(QWidget,Signals):
                         self.app.status = PkgStates.UPDATE
                         # self.star.show()
                         # self.ui.isInstalled.setVisible(False)
-                        self.ui.btn.setText("升级")
+                        # self.ui.btn.setText("升级")
+                        self.ui.btn.setText(_("Upgrade"))
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                         # self.ui.btnDetail.setStyleSheet(
@@ -272,7 +291,8 @@ class NormalCard(QWidget,Signals):
                         # self.ui.isInstalled.setVisible(True)
 
                         self.app.status = PkgStates.RUN
-                        self.ui.btn.setText("启动")
+                        # self.ui.btn.setText("启动")
+                        self.ui.btn.setText(_("Start"))
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet(
                             "QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
@@ -282,7 +302,8 @@ class NormalCard(QWidget,Signals):
                     self.app.status = PkgStates.INSTALL
                     # self.star.show()
                     # self.ui.isInstalled.setVisible(False)
-                    self.ui.btn.setText("安装")
+                    #self.ui.btn.setText("安装")
+                    self.ui.btn.setText(_("Install"))
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet(
                         "QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
@@ -294,7 +315,8 @@ class NormalCard(QWidget,Signals):
                 self.app.status = PkgStates.UPDATE
                 # self.star.show()
                 # self.ui.isInstalled.setVisible(False)
-                self.ui.btn.setText("升级")
+                #self.ui.btn.setText("升级")
+                self.ui.btn.setText(_("Upgrade"))
                 self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
@@ -304,7 +326,8 @@ class NormalCard(QWidget,Signals):
                 self.app.status = PkgStates.UNINSTALL
                 # self.star.show()
                 # self.ui.isInstalled.setVisible(False)
-                self.ui.btn.setText("卸载")
+                # self.ui.btn.setText("卸载")
+                self.ui.btn.setText(_("Uninstall"))
                 self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
@@ -317,10 +340,12 @@ class NormalCard(QWidget,Signals):
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
                 if self.app.is_installed is True and self.app.is_upgradable is True:
-                    self.ui.btn.setText("升级")
+                    #self.ui.btn.setText("升级")
+                    self.ui.btn.setText(_("Upgrade"))
                     self.ui.btn.setEnabled(True)
                 else:
-                    self.ui.btn.setText("无法升级")
+                    # self.ui.btn.setText("无法升级")
+                    self.ui.btn.setText(_("Unable to upgrade"))
                     self.ui.btn.setEnabled(False)
             elif(Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
                 # init app.status
@@ -331,10 +356,12 @@ class NormalCard(QWidget,Signals):
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                 if self.app.is_installed:
-                    self.ui.btn.setText("卸载")
+                    # self.ui.btn.setText("卸载")
+                    self.ui.btn.setText(_("Uninstall"))
                     self.ui.btn.setEnabled(True)
                 else:
-                    self.ui.btn.setText("无法卸载")
+                    #self.ui.btn.setText("无法卸载")
+                    self.ui.btn.setText(_("Unable to uninstall"))
                     self.ui.btn.setEnabled(False)
 
             # if self.app.percent < 0:
@@ -349,7 +376,8 @@ class NormalCard(QWidget,Signals):
 
         if isinstance(self.app, ApkInfo):
             if not Globals.APK_EVNRUN:
-                self.ui.btn.setText("启动安卓环境")
+                # self.ui.btn.setText("启动安卓环境")
+                self.ui.btn.setText(_("Start the Android environment"))
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
 
@@ -414,35 +442,43 @@ class NormalCard(QWidget,Signals):
                 self.normalcard_kydroid_envrun.emit()
                 return
 
-        if(self.ui.btn.text() == "启动"):
+        #if(self.ui.btn.text() == "启动"):
+        if (self.ui.btn.text() == _("Start")):
             self.app.run()
 
         else:
             self.ui.btn.setEnabled(False)
-            if(self.ui.btn.text() == "安装"):
+            #if(self.ui.btn.text() == "安装"):
+            if (self.ui.btn.text() == _("Install")):
                 self.app.status = PkgStates.INSTALLING
-                self.ui.btn.setText("等待安装")
+                # self.ui.btn.setText("等待安装")
+                self.ui.btn.setText(_("Waiting for installation"))
                 self.slot_show_progress("install")
                 self.install_app.emit(self.app)
-                self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
+                if(not self.ui.btn.isEnabled() == True):
+                    self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
                 # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-install-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-install-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-install-btn-3.png');}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
 
-            elif(self.ui.btn.text() == "升级"):
+            #elif(self.ui.btn.text() == "升级"):
+            elif (self.ui.btn.text() == _("Upgrade")):
                 self.app.status = PkgStates.UPGRADING
-                self.ui.btn.setText("等待升级")
+                #self.ui.btn.setText("等待升级")
+                self.ui.btn.setText(_("Waiting for upgrade"))
                 self.slot_show_progress("upgrade")
                 self.upgrade_app.emit(self.app)
                 self.get_card_status.emit(self.app.name, PkgStates.UPGRADING)
                 # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
-            elif(self.ui.btn.text() == "卸载"):
+            #elif(self.ui.btn.text() == "卸载"):
+            elif (self.ui.btn.text() == _("Uninstall")):
                 if self.app.name == "ubuntu-kylin-software-center":
                     self.uninstall_uksc_or_not.emit("normalcard")
                 else:
                     self.app.status = PkgStates.REMOVING
-                    self.ui.btn.setText("等待卸载")
+                    # self.ui.btn.setText("等待卸载")
+                    self.ui.btn.setText(_("Waiting for uninstall"))
                     self.slot_show_progress("remove")
                     self.remove_app.emit(self.app)
                     self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
@@ -452,7 +488,8 @@ class NormalCard(QWidget,Signals):
     def uninstall_uksc(self, where):
         if where == "normalcard":
             self.app.status = PkgStates.REMOVING
-            self.ui.btn.setText("等待卸载")
+            #self.ui.btn.setText("等待卸载")
+            self.ui.btn.setText(_("Waiting for uninstall"))
             self.remove_app.emit(self.app)
             self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
             # self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-un-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-un-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-un-btn-3.png');}")
@@ -469,21 +506,33 @@ class NormalCard(QWidget,Signals):
         self.ui.progressBar_icon.setVisible(True)
         # self.star.setVisible(False)
         if status == "install":
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#d5e8f9;}")
-            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#2d8ae1;}")
             self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
         elif status == "upgrade":
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#d1f8d1;}")
-            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#07c30b;}")
             self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#07c30b;background-color:transparent;}")
         else:
-            self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+            if(Globals.MIPS64):
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+            else:
+                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#ffe0d6;}")
-            self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#e95421;}")
             self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#e95421;background-color:transparent;}")
         #self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#F4F8FB;border:0px;border-radius:0px;color:#1E66A4;}"
@@ -501,33 +550,53 @@ class NormalCard(QWidget,Signals):
             self.ui.progressBar_icon.setVisible(True)
             # self.star.setVisible(False)
             if status == AppActions.DOWNLOADAPK:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#d5e8f9;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#2d8ae1;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
-                self.ui.btn.setText("正在下载")
+                #self.ui.btn.setText("正在下载")
+                self.ui.btn.setText(_("downloading"))
             if status == AppActions.INSTALL:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#d5e8f9;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                              "QProgressBar:chunk{background-color:#2d8ae1;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
-                self.ui.btn.setText("正在安装")
+                #self.ui.btn.setText("正在安装")
+                self.ui.btn.setText(_("Installing"))
             elif status == AppActions.UPGRADE:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#d1f8d1;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#07c30b;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#07c30b;background-color:transparent;}")
-                self.ui.btn.setText("正在升级")
+                #self.ui.btn.setText("正在升级")
+                self.ui.btn.setText(_("upgrading"))
             elif status == AppActions.REMOVE:
-                self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
+                if(Globals.MIPS64):
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
+                else:
+                    self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#ffe0d6;}")
-                self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
+                    self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}"
                                                   "QProgressBar:chunk{background-color:#e95421;}")
                 self.ui.progresslabel.setStyleSheet("QLabel{font-size:12px;color:#e95421;background-color:transparent;}")
-                self.ui.btn.setText("正在卸载")
+                #self.ui.btn.setText("正在卸载")
+                self.ui.btn.setText(_("Uninstalling"))
             self.ui.progressBar.hide()
             self.ui.progressBar.setValue(percent)
             self.ui.progressBarsmall.setValue(percent)
@@ -535,7 +604,8 @@ class NormalCard(QWidget,Signals):
             if percent < float(0.0):
                 self.ui.progressBar.setValue(0)
                 self.ui.progressBarsmall.setValue(0)
-                self.ui.progresslabel.setText("失败")
+                # self.ui.progresslabel.setText("失败")
+                self.ui.progresslabel.setText(_("failure"))
             else:
                 self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
 
@@ -564,26 +634,32 @@ class NormalCard(QWidget,Signals):
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 if self.app.percent > 0:
-                    self.ui.btn.setText("正在安装")
+                    #self.ui.btn.setText("正在安装")
+                    self.ui.btn.setText(_("Installing"))
                 else:
-                    self.ui.btn.setText("等待安装")
+                    #self.ui.btn.setText("安装")
+                    self.ui.btn.setText(_("Install"))
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
             elif status == PkgStates.REMOVING:
                 self.app.status = PkgStates.REMOVING
                 if self.app.percent > 0:
-                    self.ui.btn.setText("正在卸载")
+                    #self.ui.btn.setText("正在卸载")
+                    self.ui.btn.setText(_("Uninstalling"))
                 else:
-                    self.ui.btn.setText("等待卸载")
+                    #self.ui.btn.setText("卸载")
+                    self.ui.btn.setText(_("Uninstall"))
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
 
             elif status == PkgStates.UPGRADING:
                 self.app.status = PkgStates.UPGRADING
                 if self.app.percent > 0:
-                    self.ui.btn.setText("正在升级")
+                    #self.ui.btn.setText("正在升级")
+                    self.ui.btn.setText(_("Upgrading"))
                 else:
-                    self.ui.btn.setText("等待升级")
+                    #self.ui.btn.setText("升级")
+                    self.ui.btn.setText(_("Upgrade"))
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
@@ -605,7 +681,8 @@ class NormalCard(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                     #if self.app.is_installed:#why app.is_installed is false
-                    self.ui.btn.setText("卸载")
+                    #self.ui.btn.setText("卸载")
+                    self.ui.btn.setText(_("Uninstall"))
                     self.ui.btn.setEnabled(True)
                 elif(Globals.NOWPAGE in (PageStates.UPPAGE,PageStates.SEARCHUPPAGE)):
                     # self.star.show()
@@ -614,37 +691,43 @@ class NormalCard(QWidget,Signals):
                         self.app.status = PkgStates.NORUN
                     else:
                         self.app.status = PkgStates.RUN
-                    self.ui.btn.setText("无法升级")
+                        #self.ui.btn.setText("无法升级")
+                    self.ui.btn.setText(_("Unable to upgrade"))
                     self.ui.btn.setEnabled(False)
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
                 else:
                     # self.star.hide()
                     # self.ui.isInstalled.setVisible(True)
-                    if(run.get_run_command(self.app.name) == ""):
+                    if(Globals.NOWPAGE in (PageStates.APKPAGE,PageStates.SEARCHAPKPAGE)):
+                        self.app.status = PkgStates.RUN
+                        #self.ui.btn.setText("启动")
+                        self.ui.btn.setText(_("Start"))
+                        self.ui.btn.setEnabled(True)
+                        self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
+                        # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
+                    elif(run.get_run_command(self.app.name) == ""):
                         self.app.status = PkgStates.NORUN
-                        self.ui.btn.setText("已安装")
+                        #self.ui.btn.setText("已安装")
+                        self.ui.btn.setText(_("Aldy install"))
                         self.ui.btn.setEnabled(False)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}")
                         # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                     else:
                         self.app.status = PkgStates.RUN
-                        self.ui.btn.setText("启动")
+                        #self.ui.btn.setText("启动")
+                        self.ui.btn.setText(_("Start"))
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                         # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
-                    if(Globals.NOWPAGE == PageStates.APKPAGE):
-                        self.app.status = PkgStates.RUN
-                        self.ui.btn.setText("启动")
-                        self.ui.btn.setEnabled(True)
-                        self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
-                        # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
+
 
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.INSTALL
                 # self.star.show()
                 # self.ui.isInstalled.setVisible(False)
-                self.ui.btn.setText("安装")
+                #self.ui.btn.setText("安装")
+                self.ui.btn.setText(_("Install"))
                 self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -657,13 +740,15 @@ class NormalCard(QWidget,Signals):
                     # self.ui.isInstalled.setVisible(True)
                 if(run.get_run_command(self.app.name) == ""):
                     self.app.status = PkgStates.NORUN
-                    self.ui.btn.setText("已安装")
+                    #self.ui.btn.setText("已安装")
+                    self.ui.btn.setText(_("Aldy install"))
                     self.ui.btn.setEnabled(False)
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                 else:
                     self.app.status = PkgStates.RUN
-                    self.ui.btn.setText("启动")
+                    #self.ui.btn.setText("启动")
+                    self.ui.btn.setText(_("Start"))
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
@@ -674,7 +759,8 @@ class NormalCard(QWidget,Signals):
                 self.app.status = PkgStates.INSTALL
                 # self.star.show()
                 # self.ui.isInstalled.setVisible(False)
-                self.ui.btn.setText("安装")
+                #self.ui.btn.setText("安装")
+                self.ui.btn.setText(_("Install"))
                 self.ui.btn.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                 # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -686,12 +772,14 @@ class NormalCard(QWidget,Signals):
                     # self.star.hide()
                     # self.ui.isInstalled.setVisible(True)
                 if Globals.NOWPAGE in (PageStates.UPPAGE, PageStates.SEARCHUPPAGE):
-                    self.ui.btn.setText("升级")
+                    #self.ui.btn.setText("升级")
+                    self.ui.btn.setText(_("Upgrade"))
                     self.app.status = PkgStates.UPDATE
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
                 else:
-                    self.ui.btn.setText("卸载")
+                    #self.ui.btn.setText("卸载")
+                    self.ui.btn.setText(_("Uninstall"))
                     self.app.status = PkgStates.UNINSTALL
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
@@ -705,12 +793,14 @@ class NormalCard(QWidget,Signals):
                     # self.ui.isInstalled.setVisible(True)
                 if Globals.NOWPAGE in (PageStates.UNPAGE, PageStates.SEARCHUNPAGE):
                     self.app.status = PkgStates.UNINSTALL
-                    self.ui.btn.setText("卸载")
+                    #self.ui.btn.setText("卸载")
+                    self.ui.btn.setText(_("Uninstall"))
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                 else:
                     self.app.status = PkgStates.UPDATE
-                    self.ui.btn.setText("升级")
+                    #self.ui.btn.setText("升级")
+                    self.ui.btn.setText(_("Upgrade"))
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
                 self.ui.btn.setEnabled(True)
@@ -723,14 +813,16 @@ class NormalCard(QWidget,Signals):
                         if(run.get_run_command(self.app.name) == ""):
                             # init app.status
                             self.app.status = PkgStates.NORUN
-                            self.ui.btn.setText("已安装")
+                            # self.ui.btn.setText("已安装")
+                            self.ui.btn.setText(_("Aldy install"))
                             self.ui.btn.setEnabled(False)
                             self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}")
                             # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                         else:
                             # init app.status
                             self.app.status = PkgStates.RUN
-                            self.ui.btn.setText("启动")
+                            # self.ui.btn.setText("启动")
+                            self.ui.btn.setText(_("Start"))
                             self.ui.btn.setEnabled(True)
                             self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                             # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
@@ -739,7 +831,8 @@ class NormalCard(QWidget,Signals):
                         self.app.status = PkgStates.INSTALL
                         # self.star.show()
                         # self.ui.isInstalled.setVisible(False)
-                        self.ui.btn.setText("安装")
+                        #self.ui.btn.setText("安装")
+                        self.ui.btn.setText(_("Install"))
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                         # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -749,7 +842,8 @@ class NormalCard(QWidget,Signals):
                     self.app.status = PkgStates.UPDATE
                     # self.star.show()
                     # self.ui.isInstalled.setVisible(False)
-                    self.ui.btn.setText("升级")
+                    #self.ui.btn.setText("升级")
+                    self.ui.btn.setText(_("Upgrade"))
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
@@ -759,7 +853,8 @@ class NormalCard(QWidget,Signals):
                     self.app.status = PkgStates.UNINSTALL
                     # self.star.show()
                     # self.ui.isInstalled.setVisible(False)
-                    self.ui.btn.setText("卸载")
+                    #self.ui.btn.setText("卸载")
+                    self.ui.btn.setText(_("Uninstall"))
                     self.ui.btn.setEnabled(True)
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
@@ -771,14 +866,16 @@ class NormalCard(QWidget,Signals):
                         if(run.get_run_command(self.app.name) == ""):
                             # init app.status
                             self.app.status = PkgStates.NORUN
-                            self.ui.btn.setText("已安装")
+                            #self.ui.btn.setText("已安装")
+                            self.ui.btn.setText(_("Aldy install"))
                             self.ui.btn.setEnabled(False)
                             self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}")
                             # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                         else:
                             # init app.status
                             self.app.status = PkgStates.RUN
-                            self.ui.btn.setText("启动")
+                            #self.ui.btn.setText("启动")
+                            self.ui.btn.setText(_("Start"))
                             self.ui.btn.setEnabled(True)
                             self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                             # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
@@ -787,7 +884,8 @@ class NormalCard(QWidget,Signals):
                         self.app.status = PkgStates.INSTALL
                         # self.star.show()
                         # self.ui.isInstalled.setVisible(False)
-                        self.ui.btn.setText("安装")
+                        #self.ui.btn.setText("安装")
+                        self.ui.btn.setText(_("Install"))
                         self.ui.btn.setEnabled(True)
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                         # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-install-border.png');}")
@@ -799,10 +897,12 @@ class NormalCard(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
                     if self.app.is_installed is True and self.app.is_upgradable is True:
-                        self.ui.btn.setText("升级")
+                        #self.ui.btn.setText("升级")
+                        self.ui.btn.setText(_("Upgrade"))
                         self.ui.btn.setEnabled(True)
                     else:
-                        self.ui.btn.setText("无法升级")
+                        #self.ui.btn.setText("无法升级")
+                        self.ui.btn.setText(_("Unable to upgrade"))
                         self.ui.btn.setEnabled(False)
                 elif(Globals.NOWPAGE == PageStates.SEARCHUNPAGE):
                     # init app.status
@@ -813,10 +913,12 @@ class NormalCard(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#e95421;}")
                     # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-un-border.png');}")
                     if self.app.is_installed:
-                        self.ui.btn.setText("卸载")
+                        #self.ui.btn.setText("卸载")
+                        self.ui.btn.setText(_("Uninstall"))
                         self.ui.btn.setEnabled(True)
                     else:
-                        self.ui.btn.setText("无法卸载")
+                        #self.ui.btn.setText("无法卸载")
+                        self.ui.btn.setText(_("Unable to uninstall"))
                         self.ui.btn.setEnabled(False)
 
             # if self.app.percent < 0:

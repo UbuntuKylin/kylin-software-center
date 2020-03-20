@@ -56,10 +56,25 @@ class DebFile(BaseInfo):
 
     # get deb file name, version, installedsize, description
     def get_deb_info(self):
-        self.name = self.debfile._sections["Package"]
-        self.version = self.debfile._sections["Version"]
-        self.installedsize = int(float(self.debfile._sections["Installed-Size"]))
-        self.description = self.debfile._sections["Description"]
+        try:
+            self.name = self.debfile._sections["Package"]
+        except:
+            self.name = ""
+        try:
+            self.version = self.debfile._sections["Version"]
+        except:
+            self.version = ""
+        try:
+            self.installedsize = int(float(self.debfile._sections["Installed-Size"]))
+        except:
+            try:
+                self.installedsize = int(float(self.debfile._sections["Size"]))
+            except:
+                self.installedsize = 0
+        try:
+            self.description = self.debfile._sections["Description"]
+        except:
+            self.description = ""
 
     # install the deb file
     def install_deb(self):
