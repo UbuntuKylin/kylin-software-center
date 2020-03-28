@@ -35,13 +35,23 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(980, 680)
-        self.centralwidget = QWidget(MainWindow)
+        MainWindow.resize(1000, 715)
+        MainWindow.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        MainWindow.setWindowFlags(Qt.FramelessWindowHint)
+        self.centralwidget = QFrame(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        self.centralwidget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.centralwidget.setGeometry(QtCore.QRect(10, 10, 980, 690))
+        #add dengnan 设置边框阴影
+        # Qffect = QGraphicsDropShadowEffect(MainWindow)
+        # Qffect.setOffset(0, 0)
+        # Qffect.setColor(Qt.blue)
+        # Qffect.setBlurRadius(5)
+        # self.centralwidget.setGraphicsEffect(Qffect)
         self.navWidget = QWidget(self.centralwidget)
-        self.navWidget.setGeometry(QtCore.QRect(0, 0, 110, 680))
+        self.navWidget.setGeometry(QtCore.QRect(10, 10, 110, 690))
         self.navWidget.setObjectName(_fromUtf8("navWidget"))
-
+        # self.navWidget.setStyleSheet("QWidget{border-top-right-radius:0px;border-bottom-right-radius:0px;}")
         self.logoImg = QLabel(self.navWidget)
         self.logoImg.setGeometry(QtCore.QRect(39, 20, 32, 32))
         self.logoImg.setText(_fromUtf8(""))
@@ -85,17 +95,19 @@ class Ui_MainWindow(object):
 
 
         self.rightWidget = QWidget(self.centralwidget)
-        self.rightWidget.setGeometry(QtCore.QRect(110, 0, 870, 680))
+        self.rightWidget.setGeometry(QtCore.QRect(120, 10, 870, 690))
         self.rightWidget.setObjectName(_fromUtf8("rightWidget"))
-        self.rightWidget.setStyleSheet("background-color:#f5f5f5")
+        self.rightWidget.setStyleSheet("QWidget#rightWidget{background-color:#f5f5f5;border-top-right-radius:6px;border-bottom-right-radius:6px;}")
+        # self.rightWidget.setStyleSheet("QWidget{background-color:#f5f5f5;}")
 
-
-
-
+        # self.centralwidget.setStyleSheet("QWidget#centralwidget{border-top-left-radius:10px;border-bottom-left-radius:10px;border-top-right-radius:0px;border-bottom-right-radius:0px;}")
+        # self.centralwidget.setGraphicsEffect("QWidget{border-radius:10px;}")
+        # self.centralwidget.setStyleSheet("QWidget{border-radius:0px;}")
 
         self.allWidget = QWidget(self.rightWidget)
         self.allWidget.setGeometry(QtCore.QRect(20, 95, 850, 585))
         self.allWidget.setObjectName(_fromUtf8("allWidget"))
+        self.allWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
         # self.allline = QLabel(self.allWidget)
         # self.allline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         # self.allline.setText(_fromUtf8(""))
@@ -119,6 +131,7 @@ class Ui_MainWindow(object):
         self.apkWidget = QWidget(self.rightWidget)
         self.apkWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.apkWidget.setObjectName(_fromUtf8("apkWidget"))
+        self.apkWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
         # self.apkline = QLabel(self.apkWidget)
         # self.apkline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         # self.apkline.setText(_fromUtf8(""))
@@ -142,6 +155,8 @@ class Ui_MainWindow(object):
         self.unWidget = QWidget(self.rightWidget)
         self.unWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.unWidget.setObjectName(_fromUtf8("unWidget"))
+        self.unWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
+
         # self.unline = QLabel(self.unWidget)
         # self.unline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         # self.unline.setText(_fromUtf8(""))
@@ -165,6 +180,8 @@ class Ui_MainWindow(object):
         self.specialcategoryWidget = QWidget(self.rightWidget)
         self.specialcategoryWidget.setGeometry(QtCore.QRect(20, 62, 850, 22))
         self.specialcategoryWidget.setObjectName(_fromUtf8("specialcategoryWidget"))
+        self.specialcategoryWidget.setStyleSheet("QWidget#specialcategoryWidget{background:#f5f5f5;border-bottom-right-radius:6px;}")
+
 
         self.btnHomepage = QPushButton(self.specialcategoryWidget)
         self.btnHomepage.setGeometry(QtCore.QRect(0, 0, 65, 22))
@@ -191,10 +208,14 @@ class Ui_MainWindow(object):
         self.homepageWidget = QWidget(self.rightWidget)
         self.homepageWidget.setGeometry(QtCore.QRect(20, 95, 850, 585))
         self.homepageWidget.setObjectName(_fromUtf8("homepageWidget"))
+        self.homepageWidget.setStyleSheet("QWidget#homepageWidget{border-bottom-right-radius:6px;background:#f5f5f5;}")
+
 
         self.recommendWidget = QWidget(self.homepageWidget)
         self.recommendWidget.setGeometry(QtCore.QRect(0, 0, 849, 584))
         self.recommendWidget.setObjectName(_fromUtf8("recommendWidget"))
+        self.recommendWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
+        # self.recommendWidget.setStyleSheet("QWidget#recommendWidget{border-bottom-right-radius:10px;background-color:#f5f5f5;}")
 
         # self.adWidget_dat = QWidget(self.recommendWidget)
         # self.adWidget_dat.setGeometry(QtCore.QRect(2, 0, 826, 180))
@@ -202,12 +223,12 @@ class Ui_MainWindow(object):
 
 
 
-
-
         # self.adWidget = QWidget(self.rightWidget)
         self.adWidget = QPushButton(self.recommendWidget)
         self.adWidget.setGeometry(QtCore.QRect(0, 0, 830, 180))
         self.adWidget.setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.adWidget.setObjectName(_fromUtf8("adWidget"))
+        # self.adWidget.setStyleSheet("QWidget#adWidget{border-bottom-right-radius:10px;}")
 # #        self.adWidget.setTitle(_fromUtf8(""))
 #         self.adWidget.setObjectName(_fromUtf8("adWidget"))
 
@@ -419,6 +440,8 @@ class Ui_MainWindow(object):
         self.searchWidget = QWidget(self.rightWidget)
         self.searchWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.searchWidget.setObjectName(_fromUtf8("searchWidget"))
+        self.searchWidget.setStyleSheet("QWidget#searchWidget{border-bottom-right-radius:6px;}")
+
 
         # self.no_search_resualt.hide()
         # self.searchline = QLabel(self.searchWidget)
@@ -525,6 +548,14 @@ class Ui_MainWindow(object):
         self.clean_button.setText(_fromUtf8(""))
         self.clean_button.setObjectName(_fromUtf8("clean_button"))
 
+        # #历史安装
+        # self.Historical_installation=QPushButton(self.taskWidget)
+        # self.Historical_installation.setGeometry(QtCore.QRect(1, 430, 100, 20))
+        # self.Historical_installation.setText(_fromUtf8(""))
+        # self.Historical_installation.setObjectName(_fromUtf8("Historical_installation"))
+        # self.Historical_installation.setText("历史安装")
+
+
         # self.btnGoto = QPushButton(self.taskWidget)
         # self.btnGoto.setGeometry(QtCore.QRect(85, 400, 148, 40))
         # self.btnGoto.setText(_fromUtf8(""))
@@ -550,6 +581,7 @@ class Ui_MainWindow(object):
         self.upWidget = QWidget(self.rightWidget)
         self.upWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.upWidget.setObjectName(_fromUtf8("upWidget"))
+        self.upWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
         # self.upline = QLabel(self.upWidget)
         # self.upline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         # self.upline.setText(_fromUtf8(""))
@@ -585,7 +617,7 @@ class Ui_MainWindow(object):
         self.btnMin.setObjectName(_fromUtf8("btnMin"))
 
         self.btnTask3 = QToolButton(self.headerWidget)
-        self.btnTask3.setGeometry(QtCore.QRect(365, 15, 100, 22))
+        self.btnTask3.setGeometry(QtCore.QRect(645, 7, 70, 22))
         self.btnTask3.setText(_fromUtf8(""))
         self.btnTask3.setObjectName(_fromUtf8("btnTask3"))
 
@@ -608,8 +640,8 @@ class Ui_MainWindow(object):
         self.headercw1 = Searchcw1(self.headerWidget)
         self.headercw1.setGeometry(QtCore.QRect(0, 0, 365, 38))
         self.headercw1.setObjectName(_fromUtf8("headercw1"))
-        self.btnCloseDetail = QPushButton(self.headercw1)
-        self.btnCloseDetail.setGeometry(QtCore.QRect(0, 14, 15, 19))
+        self.btnCloseDetail = QToolButton(self.headercw1)
+        self.btnCloseDetail.setGeometry(QtCore.QRect(16, 18, 50, 20))
         self.btnCloseDetail.setText(_fromUtf8(""))
         self.btnCloseDetail.setObjectName(_fromUtf8("btnCloseDetail"))
         #add
@@ -627,6 +659,7 @@ class Ui_MainWindow(object):
         self.winpageWidget = QWidget(self.rightWidget)
         self.winpageWidget.setGeometry(QtCore.QRect(20, 95, 850, 585))
         self.winpageWidget.setObjectName(_fromUtf8("winpageWidget"))
+        self.winpageWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
         # self.wintitle = QLabel(self.winpageWidget)
         # self.wintitle.setGeometry(QtCore.QRect(0, 20, 300, 15))
         # self.wintitle.setText(_fromUtf8(""))
@@ -657,10 +690,14 @@ class Ui_MainWindow(object):
         self.detailShellWidget = QWidget(self.rightWidget)
         self.detailShellWidget.setGeometry(QtCore.QRect(0, 60, 870, 620))
         self.detailShellWidget.setObjectName(_fromUtf8("detailShellWidget"))
+        self.detailShellWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
+
 
         self.userAppListWidget = QWidget(self.rightWidget)
         self.userAppListWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.userAppListWidget.setObjectName(_fromUtf8("userAppListWidget"))
+        self.userAppListWidget.setStyleSheet("QWidget#userAppListWidget{border-bottom-right-radius:6px;background:#f5f5f5;}")
+
         self.ualine = QLabel(self.userAppListWidget)
         self.ualine.setGeometry(QtCore.QRect(0, 550, 830, 1))
         self.ualine.setText(_fromUtf8(""))
@@ -700,6 +737,8 @@ class Ui_MainWindow(object):
         self.userTransListWidget = QWidget(self.rightWidget)#zx 2015.01.30
         self.userTransListWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.userTransListWidget.setObjectName(_fromUtf8("userTransListWidget"))
+        self.userTransListWidget.setStyleSheet("QWidget#userTransListWidget{border-bottom-right-radius:6px;background:#f5f5f5}")
+
         # self.transline = QLabel(self.userTransListWidget)
         # self.transline.setGeometry(QtCore.QRect(0, 44, 830, 1))
         # self.transline.setText(_fromUtf8(""))

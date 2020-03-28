@@ -30,18 +30,18 @@ except AttributeError:
 class Ui_MultiFuncBtn(object):
     def setupUi(self, MultiFuncBtn):
         MultiFuncBtn.setObjectName(_fromUtf8("MultiFuncBtn"))
-        MultiFuncBtn.resize(148, 40)
+        MultiFuncBtn.resize(500, 40)
         self.btnRun = QPushButton(MultiFuncBtn)
-        self.btnRun.setGeometry(QtCore.QRect(0, 0, 148, 40))
+        self.btnRun.setGeometry(QtCore.QRect(0, 0, 100, 38))
         self.btnRun.setObjectName(_fromUtf8("btnRun"))
         self.btnInstall = QPushButton(MultiFuncBtn)
-        self.btnInstall.setGeometry(QtCore.QRect(0, 41, 148, 40))
+        self.btnInstall.setGeometry(QtCore.QRect(108, 0, 100, 38))
         self.btnInstall.setObjectName(_fromUtf8("btnInstall"))
         self.btnUpdate = QPushButton(MultiFuncBtn)
-        self.btnUpdate.setGeometry(QtCore.QRect(0, 82, 148, 40))
+        self.btnUpdate.setGeometry(QtCore.QRect(216, 0, 100, 38))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         self.btnUninstall = QPushButton(MultiFuncBtn)
-        self.btnUninstall.setGeometry(QtCore.QRect(0, 123, 148, 40))
+        self.btnUninstall.setGeometry(QtCore.QRect(324, 0, 100, 38))
         self.btnUninstall.setObjectName(_fromUtf8("btnUninstall"))
 
         self.retranslateUi(MultiFuncBtn)

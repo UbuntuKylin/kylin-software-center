@@ -34,10 +34,11 @@ class Globals:
     else:
         MIPS64 = False
     # mainwindow size
-    MAIN_WIDTH_NORMAL = 980
-    MAIN_HEIGHT_NORMAL = 680
-    MAIN_WIDTH = 980
-    MAIN_HEIGHT = 680
+    # mainwindow size
+    MAIN_WIDTH_NORMAL = 1000
+    MAIN_HEIGHT_NORMAL = 710
+    MAIN_WIDTH = 1000
+    MAIN_HEIGHT = 710
 
     # card format
     NORMALCARD_WIDTH = 200

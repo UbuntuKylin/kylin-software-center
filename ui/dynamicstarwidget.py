@@ -37,6 +37,7 @@ class DynamicStarWidget(QWidget,Signals):
         self.grade = 0
         self.mouse_press = False
 
+
         self.ui.star1.installEventFilter(self)
         self.ui.star2.installEventFilter(self)
         self.ui.star3.installEventFilter(self)

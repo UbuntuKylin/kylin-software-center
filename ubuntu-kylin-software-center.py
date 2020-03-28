@@ -82,6 +82,7 @@ from dbus.mainloop.glib import DBusGMainLoop
 mainloop = DBusGMainLoop(set_as_default=True)
 import configparser
 import sqlite3
+import math
 
 import gettext
 gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
@@ -187,6 +188,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self,parent)
+        self.setWindowOpacity(0)
+        #self.setProperty("blurRegion",QRegion(QRect(0,0,1,1)))
         self.check_singleton()
         # userlog = os.getlogin()
         # uid = pwd.getpwuid(os.getuid())[0]
@@ -221,6 +224,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.worker_thread_ad.myads_icon.connect(self.recursion_advertisement)
 
         # self.rank_ready = False
+        self.setWindowOpacity(1)
     def slot_init(self):
         #init main view
         self.init_main_view()
@@ -243,6 +247,7 @@ class SoftwareCenter(QMainWindow,Signals):
     def init_main_view(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.centralwidget.paintEvent = self.set_paintEvent
         # self.adv = AdverTisement(self.ui.adWidget)
         # self.srv=Adversettest(self.ui.adWidget)
         # do not cover the launch loading div
@@ -267,6 +272,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.recommendListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.recommendWidget)
         self.recommendListWidget.setGeometry(0, 223, 849, 361)
         self.recommendListWidget.calculate_data()
+        # self.recommendListWidget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.recommendListWidget.setWindowFlags(Qt.FramelessWindowHint)
+        # self.recommendListWidget.setStyleSheet("QWidget{border:1px solid red;}")
         # all card widget
         self.allListWidget = CardWidget(Globals.NORMALCARD_WIDTH, Globals.NORMALCARD_HEIGHT, 10, self.ui.allWidget)
         self.allListWidget.setGeometry(0, 0, 830 + 6 + int((20 - 6) / 2), 585)   # 6 + (20 - 6) / 2 is verticalscrollbar space
@@ -637,7 +645,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.hometext2.setStyleSheet("QLabel{color:#777777;font-size:14px;}")
         # self.ui.homeline1.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         # self.ui.homeline2.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.navWidget.setStyleSheet("QWidget{background-color:#535353;}")
+        self.ui.navWidget.setStyleSheet(".QWidget{background-color:#535353;border-top-left-radius:6px;border-bottom-left-radius:6px;}")
         self.ui.btnAll.setStyleSheet("QPushButton{background-image:url('res/nav-all-1.png');border:0px;}QPushButton:hover{background:url('res/nav-all-2.png');}QPushButton:pressed{background:url('res/nav-all-3.png');}")
         self.ui.btnApk.setStyleSheet("QPushButton{background-image:url('res/nav-apk-1.png');border:0px;}QPushButton:hover{background:url('res/nav-apk-2.png');}QPushButton:pressed{background:url('res/nav-apk-3.png');}")
         self.ui.btnUp.setStyleSheet("QPushButton{background-image:url('res/nav-up-1.png');border:0px;}QPushButton:hover{background:url('res/nav-up-2.png');}QPushButton:pressed{background:url('res/nav-up-3.png');}")
@@ -750,7 +758,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnInstallAll.clicked.connect(self.slot_click_ua_install_all)
         #self.ui.btnGoto.pressed.connect(self.slot_goto_allpage)
 
-        self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+        self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
         self.ui.btnTask3.setIconSize(QSize(22, 22))
         #self.ui.btnTask3.setText("下载管理")
         self.ui.btnTask3.setText(_("DL MGT"))
@@ -778,6 +786,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.headercw1.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
 
         self.click_item.connect(self.slot_show_app_detail)
+        self.click_item.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
         self.upgrade_app.connect(self.slot_click_upgrade)
         self.update_source.connect(self.slot_update_source)
         self.categoryBar.click_categoy.connect(self.slot_change_category)
@@ -789,6 +798,10 @@ class SoftwareCenter(QMainWindow,Signals):
         self.detailScrollWidget.submit_review.connect(self.slot_submit_review)
         self.detailScrollWidget.submit_rating.connect(self.slot_submit_rating)
         self.detailScrollWidget.submit_download.connect(self.slot_submit_downloadcount)
+        self.detailScrollWidget.goto_login.connect(self.slot_do_login_ui)
+
+        self.detailScrollWidget.free_reg.connect(self.login.slot_click_adduser)
+        self.detailScrollWidget.pl_login.connect(self.login.slot_click_login)
 
         #change login
         self.detailScrollWidget.show_login.connect(self.slot_do_login_ui)
@@ -843,6 +856,33 @@ class SoftwareCenter(QMainWindow,Signals):
         # loading
         if(Globals.LAUNCH_MODE != 'quiet'):
             self.launchLoadingDiv.start_loading()
+
+    def set_paintEvent(self, event):
+        painter=QPainter (self.ui.centralwidget)
+        m_defaultBackgroundColor = QColor(qRgb(192,192,192))
+        m_defaultBackgroundColor.setAlpha(50)
+        path=QPainterPath()
+        path.setFillRule(Qt.WindingFill)
+        path.addRoundedRect(10, 10, self.ui.centralwidget.width() - 20, self.ui.centralwidget.height() - 20, 4, 4)
+
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        painter.fillPath(path, QBrush(QColor(m_defaultBackgroundColor.red(),
+                                             m_defaultBackgroundColor.green(),
+                                             m_defaultBackgroundColor.blue())))
+
+        color=QColor(0, 0, 0, 20)
+        i=0
+        while i<4:
+            path=QPainterPath()
+            path.setFillRule(Qt.WindingFill)
+            path.addRoundedRect(10 - i, 10 - i,self.ui.centralwidget.width() - (10 - i) * 2, self.ui.centralwidget.height() - (10 - i) * 2, 6, 6)
+            color.setAlpha(100 - math.sqrt(i) * 50)
+            painter.setPen(color)
+            painter.drawPath(path)
+            i=i+1
+
+        painter.setRenderHint(QPainter.Antialiasing)
+
     def show_red_search(self):
         test_linedit = self.ui.headercw1.senior_search.currentText()
         if test_linedit==self.items[0]:
@@ -1090,6 +1130,8 @@ class SoftwareCenter(QMainWindow,Signals):
             self.setff = self.worker_thread0.appmgr.get_application_by_name(dest)
         if  self.setff is not None and  self.setff.package is not None:
             self.slot_show_app_detail(self.setff)
+            # time.sleep(4)
+            self.detailScrollWidget.earn_crenshoots(self.setff) #add dengan 0324
         else:
             MS = QMessageBox()
             #MS.setWindowTitle('提示')
@@ -1646,6 +1688,7 @@ class SoftwareCenter(QMainWindow,Signals):
                         card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                         self.winListWidget.add_card(card)
                         card.show_app_detail.connect(self.slot_show_app_detail)
+                        card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
                         card.install_app.connect(self.slot_click_install)
                         card.upgrade_app.connect(self.slot_click_upgrade)
                         card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
@@ -1718,7 +1761,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 #if event.pos().x() > 400:
                 if event.pos().x()>0:
                     self.ui.taskWidget.setVisible(False)
-                    self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+                    self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
                     #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
         self.dragPosition = -1
@@ -1916,6 +1959,8 @@ class SoftwareCenter(QMainWindow,Signals):
             card = NormalCard(app,self.messageBox, listWidget.cardPanel)#self.nowPage, self.prePage,
             listWidget.add_card(card)
             card.show_app_detail.connect(self.slot_show_app_detail)
+            card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
             card.install_app.connect(self.slot_click_install)
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
@@ -1993,6 +2038,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 card = NormalCard(app, self.messageBox, listWidget.cardPanel)# self.nowPage, self.prePage,
                 listWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
+                card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
                 card.install_app.connect(self.slot_click_install)
                 card.upgrade_app.connect(self.slot_click_upgrade)
                 card.remove_app.connect(self.slot_click_remove)
@@ -2036,6 +2083,8 @@ class SoftwareCenter(QMainWindow,Signals):
             card = NormalCard(app, self.messageBox, self.apkListWidget.cardPanel)
             self.apkListWidget.add_card(card)
             card.show_app_detail.connect(self.slot_show_app_detail)
+            card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
             card.install_app.connect(self.slot_click_install)
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
@@ -2291,6 +2340,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 card = PointCard(p,self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
+                card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
                 card.install_app.connect(self.slot_click_install)
                 card.install_app_rcm.connect(self.slot_click_install_rcm)
                 self.apt_process_finish.connect(card.slot_work_finished)
@@ -2710,6 +2761,8 @@ class SoftwareCenter(QMainWindow,Signals):
             recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
             self.recommendListWidget.add_card(recommend)
             recommend.show_app_detail.connect(self.slot_show_app_detail)
+            recommend.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
             recommend.install_app.connect(self.slot_click_install)
             recommend.rcmdcard_kydroid_envrun.connect(self.slot_goto_apkpage)
             self.apt_process_finish.connect(recommend.slot_work_finished)
@@ -2765,6 +2818,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_close_detail(self):
         # self.detailScrollWidget.hide()
+        self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:transparent;}QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
         self.ui.no_search_resualt.hide()
         self.ui.prompt1.hide()
         self.ui.prompt2.hide()
@@ -2773,6 +2827,37 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.btnClosesearch.setVisible(True)
         self.ui.detailShellWidget.hide()
         self.ui.btnCloseDetail.setVisible(False)
+
+        self.show_headdetail_all_control()
+        self.ui.set_lindit.show()
+        self.show_red_search()
+
+
+    def show_headdetail_all_control (self):
+        self.ui.headercw1.senior_search.show()
+        self.ui.headercw1.leSearch.show()
+        self.ui.btnTask3.show()
+        self.ui.btnConf.show()
+        self.ui.btnMin.show()
+        self.ui.btnClose.show()
+
+    def hide_headdetail_all_control(self):
+        self.ui.headercw1.senior_search.hide()
+        self.ui.btnCloseDetail.show()
+        self.ui.btnCloseDetail.setIcon(QIcon('res/btn-back-default.png'))
+        self.ui.btnCloseDetail.setIconSize(QSize(15, 15))
+        # self.ui.btnCloseDetail.setText("返回")
+        self.ui.btnCloseDetail.setText(_("back"))
+        self.ui.btnCloseDetail.setStyleSheet("QToolButton{border:0px;font-size:13px;color:#666666;text-align:center;} QToolButton:hover{border:0px;font-size:13px;color:#666666;} QToolButton:pressed{border:0px;font-size:13px;color:#666666;}")
+        self.ui.btnCloseDetail.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        self.ui.btnCloseDetail.setAutoRaise(True)
+
+        self.ui.headercw1.leSearch.hide()
+        self.ui.set_lindit.hide()
+        # self.ui.btnTask3.hide()
+        # self.ui.btnConf.hide()
+        # self.ui.btnMin.hide()
+        # self.ui.btnClose.hide()
 
     def slot_close_search(self):
         self.re_cli = 0
@@ -2785,7 +2870,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_close_taskpage(self):
         self.ui.taskWidget.setVisible(False)
-        self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+        self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
 
        # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
@@ -2908,6 +2993,10 @@ class SoftwareCenter(QMainWindow,Signals):
             # self.ui.hometext9.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:left;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
         #else:
         self.show_homepage(bysignal)
+        self.ui.headercw1.leSearch.show()
+        self.ui.headercw1.senior_search.show()
+        self.show_red_search()
+       #addetail_all_control()
 
 
     def show_homepage(self, bysignal):
@@ -2994,6 +3083,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.btnAllsoftware.setEnabled(False)
 
     def slot_goto_apkpage(self, bysignal = False):
+        self.show_headdetail_all_control()
         # uname_release = platform.release()
         # if("4.4.58" in uname_release):
         #    self.messageBox.alert_msg("当前启动项不支持安卓兼容\n请使用默认启动项")
@@ -3061,6 +3151,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     self.apkpageload.start_loading()
                     # self.worker_thread0.appmgr.get_kydroid_apklist()
                     self.worker_thread0.appmgr.apk_page_create()
+        self.show_red_search()
 
 
     def slot_kydroid_envrun(self):
@@ -3090,6 +3181,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.worker_thread0.appmgr.get_recommend_apps(False)
 
     def slot_goto_uppage(self, bysignal=False):
+        self.show_headdetail_all_control()
         self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
@@ -3130,8 +3222,10 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.reset_nav_bar_focus_one()
         self.ui.btnUp.setEnabled(False)
+        self.show_red_search()
 
     def slot_goto_unpage(self, bysignal=False):
+        self.show_headdetail_all_control()
         self.ui.btnClosesearch.setVisible(False)
         if bysignal is True:
             forceChange = True
@@ -3176,6 +3270,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.no_search_resualt.hide()
         self.ui.prompt1.hide()
         self.ui.prompt2.hide()
+        self.show_red_search()
 
     def goto_search_page(self, bysignal = False):
         if bysignal is False:
@@ -3230,10 +3325,10 @@ class SoftwareCenter(QMainWindow,Signals):
         if(self.ui.taskWidget.isHidden() == True):
             self.ui.taskWidget.setVisible(True)
            # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
-            self.ui.btnTask3.setIcon(QIcon('res/dowload_app2.png'))
+            self.ui.btnTask3.setIcon(QIcon('res/download_hover.png'))
         else:
             self.ui.taskWidget.setVisible(False)
-            self.ui.btnTask3.setIcon(QIcon('res/dowload_app1.png'))
+            self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
             #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         # self.prePage = "taskpage"
         # self.nowPage = 'taskpage'
@@ -3394,6 +3489,9 @@ class SoftwareCenter(QMainWindow,Signals):
                     item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
                     self.userAppListWidget.add_card(item)
                     item.show_app_detail.connect(self.slot_show_app_detail)
+                    item.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
+
                     item.install_app.connect(self.slot_click_install)
                     item.upgrade_app.connect(self.slot_click_upgrade)
                     item.remove_app.connect(self.slot_click_remove)
@@ -3463,6 +3561,8 @@ class SoftwareCenter(QMainWindow,Signals):
                     item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
                     self.userTransAppListWidget.add_card(item)
                     item.show_app_detail.connect(self.slot_show_app_detail)
+                    item.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
+
             else:
                 self.ui.NoTransItemText.show()
                 self.ui.NoTransItemWidget.show()
@@ -3534,6 +3634,7 @@ class SoftwareCenter(QMainWindow,Signals):
         app = self.worker_thread0.appmgr.get_application_by_name(self.adlist[num].name)
         if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
+            self.detailScrollWidget.earn_crenshoots(app)
         else:
             MS = QMessageBox()
             #MS.setWindowTitle('提示')
@@ -3566,6 +3667,7 @@ class SoftwareCenter(QMainWindow,Signals):
         app.status = PkgStates.UNINSTALL
         self.slot_goto_unpage()
         self.slot_show_app_detail(app)
+        self.detailScrollWidget.earn_crenshoots(app)
 
 
     def slot_show_app_detail(self, app, btntext='', ishistory=False):
@@ -3575,12 +3677,14 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnClosesearch.setVisible(False)
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
+        self.hide_headdetail_all_control()
         self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
         self.ui.btnCloseDetail.setVisible(True)
         Globals.LOCAL_DEB_FILE = path
+        self.hide_headdetail_all_control()
         self.detailScrollWidget.show_by_local_debfile(path)
 
     # kobe 1106
@@ -3693,6 +3797,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.userload.stop_loading()
         self.ui.username.setText(Globals.USER)
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/woman-logo.png')}")
+        self.detailScrollWidget.ui.pl_login.hide()
+        self.detailScrollWidget.ui.free_registration.hide()
+        self.detailScrollWidget.ui.reviewText.setReadOnly(False)
 
     def slot_rset_password(self,old_username,new_password):
         self.worker_thread0.appmgr.rset_password(old_username,new_password)
@@ -3995,6 +4102,10 @@ class SoftwareCenter(QMainWindow,Signals):
                         self.messageBox.alert_msg(AptActionMsg[action] + _("perfection"))
                         self.apt_process_finish.emit(name, action)
                         self.normalcard_progress_finish.emit(name)
+                    elif int(percent) == int(-16):
+                        self.slot_cancel_for_work_filed(name, action)
+                        self.messageBox.alert_msg(AptActionMsg[action] + _("failure") + _("\nError or missing dependencies"))
+                        self.worker_thread0.appmgr.update_models(action, name)
                     else:
                         self.slot_cancel_for_work_filed(name, action)
                         #self.messageBox.alert_msg(AptActionMsg[action] + "失败")
@@ -4170,6 +4281,9 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnLogin.show()
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         self.login.clean_user_password()
+        self.detailScrollWidget.ui.free_registration.show()
+        self.detailScrollWidget.ui.pl_login.show()
+        self.detailScrollWidget.ui.reviewText.setReadOnly(True)
         Globals.EMAIL = ''
         Globals.USER = ''
         Globals.USER_DISPLAY = ''

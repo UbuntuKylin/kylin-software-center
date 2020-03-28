@@ -67,7 +67,7 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.progresslabel.setStyleSheet("QLabel{background-color: transparent;font-size:13px;color:#888888;}")
         self.ui.progresslabel.setText("")
 
-        self.ui.name.setStyleSheet("QLabel{background-color: transparent;font-size:14px;color:#000000}")
+        self.ui.name.setStyleSheet("QLabel{background-color: transparent;border:0px;font-size:14px;color:#000000}")
 
         #self.ui.status.setStyleSheet("QLabel{font-size:12px;font-weight:bold;background-color:#EAF0F3;}")
         self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:transparent;}")
@@ -251,6 +251,13 @@ class TaskListItemWidget(QWidget,Signals):
                 if _("download") in self.ui.name.text():
                     #self.ui.name.setText("安装 " + self.app.name)
                     self.ui.name.setText(_("Install") + self.app.name)
+                    text = setLongTextToElideFormat(self.ui.name, _("Install") + self.app.name)
+                    if str(text).endswith("…") is True:
+                        # self.ui.name.setToolTip("安装 "+app.name)
+                        self.ui.name.setToolTip(_("Install") + self.app.name)
+                    else:
+                        self.ui.name.setToolTip("")
+
                 if percent < float(0.0):
                     #print percent
                     # self.ui.progressBar.hide()

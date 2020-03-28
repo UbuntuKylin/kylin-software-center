@@ -220,6 +220,7 @@ class Login(QWidget,Signals):
         # self.show()
 
     def slot_click_close(self):
+        self.slot_click_login()
         self.task_stop.emit("#update", "update")
     def slot_click_login(self):
         self.ui.login_linedit.show()

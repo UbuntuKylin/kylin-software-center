@@ -1,3 +1,16 @@
+ubuntu-kylin-software-center (3.4.1) focal; urgency=medium
+
+  * New software details interface.
+  * All software screenshots are modified to .gif format.
+  * Add missing package when local package is missing dependencies.
+  * Updated the software store icon to a new design.
+  * Android compatible icon changed to search from cache first,
+    then from code directory.
+  * The main frame is modified to rounded corners and added a
+    shadow effect.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Sat, 28 Mar 2020 09:17:47 +0800
+
 ubuntu-kylin-software-center (3.3.3) focal; urgency=medium
 
   * Fix the problem that no error will be reported if there are missing

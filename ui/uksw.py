@@ -48,7 +48,6 @@ class Ui_StarWidget(object):
         self.star5.setGeometry(QtCore.QRect(53, 1, 10, 10))
         self.star5.setText(_fromUtf8(""))
         self.star5.setObjectName(_fromUtf8("star5"))
-
         self.retranslateUi(StarWidget)
         QtCore.QMetaObject.connectSlotsByName(StarWidget)
 

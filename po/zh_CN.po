@@ -1143,16 +1143,16 @@ msgid "Ft"
 msgstr "分"
 
 #: ui/detailscrollwidget.py:528 ui/detailscrollwidget.py:646
-msgid "Package name:"
-msgstr "软件包名"
+msgid "Package name :"
+msgstr "软件包名 : "
 
 #: ui/detailscrollwidget.py:534
-msgid "Software version"
-msgstr "软件版本"
+msgid "Software version :"
+msgstr "软件版本 :"
 
 #: ui/detailscrollwidget.py:538 ui/detailscrollwidget.py:541
-msgid "Installation size"
-msgstr "安装大小"
+msgid "Installation size :"
+msgstr "安装大小 :"
 
 #: ui/detailscrollwidget.py:548
 msgid "Dependencies to be installed"
@@ -1163,21 +1163,21 @@ msgid "Unable to install the package"
 msgstr "无法安装该软件包"
 
 #: ui/detailscrollwidget.py:648
-msgid "current version:"
-msgstr "当前版本"
+msgid "current version :"
+msgstr "当前版本 : "
 
 #: ui/detailscrollwidget.py:650
-msgid "Software source version:"
-msgstr "软件源版本"
+msgid "Software source version :"
+msgstr "软件源版本 : "
 
 #: ui/detailscrollwidget.py:661 ui/detailscrollwidget.py:664
 #: ui/detailscrollwidget.py:667
-msgid "Download size:"
-msgstr "下载大小"
+msgid "Download size :"
+msgstr "下载大小 : "
 
 #: ui/detailscrollwidget.py:677
 msgid "My rating:"
-msgstr "我的评分"
+msgstr "我的评分:"
 
 #: ui/detailscrollwidget.py:679
 msgid "  People in rating"
@@ -1268,11 +1268,11 @@ msgstr "异常"
 
 #: ui/detailscrollwidget.py:1294 ui/detailscrollwidget.py:1304
 msgid "download times： "
-msgstr "下载次数:  "
+msgstr "下载次数 : "
 
 #: ui/detailscrollwidget.py:1307
 msgid "download times: "
-msgstr "下载次数"
+msgstr "下载次数 : "
 
 #: ui/detailscrollwidget.py:1307
 msgid " Times"
@@ -1281,3 +1281,27 @@ msgstr "次"
 #: ui/detailscrollwidget.py:1331
 msgid "People in rating"
 msgstr "人参加评分"
+
+#: ui//detailw.py: 376
+msgid "Pl login"
+msgstr "请登录"
+
+#: ui//detailw.py: 376
+msgid "Free reg"
+msgstr "免费注册"
+
+#: ui//detailw.py: 101
+msgid "Expand all"
+msgstr "展开全部"
+
+#: ui//detailw.py: 107
+msgid "Retract"
+msgstr "收起"
+
+#: ubuntu-kylin-software-center.py:2799
+msgid "back"
+msgstr "返回"
+
+#: ui/detailscrollwidget.py
+msgid "\nError or missing dependencies"
+msgstr "\n包异常或软件源缺少依赖包"

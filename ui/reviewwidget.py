@@ -36,7 +36,7 @@ class ReviewWidget(QWidget):
         self.ui_init()
 
         self.star = StarWidget('small', ratings_average, self)
-        self.star.move(719, 42)
+        self.star.move(742, 42)
 
         self.ui.comment.setAlignment(Qt.AlignVCenter)
         self.ui.comment.setWordWrap(True)
@@ -45,7 +45,7 @@ class ReviewWidget(QWidget):
         self.ui.comment.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
         self.ui.userHead.setStyleSheet("QLabel{background-image:url('res/userhead.png')}")
         self.ui.createDate.setStyleSheet("QLabel{color:#9AA2AF;font-size:13px;}")
-        self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png')}")
+        self.ui.commentBG.setStyleSheet("QLabel{background-image:url('res/commentbg.png');border: 0px;}")
 
         self.ui.userName.setText(review.user_display)
         self.ui.createDate.setText(review.date)

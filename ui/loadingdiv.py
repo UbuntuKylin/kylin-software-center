@@ -42,6 +42,8 @@ class LoadingDiv(QWidget):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setProperty("doNotBlur",True)
+        self.setProperty("blurRegion",QRegion(QRect(0,0,1,1)))
 
         # self.switchTimer = QTimer(self)
         # self.switchTimer.timeout.connect(self.slot_switch_animation_step)
@@ -98,6 +100,9 @@ class LoadingDiv(QWidget):
     # def stop_loading(self):
     #     self.switchTimer.stop()
     #     self.hide()
+    # def set_paintEvent(self, event):
+    #     paint=QPainter(self)
+    #     paint.fillRect(self.rect(),QColor(0,0,0,0))
     def start_loading(self):
         self.gif.start()
         self.show()

@@ -232,7 +232,7 @@ class Ui_ConfigWidget(object):
         self.icon_linedit3_2.setObjectName(_fromUtf8("icon_linedit3"))
 
         self.icon_success= QLabel(self.groupBox_success)
-        self.icon_success.setGeometry(QtCore.QRect(90, 139, 23, 16))
+        self.icon_success.setGeometry(QtCore.QRect(130, 139, 23, 16))
         self.icon_success.setText(_fromUtf8(""))
         self.icon_success.setObjectName(_fromUtf8("icon_successs"))
         self.icon_success.setStyleSheet("QLabel{background:url('res/success.png') no-repeat;}")
@@ -248,7 +248,7 @@ class Ui_ConfigWidget(object):
 
         #您的新密码设置成功
         self.success_password=QLabel(self.groupBox_success)
-        self.success_password.setGeometry(QtCore.QRect(116, 131, 280, 32))
+        self.success_password.setGeometry(QtCore.QRect(156, 131, 160, 32))
         self.success_password.setText(_fromUtf8(""))
         self.success_password.setObjectName(_fromUtf8("successs_password"))
         #self.success_password.setText("您的新密码设置成功")
@@ -257,7 +257,7 @@ class Ui_ConfigWidget(object):
 
         #今后将使用新密码登录软件中心，请牢记
         self.suc_remind=QLabel(self.groupBox_success)
-        self.suc_remind.setGeometry(QtCore.QRect(40, 178, 520, 20))
+        self.suc_remind.setGeometry(QtCore.QRect(156, 178, 230, 20))
         self.suc_remind.setText(_fromUtf8(""))
         self.suc_remind.setObjectName(_fromUtf8("suc_remind"))
         #self.suc_remind.setText("今后将使用新密码登录软件中心，请牢记")

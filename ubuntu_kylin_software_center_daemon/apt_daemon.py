@@ -316,7 +316,7 @@ class AptDaemon():
                 else:
                     self.dbus_service.set_uksc_not_working()
         else:
-            raise WorkitemError(6, "dependence not be satisfied")
+            raise WorkitemError(16, "dependence not be satisfied")
 
     # install deps
     def install_deps(self, path, kwargs=None):

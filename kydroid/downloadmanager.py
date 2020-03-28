@@ -28,7 +28,7 @@ import stat
 import shutil
 from urllib import request
 from PyQt5.QtCore import *
-from models.enums import KYDROID_SOURCE_SERVER, KYDROID_DOWNLOAD_PATH, Signals, AppActions
+from models.enums import KYDROID_SOURCE_SERVER, KYDROID_DOWNLOAD_PATH, Signals, AppActions, UBUNTUKYLIN_RES_ICON_PATH, UBUNTUKYLIN_CACHE_ICON_PATH
 import threading
 from models.globals import Globals
 
@@ -143,7 +143,8 @@ class DownloadManager(threading.Thread, QObject):
 
     # 将desktop文件转移到到用户.local/share/applications目录下
     def install_desktop_file(self):
-        self.software_icon = "/usr/share/ubuntu-kylin-software-center/data/icons/" + self.apkInfo.pkgname + ".png"
+        self.software_icon = UBUNTUKYLIN_RES_ICON_PATH + self.apkInfo.pkgname + ".png"
+        self.software_icon_cache = UBUNTUKYLIN_CACHE_ICON_PATH + self.apkInfo.pkgname + ".png"
         user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
         icon_path = os.path.join(os.path.expanduser("~"), ".local", "share", "icons")
         if(os.path.exists(user_desktop_path) == False):
@@ -151,9 +152,10 @@ class DownloadManager(threading.Thread, QObject):
         if(os.path.exists(icon_path) == False):
             os.mkdir(icon_path)
         shutil.copy(self.tmp_desktop_file_path, user_desktop_path) #拷贝desktop文件
-        if(os.path.exists(self.software_icon)):
-            shutil.copy(self.software_icon, icon_path)  #拷贝icons
-
+        if(os.path.exists(self.software_icon_cache)):
+            shutil.copy(self.software_icon_cache, icon_path)  #拷贝缓存下的icons
+        elif(os.path.exists(self.software_icon)):
+            shutil.copy(self.software_icon_cache, icon_path)
 
 if __name__ == "__main__":
     download_sourcelist()

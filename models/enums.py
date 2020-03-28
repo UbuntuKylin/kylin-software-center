@@ -54,6 +54,10 @@ KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"
 
 UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
 
+#add dengnan 2020-03-23　add resource server
+RESOURCE_SERVER="http://archive.kylinos.cn/kylin/resources/screenshots/"
+
+
 ###############################缓存路径###############################
 
 #KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-1000-kylin/data/local/tmp"
@@ -123,6 +127,8 @@ Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v
 
 # add by kobe to format long text
 def setLongTextToElideFormat(label, text):
+    if text[len(text) - 1] == '\n':
+        text = text.rstrip()
     metrics = QFontMetrics(label.font())
     elidedText = metrics.elidedText(text, Qt.ElideRight, label.width())
     label.setText(elidedText)
@@ -312,6 +318,12 @@ class Signals:
 
     #add dengnan 10.29
     goto_detail=pyqtSignal(str)
+
+    #add in dengnan,add button free registration
+    free_reg=pyqtSignal()
+    pl_login=pyqtSignal()
+
+
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"

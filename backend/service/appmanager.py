@@ -736,7 +736,7 @@ class AppManager(QObject,Signals):
         if app is None :
             return False
 
-        scre=app.name+"_thumbnail1.png"
+        scre=app.name+"_thumbnail1.GIF"
         app.thumbnailfile = cachedir+scre
 
         kwargs = {"packagename": app.pkgname,

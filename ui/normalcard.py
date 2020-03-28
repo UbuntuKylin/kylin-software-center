@@ -473,7 +473,7 @@ class NormalCard(QWidget,Signals):
 
             #elif(self.ui.btn.text() == "卸载"):
             elif (self.ui.btn.text() == _("Uninstall")):
-                if self.app.name == "ubuntu-kylin-software-center":
+                if self.app.name == "kylin-software-center":
                     self.uninstall_uksc_or_not.emit("normalcard")
                 else:
                     self.app.status = PkgStates.REMOVING
