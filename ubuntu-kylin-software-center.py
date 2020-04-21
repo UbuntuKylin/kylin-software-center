@@ -1944,7 +1944,7 @@ class SoftwareCenter(QMainWindow,Signals):
     def check_apk_sources(self):
         url = KYDROID_SOURCE_SERVER
         try:
-            r = requests.get(url, timeout=1)
+            r = requests.get(url, timeout=2)
             code = r.status_code
 
             if code == 200:
@@ -3174,7 +3174,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.prompt1.hide()
         self.ui.prompt2.hide()
         # self.loadingDiv.start_loading()
-        if(self.apkpagefirst):
+        if(self.apkpagefirst or Globals.isOnline == False):
             if not self.worker_thread0.appmgr.check_kydroid_envrun():
                 self.slot_kydroid_envrun()
             else :

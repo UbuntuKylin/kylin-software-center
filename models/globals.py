@@ -102,3 +102,5 @@ class Globals:
     JUMP_SCRENN=False
 
     # SQLITR_DB=''
+
+    isOnline = True

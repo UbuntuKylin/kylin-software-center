@@ -1290,6 +1290,10 @@ class AppManager(QObject,Signals):
         self.mutex.release()
 
     def apk_page_create_emit(self):
+        for i in range(10):
+            if Globals.isOnline:
+                break
+            self.start_download_kydroid_sl()
         self.download_apk_source_over.emit(True)
 
     # 检测安卓环境是否启动
@@ -1332,21 +1336,21 @@ class AppManager(QObject,Signals):
 
     # check and download kydroid apk sourcelist
     def start_download_kydroid_sl(self):
-        isOnline = True
+        Globals.isOnline = True
         if (Globals.DEBUG_SWITCH):
             print("start_download_kydroid_sl")
         try:
             urllib.request.urlopen(KYDROID_SOURCE_SERVER, timeout=10)
         except HTTPError as e:
             if e.code != 401:
-                isOnline = False
+                Globals.isOnline = False
         except Exception as e:
-            isOnline = False
+            Globals.isOnline = False
 
-        if isOnline == False:
+        if Globals.isOnline == False:
             if (Globals.DEBUG_SWITCH):
                 print('bad apk source   ')
-            self.download_apk_source_over.emit(False)
+            #self.download_apk_source_over.emit(False)
         else:
             downloadmanager.download_sourcelist()
             self.apk_list = confparse.getApks()
@@ -1372,7 +1376,7 @@ class AppManager(QObject,Signals):
             # self.download_apk_source_over.emit(True)
             # self.get_recommend_apps(False)
             if self.apkenvrunfrist:
-                self.download_apk_source_over.emit(True)
+                #self.download_apk_source_over.emit(True)
                 self.apkenvrunfrist = False
 
     def merge_apk_list(self, app_dict):

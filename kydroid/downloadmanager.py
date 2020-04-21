@@ -148,6 +148,7 @@ class DownloadManager(threading.Thread, QObject):
         self.default_icon = UBUNTUKYLIN_RES_PATH + "uksc.png"
         user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
         icon_path = os.path.join(os.path.expanduser("~"), ".local", "share", "icons")
+        icon_path_png = icon_path + "/" + self.apkInfo.pkgname + ".png"
         if(os.path.exists(user_desktop_path) == False):
             os.mkdir(user_desktop_path)
         if(os.path.exists(icon_path) == False):
@@ -158,7 +159,7 @@ class DownloadManager(threading.Thread, QObject):
         elif(os.path.exists(self.software_icon)):
             shutil.copy(self.software_icon, icon_path)
         elif(os.path.exists(self.default_icon)):
-            shutil.copy(self.default_icon, icon_path)
+            shutil.copy(self.default_icon, icon_path_png)
 
 if __name__ == "__main__":
     download_sourcelist()

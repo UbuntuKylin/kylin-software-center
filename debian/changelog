@@ -4,6 +4,7 @@ kylin-software-center (3.4.2kord) v100; urgency=medium
   * Automatically determine the system architecture and Android
     compatible version to use the Android compatible source.
   * Optimize screenshot capture and download times.
+  * Optimize Android source access.
 
  -- wenbo <wenbo@ubuntukylin.com>  Mon, 20 Apr 2020 20:14:36 +0800
 
