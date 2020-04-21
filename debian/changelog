@@ -1,4 +1,4 @@
-kylin-software-center (3.4.2kord) v100; urgency=medium
+ubuntu-kylin-software-center (3.4.2kord) v100; urgency=medium
 
   * Use the new startup animation.
   * Automatically determine the system architecture and Android
