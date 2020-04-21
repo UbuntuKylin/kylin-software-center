@@ -43,7 +43,6 @@ class NormalCard(QWidget,Signals):
     def __init__(self, app, messageBox, parent=None):#nowpage, prepage,
         QWidget.__init__(self, parent)
         self.ui_init()
-
         self.app = app
         # self.workType = nowpage
         # self.preType = prepage
@@ -473,7 +472,7 @@ class NormalCard(QWidget,Signals):
 
             #elif(self.ui.btn.text() == "卸载"):
             elif (self.ui.btn.text() == _("Uninstall")):
-                if self.app.name == "kylin-software-center":
+                if self.app.name == "ubuntu-kylin-software-center":
                     self.uninstall_uksc_or_not.emit("normalcard")
                 else:
                     self.app.status = PkgStates.REMOVING

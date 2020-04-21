@@ -56,6 +56,7 @@ class MultiFunctionBtn(QWidget,Signals):
 
         self.loading = MiniLoadingDiv(self,self)
         self.loading.raise_()
+        self.loading.move(-65,0)
 
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
@@ -752,7 +753,7 @@ class MultiFunctionBtn(QWidget,Signals):
 
     def slot_click_btn_uninstall(self):
         # kobe 1106
-        if self.app.name == "kylin-software-center":
+        if self.app.name == "ubuntu-kylin-software-center":
             self.uninstall_uksc_or_not.emit("detailscrollwidget")
         else:
             self.app.status = PkgStates.REMOVING

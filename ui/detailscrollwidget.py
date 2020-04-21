@@ -51,10 +51,18 @@ from utils.debfile import DebFile
 from models.globals import Globals
 from backend.remote.piston_remoter import PistonRemoter
 import requests
-
 import gettext
+
+
 gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
+# class  My_Thread(QThread,Signals):
+#     def __init__(self):
+#         super(My_Thread, self).__init__()
+#
+#     def run(self):
+#         print("111",Globals.JUMP_SCRENN)
+#         DetailScrollWidget.earn_crenshoots(Globals.JUMP_SCRENN)
 
 class SET_DESCRIPTION(QWidget):
     def wheelEvent(self, e: QtGui.QWheelEvent):
@@ -85,7 +93,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.mainwindow = parent
 
         self.server=PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
-		
+
         # self.setGeometry(QRect(5, 87, 873, 565))
         # self.resize(873, 558)
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
@@ -952,10 +960,10 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.init_description = str(self.ui.description.toPlainText()).strip()
 
         self.mainwindow.ui.detailShellWidget.show()
-        self.upload_appname(self.app.name)
         # show loading
         self.reviewload.start_loading()
         self.sshotload.start_loading()
+
         # send
         self.mainwindow.worker_thread0.appmgr.get_application_reviews(app.name)
 
@@ -968,10 +976,13 @@ class DetailScrollWidget(QScrollArea,Signals):
                 self.ui.grade1.setText('')
             else:
                 self.reset_ratings(my_rating)
+        #
 
     def earn_crenshoots(self,app):
+        #     pass
         self.screenshot_path = self.screen_select_path()
         self.mainwindow.worker_thread0.appmgr.get_application_screenshots(app, self.screenshot_path)
+        # self.upload_appname(self.app.name)
 
     def expand_alltext(self):
         ROW_ER = self.Row_er * 23
@@ -1035,7 +1046,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         i=1
         while FLAG:
             download = RESOURCE_SERVER + self.app.name + "_thumbnail"+str(i)+".GIF"
-            pic = requests.get(download)
+            pic = requests.get(download, verify=False, proxies=None, timeout=1)
             if pic.reason!="OK":
                 FLAG=False
                 break

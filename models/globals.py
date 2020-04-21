@@ -99,4 +99,6 @@ class Globals:
 
     REMOVE_SOFT = None
 
+    JUMP_SCRENN=False
+
     # SQLITR_DB=''

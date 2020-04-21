@@ -227,7 +227,7 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.progressBar.reset()
                     self.ui.progresslabel.setText("")
                     # self.ui.progressBar.hide()
-                    self.ui.progresslabel.hide()
+                    self.ui.progresslabel.show()
                     self.ui.status.show()
                     #self.ui.status.setText("正在安装")
                     self.ui.status.setText(_("Installing"))
@@ -236,14 +236,20 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.progresslabel.show()
                     self.ui.status.hide()
                     self.ui.progressBar.hide()
+                    self.ui.progressBar.hide()
                     self.ui.progressBar.setValue(percent)
+                    self.ui.progressBar.show()
                     try:
+                        self.ui.progressBarsmall.hide()
                         self.ui.progressBarsmall.setValue(self.app.percent)
+                        self.ui.progressBarsmall.show()
                     except AttributeError as e:
                         pass
                     self.ui.progressBar.show()
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
+                    self.ui.progresslabel.hide()
                     self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+                    self.ui.progresslabel.show()
             elif(processtype == 'apt'):
                 #text = "正在执行: "
                 text = _("Running")
@@ -285,9 +291,13 @@ class TaskListItemWidget(QWidget,Signals):
                     self.ui.status.setText(_("perfection"))
 
                     self.ui.status.show()
+                    self.ui.progressBar.hide()
                     self.ui.progressBar.setValue(percent)
+                    self.ui.progressBar.show()
                     try:
+                        self.ui.progressBarsmall.hide()
                         self.ui.progressBarsmall.setValue(self.app.percent)
+                        self.ui.progressBarsmall.show()
                     except AttributeError as e:
                         pass
                     # self.ui.progresslabel.setText(self.ui.progressBar.value())
@@ -300,8 +310,11 @@ class TaskListItemWidget(QWidget,Signals):
                         self.ui.status.hide()
                         self.ui.progressBar.hide()
                         self.ui.progressBar.setValue(percent)
+                        self.ui.progressBar.show()
                         try:
+                            self.ui.progressBarsmall.hide()
                             self.ui.progressBarsmall.setValue(self.app.percent)
+                            self.ui.progressBarsmall.show()
                         except AttributeError as e:
                             pass
                         self.ui.progressBar.show()

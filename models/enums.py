@@ -33,10 +33,14 @@ from backend.ubuntu_sw import safe_makedirs
 
 from models.baseinfo import BaseInfo
 from utils.debfile import DebFile
+import configparser
 
 import gettext
 gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
+
+
+
 
 #########################################################
 
@@ -49,8 +53,25 @@ UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
 
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
 
-#KYDROID_SOURCE_SERVER = "http://ports.kylin.com/kylin/kydroid/"
-KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"
+# 安卓兼容源自动判断
+kydroid_source = {
+    "kydroid2": {
+        "amd64":"http://archive.kylinos.cn/kylin/kydroid/2/x86/",
+        "arm64":"http://archive.kylinos.cn/kylin/kydroid/2/arm64/"
+    },
+    "kydroid3": {
+        # "amd64":"http://archive.kylinos.cn/kylin/kydroid/3/x86/",
+        "arm64":"http://archive.kylinos.cn/kylin/kydroid/3/arm64/"
+    }
+}
+try:
+    arch = os.popen("dpkg --print-architecture").readline().splitlines()[0]
+    kydroid_config = configparser.ConfigParser()
+    kydroid_config.read('/usr/share/kydroid2/kydroid2.conf')
+    kydroid_version = kydroid_config['image']['repo']
+    KYDROID_SOURCE_SERVER = kydroid_source[kydroid_version][arch]
+except:
+    KYDROID_SOURCE_SERVER = "http://archive.kylinos.cn/kylin/kydroid/"
 
 UBUNTU_SSO_SERVICE = 'https://login.ubuntukylin.com/api/1.0'#'http://0.0.0.0:8000/api/1.0'
 
@@ -123,6 +144,7 @@ PISTON_GENERIC_HELPER = "piston_generic_helper.py"
 
 
 Specials = ["\"%c\"", "%f","%F","%u","%U","%d","%D","%n","%N","%i","%c","%k","%v","%m","%M", "-caption", "/bin/sh", "sh", "-c", "STARTED_FROM_MENU=yes"]
+
 
 
 # add by kobe to format long text
@@ -322,6 +344,8 @@ class Signals:
     #add in dengnan,add button free registration
     free_reg=pyqtSignal()
     pl_login=pyqtSignal()
+
+    screnn=pyqtSignal(str)
 
 
 # application actions, this should sync with definition in apt_dbus_service

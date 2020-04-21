@@ -160,7 +160,6 @@ class Login(QWidget,Signals):
         self.ui.spot_linedit.setStyleSheet("QLabel{font-weight:bold;}")
         #self.ui.sourceWidget.setStyleSheet("QWidget{border:0px solid #c0d3dd;border-radius:2px;color:#0763ba;background:#ebf2f9;}")
         #self.ui.sourceWidget.setStyleSheet("QPushButton{border:1px solid #026c9e;color:#ebf2f9;}")
-        self.ui.sourceWidget.setStyleSheet(".QWidget{border:1px solid #cccccc;background-color:#ffffff}")
         self.ui.topWidget.setStyleSheet("QWidget{border:0px;background-color:#eff2f6}")
 
 

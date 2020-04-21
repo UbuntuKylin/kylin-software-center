@@ -440,7 +440,8 @@ class Ui_MainWindow(object):
         self.searchWidget = QWidget(self.rightWidget)
         self.searchWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.searchWidget.setObjectName(_fromUtf8("searchWidget"))
-        self.searchWidget.setStyleSheet("QWidget#searchWidget{border-bottom-right-radius:6px;}")
+        self.searchWidget.setStyleSheet("QWidget{background:#f5f5f5}")
+        # self.searchWidget.setStyleSheet("QWidget#searchWidget{border-bottom-right-radius:6px;}")
 
 
         # self.no_search_resualt.hide()
@@ -467,6 +468,7 @@ class Ui_MainWindow(object):
       # self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
         self.taskWidget.setGeometry(QtCore.QRect(300, 50, 370, 460))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
+        # self.taskWidget.raise_()
 
         self.no_search_resualt = QWidget(self.rightWidget)
         self.no_search_resualt.setGeometry(QtCore.QRect(251, 160, 347, 268))
@@ -492,7 +494,7 @@ class Ui_MainWindow(object):
 
 
         self.head_manage=QWidget(self.taskWidget)
-        self.head_manage.setGeometry(QtCore.QRect(1, 1,369,42))
+        self.head_manage.setGeometry(QtCore.QRect(1, 1,368,42))
         self.head_manage.setObjectName(_fromUtf8("head_manage"))
 
         self.dow_manage = QLabel(self.taskWidget)
@@ -502,7 +504,7 @@ class Ui_MainWindow(object):
 
         self.taskListWidget = QListWidget(self.taskWidget)
         #self.taskListWidget.setGeometry(QtCore.QRect(10, 65, 300, 475))
-        self.taskListWidget.setGeometry(QtCore.QRect(1, 42, 369, 378))
+        self.taskListWidget.setGeometry(QtCore.QRect(1, 42, 368, 378))
         self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
         # self.taskListWidget_complete = QListWidget(self.taskWidget)
         # self.taskListWidget_complete.setGeometry(QtCore.QRect(10, 65, 300, 475))

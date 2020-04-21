@@ -1047,6 +1047,7 @@ class AppManager(QObject,Signals):
     def submit_downloadcount(self,app_name):
         try:
             res = self.premoter.get_Amount_Downloads(app_name)
+
             self.db.update_app_downloadtotal(app_name,res[0]['download_total'])
         except:
             try:

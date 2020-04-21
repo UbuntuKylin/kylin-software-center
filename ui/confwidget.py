@@ -200,7 +200,7 @@ class ConfigWidget(QWidget,Signals):
         # self.ui.label_2.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         # self.ui.label_3.setStyleSheet("QLabel{background-color:#a5a5a5;}")
         # self.ui.label_4.setStyleSheet("QLabel{background-color:#a5a5a5;}")
-        self.ui.pageListWidget.setStyleSheet("QListWidget{background-color:#535353;}QListWidget::item{font-size:17px;height:32px;padding-left:5px;margin-top:15px;border:0px;color:#ffffff;}QListWidget::item:selected{color:#47ccf3;}")
+        self.ui.pageListWidget.setStyleSheet("QListWidget{background-color:#535353;border-top-left-radius:6px;border-bottom-left-radius:6px;}QListWidget::item{font-size:17px;height:32px;padding-left:5px;margin-top:15px;border:0px;color:#ffffff;}QListWidget::item:selected{color:#47ccf3;}")
 #add
         self.ui.groupBox.setStyleSheet(".QGroupBox{border:0px;font-size:14px;color:#000000}")
         self.ui.groupBox_2.setStyleSheet("QGroupBox{border:0px;}")

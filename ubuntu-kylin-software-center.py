@@ -83,6 +83,7 @@ mainloop = DBusGMainLoop(set_as_default=True)
 import configparser
 import sqlite3
 import math
+import subprocess
 
 import gettext
 gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
@@ -96,6 +97,7 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='w'
                     )
 LOG = logging.getLogger("uksc")
+APP_PATH=0
 
 class  initThread(QThread,Signals):
     def __init__(self):
@@ -140,6 +142,38 @@ class  AD_Thread(QThread,Signals):
     def run(self):
         self.myads_icon.emit()
 
+class  MY_Thread(QThread,Signals):
+    def __init__(self,app,parent):
+        super(MY_Thread, self).__init__()
+        self.parent=parent
+        self.app=app
+
+    def run(self):
+        self.parent.earn_crenshoots(self.app)
+        QThread.exec(self)
+
+
+class  Dowload_Thread(QThread,Signals):
+    def __init__(self,app,parent):
+        super(Dowload_Thread, self).__init__()
+        self.parent=parent
+        self.app=app
+        # self.backend = InstallBackend()
+        # self.appmgr = AppManager(self.backend)
+
+
+    def run(self):
+        self.parent.upload_appname(self.app)
+class  Ask_server(QThread,Signals):
+    def __init__(self,app):
+        super(Ask_server, self).__init__()
+        self.backend = InstallBackend()
+        self.appmgr = AppManager(self.backend)
+        self.app=app
+
+    def run(self):
+        self.appmgr.submit_downloadcount(self.app)
+
 class SoftwareCenter(QMainWindow,Signals):
 
     # recommend number in function "fill"
@@ -183,6 +217,7 @@ class SoftwareCenter(QMainWindow,Signals):
     apkpagefirst = True
 
     list=[]
+    setout = 0
 
     config = configparser.ConfigParser()
 
@@ -244,6 +279,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread_ad.start()
 
 
+
     def init_main_view(self):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
@@ -262,7 +298,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.categoryBar = CategoryBar(self.ui.specialcategoryWidget)
         self.categoryBar.setGeometry(208, 0, 507, 22)
         #self.Taskwidget = Taskwidget(self.ui.taskWidget)
-        self.ui.taskWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #cccccc}")
+        self.ui.taskWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #cccccc;border-radius:6px;}")
         # point out widget
         self.pointout = PointOutWidget(self)
         self.pointListWidget = CardWidget(200, 115, 4, self.pointout.ui.contentliw)
@@ -430,6 +466,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.detailShellWidget.raise_()
         self.ui.taskWidget.raise_()
+        # self.ui.taskWidget.mousePressEvent=self.taskwidget_pressevent
+        # self.ui.taskWidget.mouseMoveEvent=self.taskwidget_moveevent
         # self.ui.virtuallabel.raise_()
         # self.resizeCorner.raise_()
 
@@ -706,7 +744,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         # self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         self.ui.taskhline.setStyleSheet("QLabel{background-color:#e5e5e5;}")
-        self.ui.head_manage.setStyleSheet(".QWidget{background-color:#ffffff;border: opx }")
+        self.ui.head_manage.setStyleSheet(".QWidget{background-color:#ffffff;border: 0px }")
 
         self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
         self.ui.head_manage.setFocusPolicy(Qt.NoFocus)
@@ -786,7 +824,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.headercw1.leSearch.returnPressed.connect(self.slot_enter_key_pressed)
 
         self.click_item.connect(self.slot_show_app_detail)
-        self.click_item.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
         self.upgrade_app.connect(self.slot_click_upgrade)
         self.update_source.connect(self.slot_update_source)
         self.categoryBar.click_categoy.connect(self.slot_change_category)
@@ -976,7 +1013,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.apt_cache_update_ready.connect(self.slot_apt_cache_update_ready)
         self.worker_thread0.appmgr.submit_review_over.connect(self.detailScrollWidget.slot_submit_review_over)
         self.worker_thread0.appmgr.submit_rating_over.connect(self.detailScrollWidget.slot_submit_rating_over)
-        self.worker_thread0.appmgr. submit_download_over.connect(self.detailScrollWidget.slot_app_downloadcont)
+        # self.worker_thread0.appmgr.submit_download_over.connect(self.detailScrollWidget.slot_app_downloadcont)
         self.worker_thread0.appmgr.get_user_applist_over.connect(self.slot_get_user_applist_over)
         self.worker_thread0.appmgr.get_user_transapplist_over.connect(self.slot_get_user_transapplist_over)
         self.worker_thread0.appmgr.submit_translate_appinfo_over.connect(self.detailScrollWidget.slot_submit_translate_appinfo_over)#zx 2015.01.26
@@ -989,7 +1026,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.download_apk_source_over.connect(self.slot_download_apk_source_over)
         self.worker_thread0.appmgr.kydroid_envrun_over.connect(self.slot_kydroid_envrun_over)
         self.worker_thread0.appmgr.apk_process.connect(self.slot_apk_status_change)
-
         #预先检测环境初始化APK_EVNRUN
         self.worker_thread0.appmgr.check_kydroid_envrun()
         # self.worker_ads = threading.Thread(target=self.auto_play_ads)
@@ -1131,7 +1167,6 @@ class SoftwareCenter(QMainWindow,Signals):
         if  self.setff is not None and  self.setff.package is not None:
             self.slot_show_app_detail(self.setff)
             # time.sleep(4)
-            self.detailScrollWidget.earn_crenshoots(self.setff) #add dengan 0324
         else:
             MS = QMessageBox()
             #MS.setWindowTitle('提示')
@@ -1688,7 +1723,6 @@ class SoftwareCenter(QMainWindow,Signals):
                         card = WinCard(winstat, app, self.messageBox, self.winListWidget.cardPanel)
                         self.winListWidget.add_card(card)
                         card.show_app_detail.connect(self.slot_show_app_detail)
-                        card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
                         card.install_app.connect(self.slot_click_install)
                         card.upgrade_app.connect(self.slot_click_upgrade)
                         card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
@@ -1720,6 +1754,13 @@ class SoftwareCenter(QMainWindow,Signals):
     #         return False
     #     else:
     #         return False
+
+
+    # def taskwidget_pressevent(self,event):
+    #     if (event.button() == Qt.LeftButton):
+    #         self.setout= event.globalPos()-self.ui.taskWidget.pos()
+    # def taskwidget_moveevent(self,event):
+    #     self.ui.taskWidget.move(event.globalPos()-self.setout)
 
     def mousePressEvent(self, event):
         if(event.button() == Qt.LeftButton):
@@ -1959,8 +2000,6 @@ class SoftwareCenter(QMainWindow,Signals):
             card = NormalCard(app,self.messageBox, listWidget.cardPanel)#self.nowPage, self.prePage,
             listWidget.add_card(card)
             card.show_app_detail.connect(self.slot_show_app_detail)
-            card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
-
             card.install_app.connect(self.slot_click_install)
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
@@ -2038,8 +2077,6 @@ class SoftwareCenter(QMainWindow,Signals):
                 card = NormalCard(app, self.messageBox, listWidget.cardPanel)# self.nowPage, self.prePage,
                 listWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
-                card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
-
                 card.install_app.connect(self.slot_click_install)
                 card.upgrade_app.connect(self.slot_click_upgrade)
                 card.remove_app.connect(self.slot_click_remove)
@@ -2083,8 +2120,6 @@ class SoftwareCenter(QMainWindow,Signals):
             card = NormalCard(app, self.messageBox, self.apkListWidget.cardPanel)
             self.apkListWidget.add_card(card)
             card.show_app_detail.connect(self.slot_show_app_detail)
-            card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
-
             card.install_app.connect(self.slot_click_install)
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
@@ -2217,7 +2252,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #             item = self.ui.taskListWidget.item(i)
     #             taskitem = self.ui.taskListWidget.itemWidget(item)
     #
-    #             if taskitem.app.name == pkgname and taskitem.action == action and taskitem.ui.status.text() != "失败":
+    #             if taskitem.app.name == pkgname and taskitem.acti requests.geton == action and taskitem.ui.status.text() != "失败":
     #                 if (Globals.DEBUG_SWITCH):
     #                     print(("del_task_item: found an item",i,pkgname))
     #                 delitem = self.ui.taskListWidget.takeItem(i)
@@ -2340,7 +2375,6 @@ class SoftwareCenter(QMainWindow,Signals):
                 card = PointCard(p,self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
-                card.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
 
                 card.install_app.connect(self.slot_click_install)
                 card.install_app_rcm.connect(self.slot_click_install_rcm)
@@ -2761,8 +2795,6 @@ class SoftwareCenter(QMainWindow,Signals):
             recommend = RcmdCard(app, self.messageBox, self.recommendListWidget.cardPanel)
             self.recommendListWidget.add_card(recommend)
             recommend.show_app_detail.connect(self.slot_show_app_detail)
-            recommend.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
-
             recommend.install_app.connect(self.slot_click_install)
             recommend.rcmdcard_kydroid_envrun.connect(self.slot_goto_apkpage)
             self.apt_process_finish.connect(recommend.slot_work_finished)
@@ -3489,8 +3521,6 @@ class SoftwareCenter(QMainWindow,Signals):
                     item = ListItemWidget(app, self.messageBox,self.userAppListWidget.cardPanel)
                     self.userAppListWidget.add_card(item)
                     item.show_app_detail.connect(self.slot_show_app_detail)
-                    item.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
-
 
                     item.install_app.connect(self.slot_click_install)
                     item.upgrade_app.connect(self.slot_click_upgrade)
@@ -3561,8 +3591,6 @@ class SoftwareCenter(QMainWindow,Signals):
                     item = TransListItemWidget(allapp[appname], self.messageBox,self.userTransAppListWidget.cardPanel)
                     self.userTransAppListWidget.add_card(item)
                     item.show_app_detail.connect(self.slot_show_app_detail)
-                    item.show_app_detail.connect(self.detailScrollWidget.earn_crenshoots)#add dengnan 0324
-
             else:
                 self.ui.NoTransItemText.show()
                 self.ui.NoTransItemWidget.show()
@@ -3575,6 +3603,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.loadingDiv.stop_loading()
 
     def slot_close(self):
+        # self.setVisible(False)
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
         try:
             if self.worker_thread0.backend.check_dbus_workitem()[0] > 0 or self.worker_thread0.backend.check_uksc_is_working() == 1:
@@ -3591,13 +3620,13 @@ class SoftwareCenter(QMainWindow,Signals):
 
     def slot_exit_uksc(self):
         # for apt-daemon dbus exception, if exception occur，the uksc will not exit. so add try except
+
         try:
             self.worker_thread0.backend.clear_dbus_worklist()
             self.worker_thread0.backend.exit_uksc_apt_daemon()
         except Exception as e:
             if (Globals.DEBUG_SWITCH):
                 print((str(e)))
-
         self.dbusControler.stop()
         sys.exit(0)
 
@@ -3634,7 +3663,6 @@ class SoftwareCenter(QMainWindow,Signals):
         app = self.worker_thread0.appmgr.get_application_by_name(self.adlist[num].name)
         if app is not None and app.package is not None:
             self.slot_show_app_detail(app)
-            self.detailScrollWidget.earn_crenshoots(app)
         else:
             MS = QMessageBox()
             #MS.setWindowTitle('提示')
@@ -3667,8 +3695,6 @@ class SoftwareCenter(QMainWindow,Signals):
         app.status = PkgStates.UNINSTALL
         self.slot_goto_unpage()
         self.slot_show_app_detail(app)
-        self.detailScrollWidget.earn_crenshoots(app)
-
 
     def slot_show_app_detail(self, app, btntext='', ishistory=False):
         # self.reset_nav_bar()
@@ -3679,6 +3705,12 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnCloseDetail.setVisible(True)
         self.hide_headdetail_all_control()
         self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
+        self.worker_thread2=MY_Thread(app, self.detailScrollWidget)
+        self.worker_thread2.start()
+        self.worker_thread3 = Dowload_Thread(app.name, self.detailScrollWidget)
+        self.worker_thread3.start()
+        # self.detailScrollWidget.detailWidget.show()
+        # self.worker_thread0.appmgr.screnn.connect(self.detailScrollWidget.earn_crenshoots)
 
     def slot_show_deb_detail(self, path):
         self.reset_nav_bar()
@@ -3829,8 +3861,10 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.submit_rating(app_name, rating)
 
     def slot_submit_downloadcount(self,app_name):
-        self.worker_thread0.appmgr.submit_downloadcount(app_name)
-
+        # self.worker_thread0.appmgr.submit_downloadcount(app_name)
+        self.worker_thread4= Ask_server(app_name)
+        self.worker_thread4.start()
+        self.worker_thread4.appmgr.submit_download_over.connect((self.detailScrollWidget.slot_app_downloadcont))
     def slot_click_cancel(self, app, action):
         if hasattr(app, "name"):
             if (Globals.DEBUG_SWITCH):

@@ -42,16 +42,17 @@ class LoadingDiv(QWidget):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
+
         self.setProperty("doNotBlur",True)
         self.setProperty("blurRegion",QRegion(QRect(0,0,1,1)))
 
-        # self.switchTimer = QTimer(self)
-        # self.switchTimer.timeout.connect(self.slot_switch_animation_step)
+        self.switchTimer = QTimer(self)
+        self.switchTimer.timeout.connect(self.slot_switch_animation_step)
 
         #self.setWindowTitle("银河麒麟软件商店")
         self.setWindowTitle(_("Galaxy kylin softare store"))
 
-        # self.load_png()
+        self.load_png()
 
         # launch loading
         if(parent == None):
@@ -66,10 +67,10 @@ class LoadingDiv(QWidget):
             self.setGeometry(0, 0, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
 
 
-        self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loadgif.gif")
+        # self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loadgif.gif")
         self.loadinggif = QLabel(self)
         self.loadinggif.setGeometry(Globals.MAIN_WIDTH / 2 - 350 / 2, Globals.MAIN_HEIGHT / 2 - 350 / 2, 350, 350)
-        self.loadinggif.setMovie(self.gif)
+        # self.loadinggif.setMovie(self.gif)
 
 
         # self.loadingtext = QLabel(self)
@@ -78,38 +79,39 @@ class LoadingDiv(QWidget):
         self.raise_()
         self.hide()
 
-    # def load_png(self):
-    #     for i in range(1, 18):
-    #         img = QPixmap("res/loading/" + str(i) + ".png")
-    #         self.ngif.append(img)
-    #
-    # def slot_switch_animation_step(self):
-    #     if(self.currentpage == 17):
-    #         self.currentpage = 1
-    #
-    #     self.loadinggif.setPixmap(self.ngif[self.currentpage])
-    #
-    #     self.currentpage = self.currentpage + 1
+    def load_png(self):
+        for i in range(1, 60):
+            img = QPixmap("res/loading/" + str(i) + ".png")
+            self.ngif.append(img)
 
-    # def start_loading(self):
-    #     # self.loadingtext.setText(loadingText)
-    #     self.currentpage = 0
-    #     self.switchTimer.start(200)
-    #     self.show()
-    #
-    # def stop_loading(self):
-    #     self.switchTimer.stop()
-    #     self.hide()
-    # def set_paintEvent(self, event):
-    #     paint=QPainter(self)
-    #     paint.fillRect(self.rect(),QColor(0,0,0,0))
+    def slot_switch_animation_step(self):
+        if(self.currentpage == 59):
+            self.currentpage = 1
+
+        self.loadinggif.setPixmap(self.ngif[self.currentpage])
+
+        self.currentpage = self.currentpage + 1
+
     def start_loading(self):
-        self.gif.start()
+        # self.loadingtext.setText(loadingText)
+        self.currentpage = 0
+        self.switchTimer.start(60)
         self.show()
 
     def stop_loading(self):
-        self.gif.stop()
+        self.switchTimer.stop()
         self.hide()
+    # def set_paintEvent(self, event):
+    #     paint=QPainter(self)
+    #     paint.fillRect(self.rect(),QColor(0,0,0,0))
+
+    # def start_loading(self):
+    #     self.gif.start()
+    #     self.show()
+    #
+    # def stop_loading(self):
+    #     self.gif.stop()
+    #     self.hide()
 
 
 class MiniLoadingDiv(QWidget):

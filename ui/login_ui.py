@@ -29,6 +29,7 @@ class Ui_Login_ui(object):
         self.sourceWidget = QWidget(Login_ui)
         self.sourceWidget.setGeometry(QtCore.QRect(0, 0, 442, 320))
         self.sourceWidget.setObjectName(_fromUtf8("sourceWidget"))
+        self.sourceWidget.setStyleSheet(".QWidget#sourceWidget{border:1px solid #cccccc;background-color:#ffffff;border-radius:6px;}")
         self.topWidget = QWidget(self.sourceWidget)
         self.topWidget.setGeometry(QtCore.QRect(1, 1, 440,49))
         self.topWidget.setObjectName(_fromUtf8("top"))

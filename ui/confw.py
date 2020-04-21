@@ -35,12 +35,12 @@ class Ui_ConfigWidget(object):
         self.baseWidget = QWidget(ConfigWidget)
         self.baseWidget.setGeometry(QtCore.QRect(0, 0, 620, 430))
         self.baseWidget.setObjectName(_fromUtf8("baseWidget"))
-        self.baseWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #666666}")
+        self.baseWidget.setStyleSheet("QWidget#baseWidget{background-color:#f5f5f5;border:1px solid #666666;border-radius:6px;}")
 
         self.pageListWidget = QListWidget(self.baseWidget)
         self.pageListWidget.setGeometry(QtCore.QRect(0, 0,100,430))
         self.pageListWidget.setObjectName(_fromUtf8("pageListWidget"))
-        self.pageListWidget.setStyleSheet("QWidget{border:0px;}")
+        self.pageListWidget.setStyleSheet("QWidget#pageListWidget{border:0px;}")
 
         # self.pageListWidget.setStyleSheet("border:1px solid red")
         self.sourceWidget = QWidget(self.baseWidget)
