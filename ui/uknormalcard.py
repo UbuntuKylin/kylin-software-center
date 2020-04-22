@@ -33,6 +33,11 @@ class Ui_NormalCard(object):
         self.baseWidget.setGeometry(QtCore.QRect(0, 0, 200, 115))
         self.baseWidget.setObjectName(_fromUtf8("baseWidget"))
 
+        self.name = QLabel(self.baseWidget)
+        self.name.setGeometry(QtCore.QRect(68, 20, 120, 18))
+        self.name.setText(_fromUtf8(""))
+        self.name.setObjectName(_fromUtf8("name"))
+
         self.icon = QLabel(self.baseWidget)
         self.icon.setGeometry(QtCore.QRect(10, 15, 48, 48))
         self.icon.setText(_fromUtf8(""))
@@ -86,11 +91,6 @@ class Ui_NormalCard(object):
         # self.progressBarname.setGeometry(QtCore.QRect(68, 20, 120, 15))
         # self.progressBarname.setText(_fromUtf8(""))
         # self.progressBarname.setObjectName(_fromUtf8("name"))
-
-        self.name = QLabel(self.baseWidget)
-        self.name.setGeometry(QtCore.QRect(68, 20, 120, 18))
-        self.name.setText(_fromUtf8(""))
-        self.name.setObjectName(_fromUtf8("name"))
 
         self.progresslabel = QLabel(self.baseWidget)
         self.progresslabel.setGeometry(QtCore.QRect(68, 45, 35, 18))
