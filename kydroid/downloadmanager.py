@@ -145,7 +145,7 @@ class DownloadManager(threading.Thread, QObject):
     def install_desktop_file(self):
         self.software_icon = UBUNTUKYLIN_RES_ICON_PATH + self.apkInfo.pkgname + ".png"
         self.software_icon_cache = UBUNTUKYLIN_CACHE_ICON_PATH + self.apkInfo.pkgname + ".png"
-        self.default_icon = UBUNTUKYLIN_RES_PATH + "uksc.png"
+        self.default_icon = UBUNTUKYLIN_RES_PATH + "kydroid.png"
         user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
         icon_path = os.path.join(os.path.expanduser("~"), ".local", "share", "icons")
         icon_path_png = icon_path + "/" + self.apkInfo.pkgname + ".png"
