@@ -94,7 +94,7 @@ class LoadingDiv(QWidget):
 
     def start_loading(self):
         # self.loadingtext.setText(loadingText)
-        self.currentpage = 0
+        self.currentpage = 22
         self.switchTimer.start(60)
         self.show()
 
