@@ -46,10 +46,10 @@ if __name__ == "__main__":
 
     for i in range(1, db.get_doccount()):
         doc = db.get_document(i)
-        # print "pkgname : ", doc.get_value(XapianValues.PKGNAME)#包名
-        # print "appname : ", doc.get_value(XapianValues.APPNAME)#软件名（翻译后的）
-        # print "appnameuntr : ", doc.get_value(XapianValues.APPNAME_UNTRANSLATED)#软件名
-        # print "section : ", doc.get_value(XapianValues.ARCHIVE_SECTION)#所属仓库类型（main universe等）
+        print( "pkgname : ", doc.get_value(XapianValues.PKGNAME))#包名
+        print("appname : ", doc.get_value(XapianValues.APPNAME))#软件名（翻译后的）
+        print( "appnameuntr : ", doc.get_value(XapianValues.APPNAME_UNTRANSLATED))#软件名
+        print( "section : ", doc.get_value(XapianValues.ARCHIVE_SECTION))#所属仓库类型（main universe等）
         if doc.get_value(XapianValues.PKGNAME) == "p7zip-full":
             if (Globals.DEBUG_SWITCH):
                 print("categories : ", doc.get_value(XapianValues.CATEGORIES))#所属分类（多个）

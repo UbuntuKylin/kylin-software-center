@@ -54,6 +54,10 @@ class Ui_PointWidget(object):
         self.retranslateUi(PointWidget)
         QtCore.QMetaObject.connectSlotsByName(PointWidget)
 
+    #
+    #函数名:重新翻译 
+    #Function: retranslate
+    #
     def retranslateUi(self, PointWidget):
         PointWidget.setWindowTitle(_translate("PointWidget", "Form", None))
 

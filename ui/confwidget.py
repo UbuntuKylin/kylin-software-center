@@ -881,7 +881,7 @@ class ConfigWidget(QWidget,Signals):
             self.ui.icon_linedit2_1.setText(_("Enter a new password"))
             self.ui.icon_linedit2_1.setStyleSheet("QLabel{font-size:12px;color:#666666}")
 
-            self.ui.icon3_1.setStyleSheet("QLabel{background:url('res/step-6.p/home/prisoner/Desktop/new_kylin-software-center/162/kylin-software-center-3.0-trunk/ui/confwidget.pyng') no-repeat;}")
+            self.ui.icon3_1.setStyleSheet("QLabel{background:url('res/step-6.png') no-repeat;}")
             #self.ui.icon_linedit3_1.setText("完成")
             self.ui.icon_linedit3_1.setText(_("perfection"))
             self.ui.icon_linedit3_1.setStyleSheet("QLabel{font-size:12px;color:#666666}")

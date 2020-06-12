@@ -27,7 +27,9 @@ import os
 from models.enums import UBUNTUKYLIN_CACHE_ICON_PATH,UBUNTUKYLIN_RES_ICON_PATH,KYLIN_SYSTEM_ICON_48_PATH,UK_SYSTEM_ICON_48_PATH
 from models.globals import Globals
 
-
+#
+# 函数：获取图标地址的处理函数
+#
 def get_icon_path(app_name):
     if(os.path.isfile(KYLIN_SYSTEM_ICON_48_PATH + str(app_name) + ".png")):
         return KYLIN_SYSTEM_ICON_48_PATH + str(app_name) + ".png"

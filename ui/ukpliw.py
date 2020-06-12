@@ -59,6 +59,10 @@ class Ui_Ukpliw(object):
         self.retranslateUi(Ukpliw)
         QtCore.QMetaObject.connectSlotsByName(Ukpliw)
 
+    #
+    # 函数名:设置窗口标题
+    # Function: set window title
+    # 
     def retranslateUi(self, Ukpliw):
         Ukpliw.setWindowTitle(_translate("Ukpliw", "Form", None))
 

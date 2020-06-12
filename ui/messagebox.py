@@ -59,9 +59,17 @@ class MessageBox(QObject):
         self.alert.clicked.connect(self.alert.hide)
         self.alert.hide()
 
+    #
+    #函数名: 卸载 
+    #Function: remove
+    #
     def re_move(self):
         self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2, Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
 
+    #
+    #函数名:警告 
+    #Function: alert
+    #
     def alert_msg(self, alertText, statu = "success"):
         self.statu = statu
         self.alertTimer.stop()
@@ -73,7 +81,10 @@ class MessageBox(QObject):
         self.alert.raise_()
         self.alert.show()
         self.alertTimer.start(10)
-
+    #
+    #函数名:警告步骤 
+    #Function: alert step
+    #
     def slot_alert_step(self):
         if(self.ao < 1):
             self.ao += 0.015
@@ -89,6 +100,10 @@ class MessageBox(QObject):
             self.ay -= 2
             self.alert.move(self.alert.x(), self.ay)
 
+    #
+    #函数名:隐藏警告 
+    #Function: hide alert
+    #
     def slot_hide_alert(self):
         self.alert.hide()
         self.alertDelayTimer.stop()

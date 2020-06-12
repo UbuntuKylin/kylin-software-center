@@ -33,6 +33,11 @@ class Ui_NormalCard(object):
         self.baseWidget.setGeometry(QtCore.QRect(0, 0, 200, 115))
         self.baseWidget.setObjectName(_fromUtf8("baseWidget"))
 
+        self.name = QLabel(self.baseWidget)
+        self.name.setGeometry(QtCore.QRect(68, 20, 120, 18))
+        self.name.setText(_fromUtf8(""))
+        self.name.setObjectName(_fromUtf8("name"))
+
         self.icon = QLabel(self.baseWidget)
         self.icon.setGeometry(QtCore.QRect(10, 15, 48, 48))
         self.icon.setText(_fromUtf8(""))
@@ -82,15 +87,11 @@ class Ui_NormalCard(object):
         self.progressBarsmall.setProperty("value", 0)
         self.progressBarsmall.setTextVisible(False)
         self.progressBarsmall.setObjectName(_fromUtf8("progressBar"))
-        # self.progressBarname = QLabel(self.baseWidget)
-        # self.progressBarname.setGeometry(QtCore.QRect(68, 20, 120, 15))
-        # self.progressBarname.setText(_fromUtf8(""))
-        # self.progressBarname.setObjectName(_fromUtf8("name"))
 
-        self.name = QLabel(self.baseWidget)
-        self.name.setGeometry(QtCore.QRect(68, 20, 120, 18))
-        self.name.setText(_fromUtf8(""))
-        self.name.setObjectName(_fromUtf8("name"))
+        self.progressBarname = QLabel(self.progressBar)
+        self.progressBarname.setGeometry(QtCore.QRect(68, 20, 120, 15))
+        self.progressBarname.setText(_fromUtf8(""))
+        self.progressBarname.setObjectName(_fromUtf8("name"))
 
         self.progresslabel = QLabel(self.baseWidget)
         self.progresslabel.setGeometry(QtCore.QRect(68, 45, 35, 18))
@@ -105,9 +106,14 @@ class Ui_NormalCard(object):
         self.progressBar_icon.setObjectName(_fromUtf8("icon_progressBar"))
 
 
+
         self.retranslateUi(NormalCard)
         QtCore.QMetaObject.connectSlotsByName(NormalCard)
 
+    #
+    # 函数名:设置窗口标题
+    # Function:set window title
+    # 
     def retranslateUi(self, NormalCard):
         NormalCard.setWindowTitle(_translate("NormalCard", "Form", None))
 

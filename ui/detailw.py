@@ -399,7 +399,10 @@ class Ui_DetailWidget(object):
         self.retranslateUi(DetailWidget)
         QtCore.QMetaObject.connectSlotsByName(DetailWidget)
 
-
+    #
+    # 函数名:设置控件内容
+    # Function:set control text
+    #
     def retranslateUi(self, DetailWidget):
         DetailWidget.setWindowTitle(_translate("DetailWidget", "Form", None))
         #self.splitText1.setText(_translate("DetailWidget", "软件介绍", None))

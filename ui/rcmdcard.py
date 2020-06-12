@@ -100,7 +100,7 @@ class RcmdCard(QWidget,Signals):
 
         # self.ui.baseWidget.setStyleSheet("QWidget{border:0px;}")
         self.ui.name.setStyleSheet("QLabel{font-size:14px;color:#000000;background-color:transparent;}")
-        # self.ui.progressBarname.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;background:transparent;}")
+        self.ui.progressBarname.setStyleSheet("QLabel{font-size:14px;color:#000000;background-color:transparent;}")
         # self.ui.named.setStyleSheet("QLabel{font-size:13px;font-weight:bold;color:#666666;}")
         self.ui.size.setStyleSheet("QLabel{font-size:13px;color:#888888;background-color:transparent;}")
         self.ui.progresslabel.setStyleSheet("QLabel{font-size:13px;color:#888888;background-color:transparent;}")
@@ -140,11 +140,11 @@ class RcmdCard(QWidget,Signals):
         # add by kobe
         if self.app.displayname_cn != '' and self.app.displayname_cn is not None and self.app.displayname_cn != 'None':
             setLongTextToElideFormat(self.ui.name, self.app.displayname_cn)
-            # setLongTextToElideFormat(self.ui.progressBarname, self.app.displayname_cn)
+            setLongTextToElideFormat(self.ui.progressBarname, self.app.displayname_cn)
             # setLongTextToElideFormat(self.ui.named, self.app.displayname_cn)
         else:
             setLongTextToElideFormat(self.ui.name, self.app.displayname)
-            # setLongTextToElideFormat(self.ui.progressBarname, self.app.displayname)
+            setLongTextToElideFormat(self.ui.progressBarname, self.app.displayname)
             # setLongTextToElideFormat(self.ui.named, self.app.displayname)
         # if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
             # self.ui.description.setText(self.app.summary)

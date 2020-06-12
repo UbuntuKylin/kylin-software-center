@@ -25,6 +25,9 @@
 import configparser
 from models.apkinfo import ApkInfo
 
+#
+# 函数：获取安卓兼容源列表
+#
 def getApks():
     config = configparser.ConfigParser()
     config.read('/tmp/kydroid-sourcelist', encoding="utf-8")

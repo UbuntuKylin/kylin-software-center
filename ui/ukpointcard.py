@@ -69,6 +69,10 @@ class Ui_PointCard(object):
         self.retranslateUi(PointCard)
         QtCore.QMetaObject.connectSlotsByName(PointCard)
 
+    #
+    #函数名: 重新翻译
+    #Function: retranslate
+    #
     def retranslateUi(self, PointCard):
         PointCard.setWindowTitle(_translate("PointCard", "Form", None))
 

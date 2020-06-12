@@ -103,6 +103,9 @@ class Database:
             if (Globals.DEBUG_SWITCH):
                 print("cache xapiandb versin updated")
 
+    #
+    # 函数：获取数据库分类
+    #
     def query_categories(self):
         try:
             lock.acquire(True)
@@ -113,6 +116,9 @@ class Database:
 #        print "query_categories:",len(res),res
         return res
 
+    #
+    # 函数：获取数据库类别的app
+    #
     def query_category_apps(self, cate_name):
         al = ''
 
@@ -150,7 +156,7 @@ class Database:
                     al += ','
 
         al = al[:-1]
-        sql = "select app_name,display_name_cn from application where id in (%s) order by rating_avg DESC"
+        sql = "select app_name,display_name_cn from application where id in (%s) order by rating_avg DESC,app_name"
         try:
             lock.acquire(True)
             self.cursor.execute(sql % al)
@@ -162,6 +168,9 @@ class Database:
         #     print a[0],"    ",a[1]
         return res
 
+    #
+    # 函数：获取单个软件application表内容
+    #
     #return as (display_name, summary, description, rating_average,rating_total,review_total,download_total)
     def query_application(self,pkgname):
         try:
@@ -177,8 +186,9 @@ class Database:
         else:
             return res[0]
 
-
-
+    #
+    # 函数：获取application表所有软件名和中文名
+    #
     #return as (display_name, app_name)
     def query_applications(self):
         try:
@@ -259,6 +269,9 @@ class Database:
         return False
 
 #------------------------------add by zhangxin---------------------------------------------
+    #
+    # 函数：xapian数据库更新
+    #
     def is_xapiancachedb_need_update(self):
         xapian_srcFile = XAPIAN_DB_SOURCE_PATH
         xapian_destFile = os.path.join(UKSC_CACHE_DIR,"xapiandb")
@@ -292,7 +305,9 @@ class Database:
             else:
                 return False
 
-
+    #
+    # 函数：获取软件的评论页数
+    #
     def get_pagecount_by_pkgname(self, package_name):
         try:
             lock.acquire(True)
@@ -306,6 +321,9 @@ class Database:
                 review_total = 0
             return review_total / 10 + 1
 
+    #
+    # 函数：获取软件某页的所有评论
+    #
     def get_review_by_pkgname(self, package_name, page):
         # get application id
         try:
@@ -525,6 +543,9 @@ class Database:
             pointouts.append((app_name, rank_pointout))
         return pointouts
 
+    #
+    # 函数：获取推荐的app列表
+    #
     def get_recommend_apps(self):
         #self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
         #self.cursor.execute("select app_name,rank from application where application.rank!=0 order by rank")
@@ -566,6 +587,10 @@ class Database:
 #recommends.append(("virtualbox","4"))
 # youker-assistant gimp sogoupinyin virtualbox wine playonlinux freecad
         return recommends
+
+    #
+    # 函数：获取推荐的游戏app列表
+    #
     def get_game_apps(self):
         #self.cursor.execute("select app_name,rank_recommend from rank,application where rank_recommend!=0 and rank.aid_id=application.id order by rank_recommend")
         #self.cursor.execute("select app_name,rank from application where application.rank!=0 order by rank")
@@ -600,6 +625,9 @@ class Database:
 # youker-assistant gimp sogoupinyin virtualbox wine playonlinux freecad
         return recommends
 
+    #
+    # 函数：获取装机必备的app列表
+    #
     def get_necessary_apps(self):
         recommends = []
         recommends.append(("opera","2"))
@@ -653,7 +681,9 @@ class Database:
     #     recommends.append(("empire","12"))
     #     return recommends
 
-
+    #
+    # 函数：更新应用的平均评分
+    #
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
         try:
             lock.acquire(True)
@@ -662,6 +692,9 @@ class Database:
         finally:
             lock.release()
 
+    #
+    # 函数：更新应用的下载总数
+    #
     def update_app_downloadtotal(self, app_name,download_total=''):
         try:
             lock.acquire(True)
@@ -673,6 +706,9 @@ class Database:
         finally:
             lock.release()
 
+    #
+    # 函数：获取应用的下载总数
+    #
     def get_app_downloadtotal(self, app_name):
         try:
             lock.acquire(True)
@@ -682,6 +718,9 @@ class Database:
             lock.release()
         return res
 
+    #
+    # 函数：获取广告
+    #
     def get_advertisement(self):
         try:
             lock.acquire(True)
@@ -692,6 +731,9 @@ class Database:
 
 
     #------------add by kobe for windows replace------------
+    #
+    # 函数：获取win替换表中信息
+    #
     def search_name_and_categories_record(self):
         try:
             lock.acquire(True)
@@ -705,6 +747,9 @@ class Database:
             return res
 
     #------------add by kobe for windows replace------------
+    #
+    # 函数：根据分类获取软件信息
+    #
     def search_app_display_info(self, categories):
         try:
             lock.acquire(True)
@@ -718,6 +763,9 @@ class Database:
             return res
 
     #------------add by kobe for windows replace------------
+    #
+    # 函数：根据id获取信息
+    #
     def update_exists_data(self, exists, id):
         try:
             lock.acquire(True)
@@ -726,6 +774,9 @@ class Database:
         finally:
             lock.release()
 
+    #
+    # 函数：列表更新判断函数
+    #
     def need_do_sourcelist_update(self):
         try:
             lock.acquire(True)
@@ -737,6 +788,9 @@ class Database:
             re = item[0]
             return re
 
+    #
+    # 函数：列表更新函数
+    #
     def set_update_sourcelist_false(self):
         try:
             lock.acquire(True)
@@ -747,6 +801,9 @@ class Database:
 
 
     #-------------kydroid APK ----------------
+    #
+    # 函数：获取安卓兼容软件列表
+    #
     def query_apk_applications(self):
         try:
             lock.acquire(True)

@@ -51,6 +51,10 @@ class Ui_StarWidget(object):
         self.retranslateUi(StarWidget)
         QtCore.QMetaObject.connectSlotsByName(StarWidget)
 
+    #
+    # 函数名:设置窗口标题
+    # Function: set window title
+    # 
     def retranslateUi(self, StarWidget):
         StarWidget.setWindowTitle(_translate("StarWidget", "Form", None))
 

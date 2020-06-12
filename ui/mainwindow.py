@@ -67,15 +67,30 @@ class Ui_MainWindow(object):
         self.btnAll.setText(_fromUtf8(""))
         self.btnAll.setObjectName(_fromUtf8("btnAll"))
 
+        self.btnAll_text = QLabel(self.btnAll)
+        self.btnAll_text.setGeometry(QtCore.QRect(5,65,100,25))
+        self.btnAll_text.setText(_fromUtf8(""))
+        self.btnAll_text.setObjectName(_fromUtf8("btnAll_text"))
+
         self.btnApk = QPushButton(self.navWidget)
         self.btnApk.setGeometry(QtCore.QRect(0, 220, 110, 110))
         self.btnApk.setText(_fromUtf8(""))
         self.btnApk.setObjectName(_fromUtf8("btnApk"))
 
+        self.btnApk_text = QLabel(self.btnApk)
+        self.btnApk_text.setGeometry(QtCore.QRect(5,65,100,25))
+        self.btnApk_text.setText(_fromUtf8(""))
+        self.btnApk_text.setObjectName(_fromUtf8("btnApk_text"))
+
         self.btnUp = QPushButton(self.navWidget)
         self.btnUp.setGeometry(QtCore.QRect(0, 330, 110, 110))
         self.btnUp.setText(_fromUtf8(""))
         self.btnUp.setObjectName(_fromUtf8("btnUp"))
+
+        self.btnUp_text = QLabel(self.btnUp)
+        self.btnUp_text.setGeometry(QtCore.QRect(5,65,100,25))
+        self.btnUp_text.setText(_fromUtf8(""))
+        self.btnUp_text.setObjectName(_fromUtf8("btnUp_text"))
 
         self.btnUp_num = QLabel(self.navWidget)
         self.btnUp_num.setGeometry(QtCore.QRect(65, 358, 16, 15))
@@ -87,6 +102,11 @@ class Ui_MainWindow(object):
         self.btnUn.setGeometry(QtCore.QRect(0, 440, 110, 110))
         self.btnUn.setText(_fromUtf8(""))
         self.btnUn.setObjectName(_fromUtf8("btnUn"))
+
+        self.btnUn_text = QLabel(self.btnUn)
+        self.btnUn_text.setGeometry(QtCore.QRect(5,65,100,25))
+        self.btnUn_text.setText(_fromUtf8(""))
+        self.btnUn_text.setObjectName(_fromUtf8("btnUn_text"))
 
         # self.btnTask = QPushButton(self.navWidget)
         # self.btnTask.setGeometry(QtCore.QRect(0, 588, 80, 80))
@@ -184,25 +204,25 @@ class Ui_MainWindow(object):
 
 
         self.btnHomepage = QPushButton(self.specialcategoryWidget)
-        self.btnHomepage.setGeometry(QtCore.QRect(0, 0, 65, 22))
+        self.btnHomepage.setGeometry(QtCore.QRect(0, 0, 60, 22))
         #self.btnHomepage.setText(_fromUtf8("热门推荐"))
-        self.btnHomepage.setText(_fromUtf8(_("Hot Reco")))
+        self.btnHomepage.setText(_fromUtf8(_("Hot")))
         self.btnHomepage.setObjectName(_fromUtf8("btnHomepage"))
 
         self.btnvline = QLabel(self.specialcategoryWidget)
-        self.btnvline.setGeometry(QtCore.QRect(70, 4, 1, 14))
+        self.btnvline.setGeometry(QtCore.QRect(61, 4, 1, 14))
         self.btnvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
 
         self.btnAllsoftware = QPushButton(self.specialcategoryWidget)
-        self.btnAllsoftware.setGeometry(QtCore.QRect(76, 0, 65, 22))
+        self.btnAllsoftware.setGeometry(QtCore.QRect(62, 0, 61, 22))
         #self.btnAllsoftware.setText(_fromUtf8("全部软件"))
-        self.btnAllsoftware.setText(_fromUtf8(_("All soft")))
+        self.btnAllsoftware.setText(_fromUtf8(_("All")))
         self.btnAllsoftware.setObjectName(_fromUtf8("btnAllsoftware"))
 
         self.btnWin = QPushButton(self.specialcategoryWidget)
-        self.btnWin.setGeometry(QtCore.QRect(142, 0, 65, 22))
+        self.btnWin.setGeometry(QtCore.QRect(124, 0, 83, 22))
         #self.btnWin.setText(_fromUtf8("win替换"))
-        self.btnWin.setText(_fromUtf8(_("Win sub")))
+        self.btnWin.setText(_fromUtf8(_("Win Substitute")))
         self.btnWin.setObjectName(_fromUtf8("btnWin"))
 
         self.homepageWidget = QWidget(self.rightWidget)
@@ -801,6 +821,10 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
 
+    #
+    # 函数名:设置控件文本
+    # Function:set control text
+    # 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         #self.cbSelectAll.setText(_translate("MainWindow", "全选/取消全选", None))
@@ -852,10 +876,19 @@ class Searchcw1(QWidget):
             )
 
 
+    #
+    # 函数名:进入控件
+    # Function:enter control 
+    # 
     def enterEvent(self, QEvent):
         #print "********************"
         self.lebg.setStyleSheet("QPushButton{background-color:transparent;background-image:url('res/search-2.png');border:0px;}QPushButton:pressed{background:url('res/search-2.png');}")
         self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #0396dc;color:#999999;font-size:13px;}")
+
+    #
+    # 函数名:离开控件
+    # Function:leave control
+    # 
     def leaveEvent(self, QEvent):
         self.lebg.setStyleSheet("QPushButton{background-color:transparent;background-image:url('res/search-1.png');border:0px;}")
         self.setStyleSheet("QLineEdit{background-color:#EEEDF0;border:1px solid #CCCCCC;color:#999999;font-size:13px;}")

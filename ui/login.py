@@ -209,18 +209,35 @@ class Login(QWidget,Signals):
             self.ui.lesource_2.setText(Globals.PASSWORD)
             self.ui.checkBox_5.setChecked(True)
 
+    #
+    # 函数名:找回密码
+    # Function:find password
+    #
     def find_password_suc(self):
         self.find_password.emit()
 
 
+    #
+    # 函数名:初始化界面
+    # Function:init interface
+    #
     def ui_init(self):
         self.ui = Ui_Login_ui()
         self.ui.setupUi(self)
         # self.show()
 
+    #
+    # 函数名:点击关闭
+    # Function:click close
+    #
     def slot_click_close(self):
         self.slot_click_login()
         self.task_stop.emit("#update", "update")
+
+    #
+    # 函数名:点击登录
+    # Function:click login
+    #
     def slot_click_login(self):
         self.ui.login_linedit.show()
         self.ui.register_newuser.hide()
@@ -228,6 +245,11 @@ class Login(QWidget,Signals):
         self.ui.groupBox.show()
         self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;no-repeat center left;color:#2d8ae1}QPushButton:hover{font-size:13px;color:#2d8ae1;}")
         self.ui.btnAdd_2.setStyleSheet("QPushButton{border:0px;font-size:12px;no-repeat center left;color:#2d8ae1}QPushButton:hover{font-size:13px;color:#2d8ae1;}")
+   
+    #
+    # 函数名:添加用户
+    # Function:add user
+    #
     def slot_click_adduser(self):
         self.ui.login_linedit.hide()
         self.ui.register_newuser.show()
@@ -235,34 +257,66 @@ class Login(QWidget,Signals):
         self.ui.groupBox_2.show()
         self.ui.btnAdd_2.setStyleSheet("QPushButton{border:0px;font-size:12px;no-repeat center left;color:#2d8ae1}QPushButton:hover{font-size:13px;color:#2d8ae1;}")
         self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;no-repeat center left;color:#2d8ae1}QPushButton:hover{font-size:13px;color:#2d8ae1;}")
+    #
+    # 函数名:用户名输入
+    # Function:user name input
+    # 
     def slot_le_input(self,text):
         sourcetext = str(text)
         self.listlogin[0] = sourcetext
+
+    #
+    # 函数名:用户名输入
+    # Function:user name input
+    #
     def slot_le_input2(self,text):
         sourcetext = str(text)
         self.listlogin[1] = sourcetext
+    #
+    # 函数名:用户名输入
+    # Function:user name input
+    # 
     def slot_le_input3(self,text):
         sourcetext = str(text)
         #print "0",sourcetext
         self.listadduser[0] = sourcetext
+    #
+    # 函数名:用户名输入
+    # Function:user name input
+    # 
     def slot_le_input4(self,text):
         sourcetext = str(text)
         #print "1",sourcetext
         self.listadduser[1] = sourcetext
+
+    #
+    # 函数名:用户名输入
+    # Function:user name input
+    #
     def slot_le_input5(self,text):
         sourcetext = str(text)
         #print "2",sourcetext
         self.listadduser[2] = sourcetext
-
+    #
+    # 函数名:隐藏密码
+    # Function:oprate password
+    #
     def operate(self):
         self.ui.tips_user_password.hide()
         self.timer.stop()
 
+    #
+    # 函数名:设置延时
+    # Function:set timer
+    #
     def timer_set(self):
         self.ui.tips_user_password.show()
         self.timer.timeout.connect(self.operate)  # 计时结束调用operate()方法
         self.timer.start(2500)  # 设置计时间隔并启动
-
+    #
+    # 函数名:登录
+    # Function:login
+    # 
     def slot_login(self):
         # IN = QMessageBox()
         # IN.setWindowTitle('提示')
@@ -288,12 +342,21 @@ class Login(QWidget,Signals):
             self.ui_login.emit(self.listlogin[0],self.listlogin[1])
             #self.messageBox.alert_msg("登录成功")
             #print "xxxxxxxxxxx",res
+
+    #
+    # 函数名:清空用户密码
+    # Function:clean user password
+    #
     def clean_user_password(self):
         if self.ui.checkBox_5.isChecked():
             pass
         else:
             self.ui.lesource_2.setText(None)
 
+    #
+    # 函数名:添加用户
+    # Function:add user
+    #
     def slot_adduser(self):
         if self.ui.checkBox_4.isChecked():
             self.listadduser[3] = "developer"         
@@ -341,6 +404,10 @@ class Login(QWidget,Signals):
             self.ui.tips_user_password.setText(_("please enter your vaild email"))
             self.timer_set()
 
+    #
+    # 函数名:获取用户第一次登录
+    # Function:get user first login 
+    # 
     def slot_get_ui_first_login_over(self,res):
         res = res[0]['res']
         try:
@@ -382,6 +449,11 @@ class Login(QWidget,Signals):
             if (Globals.DEBUG_SWITCH):
                 print ("######","自动服务器异常")
 
+
+    #
+    # 函数名:点击登录之后
+    # Function:click login over
+    # 
     def slot_get_ui_login_over(self,res):
         # INO = QMessageBox()
         # INO.setWindowTitle('提示')
@@ -473,6 +545,11 @@ class Login(QWidget,Signals):
             else:
                 #self.messageBox.alert_msg("服务器异常")
                 self.messageBox.alert_msg(_("Server exception"))
+
+    #
+    # 函数名:用户注册
+    # Function:user registered
+    # 
     def slot_get_ui_adduser_over(self,res):
         res = res[0]['res']
         if (Globals.DEBUG_SWITCH):
@@ -536,7 +613,10 @@ class Login(QWidget,Signals):
             #INO.setText('服务器异常')
             INO.setText(_("Server exception"))
             INO.exec_()
-
+#
+# 函数名:主函数
+# Function:main
+# 
 def main():
     import sys
     app = QApplication(sys.argv)

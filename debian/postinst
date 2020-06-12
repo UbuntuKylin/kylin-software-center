@@ -41,7 +41,6 @@ chmod 775 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/sta
 chmod 777 /usr/share/ubuntu-kylin-software-center/backend/service/password.txt
 chmod 777 /usr/share/ubuntu-kylin-software-center/ubuntu-kylin-software-center.py
 
-
 #DEBHELPER#
 
 exit 0

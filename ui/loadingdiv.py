@@ -79,11 +79,19 @@ class LoadingDiv(QWidget):
         self.raise_()
         self.hide()
 
+    #
+    # 函数名:加载图片
+    # Function: load png
+    #
     def load_png(self):
         for i in range(1, 60):
             img = QPixmap("res/loading/" + str(i) + ".png")
             self.ngif.append(img)
-
+   
+    #
+    # 函数名:更改
+    # Function: process change
+    #
     def slot_switch_animation_step(self):
         if(self.currentpage == 59):
             self.currentpage = 1
@@ -92,12 +100,20 @@ class LoadingDiv(QWidget):
 
         self.currentpage = self.currentpage + 1
 
+    #
+    # 函数名:开始加载
+    # Function: start loading
+    #
     def start_loading(self):
         # self.loadingtext.setText(loadingText)
-        self.currentpage = 0
+        self.currentpage = 22
         self.switchTimer.start(60)
         self.show()
-
+   
+    #
+    # 函数名:停止加载
+    # Function: stop loading
+    #
     def stop_loading(self):
         self.switchTimer.stop()
         self.hide()
@@ -144,11 +160,19 @@ class MiniLoadingDiv(QWidget):
         # self.loadingtext.setAlignment(Qt.AlignCenter)
         self.raise_()
         self.hide()
-
+   
+ #
+    # 函数名:开始加载
+    # Function: start loading
+    #
     def start_loading(self):
         self.gif.start()
         self.show()
 
+    #
+    # 函数名:停止加载
+    # Function: stop loading
+    #
     def stop_loading(self):
         self.gif.stop()
         self.hide()

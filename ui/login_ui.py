@@ -286,6 +286,10 @@ class Ui_Login_ui(object):
         self.retranslateUi(Login_ui)
         QtCore.QMetaObject.connectSlotsByName(Login_ui)
 
+    #
+    # 函数名:设置窗口标题
+    # Function:set window title
+    # 
     def retranslateUi(self, Login_ui):
         Login_ui.setWindowTitle(_translate("Login_ui", "Form", None))
 

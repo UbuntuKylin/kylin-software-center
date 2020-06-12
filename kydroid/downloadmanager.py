@@ -32,13 +32,15 @@ from models.enums import KYDROID_SOURCE_SERVER, KYDROID_DOWNLOAD_PATH, Signals, 
 import threading
 from models.globals import Globals
 
+#
+# 函数：下载源列表文件
+#
 def download_sourcelist():
     slurl = os.path.join(KYDROID_SOURCE_SERVER, 'kydroid-sourcelist')
     sllocal = os.path.join('/tmp', 'kydroid-sourcelist')
 
     if not os.path.exists(sllocal):
         request.urlretrieve(slurl, sllocal)
-
 
 class DownloadManager(threading.Thread, QObject):
     apkpath = ""
@@ -59,6 +61,9 @@ class DownloadManager(threading.Thread, QObject):
     def run(self):
         self.download_apk(self.apkpath)
 
+    #
+    # 函数：下载进度
+    #
     def download_schedule(self, a, b, c):
         percent = a * b / self.size * 100
         # self.appmgr.normalcard_progress_change.emit(self.appname, percent, AppActions.DOWNLOADAPK)
@@ -66,6 +71,9 @@ class DownloadManager(threading.Thread, QObject):
             self.percent_num += 5
             self.appmgr.apk_process.emit(self.appname, 'fetch', AppActions.INSTALL, int(percent), 'downloading apk file')
 
+    #
+    # 函数：下载安卓兼容应用
+    #
     def download_apk(self, apkpath):
         apkurl = os.path.join(KYDROID_SOURCE_SERVER, apkpath)
         filename = apkpath.split('/')[-1]
@@ -102,9 +110,9 @@ class DownloadManager(threading.Thread, QObject):
                 print("APK install failed.")
             self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.INSTALL, -1, 'install apk failed')
 
-
-
-
+    #
+    # 函数：安装图标和desktop文件
+    #
     # tmp目录下创建desktop文件，再转移到个人目录
     def install_icon_desktop(self):
         # 创建desktop文件
@@ -145,7 +153,7 @@ class DownloadManager(threading.Thread, QObject):
     def install_desktop_file(self):
         self.software_icon = UBUNTUKYLIN_RES_ICON_PATH + self.apkInfo.pkgname + ".png"
         self.software_icon_cache = UBUNTUKYLIN_CACHE_ICON_PATH + self.apkInfo.pkgname + ".png"
-        self.default_icon = UBUNTUKYLIN_RES_PATH + "uksc.png"
+        self.default_icon = UBUNTUKYLIN_RES_PATH + "kydroid.png"
         user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
         icon_path = os.path.join(os.path.expanduser("~"), ".local", "share", "icons")
         icon_path_png = icon_path + "/" + self.apkInfo.pkgname + ".png"

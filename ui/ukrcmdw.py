@@ -54,6 +54,10 @@ class Ui_UKrcmdw(object):
         self.retranslateUi(UKrcmdw)
         QtCore.QMetaObject.connectSlotsByName(UKrcmdw)
 
+    #
+    # 函数名:设置控件内容
+    # Function:set control text
+    # 
     def retranslateUi(self, UKrcmdw):
         UKrcmdw.setWindowTitle(_translate("UKrcmdw", "Form", None))
         #self.btn.setText(_translate("UKrcmdw", "下载", None))

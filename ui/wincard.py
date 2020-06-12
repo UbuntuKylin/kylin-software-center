@@ -228,6 +228,10 @@ class WinCard(QWidget,Signals):
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
 
+    #
+    # 函数名:初始化界面
+    # Function:init interface
+    # 
     def ui_init(self):
         self.ui = Ui_WinCard()
         self.ui.setupUi(self)
@@ -283,6 +287,10 @@ class WinCard(QWidget,Signals):
     #             self.ui.detailWidget.move(0, -88)
     #             self.ui.baseWidget.move(0, 0)
 
+    #
+    # 函数名:点击控件
+    # Function:click control
+    # 
     def slot_btn_click(self):
         if self.winstat.app_name == 'wine-qq':
             webbrowser.open_new_tab('http://www.ubuntukylin.com/ukylin/forum.php?mod=viewthread&tid=7688&extra=page%3D1')
@@ -317,6 +325,10 @@ class WinCard(QWidget,Signals):
                     self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
 
     # kobe 1106
+    #
+    # 函数名:控件状态改变
+    # Function:change control status
+    # 
     def slot_change_btn_status(self, pkgname, status):
         if hasattr(self.app,"name"):
             if self.app.name == pkgname:
@@ -344,10 +356,18 @@ class WinCard(QWidget,Signals):
                 print("self.app is None in wincard")
 
 
+    #
+    # 函数名:显示应用详情界面
+    # Function:show app detail
+    # 
     def slot_emit_detail(self):
         if(self.app != None):
             self.show_app_detail.emit(self.app)
 
+    #
+    # 函数名:工作完成
+    # Function:work finished
+    # 
     def slot_work_finished(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
@@ -389,6 +409,10 @@ class WinCard(QWidget,Signals):
                         self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
                         # self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/wincard-run-border.png');}")
 
+    #
+    # 函数名:取消工作
+    # Function:cancel work
+    # 
     def slot_work_cancel(self, pkgname, action):
         if self.app is not None:
             if self.app.name == pkgname:
@@ -436,11 +460,20 @@ class DataModel():
         self.appmgr = appmgr
         self.category_list = []#win替换分类在xp数据表中的所有分类列表，无重复
 
+
+    #
+    # 函数名:初始化数据模块
+    # Function:init data model
+    # 
     def init_data_model(self):
         db_list = self.appmgr.search_name_and_categories_record()
         for line in db_list:
             if line[2] not in self.category_list:
                 self.category_list.append(line[2])
 
+    #
+    # 函数名:获取win替换的分类列表
+    # Function:get win category list
+    # 
     def get_win_category_list(self):
         return self.category_list

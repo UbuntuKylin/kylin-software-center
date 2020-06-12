@@ -72,6 +72,10 @@ data_files=[
     # ('../etc/xdg/autostart/',['ubuntu-kylin-software-center-autostart.desktop']),
     ]
 
+#
+# 函数名:找.mo文件
+# Function: find .mo file
+# 
 def find_mo_files():
     data_files = []
     for mo in glob.glob(os.path.join(PO_DIR, '*', 'ubuntu-kylin-software-center.mo')):

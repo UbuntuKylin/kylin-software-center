@@ -27,8 +27,11 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.enums import Signals
-
-
+import gettext
+gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+gettext.textdomain("ubuntu-kylin-software-center")
+_ = gettext.gettext
+set_num=0
 class CategoryBar(QWidget,Signals):
 
     categorycount = 0
@@ -52,15 +55,26 @@ class CategoryBar(QWidget,Signals):
         # self.btnvline = QLabel(self)
         # self.btnvline.setGeometry(62, 0, 1, 28)
 
-
+    #
+    # 函数名:进入控件
+    # Function:enter control
+    #
     def enterEvent(self, event):
         # print "enter"
         pass
 
+    #
+    # 函数名:离开控件
+    # Function:leave control
+    #
     def leaveEvent(self, event):
         # print "leave"
         pass
 
+    #
+    # 函数名:初始化分类
+    # Function:init categories
+    #
     def init_categories(self, cdata):
         cat_list = sorted(iter(cdata.items()),
                         key=lambda x: x[1].index,
@@ -76,10 +90,13 @@ class CategoryBar(QWidget,Signals):
             if(category.visible == True):
                 self.add_category(category)
 
+    #
+    # 函数名:添加分类
+    # Function:add category
+    #
     def add_category(self, category):
         btnCategory = CategoryButton(category.category_name, category.display_name, self.categoryPanel)
         self.btnGroup.addButton(btnCategory)
-
         x = self.categorycount * (self.itemwidth + self.categoryspacing)
         btnCategory.move(x, 0)
 
@@ -89,24 +106,43 @@ class CategoryBar(QWidget,Signals):
             return
         # btnvline = CategoryLable(self.categoryPanel)
         # btnvline.move(x+57, 7)
-#        btnvline.move(x-5, 7)
+        # btnvline.move(x-5, 7)
 
+    #
+    # 函数名:控件左侧
+    # Function:control left
+    #
     def scrollToLeft(self):
         pass
 
+    #
+    # 函数名:控件右侧
+    # Function:control right
+    #
     def scrollToRight(self):
         pass
 
-    # count the categories
+
+    #
+    # 函数名:分类数量
+    # Function:count the categories
+    #
     def count(self):
         return self.categorycount
 
-    # remove all item
+    #
+    # 函数名:删除item
+    # Function:remove item
+    #
     def clear(self):
         categories = self.categoryPanel.children()
         for category in categories:
             sip.delete(category)
 
+    #
+    # 函数名:点击控件
+    # Function:click control
+    #
     def slot_btn_clicked(self, btn):
         btns = self.btnGroup.buttons()
         for b in btns:
@@ -119,6 +155,10 @@ class CategoryBar(QWidget,Signals):
         self.click_categoy.emit(category, False)
 
     # add by kobe
+    #
+    # 函数名:重置类别栏
+    # Function:reset categorybar
+    #
     def reset_categorybar(self):
         # self.categorytab.hide()
         # self.categorytab.setStyleSheet("QLabel{background-image:url('res/categorytab.png');background-position:center;}")
@@ -141,8 +181,28 @@ class CategoryButton(QPushButton):
 
         self.category_name = categoryname
         self.display_name = displayname
-        self.setText(self.display_name)
-
+        if displayname=="特色":
+            self.setText(_("Feature"))
+        elif displayname=="办公":
+            self.setText(_("Office"))
+        elif displayname=="开发":
+            self.setText(_("Develp"))
+        elif displayname=="图像":
+            self.setText(_("Image"))
+        elif displayname=="影音":
+            self.setText(_("Audio"))
+        elif displayname=="网络":
+            self.setText(_("Net"))
+        elif displayname=="游戏":
+            self.setText(_("Game"))
+        elif displayname=="教育":
+            self.setText(_("Edu"))
+        elif displayname == "社交":
+            self.setText(_("Social"))
+        elif displayname == "系统":
+            self.setText(_("System"))
+        elif displayname == "其它":
+            self.setText(_("Other"))
         self.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:background-color:#f5f5f5;} QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;} QPushButton:pressed{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
 
 class CategoryLable(QLabel):

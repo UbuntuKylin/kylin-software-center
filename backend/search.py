@@ -190,6 +190,9 @@ class StoreDatabase(GObject.GObject):
             xapiandb.add_database(db)
         return xapiandb
 
+    #
+    # 函数：获取新的xapian解析内容
+    #
     def _get_new_xapian_parser(self):
         xapian_parser = xapian.QueryParser()
         xapian_parser.set_database(self.xapiandb)
@@ -260,11 +263,13 @@ class StoreDatabase(GObject.GObject):
             self._timeout_id = None
         self._timeout_id = GLib.timeout_add(500, self.reopen)
 
+    #
+    # 函数：添加xapian数据库
+    #
     def add_database(self, database):
         self._additional_databases.append(database)
         self.xapiandb.add_database(database)
         self.reopen()
-
 
     def reopen(self):
         """ reopen the database """

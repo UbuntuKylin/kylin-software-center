@@ -59,14 +59,19 @@ class CardWidget(QWidget):
              QScrollBar::down-arrow:vertical{background-color:yellow;}\
              QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
 
-    # calculate card number in one page in current screen resolution
+    #
+    # 函数名: 以当前屏幕分辨率计算一页中的卡号
+    # Function: calculate card number in one page in current screen resolution
+    #
     def calculate_software_step_num(self):
         number_per_row = (self.width() + self.cardspacing) / (self.itemwidth + self.cardspacing)
         number_per_column = (self.height() + self.cardspacing) / (self.itemheight + self.cardspacing)
         Globals.SOFTWARE_STEP_NUM = number_per_row * number_per_column + number_per_row
         # print "re calculate SOFTWARE_STEP_NUM == ", Globals.SOFTWARE_STEP_NUM
-
-    # calculate data
+    #
+    # 函数名：计算数据
+    # Function: calculate data
+    #
     def calculate_data(self):
         # the 'QScrollArea' inside area is 1px smaller than 'QWidget', fix it.
         self.scrollArea.setGeometry(-1, -1, self.width() + 2, self.height() + 2)
@@ -74,6 +79,10 @@ class CardWidget(QWidget):
 
         self.number_per_row = (self.width() + self.cardspacing) / (self.itemwidth + self.cardspacing)
 
+    #
+    # 函数名:设置卡片
+    # Function:reload cards
+    #
     def reload_cards(self):
         self.calculate_data()
 
@@ -84,6 +93,10 @@ class CardWidget(QWidget):
 
         self.cardcount = self.count()
 
+    #
+    # 函数名:添加卡
+    # Function:add card
+    #
     def add_card(self, card):
         x = int(self.cardcount % int(self.number_per_row)) * (self.itemwidth + self.cardspacing)
         y = int(self.cardcount / int(self.number_per_row)) * (self.itemheight + self.cardspacing)
@@ -96,19 +109,33 @@ class CardWidget(QWidget):
         card.move(x, y)
         self.cardcount = self.cardcount + 1
 
+    #
+    # 函数名:滚动条
+    # Function:verticalScrollBar
+    #
     def verticalScrollBar(self):
         return self.scrollArea.verticalScrollBar()
 
+    #
+    # 函数名:设置滚动条起始位置
+    # Function:set verticalSscrollBar starting point
+    #
     def scrollToTop(self):
         vsb = self.scrollArea.verticalScrollBar()
         vsb.setValue(0)
 
-    # count the cards
+    #
+    # 函数名:卡片数量
+    # Function:count the cards
+    # 
     def count(self):
         cards = self.cardPanel.children()
         return len(cards)
 
-    # remove all item
+    #
+    # 函数名:删除所有的item
+    # Function:remove all item
+    # 
     def clear(self):
         cards = self.cardPanel.children()
         for card in cards:
@@ -117,6 +144,10 @@ class CardWidget(QWidget):
         self.cardPanel.setGeometry(0, 0, self.width(), self.height())
         self.cardcount = 0
 
+    #
+    # 函数名: 删除卡片
+    # Function:remove card
+    #
     def remove_card(self, appname):
         cards = self.cardPanel.children()
         count = len(cards)

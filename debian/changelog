@@ -1,4 +1,14 @@
-kylin-software-center (3.4.2kord) v100; urgency=medium
+ubuntu-kylin-software-center (3.5.3kord) focal; urgency=medium
+
+  * Solve the problem that the Android interface and other interfaces will
+    freeze for a few seconds when switching quickly and frequently.
+  * Fix the problem of overlapping software information when opening the deb
+    package by right-clicking and opening the software from the software store.
+  * Fixed an issue where clicking the name could not jump to the details interface.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Mon, 25 May 2020 15:02:24 +0800
+
+ubuntu-kylin-software-center (3.4.2kord) focal; urgency=medium
 
   * Use the new startup animation.
   * Automatically determine the system architecture and Android

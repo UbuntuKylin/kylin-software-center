@@ -208,12 +208,20 @@ class TaskListItemWidget(QWidget,Signals):
         # self.ui.progressBar.hide()
         self.ui.progresslabel.hide()
         self.ui.status.show()
-
+   
+    #
+    # 函数名:初始化界面
+    # Function:init the interface
+    #
     def ui_init(self):
         self.ui = Ui_TaskLIWidget()
         self.ui.setupUi(self)
         # self.show()
 
+    #
+    # 函数名:状态更改
+    # Function:change status
+    #
     def status_change(self, processtype, percent, msg):
         if(self.finish == False):
             text = ''
@@ -326,6 +334,10 @@ class TaskListItemWidget(QWidget,Signals):
                         self.ui.status.show()
                         # self.ui.progressBar.setValue(percent)
 
+    #
+    # 函数名:工作完成
+    # Function:work finished
+    #
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname and action == self.action:
             #self.ui.progressBar.setValue(100)
@@ -341,6 +353,10 @@ class TaskListItemWidget(QWidget,Signals):
             self.finish = True
             self.ui.progressBarsmall.hide()
 
+    #
+    # 函数名:点击取消
+    # Function:click cancel
+    #
     def slot_click_cancel(self):
         if(self.isdeb == True or isinstance(self.app,DebFile)):
             return

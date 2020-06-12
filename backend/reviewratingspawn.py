@@ -173,6 +173,9 @@ class RatingsAndReviwsMethod:
     #
     #     return reviews
 
+    #
+    # 函数：获取软件截图
+    #
     #return a list of screenshot file path
     @staticmethod
     def get_screenshots(kwargs,queue=None):
@@ -289,6 +292,9 @@ class RatingsAndReviwsMethod:
 
         return screenshot_path_list
 
+    #
+    # 函数：获取评分评论状态
+    #
     #return a list of ReviewRatingStat
     @staticmethod
     def get_rating_review_stats(kwargs=None,queue=None):

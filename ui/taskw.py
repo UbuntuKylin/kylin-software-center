@@ -42,6 +42,10 @@ class Ui_TaskWidget(object):
         self.retranslateUi(TaskWidget)
         QtCore.QMetaObject.connectSlotsByName(TaskWidget)
 
+    #
+    # 函数名:设置窗口标题
+    # Function:set window title
+    # 
     def retranslateUi(self, TaskWidget):
         TaskWidget.setWindowTitle(_translate("TaskWidget", "Form", None))
 

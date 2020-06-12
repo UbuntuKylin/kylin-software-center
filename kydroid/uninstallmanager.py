@@ -45,6 +45,9 @@ class UninstallManager(threading.Thread, QObject):
     def run(self):
         self.uninstall_app(self.appname)
 
+    #
+    # 函数：卸载安卓兼容应用
+    #
     def uninstall_app(self, appname):
         self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.REMOVE, 50, 'uninstall apk file')
         rtn = self.appmgr.kydroid_service.uninstall_app(appname)

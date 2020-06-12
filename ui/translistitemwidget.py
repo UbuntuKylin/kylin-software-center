@@ -142,10 +142,18 @@ class TransListItemWidget(QWidget,Signals):
                 self.ui.descriptionstatu.setStyleSheet("QLabel{background-color:transparent;font-size:13px;color:black;}")
 
 
+    #
+    # 函数名:初始化界面
+    # Function: init interface
+    # 
     def ui_init(self):
         self.ui = Ui_Uktransliw()
         self.ui.setupUi(self)
         self.show()
 
+    #
+    # 函数名:显示详情界面
+    # Function: show detail
+    # 
     def slot_emit_detail(self):
         self.show_app_detail.emit(self.app)

@@ -163,6 +163,10 @@ class PointCard(QWidget,Signals):
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
 
+    #
+    # 函数名:初始化界面
+    # Function: init interface
+    # 
     def ui_init(self):
         self.ui = Ui_PointCard()
         self.ui.setupUi(self)
@@ -206,11 +210,19 @@ class PointCard(QWidget,Signals):
     #             self.ui.detailWidget.move(-212, 0)
     #             self.ui.baseWidget.move(0, 0)
 
+    #
+    # 函数名:进入控件
+    # Function: enter control
+    # 
     def enterEvent(self, event):
         self.delayTimer.start(300)
         # self.switchDirection = 'down'
         # self.switch_animation()
 
+    #
+    # 函数名:离开控件
+    # Function: leave control
+    # 
     def leaveEvent(self, event):
         if self.delayTimer.isActive():
             self.delayTimer.stop()
@@ -219,12 +231,20 @@ class PointCard(QWidget,Signals):
             self.switchDirection = 'up'
             self.switch_animation()
 
+    #
+    # 函数名:显示延时动画
+    # Function: show delay animation
+    # 
     def slot_show_delay_animation(self):
         self.delayTimer.stop()
         self.switchDirection = 'down'
         self.switch_animation()
         self.showDelay = True
 
+    #
+    # 函数名:切换动画
+    # Function: switch animation
+    # 
     def switch_animation(self):
         if(self.switchDirection == 'down'):
             self.py = -88
@@ -235,6 +255,10 @@ class PointCard(QWidget,Signals):
             self.switchTimer.stop()
             self.switchTimer.start(12)
 
+    #
+    # 函数名:切换动画步骤
+    # Function: switch animation step
+    # 
     def slot_switch_animation_step(self):
         if(self.switchDirection == 'down'):
             if(self.py < 0):
@@ -255,6 +279,10 @@ class PointCard(QWidget,Signals):
                 self.ui.detailWidget.move(0, -88)
                 self.ui.baseWidget.move(0, 0)
 
+    #
+    # 函数名:点击按钮
+    # Function: click button
+    # 
     def slot_btn_click(self):
         #if(self.ui.btn.text() == "启动"):
         if (self.ui.btn.text() == _("Start")):
@@ -270,6 +298,10 @@ class PointCard(QWidget,Signals):
             self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
 
     # kobe 1106
+    #
+    # 函数名:更改控件状体
+    # Function: echange button status
+    # 
     def slot_change_btn_status(self, pkgname, status):
         if self.app.name == pkgname:
             if status == PkgStates.INSTALLING:
@@ -294,9 +326,17 @@ class PointCard(QWidget,Signals):
                 self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-up-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-up-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-up-btn-3.png');}")
                 self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-up-border.png');}")
 
+    #
+    # 函数名:显示详情界面
+    # Function: show detail
+    # 
     def slot_emit_detail(self):
         self.show_app_detail.emit(self.app)
 
+    #
+    # 函数名:工作完成
+    # Function: work finished
+    # 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
             if action in (AppActions.INSTALL,AppActions.INSTALLDEBFILE):
@@ -337,6 +377,10 @@ class PointCard(QWidget,Signals):
                     self.ui.btn.setStyleSheet("QPushButton{color:white;border:0px;background-image:url('res/ncard-run-btn-1.png');}QPushButton:hover{border:0px;background-image:url('res/ncard-run-btn-2.png');}QPushButton:pressed{border:0px;background-image:url('res/ncard-run-btn-3.png');}")
                     self.ui.btnDetail.setStyleSheet("QPushButton{border:0px;background-image:url('res/ncard-run-border.png');}")
 
+    #
+    # 函数名:取消任务
+    # Function: cancel work
+    # 
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:

@@ -63,7 +63,6 @@ LOG = logging.getLogger(__name__)
 class UnimplementedError(Exception):
     pass
 
-
 class ExecutionTime(object):
     """
     Helper that can be used in with statements to have a simple

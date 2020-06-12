@@ -64,10 +64,22 @@ kydroid_source = {
         "arm64":"http://archive.kylinos.cn/kylin/kydroid/3/arm64/"
     }
 }
+
+#判断和兼容安卓兼容版本
+if(os.path.isfile('/usr/share/kydroid/kydroid.conf')): # kydroid3和之后版本
+    KYDROID_VERSION = "kydroid"
+    KYDROID_VERSION_D = "Kydroid"
+    KYDROID_CONF_PATH = "/usr/share/kydroid/kydroid.conf"
+else:
+    KYDROID_VERSION = "kydroid2"
+    KYDROID_VERSION_D = "Kydroid2"
+    KYDROID_CONF_PATH = "/usr/share/kydroid2/kydroid2.conf"
+
 try:
     arch = os.popen("dpkg --print-architecture").readline().splitlines()[0]
     kydroid_config = configparser.ConfigParser()
-    kydroid_config.read('/usr/share/kydroid2/kydroid2.conf')
+
+    kydroid_config.read(KYDROID_CONF_PATH)
     kydroid_version = kydroid_config['image']['repo']
     KYDROID_SOURCE_SERVER = kydroid_source[kydroid_version][arch]
 except:
@@ -82,7 +94,7 @@ RESOURCE_SERVER="http://archive.kylinos.cn/kylin/resources/screenshots/"
 ###############################缓存路径###############################
 
 #KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-1000-kylin/data/local/tmp"
-KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/kydroid2-" + str(os.getuid()) + "-" + str(pwd.getpwuid(os.getuid())[0]) + "/data/local/tmp"
+KYDROID_DOWNLOAD_PATH = "/var/lib/kydroid/" + KYDROID_VERSION + "-" + str(os.getuid()) + "-" + str(pwd.getpwuid(os.getuid())[0]) + "/data/local/tmp"
 KYDROID_STARTAPP_ENV = "/usr/bin/startapp start_kydroid"
 
 UKSC_CACHE_DIR = os.path.join(xdg.xdg_cache_home, "uksc")
@@ -327,6 +339,7 @@ class Signals:
 
     # check and download kydroid apk source list
     download_apk_source_over = pyqtSignal(bool)
+    download_apk_source_error = pyqtSignal(bool)
     apk_process = pyqtSignal(str, str, str, int, str)
     kydroid_envrun_over = pyqtSignal(bool)
     rcmdcard_kydroid_envrun = pyqtSignal()

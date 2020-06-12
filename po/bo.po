@@ -19,11 +19,11 @@ msgstr ""
 
 #: backend/service/appmanager.py:843
 msgid "Complete classification information acquisition"
-msgstr "获取分类信息完成"
+msgstr ""
 
 #: backend/service/appmanager.py:1076 ui/detailscrollwidget.py:1302
 msgid "Non-database select software"
-msgstr "非数据库精选软件"
+msgstr ""
 
 #: backend/ubuntu_sw.py:81
 msgid "Most helpful first"
@@ -35,20 +35,20 @@ msgstr ""
 
 #: backend/installbackend.py:81 backend/installbackend.py:100
 msgid "Initialization failed"
-msgstr "初始化失败"
+msgstr ""
 
 #: backend/installbackend.py:146 ui/normalcard.py:564 ui/listitemwidget.py:348
 #: ui/tasklistitemwidget.py:224
 msgid "downloading"
-msgstr "正在下载"
+msgstr ""
 
 #: backend/installbackend.py:165
 msgid "Operation canceled"
-msgstr "操作取消"
+msgstr ""
 
 #: backend/installbackend.py:181 backend/installbackend.py:199
 msgid "Android dbus initialization failed"
-msgstr "移动应用dbus初始化失败"
+msgstr ""
 
 #: backend/installbackend.py:309
 msgid "test"
@@ -60,11 +60,11 @@ msgstr ""
 
 #: kydroid/uninstallmanager.py:59 kydroid/kydroid_service.py:61
 msgid "Desktop"
-msgstr "桌面"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:117
 msgid "Initialization prompt"
-msgstr "初始化提示"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:118
 msgid ""
@@ -72,59 +72,59 @@ msgid ""
 "Please confirm whether\n"
 "it is installedcorrectly, ignore the software installation and \n"
 "other operations will not workPlease select:"
-msgstr "初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:251
 msgid "Galaxy Kylin Software Store"
-msgstr "麒麟软件商店"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:433 ui/login.py:113 ui/login.py:158
 msgid "Login"
-msgstr "登录"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:437
 msgid "Installation History"
-msgstr "安装历史"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:439
 msgid "My Translationed Software"
-msgstr "我的翻译软件"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:441 ui/confirmdialog.py:128
 msgid "Quit"
-msgstr "退出"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:444
 msgid "Rcd soft"
-msgstr "推荐软件"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:446
 msgid "Preq soft"
-msgstr "必备软件"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:448
 msgid "Game ent"
-msgstr "游戏娱乐"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:466
 msgid "ALL"
-msgstr "全局"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:466
 msgid "Chc"
-msgstr "精选"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:489 ubuntu-kylin-software-center.py:501
 msgid "Ha"
-msgstr "有"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:492
 msgid "Android Software"
-msgstr "款移动应用"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:506
 msgid "Soft can upgr"
-msgstr "款软件可以升级"
+msgstr ""
 
 #: ui/pointcard.py:146 ui/pointcard.py:308
 #: ui/pointcard.py:330 ui/pointcard.py:353 ui/pointcard.py:365
@@ -135,67 +135,67 @@ msgstr "款软件可以升级"
 #: ui/rcmdcard.py:596 ui/wincard.py:210 ui/wincard.py:359 ui/wincard.py:381
 #: ui/wincard.py:407
 msgid "Aldy install"
-msgstr "已安装"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:513
 msgid "Aldy Install"
-msgstr "已经安装了"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:518 ubuntu-kylin-software-center.py:530
 msgid "Soft"
-msgstr "款软件"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:525
 msgid "Search"
-msgstr "搜索到"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:537
 msgid "Cloud Saved Installation History"
-msgstr "云端保存的安装历史"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:539
 msgid "A Key Installation"
-msgstr "一键安装"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:541
 msgid ""
 "The software installed after you log in will be recorded here, there is no "
 "record at this time "
-msgstr "您登录后安装的软件会被记录在这里，目前暂无记录"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:551
 msgid "cloud saved Translation history "
-msgstr "云端保存的翻译历史"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:554
 msgid ""
 " The software translated after you log in will be recorded here, there is no "
 "record at this time "
-msgstr "您登录后翻译的软件会被记录在这里，目前暂无记录"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:658
 msgid "No DL Tasks"
-msgstr "暂无下载任务"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:757 ubuntu-kylin-software-center.py:822
 #: ubuntu-kylin-software-center.py:2395
 msgid "DL MGT"
-msgstr "下载管理"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:813
 msgid "Clean DL"
-msgstr "清空已下载"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1097 ubuntu-kylin-software-center.py:3536
 #: ui/confwidget.py:398 ui/confwidget.py:447 ui/confwidget.py:503
 #: ui/confwidget.py:542 ui/confwidget.py:577 ui/confwidget.py:622
 #: ui/login.py:490
 msgid "Prompt"
-msgstr "提示"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1099 ubuntu-kylin-software-center.py:3538
 msgid "Software source is incomplete or does not contain the software"
-msgstr "软件源不完整或不包含该软件"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1101 ubuntu-kylin-software-center.py:1423
 #: ubuntu-kylin-software-center.py:3540 ui/confwidget.py:142
@@ -204,7 +204,7 @@ msgstr "软件源不完整或不包含该软件"
 #: ui/confwidget.py:579 ui/confwidget.py:624 ui/confirmdialog.py:61
 #: ui/login.py:492
 msgid "Determine"
-msgstr "确定"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1253
 msgid ""
@@ -216,25 +216,25 @@ msgid ""
 "this by running> Software Store next time Features \n"
 " Tick no more reminders will no longer pop up prompts \n"
 " Please select:"
-msgstr "您是第一次进入系统 或 软件源发生异常\n要在系统中 安装/卸载/升级 软件，需要连接网络更新软件源\n如没有网络或不想更新，下次可通过运行>软件商店触发此功能\n勾选不再提醒将不再弹出提示\n请选择:"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1278
 msgid ""
 "Password authentication failed\n"
 "Failed to update source"
-msgstr "密码认证失败\n更新源失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1283
 msgid ""
 "Enter password timeout\n"
 "Failed to update source"
-msgstr "输入密码超时\n更新源失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1288
 msgid ""
 "An unknown error occurred\n"
 "Failed to update the source"
-msgstr "出现未知错误\n更新源失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1339
 msgid ""
@@ -243,41 +243,41 @@ msgid ""
 "Do you need to add and update it? \n"
 "Tick no more reminders and no prompt box will pop up \n"
 "Please select:"
-msgstr "您系统缺少麒麟公网软件源，将会影响软件安装\n您是否需要添加并更新？\n勾选不再提醒将不再弹出提示框\n请选择:"
+msgstr ":"
 
 #: ubuntu-kylin-software-center.py:1401
 msgid ""
 "The following software sources are too slow or temporarily inaccessible:\n"
-msgstr "以下软件源访问过慢或者暂时无法访问:\n"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1406 ubuntu-kylin-software-center.py:1420
 msgid "Warm reminder"
-msgstr "温馨提示"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1408
 msgid ""
 "The source server is too slow or inaccessible\n"
 "Some software may not be installed temporarily"
-msgstr "源服务器访问过慢或无法访问\n  部分软件暂时可能无法安装"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1412
 msgid "Confirm"
-msgstr "确认"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:1415 ui/confirmdialog.py:67
 #: ui/detailscrollwidget.py:100
 msgid "cancel"
-msgstr "取消"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:2233
 msgid "Software store has new version, whether to upgrade?"
-msgstr "软件商店有新版本，是否升级?"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:2238
 msgid ""
 "Do you really want to uninstall the software store?\n"
 "the app will close after uninstalling."
-msgstr "您真的要卸载软件商店吗?\n卸载后该应用将会关闭."
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:2846 ubuntu-kylin-software-center.py:3930
 #: ubuntu-kylin-software-center.py:3968 ubuntu-kylin-software-center.py:4019
@@ -285,7 +285,7 @@ msgstr "您真的要卸载软件商店吗?\n卸载后该应用将会关闭."
 #: ui/tasklistitemwidget.py:261 ui/tasklistitemwidget.py:279
 #: ui/tasklistitemwidget.py:291 ui/tasklistitemwidget.py:319
 msgid "perfection"
-msgstr "完成"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:2846 ubuntu-kylin-software-center.py:3941
 #: ubuntu-kylin-software-center.py:3974 ubuntu-kylin-software-center.py:3985
@@ -293,96 +293,95 @@ msgstr "完成"
 #: ubuntu-kylin-software-center.py:4070 ui/normalcard.py:609
 #: ui/listitemwidget.py:396 ui/tasklistitemwidget.py:264 ui/rcmdcard.py:448
 msgid "failure"
-msgstr "失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3005
 msgid ""
 "Missing environment \n"
 "Unable to install APP"
-msgstr "未检测到移动应用环境\n无法安装应用"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3011
 msgid ""
 "Android software source not found or\n"
 "The software source connection is abnormal！"
-msgstr "未找到移动应用源或\n软件源连接异常！"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3014
 msgid ""
 "The Android software source cannot be connected \\ nPlease check the system "
 "network！"
-msgstr "移动应用源无法连接\n请检查系统网络！"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3079
 msgid "Android environment starts abnormally, operation fails！"
-msgstr "移动应用环境启动异常，操作失败！"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3375 ubuntu-kylin-software-center.py:3469
 msgid ""
 "Network connection error\n"
 "failed to get information from server"
-msgstr "网络连接出错\n"
-       "从服务器获取信息失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3596
 msgid ""
 "Unable to obtain lock /var/lib/apt/lists/lock\n"
 " please try to update source later"
-msgstr "无法获得锁 /var/lib/apt/lists/lock\n 请稍后再尝试更新源"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3601
 msgid ""
 "An error occurred while updating the software source\n"
 "Please try to update the source later"
-msgstr "更新软件源出现异常\n请稍后再尝试更新源"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3842 ubuntu-kylin-software-center.py:3880
 msgid "Software source update failed"
-msgstr "软件源更新失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3846 ubuntu-kylin-software-center.py:3853
 #: ubuntu-kylin-software-center.py:3863 ubuntu-kylin-software-center.py:3869
 #: models/enums.py:359
 msgid "Download stopped"
-msgstr "下载停止"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3851
 msgid "Update software source completed"
-msgstr "更新软件源完成"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3855
 msgid "Software source list is empty"
-msgstr "软件源列表为空"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3866
 msgid "Source update completed"
-msgstr "源更新完成"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3873
 msgid "Source list is empty"
-msgstr "源列表为空"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3914
 msgid ""
 "Software Center upgrade completed\n"
 "Click the [OK] button to restart Software Center\n"
 "Restart will cancel the waiting task"
-msgstr "软件商店升级完成\n点击【确认】按钮重启软件商店\n重启将取消处于等待状态的任务"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3925
 msgid ""
 "Software Center installation is complete\n"
 "Click the [OK] button to restart the Software Center\n"
 "Restart will cancel the waiting task"
-msgstr "软件商店安装完成\n点击【确认】按钮重启软件商店\n重启将取消处于等待状态的任务"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3949
 msgid "Upgrade package error"
-msgstr "升级软件包出错"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3950
 msgid "Cannot find the corresponding upgrade package:"
-msgstr "找不到对应的升级包"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3950 ubuntu-kylin-software-center.py:3957
 #: ubuntu-kylin-software-center.py:3964
@@ -390,129 +389,129 @@ msgid ""
 "During the software center operation, you may have used the apt, dpkg "
 "commands in the terminal to operate the software or the software source of "
 "the system！\n"
-msgstr "在软件商店运行过程中,您可能在终端使用了apt、dpkg命令对该软件或者是系统的软件源进行了操作！\n"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3956
 msgid "Error installing package"
-msgstr "安装软件包出错"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3957
 msgid "Cannot find the corresponding installation package:"
-msgstr "找不到对应的安装包"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3963
 msgid "Error uninstalling package"
-msgstr "卸载软件包出错"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:3964
 msgid "No corresponding package found:"
-msgstr "找不到对应的软件包"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:4039
 msgid "Error installing software:"
-msgstr "安装软件出错"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:4044
 msgid "Error downloading software:"
-msgstr "下载软件出错"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:4049
 msgid "Authorization authentication failed"
-msgstr "权限认证失败"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:4053
 msgid "Error uninstalling software:"
-msgstr "卸载软件出错"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py
 msgid  "Installing or uninstalling software\nExiting now may cause software center exceptions"
-msgstr "正在安装或者卸载软件\n现在退出可能导致软件中心异常"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:4276
 msgid "Please select the software to be installed first"
-msgstr "请先选取要安装的软件"
+msgstr ""
 
 #: models/enums.py:179
 msgid "Log in to Galaxy Software Center with your Youke account."
-msgstr "使用优客账号登录软件商店"
+msgstr ""
 
 #: models/enums.py:332
 msgid "Install dependencies"
-msgstr "安装依赖包"
+msgstr ""
 
 #: models/enums.py:333
 msgid "Install local package"
-msgstr "安装本地包"
+msgstr ""
 
 #: models/enums.py:334
 msgid "Software Installation"
-msgstr "软件安装"
+msgstr ""
 
 #: models/enums.py:335
 msgid "Software uninstall"
-msgstr "软件卸载"
+msgstr ""
 
 #: models/enums.py:336
 msgid "Software upgrade"
-msgstr "软件升级"
+msgstr ""
 
 #: models/enums.py:337
 msgid "Source update"
-msgstr "源更新"
+msgstr ""
 
 #: models/enums.py:338
 msgid "Source initialization"
-msgstr "源初始化"
+msgstr ""
 
 #: models/enums.py:354
 msgid "Start..."
-msgstr "开始"
+msgstr ""
 
 #: models/enums.py:355
 msgid "Perfection!"
-msgstr "完成"
+msgstr ""
 
 #: models/enums.py:356
 msgid "Failure!"
-msgstr "失败"
+msgstr ""
 
 #: models/enums.py:357
 msgid "Processing"
-msgstr "进行中"
+msgstr ""
 
 #: models/enums.py:358
 msgid "Download begins"
-msgstr "下载开始"
+msgstr ""
 
 #: models/enums.py:360
 msgid "Download completed"
-msgstr "下载完成"
+msgstr ""
 
 #: models/enums.py:361
 msgid "download failed"
-msgstr "下载失败"
+msgstr ""
 
 #: models/enums.py:362
 msgid "Single download completed"
-msgstr "单项下载完成"
+msgstr ""
 
 #: models/enums.py:363
 msgid "Download in progress"
-msgstr "下载进行中"
+msgstr ""
 
 #: models/enums.py:364
 msgid "Download canceled"
-msgstr "下载取消"
+msgstr ""
 
 #: models/category.py:112
 msgid "Development tools"
-msgstr "开发工具"
+msgstr ""
 
 #: ui/listupdatwidget.py:71 ui/pointcard.py:115 ui/normalcard.py:138
 #: ui/listitemwidget.py:106 ui/rcmdcard.py:136 ui/wincard.py:152
 #: ui/detailscrollwidget.py:661
 msgid "unknown"
-msgstr "未知"
+msgstr ""
 
 #: ui/listupdatwidget.py:79 ui/multifunctionbtn.py:101 ui/pointcard.py:160
 #: ui/pointcard.py:322 ui/pointcard.py:347 ui/pointcard.py:379
@@ -528,7 +527,7 @@ msgstr "未知"
 #: ui/wincard.py:224 ui/wincard.py:299 ui/wincard.py:373 ui/wincard.py:399
 #: ui/multifuncbtn.py:55
 msgid "Install"
-msgstr "安装"
+msgstr ""
 
 #: ui/listupdatwidget.py:85 ui/listupdatwidget.py:169 ui/listupdatwidget.py:253
 #: ui/pointcard.py:268 ui/pointcard.py:280 ui/normalcard.py:576
@@ -537,12 +536,12 @@ msgstr "安装"
 #: ui/tasklistitemwidget.py:235 ui/rcmdcard.py:476 ui/wincard.py:187
 #: ui/wincard.py:302 ui/wincard.py:328
 msgid "Installing"
-msgstr "正在安装"
+msgstr ""
 
 #: ui/listupdatwidget.py:88 ui/normalcard.py:456 ui/listitemwidget.py:124
 #: ui/rcmdcard.py:335 ui/rcmdcard.py:348 ui/rcmdcard.py:405
 msgid "Waiting for installation"
-msgstr "等待安装"
+msgstr ""
 
 #: ui/listupdatwidget.py:97 ui/listupdatwidget.py:182 ui/listupdatwidget.py:259
 #: ui/normalcard.py:600 ui/normalcard.py:649 ui/listitemwidget.py:133
@@ -550,23 +549,23 @@ msgstr "等待安装"
 #: ui/rcmdcard.py:429 ui/rcmdcard.py:486 ui/wincard.py:194 ui/wincard.py:316
 #: ui/wincard.py:334
 msgid "Uninstalling"
-msgstr "正在卸载"
+msgstr ""
 
 #: ui/listupdatwidget.py:100 ui/normalcard.py:482 ui/normalcard.py:493
 #: ui/listitemwidget.py:136
 msgid "Waiting for uninstall"
-msgstr "等待卸载"
+msgstr ""
 
 #: ui/listupdatwidget.py:107 ui/listupdatwidget.py:176 ui/pointcard.py:294
 #: ui/normalcard.py:588 ui/listitemwidget.py:143 ui/listitemwidget.py:214
 #: ui/listitemwidget.py:326 ui/rcmdcard.py:417 ui/rcmdcard.py:497
 #: ui/wincard.py:201
 msgid "upgrading"
-msgstr "正在升级"
+msgstr ""
 
 #: ui/listupdatwidget.py:110 ui/normalcard.py:468 ui/listitemwidget.py:146
 msgid "Waiting for upgrade"
-msgstr "等待升级"
+msgstr ""
 
 #: ui/listupdatwidget.py:118 ui/listupdatwidget.py:241
 #: ui/multifunctionbtn.py:104 ui/normalcard.py:285 ui/normalcard.py:320
@@ -575,7 +574,7 @@ msgstr "等待升级"
 #: ui/normalcard.py:902 ui/listitemwidget.py:154 ui/tasklistitemwidget.py:146
 #: ui/tasklistitemwidget.py:148 ui/tasklistitemwidget.py:162 ui/wincard.py:306
 msgid "Upgrade"
-msgstr "升级"
+msgstr ""
 
 #: ui/listupdatwidget.py:127 ui/listupdatwidget.py:204
 #: ui/listupdatwidget.py:236 ui/multifunctionbtn.py:98 ui/pointcard.py:153
@@ -591,7 +590,7 @@ msgstr "升级"
 #: ui/wincard.py:294 ui/wincard.py:366 ui/wincard.py:388 ui/wincard.py:414
 #: ui/multifuncbtn.py:53
 msgid "Start"
-msgstr "启动"
+msgstr ""
 
 #: ui/listupdatwidget.py:135 ui/listupdatwidget.py:196
 #: ui/listupdatwidget.py:231 ui/multifunctionbtn.py:107 ui/normalcard.py:331
@@ -603,501 +602,501 @@ msgstr "启动"
 #: ui/tasklistitemwidget.py:136 ui/rcmdcard.py:489 ui/wincard.py:313
 #: ui/multifuncbtn.py:59
 msgid "Uninstall"
-msgstr "卸载"
+msgstr ""
 
 #: ui/listupdatwidget.py:144 ui/listupdatwidget.py:213
 #: ui/listupdatwidget.py:224
 msgid "Installation"
-msgstr "安装"
+msgstr ""
 
 #: ui/listupdatwidget.py:265 ui/normalcard.py:660 ui/listitemwidget.py:374
 #: ui/wincard.py:309 ui/wincard.py:340
 msgid "Upgrading"
-msgstr "正在升级"
+msgstr ""
 
 #: ui/multifunctionbtn.py:112
 msgid "Unable to start"
-msgstr "无法启动"
+msgstr ""
 
 #: ui/multifunctionbtn.py:115
 msgid "Unable to install"
-msgstr "无法安装"
+msgstr ""
 
 #: ui/multifunctionbtn.py:118 ui/normalcard.py:349 ui/normalcard.py:696
 #: ui/normalcard.py:906
 msgid "Unable to upgrade"
-msgstr "无法升级"
+msgstr ""
 
 #: ui/multifunctionbtn.py:121 ui/normalcard.py:365 ui/normalcard.py:922
 msgid "Unable to uninstall"
-msgstr "无法卸载"
+msgstr ""
 
 #: ui/confwidget.py:128 ui/confwidget.py:137 ui/confwidget.py:415
 #: ui/confwidget.py:519 ui/login.py:127 ui/login.py:283 ui/login.py:316
 msgid "please enter user name"
-msgstr "请输入用户名"
+msgstr ""
 
 #: ui/confwidget.py:130 ui/confwidget.py:524
 msgid "Please enter your email"
-msgstr "请输入您的邮箱"
+msgstr ""
 
 #: ui/confwidget.py:133
 msgid "Please enter a new password"
-msgstr "请输新密码"
+msgstr ""
 
 #: ui/confwidget.py:135
 msgid "Please enter new password again"
-msgstr "请再次输入新密码"
+msgstr ""
 
 #: ui/confwidget.py:140
 msgid "Next step"
-msgstr "下一步"
+msgstr ""
 
 #: ui/confwidget.py:164
 msgid "Hide ubuntu source"
-msgstr "隐藏ubuntu源"
+msgstr ""
 
 #: ui/confwidget.py:167
 msgid "Update software source"
-msgstr "更新软件源"
+msgstr ""
 
 #: ui/confwidget.py:171
 msgid "Restore default settings"
-msgstr "恢复默认设置"
+msgstr ""
 
 #: ui/confwidget.py:174 ui/confwidget.py:380 ui/confwidget.py:922
 msgid "SWS SET"
-msgstr "软件源设置"
+msgstr ""
 
 #: ui/confwidget.py:176 ui/confwidget.py:813
 msgid "User set"
-msgstr "用户设置"
+msgstr ""
 
 #: ui/confwidget.py:178 ui/confwidget.py:389 ui/confwidget.py:845
 msgid "PWD   CR"
-msgstr "密码修改找回"
+msgstr ""
 
 #: ui/confwidget.py:408 ui/login.py:289 ui/login.py:326
 msgid "Please enter the user password"
-msgstr "请输入用户密码"
+msgstr ""
 
 #: ui/confwidget.py:421 ui/confwidget.py:529
 msgid "User is not logged in Software Center"
-msgstr "用户未登录软件商店"
+msgstr ""
 
 #: ui/confwidget.py:426
 msgid "Changed user is not logged in"
-msgstr "改变身份的用户未登录"
+msgstr ""
 
 #: ui/confwidget.py:431 ui/confwidget.py:476 ui/confwidget.py:491
 #: ui/confwidget.py:569 ui/confwidget.py:590 ui/confwidget.py:616
 #: ui/confwidget.py:655 ui/login.py:438 ui/login.py:483 ui/login.py:530
 #: ui/login.py:545
 msgid "Server exception"
-msgstr "服务器异常"
+msgstr ""
 
 #: ui/confwidget.py:455
 msgid "Successfully modified"
-msgstr "修改成功"
+msgstr ""
 
 #: ui/confwidget.py:468 ui/confwidget.py:558
 msgid "User does not exist"
-msgstr "用户不存在"
+msgstr ""
 
 #: ui/confwidget.py:484
 msgid "Abnormal status"
-msgstr "身份异常"
+msgstr ""
 
 #: ui/confwidget.py:534
 msgid "Please enter login account username"
-msgstr "请输入登录帐号用户名"
+msgstr ""
 
 #: ui/confwidget.py:564
 msgid ""
 "The new password is the same as the original one, please change it again"
-msgstr "新密码与原来一致，请重新修改"
+msgstr ""
 
 #: ui/confwidget.py:594
 msgid "The passwords entered are different, please re-enter"
-msgstr "两次输入的密码不相同，请重新输入"
+msgstr ""
 
 #: ui/confwidget.py:602
 msgid "New password is empty"
-msgstr "新密码为空"
+msgstr ""
 
 #: ui/confwidget.py:607
 msgid "Reconfirm the password is empty"
-msgstr "再次确认密码为空"
+msgstr ""
 
 #: ui/confwidget.py:630
 msgid "The network is abnormal, please check the network and try again"
-msgstr "网络异常，请检查网络重试"
+msgstr ""
 
 #: ui/confwidget.py:638
 msgid "Username or email erro"
-msgstr "用户名或邮箱错误"
+msgstr ""
 
 #: ui/confwidget.py:644
 msgid "The new password is the same as the original"
-msgstr "新密码与原来一致"
+msgstr ""
 
 #: ui/confwidget.py:724 ui/confwidget.py:771
 msgid "Invalid software source"
-msgstr "无效的软件源"
+msgstr ""
 
 #: ui/confwidget.py:757
 msgid "Root authorization failed!"
-msgstr "root授权失败"
+msgstr ""
 
 #: ui/confwidget.py:760
 msgid "Added software source already exists!"
-msgstr "添加的软件源已存在"
+msgstr ""
 
 #: ui/confwidget.py:764
 msgid "Adding non-Kylin software sources is complete"
-msgstr "添加非麒麟软件源完成"
+msgstr ""
 
 #: ui/confwidget.py:767
 msgid "Adding Kylin Software Source is complete"
-msgstr "添加麒麟软件源完成"
+msgstr ""
 
 #: ui/confwidget.py:818
 msgid "Change Identity (Please log in to Software Center first)"
-msgstr "改变身份(请先登录软件商店):"
+msgstr ""
 
 #: ui/confwidget.py:821
 msgid "username"
-msgstr "用户名： "
+msgstr ""
 
 #: ui/confwidget.py:824 ui/confwidget.py:835
 msgid "User login information"
-msgstr "用户登录信息"
+msgstr ""
 
 #: ui/confwidget.py:826
 msgid "User: Developer "
-msgstr "用户为:  开发者"
+msgstr ""
 
 #: ui/confwidget.py:828
 msgid "The user last logged in was:  "
-msgstr "用户上次登录时间为：  "
+msgstr ""
 
 #: ui/confwidget.py:830 ui/confwidget.py:841
 msgid "Username:   "
-msgstr "用户名： "
+msgstr ""
 
 #: ui/confwidget.py:832
 msgid "Mailbox:    "
-msgstr "邮   箱:   "
+msgstr ""
 
 #: ui/confwidget.py:837
 msgid "User level:    "
-msgstr "用户级别为:  "
+msgstr ""
 
 #: ui/confwidget.py:839
 msgid "User last login time:   "
-msgstr "用户上次登录时间为：   "
+msgstr ""
 
 #: ui/confwidget.py:843
 msgid "Mailbox:   "
-msgstr "邮   箱:   "
+msgstr ""
 
 #: ui/confwidget.py:853 ui/confwidget.py:906 ui/confw.py:245 ui/login.py:153
 msgid "Rpwd"
-msgstr "找回密码"
+msgstr ""
 
 #: ui/confwidget.py:861 ui/confwidget.py:876 ui/confwidget.py:892
 msgid "Enter uname and email"
-msgstr "输入用户名和邮箱"
+msgstr ""
 
 #: ui/confwidget.py:866 ui/confwidget.py:881 ui/confwidget.py:897
 msgid "Enter a new password"
-msgstr "输入新密码"
+msgstr ""
 
 #: ui/confwidget.py:909
 msgid "Username:"
-msgstr "用户名:"
+msgstr ":"
 
 #: ui/confwidget.py:912
 msgid "Mailbox:"
-msgstr "邮箱:"
+msgstr ""
 
 #: ui/confirmdialog.py:118
 msgid "Software source update tips"
-msgstr "软件源更新提示"
+msgstr ""
 
 #: ui/confirmdialog.py:120
 msgid "Never remind"
-msgstr "不再提醒"
+msgstr ""
 
 #: ui/confirmdialog.py:124
 msgid "Update"
-msgstr "更新"
+msgstr ""
 
 #: ui/confirmdialog.py:126
 msgid "Don't update"
-msgstr "不更新"
+msgstr ""
 
 #: ui/pointcard.py:287
 msgid "Unstalling"
-msgstr "正在卸载"
+msgstr ""
 
 #: ui/ukrcmdw.py:60
 msgid "Download"
-msgstr "下载"
+msgstr ""
 
 #: ui/normalcard.py:381 ui/rcmdcard.py:261
 msgid "Start the Android environment"
-msgstr "初始化环境"
+msgstr ""
 
 #: ui/ranklistitemwidget.py:61
 msgid "Already installed"
-msgstr "已经安装了"
+msgstr ""
 
 #: ui/ranklistitemwidget.py:64
 msgid "Not Installed"
-msgstr "未安装"
+msgstr ""
 
 #: ui/loadingdiv.py:50
 msgid "Galaxy kylin softare store"
-msgstr "麒麟软件商店"
+msgstr ""
 
 #: ui/xpitemwidget.py:42 ui/wincard.py:179
 msgid "invalid"
-msgstr "无效"
+msgstr ""
 
 #: ui/xpitemwidget.py:78
 msgid "Please wait"
-msgstr "请稍候"
+msgstr ""
 
 #: ui/mainwindow.py:172
 msgid "Hot"
-msgstr "热门推荐"
+msgstr ""
 
 #: ui/mainwindow.py:182
 msgid "All"
-msgstr "全部软件"
+msgstr ""
 
 #: ui/mainwindow.py:188
 msgid "Win Substitute"
-msgstr "win替换"
+msgstr ""
 
 #: ui/mainwindow.py:358
 msgid "Installation history"
-msgstr "安装历史"
+msgstr ""
 
 #: ui/mainwindow.py:458
 msgid "Sorry, no application found"
-msgstr "抱歉，没有找到您想要的应用"
+msgstr ""
 
 #: ui/mainwindow.py:466
 msgid "You can select Global search in the search box"
-msgstr "您可以在搜索框选择＂全局＂搜索试试"
+msgstr ""
 
 #: ui/mainwindow.py:673
 msgid ""
 "Global search: It searches all application software under the software "
 "source. The search software may be unavailable or other quality problems."
-msgstr "全局搜索:是在软件源下搜索全部应用软件，搜索到软件可能会有不可用或者其他质量问题"
+msgstr ""
 
 #: ui/mainwindow.py:766
 msgid "Select All / Unselect All"
-msgstr "全选/取消全选"
+msgstr ""
 
 #: ui/mainwindow.py:795
 msgid "Please enter search software"
-msgstr "请输入您要搜索的软件"
+msgstr ""
 
 #: ui/translistitemwidget.py:57
 msgid "details"
-msgstr "详细信息"
+msgstr ""
 
 #: ui/translistitemwidget.py:81
 msgid "Translated"
-msgstr "翻译过"
+msgstr ""
 
 #: ui/translistitemwidget.py:83
 msgid "status"
-msgstr "状    态"
+msgstr ""
 
 #: ui/translistitemwidget.py:85
 msgid "Software name"
-msgstr "软件名"
+msgstr ""
 
 #: ui/translistitemwidget.py:87
 msgid "Introduction"
-msgstr "简    介"
+msgstr ""
 
 #: ui/translistitemwidget.py:89
 msgid "description"
-msgstr "描    述"
+msgstr ""
 
 #: ui/translistitemwidget.py:109 ui/translistitemwidget.py:124
 #: ui/translistitemwidget.py:140
 msgid "Adopted"
-msgstr "已采纳"
+msgstr ""
 
 #: ui/translistitemwidget.py:113 ui/translistitemwidget.py:128
 #: ui/translistitemwidget.py:144
 msgid "Not adopted"
-msgstr "未采纳"
+msgstr ""
 
 #: ui/translistitemwidget.py:117 ui/translistitemwidget.py:132
 #: ui/translistitemwidget.py:148
 msgid "Unreviewed"
-msgstr "待审核"
+msgstr ""
 
 #: ui/pointoutwidget.py:57
 msgid "Recommended installation"
-msgstr "推荐安装"
+msgstr ""
 
 #: ui/pointoutwidget.py:85
 msgid "Tips for next startup"
-msgstr "下次启动提示"
+msgstr ""
 
 #: ui/pointoutwidget.py:87 ui/pointoutwidget.py:128
 msgid "Install the following common software to improve the user experience"
-msgstr "安装以下常用软件  提高用户使用体验"
+msgstr ""
 
 #: ui/pointoutwidget.py:131
 msgid "Recommended software has all been updated"
-msgstr "推荐软件已经全部更新"
+msgstr ""
 
 #: ui/listitemwidget.py:301 ui/rcmdcard.py:500 ui/multifuncbtn.py:57
 msgid "upgrade"
-msgstr "升级"
+msgstr ""
 
 #: ui/confw.py:149
 msgid "NEW PW:"
-msgstr "新 密 码:"
+msgstr ""
 
 #: ui/confw.py:156
 msgid "CF     PW:"
-msgstr "确认密码:"
+msgstr ""
 
 #: ui/confw.py:255
 msgid "Your new password is set successfully"
-msgstr "您的新密码设置成功"
+msgstr ""
 
 #: ui/confw.py:264
 msgid ""
 "Remember to log in to the Software Center with a new password in the future"
-msgstr "今后将使用新密码登录软件商店，请牢记"
+msgstr ""
 
 #: ui/confw.py:273
 msgid "You can now:"
-msgstr "您现在可以："
+msgstr ""
 
 #: ui/confw.py:282 ui/login.py:109
 msgid "log in immediately"
-msgstr "立即登录"
+msgstr ""
 
 #: ui/confw.py:552
 msgid "Select all"
-msgstr "全选"
+msgstr ""
 
 #: ui/confw.py:557
 msgid "delete"
-msgstr "删除"
+msgstr ""
 
 #: ui/confw.py:597
 msgid "Software source configuration"
-msgstr "软件源配置"
+msgstr ""
 
 #: ui/tasklistitemwidget.py:189
 msgid "Unknown"
-msgstr "未知"
+msgstr ""
 
 #: ui/tasklistitemwidget.py:199
 msgid "Waiting"
-msgstr "等待中"
+msgstr ""
 
 #: ui/tasklistitemwidget.py:226 ui/tasklistitemwidget.py:252
 msgid "download"
-msgstr "下载"
+msgstr ""
 
 #: ui/tasklistitemwidget.py:250
 msgid "Running"
-msgstr "正在执行"
+msgstr ""
 
 #: ui/tasklistitemwidget.py:274
 msgid "The installation is complete"
-msgstr "安装完成"
+msgstr ""
 
 #: ui/login.py:106 ui/login.py:426
 msgid "wrong user name or password"
-msgstr "用户名或密码错误"
+msgstr ""
 
 #: ui/login.py:111 ui/login.py:160
 msgid "Reg new account"
-msgstr "注册新账号"
+msgstr ""
 
 #: ui/login.py:117
 msgid "Sign up now"
-msgstr "立即注册"
+msgstr ""
 
 #: ui/login.py:121
 msgid "Please enter your username"
-msgstr "请输入您的用户名"
+msgstr ""
 
 #: ui/login.py:124 ui/login.py:130
 msgid "Please enter the password"
-msgstr "请输入密码"
+msgstr ""
 
 #: ui/login.py:133
 msgid "Please enter the registered email"
-msgstr "请输入注册邮箱"
+msgstr ""
 
 #: ui/login.py:147
 msgid "Whether developers"
-msgstr "是否是开发者"
+msgstr ""
 
 #: ui/login.py:149
 msgid "Rmb pwd"
-msgstr "记住密码"
+msgstr ""
 
 #: ui/login.py:151
 msgid "Auto login"
-msgstr "自动登录"
+msgstr ""
 
 #: ui/login.py:155
 msgid "Soft store"
-msgstr "软件商店"
+msgstr ""
 
 #: ui/login.py:334
 msgid "Please enter user email"
-msgstr "请输入用户邮箱"
+msgstr ""
 
 #: ui/login.py:349
 msgid "please enter your vaild email"
-msgstr "请输入正确的邮箱"
+msgstr ""
 
 #: ui/login.py:407
 msgid "Network or service abnormal"
-msgstr "网络或服务异常"
+msgstr ""
 
 #: ui/login.py:417 ui/login.py:505
 msgid "Data exception"
-msgstr "数据异常"
+msgstr ""
 
 #: ui/login.py:478
 msgid "login successful"
-msgstr "登录成功"
+msgstr ""
 
 #: ui/login.py:514
 msgid "Username already exists"
-msgstr "用户名已存在"
+msgstr ""
 
 #: ui/login.py:522
 msgid "Email already exists"
-msgstr "邮箱已被注册"
+msgstr ""
 
 #: ui/login.py:537
 msgid "registration success"
-msgstr "注册成功"
+msgstr ""
 
 #: ui/singleprocessbar.py:43
 msgid "Updating software source..."
-msgstr "正在更新软件源..."
+msgstr ""
 
 #: ui/detailw.py:74
 msgid ""
@@ -1105,263 +1104,263 @@ msgid ""
 "cannot enter the input box\n"
 "Please press the Alt key in the lower left corner of the keyboard, and then "
 "click in the input box to enter"
-msgstr "在翻译或查询软件时,当点击鼠标,焦点不能进入输入框\n" "时请按下键盘左下角Alt键,然后在点击输入框进行输入"
+msgstr ""
 
 #: ui/detailw.py:332
 msgid "Software Introduction"
-msgstr "软件介绍"
+msgstr ""
 
 #: ui/detailw.py:334
 msgid "user comment"
-msgstr "用户评论"
+msgstr ""
 
 #: ui/detailw.py:336
 msgid "Software Rating"
-msgstr "软件评分"
+msgstr ""
 
 #: ui/detailscrollwidget.py:103 ui/detailscrollwidget.py:171
 msgid "Submit"
-msgstr "提交"
+msgstr ""
 
 #: ui/detailscrollwidget.py:107
 msgid ""
 "* The three columns from the top are [Software Name] [Introduction] "
 "[Description] *"
-msgstr "* 从顶部往下三栏依次为[软件名] [简介] [描述] *"
+msgstr ""
 
 #: ui/detailscrollwidget.py:110
 msgid "Introduction of the original software"
-msgstr "原软件介绍"
+msgstr ""
 
 #: ui/detailscrollwidget.py:214
 msgid "Soft Rt:"
-msgstr "软件评分"
+msgstr ""
 
 #: ui/detailscrollwidget.py:216 ui/detailscrollwidget.py:218
 #: ui/detailscrollwidget.py:1316
 msgid "Ft"
-msgstr "分"
+msgstr ""
 
 #: ui/detailscrollwidget.py:528 ui/detailscrollwidget.py:646
 msgid "Package name :"
-msgstr "软件包名 : "
+msgstr ""
 
 #: ui/detailscrollwidget.py:534
 msgid "Software version :"
-msgstr "软件版本 :"
+msgstr ""
 
 #: ui/detailscrollwidget.py:538 ui/detailscrollwidget.py:541
 msgid "Installation size :"
-msgstr "安装大小 :"
+msgstr ""
 
 #: ui/detailscrollwidget.py:548
 msgid "Dependencies to be installed"
-msgstr "需要安装的依赖包"
+msgstr ""
 
 #: ui/detailscrollwidget.py:563
 msgid "Unable to install the package"
-msgstr "无法安装该软件包"
+msgstr ""
 
 #: ui/detailscrollwidget.py:648
 msgid "Current version :"
-msgstr "当前版本 : "
+msgstr ""
 
 #: ui/detailscrollwidget.py:650
 msgid "Software source version :"
-msgstr "软件源版本 : "
+msgstr ""
 
 #: ui/detailscrollwidget.py:661 ui/detailscrollwidget.py:664
 #: ui/detailscrollwidget.py:667
 msgid "Download size :"
-msgstr "下载大小 : "
+msgstr ""
 
 #: ui/detailscrollwidget.py:677
 msgid "My rating:"
-msgstr "我的评分:"
+msgstr ""
 
 #: ui/detailscrollwidget.py:679
 msgid "  People in rating"
-msgstr "人参加评分"
+msgstr ""
 
 #: ui/detailscrollwidget.py:767 ui/detailscrollwidget.py:841
 msgid "Improve translation"
-msgstr "完善翻译"
+msgstr ""
 
 #: ui/detailscrollwidget.py:838
 msgid "translation software"
-msgstr "翻译软件"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1113
 msgid "Software name or software description cannot be empty"
-msgstr "软件名或软件介绍不能为空"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1141
 msgid "You have not translated or modified any part"
-msgstr "您未翻译或修改任何部分"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1178
 msgid "Translation submitted"
-msgstr "翻译已提交"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1181
 msgid "Submissions are too frequent, please try again later"
-msgstr "提交过于频繁，请稍后再试"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1184
 msgid ""
 "Non-database software\n"
 "This software cannot be translated temporarily"
-msgstr "非数据库中软件\n暂不能对该软件进行翻译"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1188
 msgid ""
 "Error connecting to the server\n"
 "Submit translation failed"
-msgstr "连接服务器出错\n""提交翻译失败"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1193
 msgid ""
 "Too many words translated \n"
 "Or other unknown errors"
-msgstr "翻译的字数过多\n""或其它未知错误"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1199 ui/detailscrollwidget.py:1241
 #: ui/detailscrollwidget.py:1249
 msgid "Non-database software \\ nCan't comment on this software temporarily"
-msgstr "非数据库中软件\n暂不能对该软件进行评论"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1209
 msgid "Can't post empty comments"
-msgstr "不能发表空评论"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1222
 msgid "Comment submitted"
-msgstr "评论已提交"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1232
 msgid "Tired, take some tea and rest"
-msgstr "话唠了吧，喝口茶休息一下"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1235
 msgid "Too frequent reviews of this software"
-msgstr "对本软件评论过于频繁"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1238
 msgid "Too many comments on this software"
-msgstr "对本软件评论次过多"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1244
 msgid "Server connection failed"
-msgstr "服务器连接失败"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1278
 msgid "Rating submitted"
-msgstr "评分已提交"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1281
 msgid "Scoring failed"
-msgstr "评分失败"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1292
 msgid "aberrant"
-msgstr "异常"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1294 ui/detailscrollwidget.py:1304
 msgid "Download times： "
-msgstr "下载次数 : "
+msgstr ""
 
 #: ui/detailscrollwidget.py:1307
 msgid "Download times: "
-msgstr "下载次数 : "
+msgstr ""
 
 #: ui/detailscrollwidget.py:1307
 msgid " Times"
-msgstr "次"
+msgstr ""
 
 #: ui/detailscrollwidget.py:1331
 msgid "People in rating"
-msgstr "人参加评分"
+msgstr ""
 
 #: ui//detailw.py: 376
 msgid "Pl login"
-msgstr "请登录"
+msgstr ""
 
 #: ui//detailw.py: 376
 msgid "Free reg"
-msgstr "免费注册"
+msgstr ""
 
 #: ui//detailw.py: 101
 msgid "Expand all"
-msgstr "展开全部"
+msgstr ""
 
 #: ui//detailw.py: 107
 msgid "Retract"
-msgstr "收起"
+msgstr ""
 
 #: ubuntu-kylin-software-center.py:2799
 msgid "Back"
-msgstr "返回"
+msgstr ""
 
 #: ui/detailscrollwidget.py
 msgid "\nError or missing dependencies"
-msgstr "\n包异常或软件源缺少依赖包"
+msgstr ""
 
 #ubuntu-software-center.py
 msgid "        Upgrade"
-msgstr "           升 级"
+msgstr ""
 
 #ubuntu-software-center.py
 msgid "    Storehouse"
-msgstr "           宝 库     "
+msgstr ""
 
 #ubuntu-software-center.py
 msgid "    Cell Phone"
-msgstr "           手 机"
+msgstr ""
 
 #ubuntu-software-center.py
 msgid "      Uninstall"
-msgstr "           卸 载"
+msgstr ""
 
 #categorybar.py
 msgid "Feature"
-msgstr "特色"
+msgstr ""
 
 #categorybar.py
 msgid "Office"
-msgstr "办公"
+msgstr ""
 
 #categorybar.py
 msgid "Develp"
-msgstr "开发"
+msgstr ""
 
 #categorybar.py
 msgid "Image"
-msgstr "图像"
+msgstr ""
 
 #categorybar.py
 msgid "Audio"
-msgstr "影音"
+msgstr ""
 
 #categorybar.py
 msgid "Net"
-msgstr "网络"
+msgstr ""
 
 #categorybar.py
 msgid "Game"
-msgstr "游戏"
+msgstr ""
 
 #categorybar.py
 msgid "Edu"
-msgstr "教育"
+msgstr ""
 
 #categorybar.py
 msgid "Social"
-msgstr "社交"
+msgstr ""
 
 #categorybar.py
 msgid "System"
-msgstr "系统"
+msgstr ""
 
 #categorybar.py
 msgid "Other"
-msgstr "其它"
+msgstr ""

@@ -322,6 +322,9 @@ class SilentProcess(multiprocessing.Process):
     #     url = QUrl(requestData)
     #     self.httpmodel.sendDownLoadRequest(url)
 
+    #
+    # 函数：获取新应用的图标
+    #
     def get_newer_application_icon(self):
         # get application icon last update date
         last_update_date = ''
@@ -376,8 +379,9 @@ class SilentProcess(multiprocessing.Process):
             if (Globals.DEBUG_SWITCH):
                 print("Failed to get  newer application icon")
 
-
-
+    #
+    # 函数：获取新应用的截图
+    #
     def get_newer_application_screenshots(self):
         last_update_date = ''
         try:
@@ -433,8 +437,9 @@ class SilentProcess(multiprocessing.Process):
             if (Globals.DEBUG_SWITCH):
                 print("Failed to get  newer application screenshots")
 
-
-
+    #
+    # 函数：获取新的广告
+    #
     def get_newer_application_ads(self):
         last_update_date = ''
         try:
@@ -502,6 +507,9 @@ class SilentProcess(multiprocessing.Process):
                 print("Failed to get  newer application icon")
 
     #*************************update for xapiandb***********************************#
+    #
+    # 函数：更新xapian数据库
+    #
     def update_xapiandb(self, kwargs):
         database = xapian.WritableDatabase(XAPIAN_DB_PATH, xapian.DB_OPEN)
         DB = xapian.Database(XAPIAN_DB_PATH)

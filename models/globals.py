@@ -97,6 +97,8 @@ class Globals:
     Dleft=0
     ADS_NUM=0
 
+    LINDIT=0
+
     REMOVE_SOFT = None
 
     JUMP_SCRENN=False
@@ -104,3 +106,4 @@ class Globals:
     # SQLITR_DB=''
 
     isOnline = True
+    apkpagefirst = True

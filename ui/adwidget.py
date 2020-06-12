@@ -138,6 +138,10 @@ class ADWidget(QMainWindow):
         self.adsshadow.raise_()
         self.show()
 
+    #
+    #函数名: 移动右框
+    #Function: move right
+    #
     def akg_move_right(self):
         animation = QPropertyAnimation(self.label3, b"geometry")
         animation.setDuration(3500)
@@ -149,12 +153,25 @@ class ADWidget(QMainWindow):
         if (Globals.DEBUG_SWITCH):
             print("xxxxxxxxxxxxxxxxxxxxxxxx")
         #self.admtimer.start(3000)
+
+    #
+    #函数名: 移动左框
+    #Function: move left
+    #
     def akg_move_left(self):
         pass
 
+    #
+    #函数名: 创建按钮
+    #Function: crate button
+    #
     def create_button(self, addata, parent):
         pass
 
+    #
+    #函数名: 更改按钮
+    #Function: change button
+    #
     def slot_change_button(self):
         try: 
         #self.speed = self.move_speed()
@@ -177,7 +194,10 @@ class ADWidget(QMainWindow):
         #    self.spe += 10
         self.admtimer.start(3000)
         
-#调整大小
+    #
+    #函数名: 调整大小
+    #Function: adjust size
+    #
     def resize_(self, width, height):
         if (Globals.DEBUG_SWITCH):
             print("ssssssssssssssssssssss")
@@ -224,7 +244,12 @@ class ADWidget(QMainWindow):
 #
 #        self.adsshadow.raise_()
 #        self.show()
+ 
 
+    #
+    #函数名: 创建ads
+    #Function: create ads
+    #
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
@@ -261,6 +286,10 @@ class ADWidget(QMainWindow):
 
             i += 1
 
+    #
+    #函数名: 立即更改ad
+    #Function: immediately change ad
+    #
     def slot_change_ad_immediately(self, i):
         self.adi = i
         for adb in self.adbs:
@@ -273,6 +302,10 @@ class ADWidget(QMainWindow):
         self.admtimer.stop()
         self.adtimer.start(3000)
 
+    #
+    #函数名: 更改ad
+    #Function: change ad
+    #
     def slot_change_ad(self, i):
         #self.speed = self.move_speed()
         if(len(self.adbs) == 0):
@@ -295,6 +328,10 @@ class ADWidget(QMainWindow):
 
         self.adtimer.start(3000)
 
+    #
+    #函数名: 设置延时
+    #Function:adtimer timeout
+    #
     def slot_adtimer_timeout(self):
         if(self.adi == (self.adl - 1)):
             self.adi = 0
@@ -303,6 +340,10 @@ class ADWidget(QMainWindow):
         self.adtimer.stop()
         self.slot_change_ad(self.adi)
 
+    #
+    #函数名: 更新时间
+    #Function: update admtimer
+    #
     def slot_admtimer_update(self):
         if(self.adx - self.adi * self.adwidth * -1 <= 8):
 
@@ -323,6 +364,10 @@ class ADWidget(QMainWindow):
                 self.adx = self.adi * self.adwidth * - 1
             self.adContentWidget.move(self.adx, 0)
 
+    #
+    #函数名: 
+    #Function: 
+    #
     def lock_adbs(self, flag):
         for btn in self.adbs:
             btn.setEnabled(flag)
@@ -330,6 +375,11 @@ class ADWidget(QMainWindow):
 #    def update_total_count(self,count):
 #        # self.softCount.setText(str(count))
 #        pass
+
+    #
+    #函数名: 移动speed
+    #Function: move speed
+    #
     def move_speed(self):
         #for x in xrange(0, 200, 1):
         x = 0.5
@@ -354,7 +404,10 @@ class ADButton_Background(QPushButton):
     def __init__(self, parent):
         QPushButton.__init__(self, parent)
 
-
+#
+#函数名: 主函数 
+#Function: main
+#
 def main():
     import sys
     app = QApplication(sys.argv)

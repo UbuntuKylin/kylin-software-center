@@ -91,6 +91,10 @@ class Ui_WinCard(object):
         self.retranslateUi(WinCard)
         QtCore.QMetaObject.connectSlotsByName(WinCard)
 
+    #
+    # 函数名:设置窗口标题
+    # Function: set window title
+    # 
     def retranslateUi(self, WinCard):
         WinCard.setWindowTitle(_translate("WinCard", "Form", None))
 

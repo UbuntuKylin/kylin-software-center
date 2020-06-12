@@ -214,11 +214,16 @@ class Application(BaseInfo):
         else:
             return None
 
-
+    #
+    # 函数：添加评论信息
+    #
     def add_reviews(self,page,reviewlist):
         if page not in self.reviews:
             self.reviews[page] = reviewlist
 
+    #
+    # 函数：更新软件缓存信息
+    #
     def update_cache(self, apt_cache):
         # if not apt_cache:
         #     self.package = None

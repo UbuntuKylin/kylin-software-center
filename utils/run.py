@@ -72,7 +72,9 @@ def Execute(cmd):
             print(detail)
         return False
 
-
+#
+# 函数：获取软件运行命令
+#
 def get_run_command(pkgname):
     # 对一些特殊软件单独处理
 

@@ -145,6 +145,9 @@ class UbuntuSSO(GObject.GObject):
         sso.connect("login-canceled", lambda s: self.loop.quit())
         return sso
 
+    #
+    # 函数：oautn的token同步函数
+    #
     def find_oauth_token_sync(self):
         self.oauth = None
         sso = self. _get_login_backend_and_connect()

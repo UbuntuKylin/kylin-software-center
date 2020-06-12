@@ -31,6 +31,9 @@ from models.enums import Signals
 from models.globals import Globals
 HOME_PATH = os.path.expandvars('$HOME')
 
+#
+# 函数：获取缓存目录
+#
 def generate_tmp_path(name):
     assert(isinstance(name, str))
     dest_path = HOME_PATH + "/.cache/uksc/"
@@ -39,6 +42,9 @@ def generate_tmp_path(name):
         shutil.rmtree(folder_path)
     return dest_path
 
+#
+# 函数：解压win替换的资源包
+#
 def unzip_resource(package_file):
     unziped_dir = generate_tmp_path("uk-win")
     if unziped_dir[len(unziped_dir)-1] != "/":

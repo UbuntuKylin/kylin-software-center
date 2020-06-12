@@ -24,7 +24,9 @@
 from models.globals import Globals
 
         
-
+#
+# 函数：缓存读取
+#
 def password_read():
     try:
         file_object = open('backend/service/password.txt','r')
@@ -43,7 +45,9 @@ def password_read():
     except :
         pass
                         
-
+#
+# 函数：缓存写入
+#
 def password_write(set_rem_pass,auto_login,sequence,password):
     try:
         file_object = open('backend/service/password.txt', 'w')

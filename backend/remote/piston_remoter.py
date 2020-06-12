@@ -101,6 +101,9 @@ class PistonRemoter(PistonAPI):
     default_service_root = UBUNTUKYLIN_SERVER
     default_timeout = 2
 
+    #
+    # 函数：获取所有评分接口
+    #
     @returns_json
     def get_all_ratings(self):
         gets = self._get("getallratings", scheme="http")
@@ -110,7 +113,9 @@ class PistonRemoter(PistonAPI):
             print("get_all_ratings")
         return gets
 
-
+    #
+    # 函数：获取用户评分接口
+    #
     @returns_json
     def get_user_ratings(self,user_name,app_name):
         get_ratings =self._get('getuserratings/?user_name=%s;app_name=%s' % (user_name,app_name),scheme="http")
@@ -120,6 +125,9 @@ class PistonRemoter(PistonAPI):
             print(get_ratings)
         return get_ratings
 
+    #
+    # 函数：获取下载次数统计
+    #
     @returns_json
     def get_Amount_Downloads(self,app_name):
         get_Downcont=self._get('downloadcontrol/?app_name=%s' % (app_name),scheme="http")
@@ -129,7 +137,9 @@ class PistonRemoter(PistonAPI):
             print(get_Downcont)
         return get_Downcont
 
-
+    #
+    # 函数：获取软件评论
+    #
     @returns_list_of(ReviewUK)
     def get_reviews(self, app, start, range_):
         getreviews = self._get('getreviews/?app=%s;start=%s;range=%s' % (app, start, range_), scheme="http")
@@ -137,6 +147,9 @@ class PistonRemoter(PistonAPI):
             getreviews = getreviews.decode(encoding='utf-8')
         return getreviews
 
+    #
+    # 函数：获取新的评论
+    #
     @returns_list_of(ReviewUK)
     def get_newest_review(self, app):
         start = 0
@@ -148,6 +161,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：提交软件启动记录
+    #
     @returns_json
     def submit_pingback_main(self, machine, distro, version_os, version_uksc):
         postdata = PingbackmainRequest()
@@ -162,6 +178,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：提交软件安装记录
+    #
     @returns_json
     def submit_pingback_app(self, app_name, machine, isrcm, user):
         postdata = PingbackappRequest()
@@ -178,6 +197,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：获取所有软件分类
+    #
     @returns_json
     def get_all_categories(self):
         gets = self._get("getallcategories", scheme="http")
@@ -187,6 +209,9 @@ class PistonRemoter(PistonAPI):
             print("get_all_categories")
         return gets
 
+    #
+    # 函数：获取排名和推荐
+    #
     @returns_json
     def get_all_rank_and_recommend(self):
         gets = self._get("getallrankandrecommend", scheme='http')
@@ -196,6 +221,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：获取新应用的信息
+    #
     @returns_json
     def get_newer_application_info(self, last_update_date):
         gets = self._get('getnewerapplicationinfo/?modify_time=%s' % last_update_date, scheme="http")
@@ -205,6 +233,9 @@ class PistonRemoter(PistonAPI):
             print("get_newer_application_info")
         return gets
 
+    #
+    # 函数：获取新应用的图标
+    #
     @returns_json
     def get_newer_application_icon(self, last_update_date):
         gets = self._get('getnewericon/?modify_time=%s' % last_update_date, scheme="http")
@@ -214,6 +245,9 @@ class PistonRemoter(PistonAPI):
             print("get_newer_application_icon")
         return gets
 
+    #
+    # 函数：获取新应用广告
+    #
     @returns_json
     def get_newer_application_ads(self, last_update_date):
         gets = self._get('getnewads/?modify_time=%s' % last_update_date, scheme="http")
@@ -223,6 +257,9 @@ class PistonRemoter(PistonAPI):
             print("get_newer_application_icon")
         return gets
 
+    #
+    # 函数：获取新应用的截图
+    #
     @returns_json
     def get_newer_application_screenshots(self, last_update_date):
         gets = self._get ('getsmallscreenshots/?modify_time=%s' % last_update_date, scheme="http")
@@ -233,7 +270,9 @@ class PistonRemoter(PistonAPI):
             print("get_newer_application_screenshots")
         return gets
 
-
+    #
+    # 函数：xapian数据库所有应用更新
+    #
     @returns_json
     def allapp_forxapianupdate(self):
         gets = self._get('allappforxapianupdate/?', scheme="http")
@@ -242,7 +281,10 @@ class PistonRemoter(PistonAPI):
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
-    
+
+    #
+    # 函数：xiapian数据库新增应用更新
+    #
     @returns_json
     def newerapp_for_xapianupdate(self, the_latest_update_time):
         gets = self._get('newerappforxapianupdate/?update_datetime=%s' % the_latest_update_time, scheme="http")
@@ -252,6 +294,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：获取用户安装列表
+    #
     @returns_json
     def get_user_applist(self, user):
         gets = self._get('getapplist/?user=%s' % user, scheme="http")
@@ -261,6 +306,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：获取用户翻译列表
+    #
     @returns_json
     def get_user_transapplist(self, user):
         gets = self._get('getusertranslation/?user=%s' % user, scheme="http")
@@ -270,6 +318,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：创建用户
+    #
     @returns_json
     def submit_add_user(self,username,password,email,identity):
         postdata = ADDUSERRequest()
@@ -284,6 +335,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：重置密码
+    #
     @returns_json
     def rset_user_password(self, username ,newpwd):
         #postdata = Rsetpassword()
@@ -296,6 +350,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：找回密码
+    #
     @returns_json
     def recover_user_password(self, username ,email, newpwd):
         #postdata = Reecoverpassword()
@@ -308,6 +365,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：改变用户身份
+    #
     @returns_json
     def change_user_identity(self, username ,identity):
         #postdata = Changeidentity()
@@ -319,8 +379,7 @@ class PistonRemoter(PistonAPI):
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
         return gets
- 
- 
+
     @returns_json
     def log_in_appinfo(self,username,password):
         postdata = Applogin()
@@ -342,6 +401,9 @@ class PistonRemoter(PistonAPI):
 #    default_content_type = 'application/x-www-form-urlencoded'
 #    default_service_root = UBUNTUKYLIN_SERVER
 
+    #
+    # 函数：提交应用评论
+    #
     @returns_json
     def submit_review(self, app_name, content, distroseries, language, user, user_display):
         postdata = ReviewUKRequest()
@@ -358,6 +420,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：提交翻译信息
+    #
     @returns_json
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description, user, user_display):
         postdata = AppTransinfoUKRequest()
@@ -392,6 +457,9 @@ class PistonRemoter(PistonAPI):
             gets = gets.decode(encoding='utf-8')
         return gets
 
+    #
+    # 函数：提交应用评分
+    #
     @returns_json
     def submit_rating(self, app_name, rating, user, user_display):
         postdata = RatinsUKRequest()

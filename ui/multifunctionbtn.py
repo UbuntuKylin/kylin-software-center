@@ -89,12 +89,19 @@ class MultiFunctionBtn(QWidget,Signals):
         self.ui.btnUpdate.setStyleSheet("QPushButton{font-size:14px;background:#0ad60f;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#0ad60f;border:0px;color:white;}QPushButton:pressed{background-color:#0ad60f;border:0px;color:white;}")
         self.ui.btnUninstall.setStyleSheet("QPushButton{font-size:14px;background:#ff6631;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#ff6631;border:0px;color:white;}QPushButton:pressed{background-color:#ff6631;border:0px;color:white;}")
 
-
+    #
+    # 函数名:初始化窗口
+    # Function:init window
+    # 
     def ui_init(self):
         self.ui = Ui_MultiFuncBtn()
         self.ui.setupUi(self)
         self.show()
 
+    #
+    # 函数名:设置按钮
+    # Function:set button
+    # 
     def setBtnEnabledPlus(self, btn, flag):
         btn.setEnabled(flag)
         if(flag == True):
@@ -126,7 +133,10 @@ class MultiFunctionBtn(QWidget,Signals):
                 #btn.setText("无法卸载")
                 btn.setText(_("Unable to uninstall"))
 
-    # confirm which btn on top, confirm the status of each btn
+    #
+    # 函数名:确认最前面的btn，确认每个btn的状态
+    # Function:confirm which btn on top, confirm the status of each btn
+    # 
     def reset_btns(self, app, type, debfile=None):#zx11.27
         self.debfile = debfile
         self.app = app
@@ -172,10 +182,10 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnUninstall.move(0, y)
                         # self.ui.btnUpdate.move(0, y + 82)
                         # self.ui.btnInstall.move(0, y + 123)
-                        self.ui.btnInstall.move(y, 0)
+                        self.ui.btnInstall.move(y + 324, 0)
                         self.ui.btnRun.move(y + 108, 0)
                         self.ui.btnUpdate.move(y + 216, 0)
-                        self.ui.btnUninstall.move(y + 324, 0)
+                        self.ui.btnUninstall.move(y, 0)
                     else:
                         if app.is_upgradable is True:
                             self.setBtnEnabledPlus(self.ui.btnUpdate, True)
@@ -184,9 +194,9 @@ class MultiFunctionBtn(QWidget,Signals):
                             # self.ui.btnUpdate.move(0, y)
                             #self.ui.btnUninstall.move(0, y + 41)
 
-                            self.ui.btnInstall.move(y+324, 0)
-                            self.ui.btnRun.move(y , 0)
-                            self.ui.btnUpdate.move(y + 216, 0)
+                            self.ui.btnInstall.move(y + 324, 0)
+                            self.ui.btnRun.move(y + 216, 0)
+                            self.ui.btnUpdate.move(y, 0)
                             self.ui.btnUninstall.move(y + 108, 0)
                         else:
                             self.setBtnEnabledPlus(self.ui.btnUpdate, False)
@@ -642,6 +652,10 @@ class MultiFunctionBtn(QWidget,Signals):
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)
 
 
+    #
+    # 函数名:隐藏按钮
+    # Function:hide button
+    # 
     def start_work(self):
         self.isWorking = True
 
@@ -652,6 +666,10 @@ class MultiFunctionBtn(QWidget,Signals):
 
         self.loading.start_loading()
 
+    #
+    # 函数名: 显示按钮
+    # Function: show button
+    # 
     def stop_work(self):
         self.isWorking = False
         if self.ui.btnRun.isEnabled():
@@ -665,10 +683,18 @@ class MultiFunctionBtn(QWidget,Signals):
 
         self.loading.stop_loading()
 
+    #
+    # 函数名:进入控件  
+    # Function:enter control
+    # 
     def enterEvent(self, event):
         if(self.isWorking == False):
             self.delayTimer.start(100)
 
+    #
+    # 函数名:离开控件
+    # Function:leave control
+    # 
     def leaveEvent(self, event):
         if self.delayTimer.isActive():
             self.delayTimer.stop()
@@ -678,12 +704,20 @@ class MultiFunctionBtn(QWidget,Signals):
             self.switchDirection = 'up'
             self.switch_animation()
 
+    #
+    # 函数名:显示延时动画
+    # Function:show delay animation
+    # 
     def slot_show_delay_animation(self):
         self.delayTimer.stop()
         self.switchDirection = 'down'
         self.switch_animation()
         self.showDelay = True
 
+    #
+    # 函数名:切换动画
+    # Function:switch animation
+    # 
     def switch_animation(self):
         if(self.switchDirection == 'down'):
             self.py = 40
@@ -694,6 +728,10 @@ class MultiFunctionBtn(QWidget,Signals):
             self.switchTimer.stop()
             self.switchTimer.start(12)
 
+    #
+    # 函数名:切换动画步骤
+    # Function:switch animation step
+    # 
     def slot_switch_animation_step(self):
 
         if(self.switchDirection == 'down'):
@@ -724,12 +762,20 @@ class MultiFunctionBtn(QWidget,Signals):
                 self.switchTimer.stop()
                 self.resize(self.width(), 40)
 
+    #
+    # 函数名:点击启动
+    # Function:click button run
+    # 
     def slot_click_btn_run(self):
         if (not hasattr(self.app, "run")): #or (self.ui.btnRun.clicked):#DebFile instance has no attribute 'run' when it's installing progress finished
             run.run_app(self.app.name)
         else:
             self.app.run()
 
+    #
+    # 函数名:点击安装
+    # Function:click install
+    # 
     def slot_click_btn_install(self):
         # kobe 1106
         self.app.status = PkgStates.INSTALLING
@@ -742,6 +788,10 @@ class MultiFunctionBtn(QWidget,Signals):
             self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
             self.mfb_click_install.emit(self.app)
 
+    #
+    # 函数名:点击升级
+    # Function:click update
+    # 
     def slot_click_btn_update(self):
         # kobe 1106
         self.app.status = PkgStates.UPGRADING
@@ -751,6 +801,10 @@ class MultiFunctionBtn(QWidget,Signals):
         self.start_work()
         self.mfb_click_update.emit(self.app)
 
+    #
+    # 函数名:点击卸载
+    # Function:click uninstall
+    #
     def slot_click_btn_uninstall(self):
         # kobe 1106
         if self.app.name == "ubuntu-kylin-software-center":
@@ -763,6 +817,10 @@ class MultiFunctionBtn(QWidget,Signals):
             self.start_work()
             self.mfb_click_uninstall.emit(self.app)
 
+    #
+    # 函数名:卸载软件
+    # Function:uninstall software
+    # 
     def uninstall_uksc(self, where):
         if where == "detailscrollwidget":
             self.app.status = PkgStates.REMOVING
@@ -772,6 +830,10 @@ class MultiFunctionBtn(QWidget,Signals):
             self.start_work()
             self.mfb_click_uninstall.emit(self.app)
 
+    #
+    # 函数名:取消卸载
+    # Function:cancel uninstall
+    # 
     def cancel_uninstall_uksc(self, where):
         if where == "detailscrollwidget":
             self.stop_work()
@@ -783,6 +845,10 @@ class MultiFunctionBtn(QWidget,Signals):
     # def slot_work_cancel(self):
     #     self.stop_work()
 
+    #
+    # 函数名:刷新
+    # Function:refresh
+    # 
     def refresh_btns(self, app):
         self.app = app
         y = 0

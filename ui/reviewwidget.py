@@ -54,6 +54,10 @@ class ReviewWidget(QWidget):
         setLongTextToElideFormat(self.ui.comment, review.content)
         self.ui.comment.setToolTip(review.content)
 
+    #
+    # 函数名:初始化界面
+    # Function: init interface
+    # 
     def ui_init(self):
         self.ui = Ui_CommentWidget()
         self.ui.setupUi(self)

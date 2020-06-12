@@ -34,7 +34,10 @@ class Ui_Ukxp(object):
 
         self.retranslateUi(Ukxp)
         QtCore.QMetaObject.connectSlotsByName(Ukxp)
-
+    #
+    #函数名:重新翻译 
+    #Function: retranslate
+    #
     def retranslateUi(self, Ukxp):
         Ukxp.setWindowTitle(_translate("Ukxp", "Form", None))
 

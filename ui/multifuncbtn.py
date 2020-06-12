@@ -47,6 +47,10 @@ class Ui_MultiFuncBtn(object):
         self.retranslateUi(MultiFuncBtn)
         QtCore.QMetaObject.connectSlotsByName(MultiFuncBtn)
 
+    #
+    # 函数名:设置控件名称
+    # Function:set the control name
+    #
     def retranslateUi(self, MultiFuncBtn):
         MultiFuncBtn.setWindowTitle(_translate("MultiFuncBtn", "Form", None))
        # self.btnRun.setText(_translate("MultiFuncBtn", "启动", None))

@@ -51,6 +51,10 @@ class Ui_CommentWidget(object):
         self.retranslateUi(CommentWidget)
         QtCore.QMetaObject.connectSlotsByName(CommentWidget)
 
+    #
+    # 函数名:设置窗口标题
+    # Function: set window title
+    # 
     def retranslateUi(self, CommentWidget):
         CommentWidget.setWindowTitle(_translate("CommentWidget", "Form", None))
 

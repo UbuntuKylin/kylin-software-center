@@ -146,11 +146,19 @@ class ListItemWidget(QWidget,Signals):
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
 
+    #
+    #函数名: 初始化界面 
+    #Function: init widget
+    #
     def ui_init(self):
         self.ui = Ui_Ukliw()
         self.ui.setupUi(self)
         self.show()
 
+    #
+    #函数名: 点击按钮 
+    #Function: click button
+    #
     def slot_btn_click(self):
         if(self.workType == "run"):
             self.app.run()
@@ -179,9 +187,17 @@ class ListItemWidget(QWidget,Signals):
 
 
 
+    #
+    #函数名:信号发送
+    #Function: singnal send
+    #
     def slot_emit_detail(self):
         self.show_app_detail.emit(self.app)
 
+    #
+    #函数名:工作完成 
+    #Function: work finished
+    #
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
             if action in (AppActions.INSTALL,AppActions.UPGRADE,AppActions.INSTALLDEBFILE):
@@ -212,6 +228,10 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.cbSelect.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
 
+    #
+    #函数名: 取消工作
+    #Function: cancel work
+    #
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
@@ -238,6 +258,10 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.status.show()
                 self.ui.cbSelect.setEnabled(True)
 
+    #
+    #函数名: 更改控件状体
+    #Function: change button status
+    #
     def slot_change_btn_status(self, pkgname, status):#zx11.28 To keep the same btn status in uapage and detailscrollwidget
         if self.app.name == pkgname:
             self.ui.btn.setEnabled(False)

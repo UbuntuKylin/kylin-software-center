@@ -31,7 +31,6 @@ import xapian
 import dbus
 import dbus.service
 
-
 class UtilDbus(dbus.service.Object):
 
     def __init__(self, parent, bus_name,

@@ -60,8 +60,8 @@ class WorkerItem:
      def __init__(self, funcname, kwargs):
         self.funcname = funcname
         self.kwargs = kwargs
-class ThreadWorker(threading.Thread):
 
+class ThreadWorker(threading.Thread):
     def __init__(self,appmgr):
         threading.Thread.__init__(self)
         self.appmgr = appmgr
@@ -78,6 +78,9 @@ class ThreadWorker(threading.Thread):
                 #self.appmgr.db = self.db
                 self._init_models()
 
+    #
+    # 函数：调用apt库
+    #
     def open_cache(self):
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
         if not self.apt_cache:
@@ -87,6 +90,9 @@ class ThreadWorker(threading.Thread):
         #if (self.pkgcount < 2000):
         #        self.appmgr.for_update = 1
 
+    #
+    # 函数：初始化模块
+    #
     def _init_models(self):
         self.open_cache()
         self.cat_list = self.get_category_list_from_db()
@@ -109,6 +115,9 @@ class ThreadWorker(threading.Thread):
         #QApplication.slot_recommend_apps_ready(applist, bysignal)
         exit()
 
+    #
+    # 函数：初始化时获取分类列表
+    #
     def get_category_list_from_db(self):
         lists = self.appmgr.db.query_categories()
         cat_list = {}
@@ -134,6 +143,9 @@ class ThreadWorker(threading.Thread):
 
         return cat_list
 
+    #
+    # 函数：初始化时根据分类获取该分类的app
+    #
     def get_category_apps_from_db(self,cat,catdir=""):
         lists = self.appmgr.db.query_category_apps(cat)
         apps = {}
@@ -306,7 +318,7 @@ class AppManager(QObject,Signals):
         # silent process work queue
         self.squeue = multiprocessing.Queue()
         self.silent_process = SilentProcess(self.squeue)
-        self.silent_process.daemon = True
+        #self.silent_process.daemon = True
         self.silent_process.start()
         self.worklist = []
         self.mutex = threading.RLock()
@@ -339,7 +351,9 @@ class AppManager(QObject,Signals):
 
         #self.premoter = PistonRemoter(service_root=UBUNTUKYLIN_SERVER)
 
-
+    #
+    # 函数：登录接口
+    #
     def login_in(self):
         if Globals.AUTO_LOGIN == "1":
             res = self.apprui_first_login(Globals.USER,Globals.PASSWORD)
@@ -356,6 +370,9 @@ class AppManager(QObject,Signals):
 #        authorizer = auth.OAuthAuthorizer(Globals.TOKEN["token"], Globals.TOKEN["token_secret"], Globals.TOKEN["consumer_key"], Globals.TOKEN["consumer_secret"])
 #        self.premoterauth = PistonRemoterAuth(auth=authorizer)
 
+    #
+    # 函数：检测源是否需要更新
+    #
     def check_source_update(self):
         f = QFile("/var/lib/apt/periodic/update-success-stamp")
         if(self.for_update == 1):
@@ -408,6 +425,9 @@ class AppManager(QObject,Signals):
         if "install_debfile" == action:
             self.update_xapiandb(pkgname)
 
+    #
+    # 函数：获取分类列表
+    #
     def get_category_list_from_db(self):
         # list = self.db.query_categories()
         cat_list = self.cat_list
@@ -440,6 +460,9 @@ class AppManager(QObject,Signals):
         cat_list = self.get_category_list_from_db()
         return cat_list
 
+    #
+    # 函数：根据分类获取该分类的app
+    #
     def get_category_apps_from_db(self,cat,catdir=""):
         lists = self.db.query_category_apps(cat)
         apps = {}
@@ -490,6 +513,9 @@ class AppManager(QObject,Signals):
                     Globals.ALL_APPS[pkgname] = app #make sure there is only one app with the same pkgname even it may belongs to other category
         return apps
 
+    #
+    # 函数：加载分类的app
+    #
     def download_category_apps(self,cat,catdir=""):
         #load the apps from category file
         count = 0
@@ -623,6 +649,9 @@ class AppManager(QObject,Signals):
             return app
         return None
 
+    #
+    # 函数：获取软件数量
+    #
     def get_application_count(self,cat_name=""):
         self.apt_cache = self.worker_thread1.apt_cache
         sum_inst = 0
@@ -829,6 +858,9 @@ class AppManager(QObject,Signals):
 
             print("init models后台运行中")
 
+    #
+    # 函数：更新评分评论
+    #
     def update_rating_reviews(self,rnrStats):
         print(("update_rating_reviews:",len(rnrStats)))
 
@@ -836,51 +868,72 @@ class AppManager(QObject,Signals):
             self.db.update_app_rnr(rnrStat.pkgname,rnrStat.ratings_average,rnrStat.ratings_total,rnrStat.reviews_total,0)
 
     #--------------------------------0.3----------------------------------
-
+    #
+    # 函数：获取所有评分
+    #
     def get_all_ratings(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_all_ratings", kwargs)
         self.squeue.put_nowait(item)
 
+    #
+    # 函数：获取新应用信息
+    #
     def get_newer_application_info(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_newer_application_info", kwargs)
         self.squeue.put_nowait(item)
 
+    #
+    # 函数：获取新应用图标
+    #
     def get_newer_application_icon(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_newer_application_icon", kwargs)
         self.squeue.put_nowait(item)
 
-
+    #
+    # 函数：获取新的广告
+    #
     def get_newer_application_ads(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_newer_application_ads", kwargs)
         self.squeue.put_nowait(item)
 
+    #
+    # 函数：获取新的截图
+    #
     def get_newer_application_screenshots(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_newer_application_screenshots", kwargs)
         self.squeue.put_nowait(item)
 
-
+    #
+    # 函数：获取所有分类
+    #
     def get_all_categories(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_all_categories", kwargs)
         self.squeue.put_nowait(item)
 
+    #
+    # 函数：获取所有排名和推荐
+    #
     def get_all_rank_and_recommend(self):
         kwargs = {}
 
         item = SilentWorkerItem("get_all_rank_and_recommend", kwargs)
         self.squeue.put_nowait(item)
 
+    #
+    # 函数：发送启动记录
+    #
     def submit_pingback_main(self):
         pass
         kwargs = {}
@@ -888,6 +941,9 @@ class AppManager(QObject,Signals):
         item = SilentWorkerItem("submit_pingback_main", kwargs)
         self.squeue.put_nowait(item)
 
+    #
+    # 函数：发送安装记录
+    #
     def submit_pingback_app(self, app_name, isrcm=False):
 #        pass
         self.db.update_app_downloadtotal(app_name)
@@ -899,6 +955,9 @@ class AppManager(QObject,Signals):
         self.squeue.put_nowait(item)
 
     # update xapiandb add by zhangxin
+    #
+    # 函数：更新xapian数据库
+    #
     def update_xapiandb(self, pkgname):
         kwargs = {"pkgname": pkgname, "path": Globals.LOCAL_DEB_FILE}
         item = SilentWorkerItem("update_xapiandb", kwargs)
@@ -1015,6 +1074,9 @@ class AppManager(QObject,Signals):
     #     if Globals.UPDATE_HOM == 0:
     #         self.ratingrank_ready.emit(applist, bysignal)
 
+    #
+    # 函数：提交应用评论
+    #
     def submit_review(self, app_name, content):
         distroseries = get_distro_info()[2]
         language = get_language()
@@ -1025,6 +1087,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.submit_review_over.emit(res)
 
+    #
+    # 函数：提交翻译信息
+    #
     def submit_translate_appinfo(self, appname,type_appname, type_summary, type_description, orig_appname, orig_summary, orig_description, trans_appname, trans_summary, trans_description):
         # distroseries = get_distro_info()[2]
         # language = get_language()
@@ -1035,7 +1100,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.submit_translate_appinfo_over.emit(res)
 
-
+    #
+    # 函数：提交评分
+    #
     def submit_rating(self, app_name, rating):
         try:
             res = self.premoter.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
@@ -1044,6 +1111,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.submit_rating_over.emit(res)
 
+    #
+    # 函数：提交下载次数
+    #
     def submit_downloadcount(self,app_name):
         try:
             res = self.premoter.get_Amount_Downloads(app_name)
@@ -1068,6 +1138,9 @@ class AppManager(QObject,Signals):
     def update_app_ratingavg(self, app_name, ratingavg, ratingtotal):
         self.db.update_app_ratingavg(app_name, ratingavg, ratingtotal)
 
+    #
+    # 函数：获取用户安装的app列表
+    #
     def get_user_applist(self):
         try:
             res = self.premoter.get_user_applist(Globals.USER)
@@ -1076,6 +1149,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.get_user_applist_over.emit(res)
 
+    #
+    # 函数：获取用户的翻译列表
+    #
     def get_user_transapplist(self):#zx 2015.01.30
         try:
             res = self.premoter.get_user_transapplist(Globals.USER)
@@ -1084,6 +1160,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.get_user_transapplist_over.emit(res)
 
+    #
+    # 函数：用户首次登陆判断
+    #
     def apprui_first_login(self,ui_username,ui_password):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
         res = self.premoter.log_in_appinfo(ui_username,ui_password)
@@ -1136,6 +1215,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.get_ui_first_login_over.emit(res)
 
+    #
+    # 函数：登陆接口
+    #
     def ui_login(self,ui_username,ui_password):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
         try:
@@ -1146,6 +1228,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.get_ui_login_over.emit(res)
 
+    #
+    # 函数：创建用户
+    #
     def ui_adduser(self,ui_username,ui_password,ui_email,ui_iden):
         #print "ffffffffffffffff",ui_username,ui_password,ui_email,ui_iden
         try:
@@ -1156,6 +1241,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.get_ui_adduser_over.emit(res)
 
+    #
+    # 函数：重置密码
+    #
     def rset_password(self,ui_username,new_password):
         try:
             res = self.premoter.rset_user_password(ui_username,new_password)
@@ -1164,6 +1252,9 @@ class AppManager(QObject,Signals):
         res = [{'res':res}]
         self.rset_password_over.emit(res)
 
+    #
+    # 函数：找回密码
+    #
     def recover_password(self,old_username,old_email,new_password):
         try:
             res = self.premoter.recover_user_password(old_username,old_email,new_password)
@@ -1177,8 +1268,12 @@ class AppManager(QObject,Signals):
         # else:
         #     rer = res
         res = [{'res':res}]
-        self.recover_password_over.emit(res)        
+        self.recover_password_over.emit(res)
 
+
+    #
+    # 函数：改变身份
+    #
     def change_identity(self):
         if Globals.USER_IDEN == "general_user":
             us_iden = "developer"
@@ -1206,6 +1301,9 @@ class AppManager(QObject,Signals):
         self.worklist.append(item)
         self.mutex.release()
 
+    #
+    # 函数：检测源是否可用
+    #
     def start_check_source_useable(self):
         source_urllist = []
         bad_source_urllist = []
@@ -1259,6 +1357,9 @@ class AppManager(QObject,Signals):
             self.check_source_useable_over.emit(bad_source_urllist)
         #print "check source useable over"
 
+    #
+    # 函数：源需要更新判断
+    #
     def sourcelist_need_update(self):
         res = self.db.need_do_sourcelist_update()
         if('True' == res):
@@ -1269,12 +1370,18 @@ class AppManager(QObject,Signals):
     def set_check_update_false(self):
         self.db.set_update_sourcelist_false()
 
+    #
+    # 函数：检测安卓兼容环境是否运行接口
+    #
     def start_cycle_check_kydroid_envrun(self):
         item = WorkerItem("cycle_check_kydroid_envrun", None)
         self.mutex.acquire()
         self.worklist.append(item)
         self.mutex.release()
 
+    #
+    # 函数：获取安卓兼容应用列表
+    #
     def get_kydroid_apklist(self):
         # print('!! zhe bu he li !!')
         item = WorkerItem("download_kydroid_sl", None)
@@ -1291,9 +1398,13 @@ class AppManager(QObject,Signals):
 
     def apk_page_create_emit(self):
         for i in range(10):
-            if Globals.isOnline:
+            if (not Globals.apkpagefirst) and Globals.isOnline:
                 break
             self.start_download_kydroid_sl()
+            if Globals.isOnline:
+                Globals.apkpagefirst = False
+        else:
+            self.download_apk_source_error.emit(True)
         self.download_apk_source_over.emit(True)
 
     # 检测安卓环境是否启动
@@ -1327,7 +1438,7 @@ class AppManager(QObject,Signals):
             time.sleep(1)
             if sum > 120*5:  # 5分钟环境还没启动，判断为超时！
                 if (Globals.DEBUG_SWITCH):
-                    print("安卓环境启动超时")
+                    print("移动应用环境启动超时")
                 ret = 0
                 break
         self.apkenvrunfrist = True
@@ -1340,7 +1451,7 @@ class AppManager(QObject,Signals):
         if (Globals.DEBUG_SWITCH):
             print("start_download_kydroid_sl")
         try:
-            urllib.request.urlopen(KYDROID_SOURCE_SERVER, timeout=10)
+            urllib.request.urlopen(KYDROID_SOURCE_SERVER, timeout=2)
         except HTTPError as e:
             if e.code != 401:
                 Globals.isOnline = False
@@ -1379,6 +1490,9 @@ class AppManager(QObject,Signals):
                 #self.download_apk_source_over.emit(True)
                 self.apkenvrunfrist = False
 
+    #
+    # 函数：合并源中包列表和本地列表
+    #
     def merge_apk_list(self, app_dict):
         for apk in self.apk_list:
             if apk.name == app_dict['package_name']:
@@ -1396,6 +1510,9 @@ class AppManager(QObject,Signals):
         self.apk_list.append(apkinfo)
         return False
 
+    #
+    # 函数：下载安卓兼容应用接口
+    #
     def download_apk(self, apkInfo):
         try:
             if(self.backend.call_kydroid_policykit()):
@@ -1410,6 +1527,9 @@ class AppManager(QObject,Signals):
         except:
             return False
 
+    #
+    # 函数：卸载安卓兼容应用接口
+    #
     def uninstall_app(self, apkInfo):
         try:
             if(self.backend.call_kydroid_policykit()):

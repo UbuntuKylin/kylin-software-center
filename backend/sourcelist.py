@@ -37,6 +37,9 @@ class SourceList:
                 slist.append(one)
         return slist
 
+    #
+    # 函数：获取除ubuntu意外的源列表
+    #
     def get_sources_except_ubuntu(self):
         slist = []
         source = aptsources.sourceslist.SourcesList()

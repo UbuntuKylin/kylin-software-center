@@ -87,6 +87,9 @@ class Category:
                 app = None
         return app
 
+    #
+    # 函数：获取安装、升级、卸载应用个数
+    #
     def get_application_count(self):
         inst = 0
         up = 0

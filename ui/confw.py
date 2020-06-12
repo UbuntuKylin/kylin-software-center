@@ -591,6 +591,10 @@ class Ui_ConfigWidget(object):
         self.retranslateUi(self.baseWidget)
         QtCore.QMetaObject.connectSlotsByName(ConfigWidget)
 
+    #
+    # 函数名:设置控件文本
+    # Function:set control text
+    # 
     def retranslateUi(self, ConfigWidget):
         ConfigWidget.setWindowTitle(_translate("ConfigWidget", "Form", None))
         #self.groupBox.setTitle(_translate("ConfigWidget", "软件源配置", None))

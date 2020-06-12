@@ -57,12 +57,20 @@ class StarWidget(QWidget):
             self.ui.star5.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
 
         self.changeGrade(grade)
-
+   
+    #
+    #函数名:初始化界面 
+    #Function: init innterface
+    #
     def ui_init(self):
         self.ui = Ui_StarWidget()
         self.ui.setupUi(self)
         self.show()
 
+    #
+    #函数名:更改等级 
+    #Function: change grade
+    #
     def changeGrade(self, grade):
         if(self.size == 'small'):
             self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-small-2.png')}")

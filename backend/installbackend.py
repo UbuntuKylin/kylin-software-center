@@ -42,6 +42,7 @@ from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
                           Signals,
                           AptActionMsg,
                           AptProcessMsg,
+                          KYDROID_VERSION_D,
                           UnicodeToAscii)
 
 import multiprocessing
@@ -69,7 +70,9 @@ class InstallBackend(QObject,Signals):
 
         self.iface = None
 
-
+    #
+    # 函数：初始化dbus接口
+    #
     def init_dbus_ifaces(self):
         try:
             bus = dbus.SystemBus(mainloop)
@@ -125,6 +128,9 @@ class InstallBackend(QObject,Signals):
 
         return res
 
+    #
+    # 函数：软件状态的信号响应
+    #
     def _on_software_fetch_signal(self, type, kwarg):
         sendType = "fetch"
         appname = str(kwarg['download_appname'])
@@ -147,6 +153,9 @@ class InstallBackend(QObject,Signals):
 
         self.dbus_apt_process.emit(appname,sendType,action,percent,sendMsg)
 
+    #
+    # 函数：apt调用的返回信号响应
+    #
     def _on_software_apt_signal(self,type, kwarg):
         sendType = "apt"
         appname = str(kwarg['apt_appname'])
@@ -157,6 +166,9 @@ class InstallBackend(QObject,Signals):
 
         self.dbus_apt_process.emit(appname,sendType,action,percent,sendMsg)
 
+    #
+    # 函数：auth信号响应
+    #
     def _on_software_auth_signal(self,type, kwarg):
 
         sendType = "auth"
@@ -180,12 +192,13 @@ class InstallBackend(QObject,Signals):
             #self.init_models_ready.emit("fail","安卓dbus初始化失败!")
             self.init_models_ready.emit("fail", _("Android dbus initialization failed"))
             return False
-
+        dbus_server = "cn.kylinos." + KYDROID_VERSION_D
+        dbus_path = "/cn/kylinos/" + KYDROID_VERSION_D
         try:
-            obj = bus.get_object('cn.kylinos.Kydroid2',
-                                 '/cn/kylinos/Kydroid2',
-                                 'cn.kylinos.Kydroid2')
-            self.kydroid_iface = dbus.Interface(obj, 'cn.kylinos.Kydroid2')
+            obj = bus.get_object(dbus_server,
+                                 dbus_path,
+                                 dbus_server)
+            self.kydroid_iface = dbus.Interface(obj, dbus_server)
 
 #            self.call_dbus_iface("check_source_ubuntukylin")
 
@@ -204,6 +217,9 @@ class InstallBackend(QObject,Signals):
 
         return True
 
+    #
+    # 函数：调用kydroid的dbus接口
+    #
     def call_kydroid_dbus_iface(self, funcname, kwargs=None,kwargs2=None,kwargs3=None):
         if self.kydroid_iface is None:
             return None
@@ -221,13 +237,21 @@ class InstallBackend(QObject,Signals):
             return None
         return res
 
+    #
+    # 函数：获取kydroid环境运行状态
+    #
     def get_kydroid_evnrun(self,name,uid,prop):
         return self.call_kydroid_dbus_iface("GetPropOfContainer",name,uid,prop)
 
-
+    #
+    # 函数：安装多个deb包调用
+    #
     def install_deps(self, path):
         return self.call_dbus_iface(AppActions.INSTALLDEPS, path)
 
+    #
+    # 函数：安装本地deb包调用
+    #
     def install_debfile(self, path):
         debcache_dir = os.path.join(os.path.expanduser("~"), ".cache", "uksc", "debfile")
         if(os.path.exists(debcache_dir) == False):
@@ -283,6 +307,9 @@ class InstallBackend(QObject,Signals):
     def call_kydroid_policykit(self):
         return self.call_dbus_iface("kydroid_policykit")
 
+    #
+    # 函数：获取软件源
+    #
     def get_sources(self,except_ubuntu):
         list  = self.call_dbus_iface(AppActions.GET_SOURCES,except_ubuntu)
         resList = []

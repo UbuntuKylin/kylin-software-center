@@ -104,11 +104,19 @@ class PointOutWidget(QWidget):
 
         self.ui.cbisshow.hide() # pointout only show once
 
+    #
+    # 函数名:初始化界面
+    # Function: init interface
+    # 
     def ui_init(self):
         self.ui = Ui_PointWidget()
         self.ui.setupUi(self)
         self.show()
 
+    #
+    # 函数名:关闭窗口
+    # Function: close window
+    # 
     def slot_close(self):
         # if only pointout widget shown, close pointout must close whole uksc too
         if(self.mainw.isHidden() == True):
@@ -117,10 +125,18 @@ class PointOutWidget(QWidget):
         else:
             self.hide()
 
+    #
+    # 函数名:检查状态更改
+    # Function: slotcheckstate changed
+    # 
     def slot_checkstate_changed(self):
         flag = self.ui.cbisshow.isChecked()
         self.mainw.worker_thread0.appmgr.set_pointout_is_show(flag)
 
+    #
+    # 函数名:显示动画
+    # Function: show animation
+    # 
     def show_animation(self, flag):
         # add by kobe
         if flag:
@@ -139,6 +155,10 @@ class PointOutWidget(QWidget):
         self.show()
         self.pointoutTimer.start(2)
 
+    #
+    # 函数名:显示动画步骤
+    # Function: show animation step
+    # 
     def slot_show_animation_step(self):
         if(self.po < 1):
             self.po += 0.011

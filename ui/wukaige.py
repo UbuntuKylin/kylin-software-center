@@ -120,9 +120,18 @@ class ADWidget(QWidget):
 
         self.adsshadow.raise_()
         self.show()
+
+    #
+    # 函数名:创建按钮
+    # Function:create button
+    # 
     def create_button(self, addata, parent):
         pass
 
+    #
+    # 函数名:改变按钮
+    # Function:change button
+    # 
     def slot_change_button(self):
         try: 
         #self.speed = self.move_speed()
@@ -145,7 +154,11 @@ class ADWidget(QWidget):
         #    self.spe += 10
         self.admtimer.start(3000)
         
-#调整大小
+
+    #
+    # 函数名:调整大小
+    # Function:adjustment resize
+    # 
     def resize_(self, width, height):
         if (Globals.DEBUG_SWITCH):
             print("ssssssssssssssssssssss")
@@ -193,6 +206,10 @@ class ADWidget(QWidget):
 #        self.adsshadow.raise_()
 #        self.show()
 
+    #
+    # 函数名:设置窗口属性
+    # Function:set window properties
+    # 
     def create_ads(self, addata, parent):
         i = 0
         adx = 0
@@ -229,6 +246,10 @@ class ADWidget(QWidget):
 
             i += 1
 
+    #
+    # 函数名:设置控件样式
+    # Function:set control style
+    # 
     def slot_change_ad_immediately(self, i):
         self.adi = i
         for adb in self.adbs:
@@ -241,6 +262,10 @@ class ADWidget(QWidget):
         self.admtimer.stop()
         self.adtimer.start(3000)
 
+    #
+    # 函数名:改变控件
+    # Function:change button
+    # 
     def slot_change_ad(self, i):
         #self.speed = self.move_speed()
         if(len(self.adbs) == 0):
@@ -263,6 +288,10 @@ class ADWidget(QWidget):
 
         self.adtimer.start(3000)
 
+    #
+    # 函数名:设置延时
+    # Function:set timer
+    # 
     def slot_adtimer_timeout(self):
         if(self.adi == (self.adl - 1)):
             self.adi = 0
@@ -271,6 +300,10 @@ class ADWidget(QWidget):
         self.adtimer.stop()
         self.slot_change_ad(self.adi)
 
+    #
+    # 函数名:更新时间
+    # Function:update admtimer
+    # 
     def slot_admtimer_update(self):
         if(self.adx - self.adi * self.adwidth * -1 <= 8):
 
@@ -298,6 +331,11 @@ class ADWidget(QWidget):
 #    def update_total_count(self,count):
 #        # self.softCount.setText(str(count))
 #        pass
+
+    #
+    # 函数名:移动速度
+    # Function:move speed
+    # 
     def move_speed(self):
         #for x in xrange(0, 200, 1):
         x = 0.5

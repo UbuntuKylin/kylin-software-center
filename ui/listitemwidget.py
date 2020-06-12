@@ -182,11 +182,19 @@ class ListItemWidget(QWidget,Signals):
         self.ui.btn.clicked.connect(self.slot_btn_click)
         self.ui.btnDetail.clicked.connect(self.slot_emit_detail)
 
+    #
+    # 函数名:窗口初始化
+    # Function: init interface
+    # 
     def ui_init(self):
         self.ui = Ui_Ukliw()
         self.ui.setupUi(self)
         self.show()
 
+    #
+    # 函数名:点击按钮
+    # Function: click button
+    # 
     def slot_btn_click(self):
         if(self.workType == "run"):
             self.app.run()
@@ -219,9 +227,17 @@ class ListItemWidget(QWidget,Signals):
 
 
 
+    #
+    # 函数名:显示详情界面
+    # Function: show detail
+    # 
     def slot_emit_detail(self):
         self.show_app_detail.emit(self.app)
 
+    #
+    # 函数名:任务已完成
+    # Function: work fijished
+    # 
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname:
             if action in (AppActions.INSTALL,AppActions.UPGRADE,AppActions.INSTALLDEBFILE):
@@ -269,6 +285,10 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.cbSelect.setEnabled(True)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
 
+    #
+    # 函数名:任务取消
+    # Function: cancel work
+    # 
     def slot_work_cancel(self, pkgname, action):
         if self.app.name == pkgname:
             if action == AppActions.INSTALL:
@@ -299,6 +319,10 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.status.show()
                 self.ui.cbSelect.setEnabled(True)
 
+    #
+    # 函数名:控件状态改变
+    # Function:change control status
+    # 
     def slot_change_btn_status(self, pkgname, status):#zx11.28 To keep the same btn status in uapage and detailscrollwidget
         if self.app.name == pkgname:
             self.ui.btn.setEnabled(False)
@@ -321,6 +345,10 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.btn.setText(_("upgrading"))
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#07c30b;}")
 
+    #
+    # 函数名:任务进展
+    # Function: work progress
+    #
     def slot_progress_change(self, pkgname, percent, status):
         if self.app.name == pkgname:
             self.ui.progressBar.setVisible(True)
