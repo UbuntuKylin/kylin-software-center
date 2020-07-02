@@ -1,3 +1,11 @@
+ubuntu-kylin-software-center (3.6.0kord) focal; urgency=medium
+
+  * Added environment variable detection for 4k HD screen.
+  * Fix self upgrade failure and source update stuck.
+  * Fix the problem of repeated thread creation.
+
+ -- wenbo <wenbo@ubuntukylin.com>  Thu, 02 Jul 2020 11:07:42 +0800
+
 ubuntu-kylin-software-center (3.5.3kord) focal; urgency=medium
 
   * Solve the problem that the Android interface and other interfaces will

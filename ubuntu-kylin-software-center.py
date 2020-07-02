@@ -84,6 +84,7 @@ import configparser
 import sqlite3
 import math
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
 
 import gettext
 gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
@@ -99,6 +100,8 @@ logging.basicConfig(level=logging.DEBUG,
 LOG = logging.getLogger("uksc")
 APP_PATH=0
 
+
+pool = ThreadPoolExecutor(max_workers=3)
 class  initThread(QThread,Signals):
     def __init__(self):
         super(initThread, self).__init__()
@@ -142,37 +145,37 @@ class  AD_Thread(QThread,Signals):
     def run(self):
         self.myads_icon.emit()
 
-class  MY_Thread(QThread,Signals):
-    def __init__(self,app,parent):
-        super(MY_Thread, self).__init__()
-        self.parent=parent
-        self.app=app
-
-    def run(self):
-        self.parent.earn_crenshoots(self.app)
-        QThread.exec(self)
-
-
-class  Dowload_Thread(QThread,Signals):
-    def __init__(self,app,parent):
-        super(Dowload_Thread, self).__init__()
-        self.parent=parent
-        self.app=app
-        # self.backend = InstallBackend()
-        # self.appmgr = AppManager(self.backend)
-
-
-    def run(self):
-        self.parent.upload_appname(self.app)
-class  Ask_server(QThread,Signals):
-    def __init__(self,app):
-        super(Ask_server, self).__init__()
-        self.backend = InstallBackend()
-        self.appmgr = AppManager(self.backend)
-        self.app=app
-
-    def run(self):
-        self.appmgr.submit_downloadcount(self.app)
+# class  MY_Thread(QThread,Signals):
+#     def __init__(self,app,parent):
+#         super(MY_Thread, self).__init__()
+#         self.parent=parent
+#         self.app=app
+#
+#     def run(self):
+#         self.parent.earn_crenshoots(self.app)
+#         QThread.exec(self)
+#
+#
+# class  Dowload_Thread(QThread,Signals):
+#     def __init__(self,app,parent):
+#         super(Dowload_Thread, self).__init__()
+#         self.parent=parent
+#         self.app=app
+#         # self.backend = InstallBackend()
+#         # self.appmgr = AppManager(self.backend)
+#
+#
+#     def run(self):
+#         self.parent.upload_appname(self.app)
+# class  Ask_server(QThread,Signals):
+#     def __init__(self,app):
+#         super(Ask_server, self).__init__()
+#         self.backend = InstallBackend()
+#         self.appmgr = AppManager(self.backend)
+#         self.app=app
+#
+#     def run(self):
+#         self.appmgr.submit_downloadcount(self.app)
 
 class SoftwareCenter(QMainWindow,Signals):
 
@@ -1053,6 +1056,10 @@ class SoftwareCenter(QMainWindow,Signals):
         self.worker_thread0.appmgr.check_source_useable_over.connect(self.slot_check_source_useable_over)
         self.count_application_update.connect(self.slot_count_application_update)
         self.apt_process_finish.connect(self.slot_apt_process_finish)
+
+        # self.worker_thread4.appmgr.submit_download_over.connect((self.detailScrollWidget.slot_app_downloadcont))
+
+        self.worker_thread0.appmgr.submit_download_over.connect((self.detailScrollWidget.slot_app_downloadcont))
 
         self.worker_thread0.appmgr.download_apk_source_over.connect(self.slot_download_apk_source_over)
         self.worker_thread0.appmgr.download_apk_source_error.connect(self.slot_download_apk_source_error)
@@ -2546,7 +2553,7 @@ class SoftwareCenter(QMainWindow,Signals):
             if (Globals.DEBUG_SWITCH):
                 print((str(e)))
         self.dbusControler.stop()
-        os.system("ubuntu-kylin-software-center restart")
+        os.system("ubuntu-kylin-software-center restart &")
         sys.exit(0)
 
     #
@@ -4102,10 +4109,12 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnCloseDetail.setVisible(True)
         self.hide_headdetail_all_control()
         self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
-        self.worker_thread2=MY_Thread(app, self.detailScrollWidget)
-        self.worker_thread2.start()
-        self.worker_thread3 = Dowload_Thread(app.name, self.detailScrollWidget)
-        self.worker_thread3.start()
+        #     self.worker_thread2=MY_Thread(app, self.detailScrollWidget)
+        #     self.worker_thread3 = Dowload_Thread(app.name, self.detailScrollWidget)
+        #     self.worker_thread2.start()
+        #     self.worker_thread3.start()
+        future1=pool.submit(self.detailScrollWidget.earn_crenshoots,app)
+        future2=pool.submit(self.detailScrollWidget.upload_appname,app.name)
         # self.detailScrollWidget.detailWidget.show()
         # self.worker_thread0.appmgr.screnn.connect(self.detailScrollWidget.earn_crenshoots)
 
@@ -4336,9 +4345,11 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     def slot_submit_downloadcount(self,app_name):
         # self.worker_thread0.appmgr.submit_downloadcount(app_name)
-        self.worker_thread4= Ask_server(app_name)
-        self.worker_thread4.start()
-        self.worker_thread4.appmgr.submit_download_over.connect((self.detailScrollWidget.slot_app_downloadcont))
+        # self.worker_thread4= Ask_server(app_name)
+        # self.worker_thread4.start()
+        # self.worker_thread4.appmgr.submit_download_over.connect((self.detailScrollWidget.slot_app_downloadcont))
+        feture3=pool.submit(self.worker_thread0.appmgr.submit_downloadcount,app_name)
+        # self.worker_thread0.appmgr.submit_downloadcount(app_name)
 
     #
     #函数名: 点击取消
@@ -5091,4 +5102,6 @@ def main():
 
 
 if __name__ == '__main__':
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     main()

@@ -103,6 +103,8 @@ class Globals:
 
     JUMP_SCRENN=False
 
+    ERAN_SCRENN=0
+
     # SQLITR_DB=''
 
     isOnline = True

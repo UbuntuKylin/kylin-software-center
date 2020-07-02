@@ -615,7 +615,24 @@ class DetailScrollWidget(QScrollArea,Signals):
         #self.ui.debname.setText("软件包名: " + self.debfile.name)
         self.ui.debname.setText(_("Package name :") + self.debfile.name)
 
-        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png');background-color:transparent;}")
+        descrption = self.mainwindow.worker_thread0.appmgr.get_debfile_description(self.debfile.name)
+        if descrption != None:
+            string = str(descrption[0])
+            desk_set = ""
+            undes = 0
+            for i in string:
+                if undes > 1 and undes < len(string) - 3:
+                    desk_set = desk_set + i
+                else:
+                    pass
+                undes = undes + 1
+
+        descrption=desk_set.replace("\\r",'').replace("\\n",'').replace("\\t",'')
+        iconpath = commontools.get_icon_path(self.debfile.name)
+        self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
+        # self.ui.name.setText
+
+        # self.ui.icon.setStyleSheet("QLabel{background-image:url('" + UBUNTUKYLIN_RES_ICON_PATH + "default.png');background-color:transparent;}")
         # self.ui.name.setText
         text=setLongTextToElideFormat(self.ui.name, self.debfile.name)
         #self.ui.installedVersion.setText("软件版本: " + self.debfile.version)
@@ -630,7 +647,12 @@ class DetailScrollWidget(QScrollArea,Signals):
         else:
             #self.ui.size.setText("安装大小: " + str('%.2f'%(sizek/1024.0)) + " MB")
             self.ui.size.setText(_("Installation size :") + str('%.2f' % (sizek / 1024.0)) + " MB")
-        self.ui.description.setText(self.debfile.description)
+        if descrption!="":
+            self.ui.description.clear()
+            self.ui.description.setText(descrption)
+        else:
+            self.ui.description.setText(self.debfile.description)
+        # self.ui.description.setText(self.debfile.description)
         deps = self.debfile.get_missing_deps()
         if (deps == []):
             deps = ""
@@ -948,13 +970,13 @@ class DetailScrollWidget(QScrollArea,Signals):
                     pass
                 self.ui.description.setText(app.description)
                 self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
-                doc=self.ui.description.document()
-                doc.adjustSize()
                 tc=self.ui.description.textCursor()
                 tc.movePosition(QTextCursor.End)
                 lay=tc.block().layout()
                 curpos=tc.position()-tc.block().position()
-                textline=lay.lineForTextPosition(curpos).lineNumber()+tc.block().firstLineNumber()+1
+                textline=lay.lineForTextPosition(curpos).lineNumber()+tc.block().firstLineNumber()
+                if textline>=4:
+                    textline=textline+2
                 self.Row_er=textline-5
                 if textline >5:
                     self.Coordinate_change(0)

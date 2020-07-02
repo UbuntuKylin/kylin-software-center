@@ -42,14 +42,14 @@ def download_sourcelist():
     if not os.path.exists(sllocal):
         request.urlretrieve(slurl, sllocal)
 
-class DownloadManager(threading.Thread, QObject):
+class DownloadManager(QObject):
     apkpath = ""
     appname = ""
     size = 0
     appmgr = None
 
     def __init__(self, appmgr, apkInfo):
-        threading.Thread.__init__(self)
+        # threading.Thread.__init__(self)
         QObject.__init__(self)
         self.apkpath = apkInfo.file_path
         self.appmgr = appmgr
@@ -79,6 +79,7 @@ class DownloadManager(threading.Thread, QObject):
         filename = apkpath.split('/')[-1]
         apklocal = os.path.join(KYDROID_DOWNLOAD_PATH, filename)
         # print("1111",apkurl,apklocal,self.download_schedule)
+
 
         try: # 防止出现下载中断的情况
             request.urlretrieve(apkurl, apklocal, self.download_schedule)

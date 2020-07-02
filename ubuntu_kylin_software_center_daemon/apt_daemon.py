@@ -161,16 +161,16 @@ class FetchProcess(apb.AcquireProgress):
         if hasattr(self, "percent"):
             kwarg["download_percent"] = str(self.percent)
         else:
-            kwarg["download_percent"] = str(0)
+            kwarg["download_percent"] = str(100)
         if self.action == "update" or self.action == "update_first":
             self.dbus_service.set_uksc_not_working()
             if self.total_items > 0 and (self.current_items / self.total_items) < 1:
                 kwarg["download_percent"] = str(-15)
         #apt安装和更新缺少依赖时apt不会返回异常，人为处理异常，通过下载停止来判断
-        if kwarg["download_percent"] == '0' and (self.action == "install" or self.action == "upgrade" or self.action == "install_deps"):
-            kwarg["download_percent"] = str(-99)
-            FLAG = 0
-            self.dbus_service.set_uksc_not_working()
+        #if kwarg["download_percent"] == '0' and (self.action == "install" or self.action == "upgrade" or self.action == "install_deps"):
+        #    kwarg["download_percent"] = str(-99)
+        #    FLAG = 0
+        #    self.dbus_service.set_uksc_not_working()
         self.dbus_service.software_fetch_signal("down_stop", kwarg)
 
 
@@ -222,10 +222,10 @@ class AptProcess(apb.InstallProgress):
             self.dbus_service.software_apt_signal("apt_finish", kwarg)
         else:
             FLAG = 1
-        if self.appname == "ubuntu-kylin-software-center" and self.action == "upgrade":
-            pass
-        else:
-            self.dbus_service.set_uksc_not_working()
+        #if self.appname == "kylin-software-center" and self.action == "upgrade":
+        #    pass
+        #else:
+        self.dbus_service.set_uksc_not_working()
 
     def status_change(self, pkg, percent, status):
 #        print "status_change:", self.appname, pkg

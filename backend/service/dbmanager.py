@@ -187,6 +187,23 @@ class Database:
             return res[0]
 
     #
+    # 函数名：获取deb文件的详细描述
+    #
+    def get_description(self, debfilename):
+        try:
+            lock.acquire(True)
+            self.cursor.execute("select description \
+               from application where app_name='%s'" % (debfilename))
+            res = self.cursor.fetchall()
+        finally:
+            lock.release()
+
+        if len(res) == 0:
+            return None
+        else:
+            return res
+
+    #
     # 函数：获取application表所有软件名和中文名
     #
     #return as (display_name, app_name)

@@ -250,6 +250,8 @@ class ThreadWorkerDaemon(threading.Thread, QObject):
                 self.appmgr.apk_page_create_emit()
             elif item.funcname == "cycle_check_kydroid_envrun":
                 self.appmgr.cycle_check_kydroid_envrun()
+            elif item.funcname == "download_apk":
+                self.appmgr.start_download_apk(item.kwargs['apkInfo'])
             else:
         ##获取介绍
                 #event = multiprocessing.Event()
@@ -391,6 +393,13 @@ class AppManager(QObject,Signals):
             self.apt_cache = apt.Cache()
         self.apt_cache.open()
         self.pkgcount = len(self.apt_cache)
+
+    #
+    #函数名：从数据库中获取deb包的详情描述
+    #
+    def get_debfile_description(self, debfilename):
+        res = self.db.get_description(debfilename)
+        return res
 
    # def _init_models(self):
     #    self.open_cache()
@@ -1516,10 +1525,22 @@ class AppManager(QObject,Signals):
     def download_apk(self, apkInfo):
         try:
             if(self.backend.call_kydroid_policykit()):
+                kwargs = {"apkInfo": apkInfo}
+                item = WorkerItem("download_apk",kwargs)
+                self.mutex.acquire()
+                self.worklist.append(item)
+                self.mutex.release()
+                return True
+        except:
+            return False
+
+    def start_download_apk(self, apkInfo):
+        try:
+            if(self.backend.call_kydroid_policykit()):
                 dm = DownloadManager(self, apkInfo)
                 if (Globals.DEBUG_SWITCH):
                     print("apkinfo : ",apkInfo.__dict__)
-                dm.start()
+                dm.run()
                 return True
             else:
                 self.apk_process.emit(apkInfo.name, 'apt', "install", -3, 'auth failed')
