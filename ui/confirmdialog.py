@@ -127,3 +127,17 @@ class Update_Source_Dialog(QMessageBox):
         self.button_exit = self.addButton(self.tr(_("Quit")), QMessageBox.ActionRole)
         self.button_exit.hide()
         self.setEscapeButton(self.button_exit)
+
+class File_window(QMessageBox):
+
+    def __init__(self, parent=None):
+        QMessageBox.__init__(self, parent)
+        #self.setWindowTitle("软件源更新提示")
+        # self.setWindowTitle(_("提示"))
+        self.setWindowTitle(_("Tips"))
+        # self.button_update = self.addButton(self.tr(_("确定")), QMessageBox.ActionRole)
+        self.button_update = self.addButton(self.tr(_("determine")), QMessageBox.ActionRole)
+        self.button_exit = self.addButton(self.tr(_("Quit")), QMessageBox.ActionRole)
+        self.button_exit.hide()
+        self.setEscapeButton(self.button_exit)
+

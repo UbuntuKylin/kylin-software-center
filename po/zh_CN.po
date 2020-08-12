@@ -1009,7 +1009,7 @@ msgstr "未知"
 
 #: ui/tasklistitemwidget.py:199
 msgid "Waiting"
-msgstr "等待中"
+msgstr "等待"
 
 #: ui/tasklistitemwidget.py:226 ui/tasklistitemwidget.py:252
 msgid "download"
@@ -1173,7 +1173,7 @@ msgstr "软件源版本 : "
 #: ui/detailscrollwidget.py:661 ui/detailscrollwidget.py:664
 #: ui/detailscrollwidget.py:667
 msgid "Download size :"
-msgstr "下载大小 : "
+msgstr "安装大小 : "
 
 #: ui/detailscrollwidget.py:677
 msgid "My rating:"
@@ -1322,46 +1322,83 @@ msgstr "           手 机"
 msgid "      Uninstall"
 msgstr "           卸 载"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Feature"
 msgstr "特色"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Office"
 msgstr "办公"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Develp"
 msgstr "开发"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Image"
 msgstr "图像"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Audio"
 msgstr "影音"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Net"
 msgstr "网络"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Game"
 msgstr "游戏"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Edu"
 msgstr "教育"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Social"
 msgstr "社交"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "System"
 msgstr "系统"
 
-#categorybar.py
+#:ui/categorybar.py
 msgid "Other"
 msgstr "其它"
+
+#:ui/tasklistitemwidget.py
+msgid "Cancelled"
+msgstr "已取消"
+
+#:ui/login.py
+msgid "The first character is a letter"
+msgstr "用户名首字符必须是字母"
+
+#:ui/login.py
+msgid "Password canot be pure numbers letters"
+msgstr "用户密码必须由数字和字母组成"
+
+#:ui/login.py
+msgid "The password length is greater than six"
+msgstr "用户密码长度必须大于六位"
+
+#:ubuntu-kylin-software-center.py
+msgid "If the number of comments exceeds 150 words or 3 lines, it will be omitted. Hover over the comment box to view the comments"
+msgstr "评论字数超过150个字或者3行后会省略，鼠标悬浮评论框即可查看评论内容"
+
+#:ui/confirmdialog.py
+msgid "Tips"
+msgstr "用提示"
+
+#:ui/confirmdialog.py
+msgid "determine"
+msgstr "确定"
+
+#:ubuntu-kylin-software-center.py
+msgid "Opening files is not supported"
+msgstr "不支持打开文件"
+
+
+
+
+

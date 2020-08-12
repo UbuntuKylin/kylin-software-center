@@ -83,6 +83,7 @@ class DetailScrollWidget(QScrollArea,Signals):
     is_clean_star=0
     add_revieheight=0
     Line_height=0
+    SET_ISNTALL=False
     def __init__(self,messageBox,parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
         self.detailWidget = QWidget()
@@ -99,6 +100,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         # self.setGeometry(QRect(20, 60, 860 + 6 + (20 - 6) / 2, 605))
 
         self.btns = MultiFunctionBtn(self.messageBox,self.detailWidget)
+        self.btns.loading.raise_()
         self.btns.move(538, 228)
         self.btns.mfb_click_install.connect(parent.slot_click_install)
         self.btns.mfb_click_uninstall.connect(parent.slot_click_remove)
@@ -557,6 +559,7 @@ class DetailScrollWidget(QScrollArea,Signals):
     # Function: show by local debfile
     #
     def show_by_local_debfile(self, path):
+        desk_set = ""
         if Globals.LINDIT==0:
             self.ui.description.move(0,28+15)
             Globals.LINDIT=1
@@ -618,7 +621,6 @@ class DetailScrollWidget(QScrollArea,Signals):
         descrption = self.mainwindow.worker_thread0.appmgr.get_debfile_description(self.debfile.name)
         if descrption != None:
             string = str(descrption[0])
-            desk_set = ""
             undes = 0
             for i in string:
                 if undes > 1 and undes < len(string) - 3:
@@ -626,8 +628,10 @@ class DetailScrollWidget(QScrollArea,Signals):
                 else:
                     pass
                 undes = undes + 1
-
-        descrption=desk_set.replace("\\r",'').replace("\\n",'').replace("\\t",'')
+        if  desk_set != "":
+            descrption=desk_set.replace("\\r",'').replace("\\n",'').replace("\\t",'')
+        else:
+            descrption=""
         iconpath = commontools.get_icon_path(self.debfile.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
         # self.ui.name.setText
@@ -774,7 +778,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
        #add in dengnan 获取下载次数
 
-        size = app.packageSize
+        size = app.installedSize
         sizek = size / 1024
         if(sizek == 0):
             #self.ui.size.setText("下载大小: " + "未知")
@@ -802,7 +806,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.scorelabel.setText(averate_rate)
         self.ui.grade.setText(averate_rate)
 
-        self.smallstar.changeGrade(app.ratings_average)
+        # self.smallstar.changeGrade(app.ratings_average)
         self.smallstar.show()
 
 
@@ -828,6 +832,12 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.status.setStyleSheet("QLabel{background-image:url('res/installed.png')}")
 
 # Tow ways go to detailpage 1.from normalcard,recmmandcard,wincard,listitemwidget,they all have app.status 2.from transpage, homepage-rankitem,homepage-ad, then all don't have app.status
+        if Globals.TASK_LIST!=[]:
+            for item in Globals.TASK_LIST:
+                if item == self.app.name:
+                    #Globals.TASK_LIST.append()
+                    self.app.status=18
+            #Globals.TASK_LIST=False
         if self.app.status == PkgStates.INSTALL:
             self.btns.stop_work()#zx 2015.01.23 for bug1402527
             self.ui.status.hide()
@@ -1033,6 +1043,23 @@ class DetailScrollWidget(QScrollArea,Signals):
             else:
                 self.reset_ratings(my_rating)
 
+
+    #
+    #函数名:刷新页面获取用户评分
+    #
+    #
+    def get_user_ratings_cat(self):
+        self.set_goles_mouse_press()
+        if (Globals.USER != ''):
+            try:
+                my_rating = self.server.get_user_ratings(Globals.USER, self.app.name)
+            except:
+                my_rating = []
+            if (my_rating == []):
+                self.ui.grade1.setText('')
+            else:
+                self.reset_ratings(my_rating)
+
     #
     # 函数名:获取截图
     # Function:get screenshots 
@@ -1162,8 +1189,8 @@ class DetailScrollWidget(QScrollArea,Signals):
             # not this app's review end it
             if (review.package_name != self.app.name):
                 return
-
             self.add_one_review(review)
+            # future1 = pool.submit( self.add_one_review,review)
 
         self.reviewpage += 1
         self.currentreviewready = True
@@ -1175,7 +1202,19 @@ class DetailScrollWidget(QScrollArea,Signals):
     #
     def add_one_review(self, review):
         oneitem = QListWidgetItem()
-        rliw = ReviewWidget(self.app.ratings_average, review)
+        """
+        try:
+            my_rating = self.server.get_user_ratings(review.user_display, self.app.name)
+        except:
+            my_rating=[]
+        if my_rating!=[]:
+            set_rating=int(my_rating[0]["rating"])
+        else:
+            set_rating=0
+        """
+        #rliw = ReviewWidget(self.app.ratings_average, review)
+        rliw = ReviewWidget(review.user_rating, review)
+        # self.smallstar.changeGrade(set_teting)
         self.ui.reviewListWidget.addItem(oneitem)
         self.ui.reviewListWidget.setItemWidget(oneitem, rliw)
 
@@ -1607,6 +1646,8 @@ class DetailScrollWidget(QScrollArea,Signals):
     # Function: submit reting
     #
     def slot_submit_rating(self, rating):
+        if rating==-1:
+            self.show_login.emit()
         if self.app.from_ukscdb is not True:
             # self.messageBox.alert_msg("非数据库中软件\n暂不能对该软件评分")
             self.messageBox.alert_msg(_("Non-database software \ nCan't comment on this software temporarily"))
@@ -1616,8 +1657,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         if(Globals.USER != ''):
             self.submitratingload.start_loading()
             self.submit_rating.emit(self.app.name, rating)
-        else:
-            self.show_login.emit()
+
 
     #
     # 函数名:提交评分完成
@@ -1646,6 +1686,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         else:
             #self.mainwindow.messageBox.alert_msg("评分失败")
             self.mainwindow.messageBox.alert_msg(_("Scoring failed"))
+            self.set_goles_mouse_press()
 
         self.submitratingload.stop_loading()
 
@@ -1686,6 +1727,7 @@ class DetailScrollWidget(QScrollArea,Signals):
     #
     def reset_ratings(self,my_rating):
         my_rating_int=my_rating[0]['rating']
+        self.ratingstar.init_start_style_sheet()
         self.ratingstar.changeGrade(int(my_rating_int))
         #my_rating_int= self.ratingstar.getUserGrade()
         my_rating_int=str(my_rating_int)
@@ -1694,7 +1736,18 @@ class DetailScrollWidget(QScrollArea,Signals):
         #self.ui.gradetitle1.setText("分")
         self.ui.gradetitle1.setText(_("Ft"))
 
+    def copy_ratings_reset(self,my_rating_int):
+        self.ratingstar.init_start_style_sheet()
+        if my_rating_int>0:
+            self.ratingstar.changeGrade(int(my_rating_int))
+        else:
+            my_rating_int=''
+        self.ui.grade1.setText(my_rating_int)
+        self.ui.grade1.setStyleSheet("QLabel{border-width:0px;font-size:14px;color:#f69b35;}")
+        self.ui.gradetitle1.setText(_("Ft"))
 
+    def set_goles_mouse_press(self):
+        self.ratingstar.mouse_press=False
 
     #
     # 函数名:评分获取
@@ -1705,7 +1758,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.app.ratings_total = ratingtotal
 
         ratingavg = float('%.1f' % ratingavg)
-        self.smallstar.changeGrade(ratingavg)
+        # self.smallstar.changeGrade(ratingavg)
         self.star.changeGrade(ratingavg)
         self.ui.scorelabel.setText(str(ratingavg))
         self.ui.grade.setText(str(ratingavg))
@@ -1850,6 +1903,11 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.mainwindow.worker_thread0.appmgr.get_application_reviews(self.app.name, page=self.reviewpage)
         self.verticalScrollBar().setValue(self.detailWidget.height())
 
+    def set_install_detail_func(self):
+        self.btns.ui.btnUninstall.setEnabled(True)
+        self.btns.stop_work()
+
+
 class ScreenShotBig(QWidget):
 
     def __init__(self, parent=None):
@@ -1880,4 +1938,5 @@ class ScreenShotBig(QWidget):
         windowWidth = QApplication.desktop().screenGeometry(0).width()
         windowHeight = QApplication.desktop().screenGeometry(0).height()
         self.move((windowWidth - self.width()) / 2, (windowHeight - self.height()) / 2)
+
 

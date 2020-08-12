@@ -24,6 +24,18 @@
 
 import configparser
 from models.apkinfo import ApkInfo
+import os
+
+#FT1500 添加不能使用的安卓应用黑名单
+FT1500CPU = False
+if os.popen("cat /proc/cpuinfo  |grep -i 'ft.*1500'").read() != '':
+    FT1500CPU = True
+
+blacklist = [
+    "com.tencent.tmgp.speedmobile",
+    "com.smile.gifmaker"
+]
+
 
 #
 # 函数：获取安卓兼容源列表
@@ -35,6 +47,8 @@ def getApks():
 
     apklist = []
     for pkgname in lists_header:
+        if FT1500CPU and pkgname in blacklist :
+            continue
         apkinfo = ApkInfo(pkgname, config[pkgname]['name'], config[pkgname]['version'], config[pkgname]['size'], config[pkgname]['file'], config[pkgname]['summary'])
         apkinfo.from_ukscdb = False
         apklist.append(apkinfo)

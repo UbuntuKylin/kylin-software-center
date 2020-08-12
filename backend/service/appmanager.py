@@ -78,6 +78,20 @@ class ThreadWorker(threading.Thread):
                 #self.appmgr.db = self.db
                 self._init_models()
 
+            apkworklen = len(self.appmgr.apkworklist)
+            if apkworklen == 0:
+                time.sleep(1)
+                continue
+
+            self.appmgr.apkmutex.acquire()
+            item = self.appmgr.apkworklist.pop()
+            self.appmgr.apkmutex.release()
+
+            if item.funcname == "download_apk":
+                self.appmgr.start_download_apk(item.kwargs['apkInfo'])
+
+
+
     #
     # 函数：调用apt库
     #
@@ -113,7 +127,7 @@ class ThreadWorker(threading.Thread):
         self.appmgr.get_necessary_apps(False,False)
 
         #QApplication.slot_recommend_apps_ready(applist, bysignal)
-        exit()
+        #exit()
 
     #
     # 函数：初始化时获取分类列表
@@ -124,7 +138,7 @@ class ThreadWorker(threading.Thread):
         for item in lists:
             c = item[2]
             zhcnc = item[3]
-            index = item[4] 
+            index = item[4]
             visible = (item[0]==1)
 
             icon = UBUNTUKYLIN_RES_PATH + str(c) + ".png"
@@ -250,8 +264,6 @@ class ThreadWorkerDaemon(threading.Thread, QObject):
                 self.appmgr.apk_page_create_emit()
             elif item.funcname == "cycle_check_kydroid_envrun":
                 self.appmgr.cycle_check_kydroid_envrun()
-            elif item.funcname == "download_apk":
-                self.appmgr.start_download_apk(item.kwargs['apkInfo'])
             else:
         ##获取介绍
                 #event = multiprocessing.Event()
@@ -279,7 +291,7 @@ class ThreadWorkerDaemon(threading.Thread, QObject):
                 #    except Queue.Empty:
                 #        #print "&&&&&&&&&&get error33333333333333:",queue.qsize()
                 #        count += 1
-                
+
                 #    resLen = queue.qsize()
                 #print "receive data from backend process, func, qlen, len=",item.funcname,queue.qsize(),reslist
             #LOG.debug("receive data from backend process, len=%d",len(reslist))
@@ -299,6 +311,9 @@ class AppManager(QObject,Signals):
     kydroid_service = None
     kydroid = KydroidService()
     kydroid_check = kydroid.check_has_kydroid()
+    testcat=["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","l","s","t","u","v","w","x","y","z",
+              "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","L","S","T","U","V","W","X","Y","Z"]
+    destcat=["0","1","2","3","4","5","6","7","8","9","_"]
 
     def __init__(self, backend):
         #super(AppManager, self).__init__()
@@ -322,12 +337,17 @@ class AppManager(QObject,Signals):
         self.silent_process = SilentProcess(self.squeue)
         #self.silent_process.daemon = True
         self.silent_process.start()
+
+        self.apkworklist = []
+        self.apkmutex = threading.RLock()
+
         self.worklist = []
         self.mutex = threading.RLock()
         self.worker_thread = ThreadWorkerDaemon(self)
+        self.cancel_name_list=[]
         self.worker_thread.setDaemon(True)
         self.worker_thread.start()
-        
+
         self.worker_thread1 = ThreadWorker(self)
         self.worker_thread1.setDaemon(True)
         #self.worker_thread1.start()
@@ -617,8 +637,12 @@ class AppManager(QObject,Signals):
         except:
             package = None
         else:
-            if package.candidate is None:
-                package = None
+            if package is not None:
+                try:
+                    if package.candidate is None:
+                        package = None
+                except:
+                    package = None
 
         return package
 
@@ -806,15 +830,28 @@ class AppManager(QObject,Signals):
                 LOG.debug("reviews ready:%s",len(reslist))
             reviews = reslist
             page = item.kwargs['page']
-
             app = self.get_application_by_name(item.kwargs['packagename'])
             if app is not None and app.package is not None:
                 app.add_reviews(page,reviews)
             else:
                 app = self.get_apk_by_name(item.kwargs['packagename'])
                 app.add_reviews(page,reviews)
-                print((item.kwargs['packagename'], " not exist"))
+               #print((item.kwargs['packagename'], " not exist"))
 
+            # 获取评分
+            # for i,_rev in enumerate(reviews):#遍历评论的列表/放这里的目的是避免阻塞主线程
+            #     try:
+            #         my_rating = self.premoter.get_user_ratings(_rev.user_display, app.name)
+            #     except:
+            #         my_rating = []
+            #
+            #     print("7777777777",my_rating)
+            #     if my_rating != []:
+            #         _rev.set_rating = int(my_rating[0]["rating"])#每一条评论附上评分的属性，
+            #     else:
+            #         _rev.set_rating = 0
+            #         pass
+            #     pass
             self.app_reviews_ready.emit(reviews)
         elif item.funcname == "get_screenshots":
             if (Globals.DEBUG_SWITCH):
@@ -977,7 +1014,7 @@ class AppManager(QObject,Signals):
 
         item = SilentWorkerItem("download_images", kwargs)
         self.squeue.put_nowait(item)
-        
+
     # get recommend apps
     def get_recommend_apps(self, bysignal=False, first=True):
         # recommends = self.db.get_recommend_apps()
@@ -1242,6 +1279,21 @@ class AppManager(QObject,Signals):
     #
     def ui_adduser(self,ui_username,ui_password,ui_email,ui_iden):
         #print "ffffffffffffffff",ui_username,ui_password,ui_email,ui_iden
+        if ui_username[0] not in self.testcat:
+            res = -2
+            res = [{'res': res}]
+            self.get_ui_adduser_over.emit(res)
+            return
+        if str.isalpha(ui_password) or str.isdigit(ui_password):
+            res = -3
+            res = [{'res': res}]
+            self.get_ui_adduser_over.emit(res)
+            return
+        if len(ui_password)<6:
+            res = -4
+            res = [{'res': res}]
+            self.get_ui_adduser_over.emit(res)
+            return
         try:
             res = self.premoter.submit_add_user(ui_username,ui_password,ui_email,ui_iden)
         except:
@@ -1527,24 +1579,52 @@ class AppManager(QObject,Signals):
             if(self.backend.call_kydroid_policykit()):
                 kwargs = {"apkInfo": apkInfo}
                 item = WorkerItem("download_apk",kwargs)
-                self.mutex.acquire()
-                self.worklist.append(item)
-                self.mutex.release()
-                return True
-        except:
-            return False
-
-    def start_download_apk(self, apkInfo):
-        try:
-            if(self.backend.call_kydroid_policykit()):
-                dm = DownloadManager(self, apkInfo)
-                if (Globals.DEBUG_SWITCH):
-                    print("apkinfo : ",apkInfo.__dict__)
-                dm.run()
+                self.apkmutex.acquire()
+                self.apkworklist.insert(0, item)
+                self.apkmutex.release()
                 return True
             else:
                 self.apk_process.emit(apkInfo.name, 'apt', "install", -3, 'auth failed')
                 return False
+        except:
+            return False
+
+    #
+    #函数名:取消安卓下载应用
+    #
+    def cancel_download_apk(self,funcname,app):
+        cancelinfo=[funcname,app]
+        # print("####del_worker_item_by_name:",cancelinfo[0])
+
+        del_work_item = None
+        self.mutex.acquire()
+        try:
+            flag = 0
+            for item in self.apkworklist:
+                if item.funcname == cancelinfo[0] and app.name == item.kwargs["apkInfo"].name:
+                    self.apkworklist.remove(item)
+                    del_work_item = item
+                    flag = 1
+
+            if flag == 0:
+                Globals.STOP_DOWNLOAD=True
+        except:
+            pass
+        self.mutex.release()
+
+        self.mutex.acquire()
+        if del_work_item != None:
+            self.cancel_name_list.append(del_work_item)
+        self.mutex.release()
+        # print("####del_worker_item_by_name finished!")
+
+    def start_download_apk(self, apkInfo):
+        try:
+            dm = DownloadManager(self, apkInfo)
+            if (Globals.DEBUG_SWITCH):
+                print("apkinfo : ",apkInfo.__dict__)
+            dm.run()
+            return True
         except:
             return False
 

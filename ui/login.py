@@ -44,6 +44,7 @@ class Login(QWidget,Signals):
     listadduser = ["","","",""]
     listlogin = ["",""]
     res = []
+
     #strs = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
     strs = r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$'
     def __init__(self,parent=None):
@@ -82,6 +83,8 @@ class Login(QWidget,Signals):
         self.ui.lesource_3.textChanged.connect(self.slot_le_input3)
         self.ui.lesource_4.textChanged.connect(self.slot_le_input4)
         self.ui.lesource_5.textChanged.connect(self.slot_le_input5)
+
+        self.ui.checkBox_6.stateChanged.connect(self.slot_change2)
 
         self.ui.text10.clicked.connect(self.find_password_suc)
         self.ui.lesource.setMaxLength(30)
@@ -208,6 +211,14 @@ class Login(QWidget,Signals):
             self.ui.lesource.setText(Globals.OS_USER)
             self.ui.lesource_2.setText(Globals.PASSWORD)
             self.ui.checkBox_5.setChecked(True)
+
+
+
+    def slot_change2(self):
+        if self.ui.checkBox_6.isChecked():
+            self.ui.checkBox_5.setChecked(True)
+        else:
+            pass
 
     #
     # 函数名:找回密码
@@ -349,8 +360,10 @@ class Login(QWidget,Signals):
     #
     def clean_user_password(self):
         if self.ui.checkBox_5.isChecked():
+            password_write("1", "0", Globals.USER, Globals.PASSWORD)
             pass
         else:
+            password_write("0", "0", Globals.USER, Globals.PASSWORD)
             self.ui.lesource_2.setText(None)
 
     #
@@ -526,6 +539,7 @@ class Login(QWidget,Signals):
                     Globals.PASSWORD = self.listlogin[1]
                     password_write(set_rem_pass,auto_login,Globals.USER,Globals.PASSWORD)
                 if self.ui.checkBox_5.isChecked():
+                    self.ui.checkBox_6.setChecked(True)
                     set_rem_pass = '1'
                     Globals.PASSWORD = self.listlogin[1]
                     password_write(set_rem_pass,auto_login,Globals.USER,Globals.PASSWORD)
@@ -540,6 +554,9 @@ class Login(QWidget,Signals):
                 self.ui_login_success.emit()
                 # self.messageBox.alert_msg("登录成功")
                 self.messageBox.alert_msg(_("login successful"))
+                if Globals.LOGIN_SUCCESS==True:
+                    self.login_sucess_goto_star.emit()
+
                 self.hide()
                 #self.emit(ui_uksc_update)
             else:
@@ -571,8 +588,10 @@ class Login(QWidget,Signals):
                 print ("######","数据异常")
             #INO.information(self,"提示","数据异常",QMessageBox.Yes)
                 # INO.setText('数据异常')
-            INO.setText(_("Data exception"))
-            INO.exec_()
+            # INO.setText(_("Data exception"))
+            # INO.exec_()
+            self.ui.tips_user_password.setText(_("Data exception"))
+            self.timer_set()
 
         elif res == 2:
             #用户名已存在
@@ -580,39 +599,64 @@ class Login(QWidget,Signals):
                 print ("######","用户名已存在")
             #INO.information(self,"提示","用户名已存在",QMessageBox.Yes)
                 #INO.setText('用户名已存在')
-            INO.setText(_("Username already exists"))
-            INO.exec_()
+            # INO.setText(_("Username already exists"))
+            # INO.exec_()
+            self.ui.tips_user_password.setText(_("Username already exists"))
+            self.timer_set()
+        elif res==-2:
+            #self.ui.tips_user_password.setText(_("用户名首字符必须是字母"))
+            self.ui.tips_user_password.setText(_("The first character is a letter"))
+            self.timer_set()
+        elif res==-3:
+            #self.ui.tips_user_password.setText(_("用户密码必须由数字和字母组成"))
+            self.ui.tips_user_password.setText(_("Password canot be pure numbers letters"))
+            self.timer_set()
+        elif res==-4:
+            #self.ui.tips_user_password.setText(_("用户密码长度必须大于六位"))
+            self.ui.tips_user_password.setText(_("The password length is greater than six"))
+            self.timer_set()
         elif res == 4:
             #邮箱已存在
             if (Globals.DEBUG_SWITCH):
                 print ("######","邮箱已存在")
             #INO.information(self,"提示","邮箱已被注册",QMessageBox.Yes)
                 #INO.setText('邮箱已被注册')
-            INO.setText(_("Email already exists"))
-            INO.exec_()
+            # INO.setText(_("Email already exists"))
+            # INO.exec_()
+            self.ui.tips_user_password.setText(_("Email already exists"))
+            self.timer_set()
         elif res == 3:
             #服务器异常
             if (Globals.DEBUG_SWITCH):
                 print ("######1","服务器异常")
             #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
                 #INO.setText('服务器异常')
-            INO.setText(_("Server exception"))
-            INO.exec_()
+            # INO.setText(_("Server exception"))
+            # INO.exec_()
+            self.ui.tips_user_password.setText(_("Server exception"))
+            self.timer_set()
         elif res == 0:
             if (Globals.DEBUG_SWITCH):
                 print ("######","注册成功")
             #INO.information(self,"提示","注册成功",QMessageBox.Yes)
                 #INO.setText('注册成功')
-            INO.setText(_("registration success"))
-            INO.exec_()
+            # INO.setText(_("registration success"))
+            # INO.exec_()
+            self.ui.lesource_3.clear()
+            self.ui.lesource_4.clear()
+            self.ui.lesource_5.clear()
+            self.ui.tips_user_password.setText(_("registration success"))
+            self.timer_set()
             self.slot_click_login()
-        else: 
+        else:
             #注册成功
             #print "######","注册成功"
             #INO.information(self,"提示","服务器异常",QMessageBox.Yes)
             #INO.setText('服务器异常')
-            INO.setText(_("Server exception"))
-            INO.exec_()
+            # INO.setText(_("Server exception"))
+            # INO.exec_()
+            self.ui.tips_user_password.setText(_("Network or service abnormal"))
+            self.timer_set()
 #
 # 函数名:主函数
 # Function:main

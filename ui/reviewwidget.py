@@ -33,6 +33,8 @@ class ReviewWidget(QWidget):
 
     def __init__(self, ratings_average, review, parent=None):
         QWidget.__init__(self,parent)
+        k=0
+        strstr=""
         self.ui_init()
 
         self.star = StarWidget('small', ratings_average, self)
@@ -40,6 +42,7 @@ class ReviewWidget(QWidget):
 
         self.ui.comment.setAlignment(Qt.AlignVCenter)
         self.ui.comment.setWordWrap(True)
+        self.ui.comment.setAlignment(Qt.AlignTop)
 
         self.ui.userName.setStyleSheet("QLabel{color:#999999;font-size:12px;}")
         self.ui.comment.setStyleSheet("QLabel{color:#666666;font-size:12px;}")
@@ -49,10 +52,17 @@ class ReviewWidget(QWidget):
 
         self.ui.userName.setText(review.user_display)
         self.ui.createDate.setText(review.date)
-        # self.ui.comment.setText(review.content)
+        self.ui.comment.setText(review.content)
         # add by kobe
-        setLongTextToElideFormat(self.ui.comment, review.content)
+        if len(review.content)>150:
+            setLongTextToElideFormat(self.ui.comment, review.content)
         self.ui.comment.setToolTip(review.content)
+        for i in review.content:
+            k = k + 1
+            strstr = strstr + i
+            if k % 80 == 0:
+                strstr = strstr + "\n"
+        self.ui.comment.setToolTip(strstr)
 
     #
     # 函数名:初始化界面

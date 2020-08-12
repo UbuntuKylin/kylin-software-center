@@ -152,6 +152,7 @@ class Ui_MainWindow(object):
         self.apkWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.apkWidget.setObjectName(_fromUtf8("apkWidget"))
         self.apkWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
+
         # self.apkline = QLabel(self.apkWidget)
         # self.apkline.setGeometry(QtCore.QRect(0, 44, 860, 1))
         # self.apkline.setText(_fromUtf8(""))
@@ -639,7 +640,7 @@ class Ui_MainWindow(object):
         self.btnMin.setObjectName(_fromUtf8("btnMin"))
 
         self.btnTask3 = QToolButton(self.headerWidget)
-        self.btnTask3.setGeometry(QtCore.QRect(645, 7, 70, 22))
+        self.btnTask3.setGeometry(QtCore.QRect(645, 7, 90, 22))
         self.btnTask3.setText(_fromUtf8(""))
         self.btnTask3.setObjectName(_fromUtf8("btnTask3"))
 

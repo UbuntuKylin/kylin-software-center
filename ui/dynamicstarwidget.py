@@ -27,6 +27,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from ui.uksw import Ui_StarWidget
 from models.enums import Signals
+from models.globals import Globals
 
 
 class DynamicStarWidget(QWidget,Signals):
@@ -59,6 +60,7 @@ class DynamicStarWidget(QWidget,Signals):
         self.show()
 
     def init_start_style_sheet(self):
+
         self.ui.star1.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
         self.ui.star2.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
         self.ui.star3.setStyleSheet("QLabel{background-image:url('res/star-2.png')}")
@@ -72,92 +74,177 @@ class DynamicStarWidget(QWidget,Signals):
     #     pass
 
     def eventFilter(self, obj, event):
-        #QEvent.MouseButtonPress and QEvent.MouseButtonRelease
-        if(obj == self.ui.star1):
-            if(event.type() == QEvent.Enter):
-                if self.mouse_press == False:
-                    self.init_start_style_sheet()
-                    self.changeGrade(1)
-            elif(event.type() == QEvent.Leave):
-                if self.mouse_press:
-                    pass
-                    # self.mouse_press = False
-                else:
-                    self.init_start_style_sheet()
-                    self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
-                self.mouse_press = True
-                self.get_user_rating.emit(1)
-            # elif(event.type() == QEvent.MouseButtonRelease):
-            #     self.grade = 1
-        elif(obj == self.ui.star2):
-            if(event.type() == QEvent.Enter):
-                if self.mouse_press == False:
-                    self.init_start_style_sheet()
-                    self.changeGrade(2)
-            elif(event.type() == QEvent.Leave):
-                if self.mouse_press:
-                    pass
-                    # self.mouse_press = False
-                else:
-                    self.init_start_style_sheet()
-                    self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
-                self.mouse_press = True
-                self.get_user_rating.emit(2)
-            # elif(event.type() == QEvent.MouseButtonRelease):
-            #     self.grade = 2
-        elif(obj == self.ui.star3):
-            if(event.type() == QEvent.Enter):
-                if self.mouse_press == False:
-                    self.init_start_style_sheet()
-                    self.changeGrade(3)
-            elif(event.type() == QEvent.Leave):
-                if self.mouse_press:
-                    pass
-                    # self.mouse_press = False
-                else:
-                    self.init_start_style_sheet()
-                    self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
-                self.mouse_press = True
-                self.get_user_rating.emit(3)
-            # elif(event.type() == QEvent.MouseButtonRelease):
-            #     self.grade = 3
-        elif(obj == self.ui.star4):
-            if(event.type() == QEvent.Enter):
-                if self.mouse_press == False:
-                    self.init_start_style_sheet()
-                    self.changeGrade(4)
-            elif(event.type() == QEvent.Leave):
-                if self.mouse_press:
-                    pass
-                    # self.mouse_press = False
-                else:
-                    self.init_start_style_sheet()
-                    self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
-                self.mouse_press = True
-                self.get_user_rating.emit(4)
-            # elif(event.type() == QEvent.MouseButtonRelease):
-            #     self.grade = 4
-        elif(obj == self.ui.star5):
-            if(event.type() == QEvent.Enter):
-                if self.mouse_press == False:
-                    self.init_start_style_sheet()
-                    self.changeGrade(5)
-            elif(event.type() == QEvent.Leave):
-                if self.mouse_press:
-                    pass
-                    # self.mouse_press = False
-                else:
-                    self.init_start_style_sheet()
-                    self.changeGrade(0)
-            elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
-                self.mouse_press = True
-                self.get_user_rating.emit(5)
-            # elif(event.type() == QEvent.MouseButtonRelease):
-            #     self.grade = 5
+        if Globals.USER!='':
+            #QEvent.MouseButtonPress and QEvent.MouseButtonRelease
+            if(obj == self.ui.star1):
+                if(event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(1)
+                elif(event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    self.mouse_press = True
+                    self.get_user_rating.emit(1)
+                # elif(event.type() == QEvent.MouseButtonRelease):
+                #     self.grade = 1
+            elif(obj == self.ui.star2):
+                if(event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(2)
+                elif(event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    self.mouse_press = True
+                    self.get_user_rating.emit(2)
+                # elif(event.type() == QEvent.MouseButtonRelease):
+                #     self.grade = 2
+            elif(obj == self.ui.star3):
+                if(event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(3)
+                elif(event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    self.mouse_press = True
+                    self.get_user_rating.emit(3)
+                # elif(event.type() == QEvent.MouseButtonRelease):
+                #     self.grade = 3
+            elif(obj == self.ui.star4):
+                if(event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(4)
+                elif(event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    self.mouse_press = True
+                    self.get_user_rating.emit(4)
+                # elif(event.type() == QEvent.MouseButtonRelease):
+                #     self.grade = 4
+            elif(obj == self.ui.star5):
+                if(event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(5)
+                elif(event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif(event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    self.mouse_press = True
+                    self.get_user_rating.emit(5)
+                # elif(event.type() == QEvent.MouseButtonRelease):
+                #     self.grade = 5
+        else:
+            if (obj == self.ui.star1):
+                if (event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    # self.mouse_press = True
+                    self.get_user_rating.emit(-1)
+                    # elif(event.type() == QEvent.MouseButtonRelease):
+                    #     self.grade = 1
+            elif (obj == self.ui.star2):
+                if (event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    # self.mouse_press = True
+                    self.get_user_rating.emit(-1)
+                    # elif(event.type() == QEvent.MouseButtonRelease):
+                    #     self.grade = 2
+            elif (obj == self.ui.star3):
+                if (event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    # self.mouse_press = True
+                    self.get_user_rating.emit(-1)
+                    # elif(event.type() == QEvent.MouseButtonRelease):
+                    #     self.grade = 3
+            elif (obj == self.ui.star4):
+                if (event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    # self.mouse_press = True
+                    self.get_user_rating.emit(-1)
+                    # elif(event.type() == QEvent.MouseButtonRelease):
+                    #     self.grade = 4
+            elif (obj == self.ui.star5):
+                if (event.type() == QEvent.Enter):
+                    if self.mouse_press == False:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.Leave):
+                    if self.mouse_press:
+                        pass
+                        # self.mouse_press = False
+                    else:
+                        self.init_start_style_sheet()
+                        self.changeGrade(0)
+                elif (event.type() == QEvent.MouseButtonPress and self.mouse_press == False):
+                    # self.mouse_press = True
+                    self.get_user_rating.emit(-1)
         # print self.grade
         return QObject.eventFilter(self, obj, event)
 

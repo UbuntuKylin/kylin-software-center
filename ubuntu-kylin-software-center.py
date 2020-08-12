@@ -49,7 +49,7 @@ from ui.ranklistitemwidget import RankListItemWidget
 from ui.detailscrollwidget import DetailScrollWidget
 from ui.loadingdiv import *
 from ui.messagebox import MessageBox
-from ui.confirmdialog import ConfirmDialog, TipsDialog, Update_Source_Dialog
+from ui.confirmdialog import ConfirmDialog, TipsDialog, Update_Source_Dialog,File_window
 from ui.confwidget import ConfigWidget
 from ui.login import Login
 from ui.pointoutwidget import PointOutWidget
@@ -62,7 +62,7 @@ from backend.utildbus import UtilDbus
 #from backend.ubuntusso import get_ubuntu_sso_backend
 from backend.service.save_password import password_write, password_read
 from models.enums import (UBUNTUKYLIN_RES_PATH, AppActions, AptActionMsg, PageStates, PkgStates)
-from models.enums import Signals, setLongTextToElideFormat,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
+from models.enums import Signals, KYDROID_VERSION,KYDROID_SOURCE_SERVER,UBUNTUKYLIN_CACHE_SETADS_PATH
 from models.globals import Globals
 from models.http import HttpDownLoad, unzip_resource
 from models.apkinfo import ApkInfo
@@ -85,7 +85,7 @@ import sqlite3
 import math
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
-
+import fcntl
 import gettext
 gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
 gettext.textdomain("ubuntu-kylin-software-center")
@@ -114,27 +114,7 @@ class  initThread(QThread,Signals):
 
         res = self.backend.init_dbus_ifaces()
 
-
-        while res == False:
-            # button=QMessageBox.question(self,"初始化提示",
-            #                         self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
-            #                         QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
-
-            button=QMessageBox.question(self,_("Initialization prompt"),
-                                    self.tr(_("Initialization failed (DBus service)\nPlease confirm whether\nit is installed"
-                                              "correctly, ignore the software installation and \nother operations will not workPlease select:")),
-                                    QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
-            if button == QMessageBox.Retry:
-                res = self.backend.init_dbus_ifaces()
-            elif button == QMessageBox.Ignore:
-                LOG.warning("failed to connecting dbus service, you still choose to continue...")
-                break
-            else:
-                LOG.warning("dbus service init failed, you choose to exit.\n\n")
-                sys.exit(0)
-
-
-        self.myinit_emit.emit()
+        self.myinit_emit.emit(res)
         #
         self.sleep(1)
 
@@ -264,7 +244,29 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.rank_ready = False
         self.setWindowOpacity(1)
 
-    def slot_init(self):
+    def slot_init(self, res):
+
+
+        if res == False:
+            # button=QMessageBox.question(self,"初始化提示",
+            #                         self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+            #                         QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
+
+            button=QMessageBox.question(self,_("Initialization prompt"),
+                                    self.tr(_("Initialization failed (DBus service)\nPlease confirm whether\nit is installed"
+                                              "correctly, ignore the software installation and \nother operations will not workPlease select:")),
+                                    QMessageBox.Cancel, QMessageBox.Cancel)
+
+            # if button == QMessageBox.Retry:
+            #     res = self.worker_thread0.backend.init_dbus_ifaces()
+            # elif button == QMessageBox.Ignore:
+            #     LOG.warning("failed to connecting dbus service, you still choose to continue...")
+            #     break
+
+            if button == QMessageBox.Cancel:
+                LOG.warning("dbus service init failed, you choose to exit.\n\n")
+                sys.exit(0)
+
         #init main view
         self.init_main_view()
         # init main service
@@ -376,6 +378,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
         self.login.find_password.connect(self.configWidget.slot_show_ui)
+        self.login.login_sucess_goto_star.connect(self.detailScrollWidget.get_user_ratings_cat)
 
         # resize corner
         # self.resizeCorner = QPushButton(self.ui.centralwidget)
@@ -435,7 +438,6 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnApk.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp.setFocusPolicy(Qt.NoFocus)
         self.ui.btnUp_num.setFocusPolicy(Qt.NoFocus)
-
 
         self.ui.btnUn.setFocusPolicy(Qt.NoFocus)
         self.ui.btnWin.setFocusPolicy(Qt.NoFocus)
@@ -911,6 +913,9 @@ class SoftwareCenter(QMainWindow,Signals):
         # loading
         if(Globals.LAUNCH_MODE != 'quiet'):
             self.launchLoadingDiv.start_loading()
+
+    def cacnel_wait(self,appname):
+        self.set_cancel_wait.emit(appname)
     #
     #函数名：重绘窗口阴影
     #Function: Redraw window shadow
@@ -1585,26 +1590,8 @@ class SoftwareCenter(QMainWindow,Signals):
         except:
             LOG.exception("could not initiate dbus")
             sys.exit(0)
-
-        # if there is an instance running, call to bring it to frontend
-        try:
-            proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter', '/com/ubuntukylin/softwarecenter')
-            iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.utiliface')
-            iface.bring_to_front()
-
-            # user clicked local deb file, show info
-            if(Globals.LOCAL_DEB_FILE != None):
-                iface.show_deb_file(Globals.LOCAL_DEB_FILE)
-                Globals.UPDATE_HOM = 1
-            elif(Globals.REMOVE_SOFT != None):
-                iface.show_remove_soft(Globals.REMOVE_SOFT)
-                Globals.UPDATE_HOM = 1
-            sys.exit(0)
-
-        # else startup one instance
-        except dbus.DBusException:
-            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
-            self.dbusControler = UtilDbus(self, bus_name)
+        bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
+        self.dbusControler = UtilDbus(self, bus_name)
 
     #
     #函数名: 用户选择
@@ -1626,7 +1613,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #    LOG.exception('Check user failed.')
         if Globals.AUTO_LOGIN == "1":
             try:
-                res = self.worker_thread0.appmgr.ui_first_login(Globals.USER,Globals.PASSWORD)
+                res = self.worker_thread0.appmgr.ui_first_login(Globals.OS_USER,Globals.PASSWORD)
             except:
                 res = False
             if res != False and res != None and res not in list(range(1,4)):
@@ -1833,8 +1820,11 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: The interface is displayed at the top
     #
     def show_to_frontend(self):
-        self.show()
+        # self.show()
+        # self.raise_()
         self.raise_()
+        self.activateWindow()
+
 
     #
     #函数名: 动画显示
@@ -2131,6 +2121,8 @@ class SoftwareCenter(QMainWindow,Signals):
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
             card.normalcard_kydroid_envrun.connect(self.slot_goto_apkpage)
+            card.nomol_cancel.connect(self.slot_click_cancel)
+
             self.apt_process_finish.connect(card.slot_work_finished)
             self.apt_process_cancel.connect(card.slot_work_cancel)
             card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
@@ -2209,8 +2201,13 @@ class SoftwareCenter(QMainWindow,Signals):
                 listWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
                 card.install_app.connect(self.slot_click_install)
+                card.nomol_cancel.connect(self.slot_click_cancel)
+                # card.apk_nocard_cancel.connect(self.worker_thread0.appmgr.cancel_download_apk)
                 card.upgrade_app.connect(self.slot_click_upgrade)
                 card.remove_app.connect(self.slot_click_remove)
+                card.connct_cancel.connect(self.cacnel_wait)
+                card.set_detail_install.connect(self.detailScrollWidget.set_install_detail_func)
+                self.kylin_goto_normocad.connect(card.status_cancel)
                 self.apt_process_finish.connect(card.slot_work_finished)
                 self.apt_process_cancel.connect(card.slot_work_cancel)
                 card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
@@ -2273,9 +2270,13 @@ class SoftwareCenter(QMainWindow,Signals):
             card.install_app.connect(self.slot_click_install)
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
+            card.signale_set.connect(self.cacnel_apkname)
             self.apt_process_finish.connect(card.slot_work_finished)
             self.apt_process_cancel.connect(card.slot_work_cancel)
             card.get_card_status.connect(self.slot_get_normal_card_status)
+            card.connct_cancel.connect(self.cacnel_wait)
+            self.kylin_goto_normocad.connect(card.status_cancel)
+
 
             # wb : show_progress
             self.normalcard_progress_change.connect(card.slot_progress_change)
@@ -2290,10 +2291,15 @@ class SoftwareCenter(QMainWindow,Signals):
             if (count >= (Globals.SOFTWARE_STEP_NUM + listLen)):
                 break
         self.count_application_update.emit()
+        Globals.apkpagefirst = False
         self.apkpageload.stop_loading()
         # if(count == 0):
         #     self.messageBox.alert_msg("未找到安卓软件源\n或网络无法连接！")
         # self.apkpageload.stop_loading()
+
+
+    def cacnel_apkname(self,funcnanme,app):
+        self.worker_thread0.appmgr.cancel_download_apk(funcnanme,app)
 
     #
     #函数名: 获取当前列表
@@ -2357,6 +2363,9 @@ class SoftwareCenter(QMainWindow,Signals):
             tliw = TaskListItemWidget(app, action, self.task_number, self)
             tliw.task_cancel_tliw.connect(self.slot_click_cancel)
             tliw.task_remove.connect(self.slot_remove_task)
+            tliw.apk_cancel_download.connect(self.sigenal_sest)
+            tliw.task_to_normocad.connect(self.task_goto_normorcard)
+            self.set_cancel_wait.connect(tliw.cancl_download_app)
             if (Globals.DEBUG_SWITCH):
                 print("add_task_item 000:",tliw.__dict__)
             self.ui.taskListWidget.insertItem(0,oneitem)
@@ -2427,8 +2436,13 @@ class SoftwareCenter(QMainWindow,Signals):
     #                 #break
     
     #
-    #函数名: 左侧栏显示
-    #Function:The left column shows
+    def task_goto_normorcard(self,appname):
+        self.kylin_goto_normocad.emit(appname)
+
+    def sigenal_sest(self,funcname,app):
+        self.worker_thread0.appmgr.cancel_download_apk(funcname,app)
+    # 函数名: 左侧栏显示
+    # Function:The left column shows
     #
     def reset_nav_bar(self):
         self.ui.btnHomepage.setEnabled(True)
@@ -2498,7 +2512,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     def slot_uninstall_uksc_or_not(self, where):
         #cd = ConfirmDialog("您真的要卸载软件商店吗?\n卸载后该应用将会关闭.", self, where)
-        cd = ConfirmDialog(_("Do you really want to uninstall the software store?\nthe app will close after uninstalling.", self, where))
+        cd = ConfirmDialog(_("Do you really want to uninstall the software store?\nthe app will close after uninstalling."), self, where)
         cd.confirmdialog_ok.connect(self.to_uninstall_uksc)
         cd.confirmdialog_no.connect(self.to_cancel_uninstall_uksc)
         cd.exec_()
@@ -2585,7 +2599,6 @@ class SoftwareCenter(QMainWindow,Signals):
                 card = PointCard(p,self.messageBox, self.pointListWidget.cardPanel)
                 self.pointListWidget.add_card(card)
                 card.show_app_detail.connect(self.slot_show_app_detail)
-
                 card.install_app.connect(self.slot_click_install)
                 card.install_app_rcm.connect(self.slot_click_install_rcm)
                 self.apt_process_finish.connect(card.slot_work_finished)
@@ -3041,6 +3054,7 @@ class SoftwareCenter(QMainWindow,Signals):
             recommend.show_app_detail.connect(self.slot_show_app_detail)
             recommend.install_app.connect(self.slot_click_install)
             recommend.rcmdcard_kydroid_envrun.connect(self.slot_goto_apkpage)
+
             self.apt_process_finish.connect(recommend.slot_work_finished)
             self.apt_process_cancel.connect(recommend.slot_work_cancel)
             self.trans_card_status.connect(recommend.slot_change_btn_status)
@@ -3049,6 +3063,11 @@ class SoftwareCenter(QMainWindow,Signals):
             self.normalcard_progress_finish.connect(recommend.slot_progress_finish)
             self.normalcard_progress_cancel.connect(recommend.slot_progress_cancel)
 
+            recommend.remove_app.connect(self.slot_click_remove)
+            recommend.signale_set.connect(self.cacnel_apkname)
+            recommend.get_card_status.connect(self.slot_get_normal_card_status)
+            recommend.connct_cancel.connect(self.cacnel_wait)
+
             recommend.get_card_status.connect(self.slot_get_normal_card_status)#12.02
 
             # self.adv.show_app_detail.connect(self.slot_show_app_detail)
@@ -3056,6 +3075,7 @@ class SoftwareCenter(QMainWindow,Signals):
         if(first):
             self.rec_ready = True
         self.check_init_ready(bysignal)
+
 
     # def slot_ratingrank_apps_ready(self, applist, bysignal):
     #     if (Globals.DEBUG_SWITCH):
@@ -3125,6 +3145,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.show_headdetail_all_control()
         self.ui.set_lindit.show()
         self.show_red_search()
+        Globals.LOGIN_SUCCESS = False
 
 
     #
@@ -3249,7 +3270,7 @@ class SoftwareCenter(QMainWindow,Signals):
             item = self.ui.taskListWidget.item(top)
             taskitem = self.ui.taskListWidget.itemWidget(item)
             #if (taskitem.ui.status.text() == "完成"or taskitem.ui.status.text()=="失败"):
-            if (taskitem.ui.status.text() == _("perfection") or taskitem.ui.status.text() == _("failure")):
+            if (taskitem.ui.status.text() == _("perfection") or taskitem.ui.status.text() == _("failure")or taskitem.ui.status.text() == _("Cancelled")):
                 delitem = self.ui.taskListWidget.takeItem(top)
                 self.ui.taskListWidget.removeItemWidget(delitem)
                 del delitem		
@@ -3439,8 +3460,9 @@ class SoftwareCenter(QMainWindow,Signals):
 
         #709显卡 检测，临时使用
         if os.popen("lspci -n|awk '{print $3}' |grep '0709:'").read() != '':
-            self.messageBox.alert_msg("709显卡优化中\n敬请期待！")
-            return
+            if (KYDROID_VERSION == "kydroid2"):
+                self.messageBox.alert_msg("709显卡优化中\n敬请期待！")
+                return
 
         if self.kydroid_service.hasKydroid == False:
             #self.messageBox.alert_msg("未检测到安卓兼容环境\n无法安装安卓APP")
@@ -3487,10 +3509,8 @@ class SoftwareCenter(QMainWindow,Signals):
             if not self.worker_thread0.appmgr.check_kydroid_envrun():
                 self.slot_kydroid_envrun()
             else :
-                Globals.apkpagefirst =False
                 if self.kydroid_service.hasKydroid != False:
                     self.apkpageload.start_loading()
-                    # self.worker_thread0.appmgr.get_kydroid_apklist()
                     self.worker_thread0.appmgr.apk_page_create()
         self.show_red_search()
 
@@ -4108,6 +4128,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.reset_nav_bar_focus_one()
         self.ui.btnCloseDetail.setVisible(True)
         self.hide_headdetail_all_control()
+        Globals.LOGIN_SUCCESS =True
         self.detailScrollWidget.showSimple(app)#, self.nowPage, self.prePage, btntext
         #     self.worker_thread2=MY_Thread(app, self.detailScrollWidget)
         #     self.worker_thread3 = Dowload_Thread(app.name, self.detailScrollWidget)
@@ -4123,6 +4144,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: show  deb detail
     #
     def slot_show_deb_detail(self, path):
+        self.show_to_frontend()
         self.reset_nav_bar()
         self.ui.btnCloseDetail.setVisible(True)
         Globals.LOCAL_DEB_FILE = path
@@ -4192,7 +4214,6 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: click install 
     #
     def slot_click_install(self, app):
-
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an install task:%s",app.name)
 
@@ -4203,12 +4224,15 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.add_task_item(app, AppActions.INSTALL)
                 self.worker_thread0.appmgr.submit_pingback_app(app.name)
                 self.detailScrollWidget.upload_appname(app.name)
+
         else:
             res = self.worker_thread0.backend.install_package(app.name)
             if res:
                 self.add_task_item(app, AppActions.INSTALL)
                 self.worker_thread0.appmgr.submit_pingback_app(app.name)
                 self.detailScrollWidget.upload_appname(app.name)
+
+
 
     #
     #函数名: 点击安装软件
@@ -4245,6 +4269,7 @@ class SoftwareCenter(QMainWindow,Signals):
             if res:
                 self.add_task_item(app, AppActions.UPGRADE)
 
+
     #
     #函数名:点击卸载
     #Function: click remove 
@@ -4280,6 +4305,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.username.setText(Globals.USER)
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/woman-logo.png')}")
         self.detailScrollWidget.ui.pl_login.hide()
+        self.detailScrollWidget.ui.reviewText.setPlaceholderText(_("评论字数超过150个字或者3行后会省略，鼠标悬浮评论框即可查看评论内容"))
+        self.detailScrollWidget.ui.reviewText.setPlaceholderText(_("If the number of comments exceeds 150 words or 3 lines, it will be omitted. Hover over the comment box to view the comments"))
         self.detailScrollWidget.ui.free_registration.hide()
         self.detailScrollWidget.ui.reviewText.setReadOnly(False)
 
@@ -4744,6 +4771,8 @@ class SoftwareCenter(QMainWindow,Signals):
                 #self.messageBox.alert_msg("卸载软件出错:")
                 self.messageBox.alert_msg(_("Error uninstalling software:"))
                 # buttom = QMessageBox.information(self, "卸载APP出错", "卸载APP出错:" + name + "\n", QMessageBox.Yes)
+            elif int(percent) == int(-20):
+                self.slot_cancel_for_work_filed(name, action)
             else:
                 self.slot_cancel_for_work_filed(name, action)
                 #self.messageBox.alert_msg(AptActionMsg[action] + "失败")
@@ -4860,6 +4889,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.login.clean_user_password()
         self.detailScrollWidget.ui.free_registration.show()
         self.detailScrollWidget.ui.pl_login.show()
+        self.detailScrollWidget.ui.reviewText.setPlaceholderText(_(" "))
         self.detailScrollWidget.ui.reviewText.setReadOnly(True)
         Globals.EMAIL = ''
         Globals.USER = ''
@@ -4867,6 +4897,8 @@ class SoftwareCenter(QMainWindow,Signals):
         Globals.LAST_LOGIN = ''
         Globals.USER_IDEN = ''
         Globals.USER_LEVEL = ''
+        if Globals.LOGIN_SUCCESS==True:
+            self.detailScrollWidget.copy_ratings_reset(0)
 
     # user login
     #def slot_do_login_account(self):
@@ -5036,7 +5068,38 @@ def windows():
     animation.setDuration(100000)
     animation.setStartValue(QRect(0, 0, 100, 30))
     animation.setEndValue(QRect(1250, 1250, 100, 30))
-    animation.start() 
+    animation.start()
+
+#
+#函数名：单例
+#
+#
+pidfile=0
+def app_instance():
+    global pidfile
+    pidfile = open(os.path.realpath(__file__), "r")
+    try:
+        fcntl.flock(pidfile, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except:
+        try:
+            bus = dbus.SessionBus()
+        except:
+            LOG.exception("could not initiate dbus")
+            sys.exit(0)
+        proxy_obj = bus.get_object('com.ubuntukylin.softwarecenter', '/com/ubuntukylin/softwarecenter')
+        iface = dbus.Interface(proxy_obj, 'com.ubuntukylin.utiliface')
+       #iface.bring_to_front()
+        # user clicked local deb file, show info
+        if(Globals.LOCAL_DEB_FILE != None):
+           # sys.exit(0)
+            iface.show_deb_file(Globals.LOCAL_DEB_FILE)
+            Globals.UPDATE_HOM = 1
+        elif(Globals.REMOVE_SOFT != None):
+            iface.show_remove_soft(Globals.REMOVE_SOFT)
+            Globals.UPDATE_HOM = 1
+        iface.bring_to_front()
+        sys.exit(0)
+
 
 #
 #函数名: 主函数
@@ -5044,6 +5107,9 @@ def windows():
 # 
 def main():
     app = QApplication(sys.argv)
+    if app.desktop().width()>=2560:
+        QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+        QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 #   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
 #   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
@@ -5090,9 +5156,13 @@ def main():
             Globals.LAUNCH_MODE = 'normal'
             if(check_local_deb_file(arg)):
                 Globals.LOCAL_DEB_FILE = arg
+                MessageBox = File_window()
+                MessageBox.setText(_("Opening files is not supported"))
+                MessageBox.exec()
+                sys.exit(0)
             else:
                 sys.exit(0)
-
+    app_instance()
     mw = SoftwareCenter()
     # mw.set_sources_list()
     signal.signal(signal.SIGINT, quit)
@@ -5102,6 +5172,4 @@ def main():
 
 
 if __name__ == '__main__':
-    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     main()
