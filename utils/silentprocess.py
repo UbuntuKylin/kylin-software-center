@@ -549,12 +549,14 @@ class SilentProcess(multiprocessing.Process):
                 enquire.set_query(query)
                 doccount = DB.get_doccount()
                 matches = enquire.get_mset(0,doccount)
+                flag = 1
                 if matches.size() != 0:
                     for re in matches:
                         get_name = re.document.get_data()
                         if (isinstance(get_name,bytes)):
                             get_name = get_name.decode(encoding='utf-8')
                         if get_name == app_name:
+                            flag = 0
                             docid = re.docid
                             doc = re.document
                             doc.clear_terms()
@@ -583,7 +585,7 @@ class SilentProcess(multiprocessing.Process):
 
                         else:
                             continue
-                else:
+                if flag:
                     doc = xapian.Document()
                     doc.set_data(app_name)
                     doc.add_term(app_name,10)

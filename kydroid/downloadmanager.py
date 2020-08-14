@@ -66,6 +66,8 @@ class DownloadManager(QObject):
     #
     def download_schedule(self, a, b, c):
         percent = a * b / self.size * 100
+        if Globals.STOP_DOWNLOAD==True:
+            sys.exit(0)
         # self.appmgr.normalcard_progress_change.emit(self.appname, percent, AppActions.DOWNLOADAPK)
         if int(percent) == self.percent_num :
             self.percent_num += 5
@@ -82,6 +84,7 @@ class DownloadManager(QObject):
 
 
         try: # 防止出现下载中断的情况
+            Globals.STOP_DOWNLOAD=False
             request.urlretrieve(apkurl, apklocal, self.download_schedule)
         except:
             count = 1
@@ -92,7 +95,10 @@ class DownloadManager(QObject):
                 except:
                     count += 1
             if count > 5:
-                self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.INSTALL, -2, 'download apk failed')
+                if Globals.STOP_DOWNLOAD==False:
+                    self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.INSTALL, -2, 'download apk failed')
+                else :
+                    self.appmgr.apk_process.emit(self.appname, 'apt', AppActions.INSTALL, -20, 'download cancel')
                 return
 
         if (Globals.DEBUG_SWITCH):

@@ -106,6 +106,11 @@ class Ui_NormalCard(object):
         self.progressBar_icon.setObjectName(_fromUtf8("icon_progressBar"))
 
 
+        self.btnCancel = QPushButton(self.progressBar)
+        self.btnCancel.setGeometry(QtCore.QRect(176, 78, 14,14))
+        self.btnCancel.setText(_fromUtf8(""))
+        self.btnCancel.setObjectName(_fromUtf8("btncancel"))
+
 
         self.retranslateUi(NormalCard)
         QtCore.QMetaObject.connectSlotsByName(NormalCard)

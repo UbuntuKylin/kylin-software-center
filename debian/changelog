@@ -1,3 +1,25 @@
+kylin-software-center (3.8.1kord) v100; urgency=medium
+
+  * How to deal with the lack of dependency of apt installation application before shielding.
+  * The Android Software Download is changed to linear queue download as apt to solve the problem of probability deadlock and thread recovery when the thread download reaches more than 50 at the same time.
+  * Fixed two kinds of abnormal filter that may be stuck in use
+  * Source judgment of adding kydroid 3709 and Jingjia micro card.
+  * Optimize the thread of Android Software queue installation, from processing routine tasks to initialization thread.
+  * Add an android app cancellation feature that is being downloaded.
+  * Fix progress bar bugs and button problems caused by clicking cancel.
+  * When fixing the DBUS service exception, the prompt interface is placed in the thread, which causes the exception.
+  * Fix the problem of clicking the uninstall button in the software details interface in the uninstall interface, and the software uninstall success button did not appear.
+  * Ft1500 adds a blacklist of Android apps that cannot be used.
+  * Fix the problem that the package name cannot be synchronized when it is a substring of an existing package name in xapian search.
+  * Dealing with software store self unloading.
+  * Fix the startup problem, black box problem and multi icon problem of taskbar when opening DEB package.
+  * Fix ratings, comments, registration rules, etc.
+  * Set rules for software store to open files.
+  * Fixed some software shows that the installed status button is not correct, and fixed the interface blocking problem when the comment score is twice clicked.
+  * Fixed comment display and unknown software size display.
+
+ -- dengnan <dengnan@kylinos.cn>  Wed, 12 Aug 2020 13:44:42 +0800
+
 ubuntu-kylin-software-center (3.6.0kord) focal; urgency=medium
 
   * Added environment variable detection for 4k HD screen.

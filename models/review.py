@@ -38,3 +38,4 @@ class Review(object):
         self.version = None
         self.up_total = None
         self.down_total = None
+        self.user_rating=0

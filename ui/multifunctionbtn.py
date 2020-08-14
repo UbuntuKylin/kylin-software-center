@@ -53,10 +53,9 @@ class MultiFunctionBtn(QWidget,Signals):
         QWidget.__init__(self, parent)
         self.ui_init()
         self.messageBox = messageBox
-
         self.loading = MiniLoadingDiv(self,self)
+        self.loading.move(-70,0)
         self.loading.raise_()
-        self.loading.move(-65,0)
 
         self.switchTimer = QTimer(self)
         self.switchTimer.timeout.connect(self.slot_switch_animation_step)
@@ -85,10 +84,10 @@ class MultiFunctionBtn(QWidget,Signals):
         # self.ui.btnUpdate.setStyleSheet("QPushButton{font-size:14px;background:#0ad60f;border:1px solid #df9b23;border-radius:3px;color:white;}QPushButton:hover{background-color:#fdbf52;border:1px solid #df9b23;color:white;}QPushButton:pressed{background-color:#e29f29;border:1px solid #c07b04;color:white;}")
         # self.ui.btnUninstall.setStyleSheet("QPushButton{font-size:14px;background:#ff6631;border:1px solid #97a5b9;border-radius:3px;color:white;}QPushButton:hover{background-color:#bac7d7;border:1px solid #97a5b9;color:white;}QPushButton:pressed{background-color:#97a5b9;border:1px solid #7e8da1;color:white;}")
         self.ui.btnRun.setStyleSheet("QPushButton{font-size:14px;background:#0FA2E8;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#14ACF5;border:0px;color:white;}QPushButton:pressed{background-color:#0B95D7;border:0px;color:white;}")
-        self.ui.btnInstall.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#16d911;border:0px;color:white;}QPushButton:pressed{background-color:#07b302;border:0px;color:white;}")
+        self.ui.btnInstall.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#16d911;border:px;color:white;}QPushButton:pressed{background-color:#07b302;border:0px;color:white;}")
         self.ui.btnUpdate.setStyleSheet("QPushButton{font-size:14px;background:#0ad60f;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#0ad60f;border:0px;color:white;}QPushButton:pressed{background-color:#0ad60f;border:0px;color:white;}")
         self.ui.btnUninstall.setStyleSheet("QPushButton{font-size:14px;background:#ff6631;border:0px;border-radius:3px;color:white;}QPushButton:hover{background-color:#ff6631;border:0px;color:white;}QPushButton:pressed{background-color:#ff6631;border:0px;color:white;}")
-
+        self.loading.raise_()
     #
     # 函数名:初始化窗口
     # Function:init window
@@ -396,7 +395,7 @@ class MultiFunctionBtn(QWidget,Signals):
                     # self.ui.btnRun.move(0, y)
                     # self.ui.btnInstall.move(0, y + 123)
                     # self.ui.btnUninstall.move(0, y + 41)
-                    self.ui.btnUpdate.move(y + 216)
+                    self.ui.btnUpdate.move(y + 216,0)
                     self.ui.btnRun.move(y,0)
                     self.ui.btnInstall.move(y + 324,0)
                     self.ui.btnUninstall.move(y + 108,0)
@@ -460,8 +459,8 @@ class MultiFunctionBtn(QWidget,Signals):
                     # self.ui.btnRun.move(0, y + 82)
                     # self.ui.btnInstall.move(0, y)
                     # self.ui.btnUninstall.move(0, y + 123)
-                    self.ui.btnUpdate.move(y + 108)
-                    self.ui.btnRun.move(y + 216)
+                    self.ui.btnUpdate.move(y + 108,0)
+                    self.ui.btnRun.move(y + 216,0)
                     self.ui.btnInstall.move(y,0)
                     self.ui.btnUninstall.move(y + 324,0)
 
@@ -500,7 +499,7 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnUpdate.move(0, y + 41)
                         self.ui.btnUninstall.move(y,0)
                         self.ui.btnRun.move(y + 216,0)
-                        self.ui.btnInstall.move(y + 324)
+                        self.ui.btnInstall.move(y + 324,0)
                         self.ui.btnUpdate.move(y + 108,0)
                     else:
                         self.setBtnEnabledPlus(self.ui.btnRun, True)
@@ -527,7 +526,7 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnInstall.move(0, y + 123)
                         # self.ui.btnUpdate.move(0, y)
                         # self.ui.btnUninstall.move(0, y + 41)
-                        self.ui.btnRun.move(0, y+216)
+                        self.ui.btnRun.move(y+216,0)
                         self.ui.btnInstall.move(y + 324,0)
                         self.ui.btnUpdate.move(y,0)
                         self.ui.btnUninstall.move(y + 108,0)
@@ -537,7 +536,7 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnInstall.move(0, y + 123)
                         # self.ui.btnUpdate.move(0, y + 82)
                         # self.ui.btnUninstall.move(0, y)
-                        self.ui.btnRun.move(y + 108)
+                        self.ui.btnRun.move(y + 108,0)
                         self.ui.btnInstall.move(y + 324,0)
                         self.ui.btnUpdate.move(y + 216,0)
                         self.ui.btnUninstall.move(y,0)
@@ -552,9 +551,9 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnUpdate.move(0, y + 41)
                         # self.ui.btnUninstall.move(0, y + 82)
                         self.ui.btnRun.move(y,0)
-                        self.ui.btnInstall.move(y + 324)
+                        self.ui.btnInstall.move(y + 324,0)
                         self.ui.btnUpdate.move(y + 108,0)
-                        self.ui.btnUninstall.move(y +216)
+                        self.ui.btnUninstall.move(y +216,0)
                     else:
                         self.setBtnEnabledPlus(self.ui.btnUpdate, False)
                         # self.ui.btnRun.move(0, y)
@@ -634,7 +633,7 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnInstall.move(0, y + 123)
                         # self.ui.btnUninstall.move(0, y + 41)
                         self.ui.btnUpdate.move(y,0)
-                        self.ui.btnRun.move(y + 216)
+                        self.ui.btnRun.move(y + 216,0)
                         self.ui.btnInstall.move(y + 324,0)
                         self.ui.btnUninstall.move(y + 108,0)
                     else:
@@ -663,8 +662,8 @@ class MultiFunctionBtn(QWidget,Signals):
         self.ui.btnInstall.hide()
         self.ui.btnUpdate.hide()
         self.ui.btnUninstall.hide()
-
         self.loading.start_loading()
+        self.loading.raise_()
 
     #
     # 函数名: 显示按钮
@@ -738,16 +737,16 @@ class MultiFunctionBtn(QWidget,Signals):
             self.py = 0
             if self.ui.btnRun.isEnabled():
                 self.ui.btnRun.show()
-                self.py += 41
+                self.py += 50
             if self.ui.btnInstall.isEnabled():
                 self.ui.btnInstall.show()
-                self.py += 41
+                self.py += 50
             if self.ui.btnUpdate.isEnabled():
                 self.ui.btnUpdate.show()
-                self.py += 41
+                self.py += 50
             if self.ui.btnUninstall.isEnabled():
                 self.ui.btnUninstall.show()
-                self.py += 41
+                self.py += 50
             if(self.py < 163):
                 self.py += 4
                 self.resize(self.width(), self.py)
@@ -755,12 +754,12 @@ class MultiFunctionBtn(QWidget,Signals):
                 self.switchTimer.stop()
                 self.resize(self.width(), 163)
         else:
-            if(self.py > 40):
+            if(self.py > 50):
                 self.py -= 4
                 self.resize(self.width(), self.py)
             else:
                 self.switchTimer.stop()
-                self.resize(self.width(), 40)
+                self.resize(self.width(), 50)
 
     #
     # 函数名:点击启动
@@ -807,7 +806,7 @@ class MultiFunctionBtn(QWidget,Signals):
     #
     def slot_click_btn_uninstall(self):
         # kobe 1106
-        if self.app.name == "ubuntu-kylin-software-center":
+        if self.app.name == "kylin-software-center":
             self.uninstall_uksc_or_not.emit("detailscrollwidget")
         else:
             self.app.status = PkgStates.REMOVING
@@ -863,7 +862,7 @@ class MultiFunctionBtn(QWidget,Signals):
                 # self.ui.btnUpdate.move(0, y + 82)
                 # self.ui.btnUninstall.move(0, y + 123)
                 self.ui.btnInstall.move(y,0)
-                self.ui.btnRun.move(y + 108)
+                self.ui.btnRun.move(y + 108,0)
                 self.ui.btnUpdate.move(y + 216,0)
                 self.ui.btnUninstall.move(y + 324,0)
             else:
@@ -917,7 +916,7 @@ class MultiFunctionBtn(QWidget,Signals):
                             # self.ui.btnInstall.move(0, y + 123)
                             # self.ui.btnUpdate.move(0, y + 82)
                             # self.ui.btnUninstall.move(0, y)
-                            self.ui.btnRun.move(y + 108)
+                            self.ui.btnRun.move(y + 108,0)
                             self.ui.btnInstall.move(y + 324,0)
                             self.ui.btnUpdate.move(y + 216,0)
                             self.ui.btnUninstall.move(y,0)
@@ -933,7 +932,7 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnUpdate.move(0, y + 82)
                         # self.ui.btnInstall.move(0, y + 123)
                         self.ui.btnRun.move(y,0)
-                        self.ui.btnUninstall.move(y + 108)
+                        self.ui.btnUninstall.move(y + 108,0)
                         self.ui.btnUpdate.move(y + 216,0)
                         self.ui.btnInstall.move(y + 324,0)
                     else:
@@ -1130,7 +1129,7 @@ class MultiFunctionBtn(QWidget,Signals):
                             # self.ui.btnRun.move(0, y + 82)
                             # self.ui.btnInstall.move(0, y + 123)
                             # self.ui.btnUninstall.move(0, y)
-                            self.ui.btnUpdate.move(y + 108)
+                            self.ui.btnUpdate.move(y + 108,0)
                             self.ui.btnRun.move(y + 216,0)
                             self.ui.btnInstall.move(y + 324,0)
                             self.ui.btnUninstall.move(y,0)
@@ -1236,7 +1235,7 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnInstall.move(0, y + 123)
                         # self.ui.btnUpdate.move(0, y)
                         # self.ui.btnUninstall.move(0, y + 41)
-                        self.ui.btnRun.move(216)
+                        self.ui.btnRun.move(y+216,0)
                         self.ui.btnInstall.move(y + 324,0)
                         self.ui.btnUpdate.move(y,0)
                         self.ui.btnUninstall.move(y + 108,0)
@@ -1350,9 +1349,9 @@ class MultiFunctionBtn(QWidget,Signals):
                         # self.ui.btnInstall.move(0, y + 123)
                         # self.ui.btnUninstall.move(0, y + 82)
                         self.ui.btnUpdate.move(y,0)
-                        self.ui.btnRun.move(y + 108,)
+                        self.ui.btnRun.move(y + 108,0)
                         self.ui.btnInstall.move(y + 324,0)
-                        self.ui.btnUninstall.move(y + 216)
+                        self.ui.btnUninstall.move(y + 216,0)
                     self.setBtnEnabledPlus(self.ui.btnUpdate, True)
                     self.setBtnEnabledPlus(self.ui.btnUninstall, True)
                     self.setBtnEnabledPlus(self.ui.btnInstall, False)

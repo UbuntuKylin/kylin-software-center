@@ -61,7 +61,8 @@ kydroid_source = {
     },
     "kydroid3": {
         # "amd64":"http://archive.kylinos.cn/kylin/kydroid/3/x86/",
-        "arm64":"http://archive.kylinos.cn/kylin/kydroid/3/arm64/"
+        "arm64":"http://archive.kylinos.cn/kylin/kydroid/3/arm64/",
+        "other":"http://archive.kylinos.cn/kylin/kydroid/3/other/"  #709和景嘉微显卡源
     }
 }
 
@@ -78,6 +79,10 @@ else:
 try:
     arch = os.popen("dpkg --print-architecture").readline().splitlines()[0]
     kydroid_config = configparser.ConfigParser()
+
+    if((os.popen("lspci -n|awk '{print $3}' |grep '0709:'").read() != '') or (os.popen("cat /proc/fb |grep -i MWV206").read() != '')): # 709和景嘉微特殊处理
+        arch = "other"
+
 
     kydroid_config.read(KYDROID_CONF_PATH)
     kydroid_version = kydroid_config['image']['repo']
@@ -239,7 +244,7 @@ class Signals:
     # from models.application import Application
     init_models_ready = pyqtSignal(str,str)
 
-    myinit_emit = pyqtSignal()
+    myinit_emit = pyqtSignal(bool)
     myads_icon=pyqtSignal()
 #    chksoftwareover = pyqtSignal()
 #    getallpackagesover = pyqtSignal()
@@ -360,6 +365,28 @@ class Signals:
 
     screnn=pyqtSignal(str)
 
+    nomol_cancel=pyqtSignal(BaseInfo,str)#调用dbus接口取消等待下载的软件
+
+    connct_cancel=pyqtSignal(str)#通过界面的取消按钮修改下载界面中的取消按钮的状态
+
+    set_cancel_wait=pyqtSignal(str)#通过界面的取消按钮修改下载界面中的取消按钮的状态
+
+    apk_cancel_download=pyqtSignal(str,BaseInfo)#下载管理中的取消按钮取消等待下载的安卓应用任务
+    # apk_nocard_cancel=pyqtSignal()#界面的取消按钮取消等待下载的安卓应用任务
+
+    signale_set=pyqtSignal(str,BaseInfo)#界面的取消按钮取消等待下载的安卓应用任务
+
+    task_to_normocad=pyqtSignal(str)#下载界面的取消按钮修改界面的取消按钮的状态
+
+    kylin_goto_normocad=pyqtSignal(str)#界面的取消按钮修改自身的状态
+
+    set_detail_install=pyqtSignal()#界面按钮修改详情界面按钮的状态
+
+    # cancel_btncancel=pyqtSignal()#授权时取消后对“取消下载”的处理
+    login_sucess_goto_star=pyqtSignal()#
+    reset_star_ft=pyqtSignal()
+
+    login_out=pyqtSignal()#退出登录时清空评分
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
@@ -447,6 +474,19 @@ PKG_NAME = {
     "crossover:i386": "/opt/cxoffice/bin/crossover",#crossover:i386
     "gnome-screenshot":  "org.gnome.Screenshot",
     "gnome-mines":  "gnomine",
+    "qtcreator":"org.qt-project.qtcreator",
+    "suwellreaderpro":"SuwellReader",
+    "qaxbrowser-safe-stable":"qaxbrowser-safe",
+    "foxitofficesuite":"FoxitofficeSuite",
+    "linkdoodsetup": "Linkdood",
+    "yozo-office": "yozo-writer",
+    "zwcad-linuxpreinst": "ZWCAD-LinuxPreInst",
+    "browser360-cn-stable": "browser360-cn",
+    "360safe": "start360safe",
+    "eleanscan": "Elean",
+    "jingyunsd": "JingyunSd",
+    "ukui-biometric-manager": "biometric-manager",
+    "linuxqq":"qq",
 }
 
 class ErrorCode:

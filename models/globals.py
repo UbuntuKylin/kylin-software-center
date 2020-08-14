@@ -109,3 +109,10 @@ class Globals:
 
     isOnline = True
     apkpagefirst = True
+
+    TASK_LIST=[]
+
+    STOP_DOWNLOAD=False
+
+    LOGIN_SUCCESS=False
+

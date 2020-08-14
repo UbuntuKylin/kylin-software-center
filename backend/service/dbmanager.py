@@ -151,9 +151,12 @@ class Database:
                     #c = list(filter(str.isdigit, c.encode("utf-8")))
                     c = re.sub("\D","",c)
                     c = c.encode("utf-8")
-                if(int(cateid) == int(c)):
-                    al += str(aid)
-                    al += ','
+                try:
+                    if(int(cateid) == int(c)):
+                        al += str(aid)
+                        al += ','
+                except:
+                    pass
 
         al = al[:-1]
         sql = "select app_name,display_name_cn from application where id in (%s) order by rating_avg DESC,app_name"
@@ -299,6 +302,8 @@ class Database:
             new_query = xapian.Query("the_#ukxapiandb#_version")
             new_enquire.set_query(new_query)
             new_matches = new_enquire.get_mset(0,1)
+            new_version = 0
+            old_version = 0
 
             for new_item in new_matches:
                 new_doc = new_item.document
@@ -312,8 +317,8 @@ class Database:
                     for old_item in old_matches:
                         old_doc = old_item.document
                         old_version = old_doc.get_value(1) #valueslot:1 xapiandb version
-            #if (Globals.DEBUG_SWITCH):
-            print(("old xapiandb  version:",old_version," new xapiandb version:",new_version))
+            if (Globals.DEBUG_SWITCH):
+                print(("old xapiandb  version:",old_version," new xapiandb version:",new_version))
         except:
             return True
         else:
@@ -497,7 +502,6 @@ class Database:
                         finally:
                             lock.release()
 
-
         # all download check over, return reviews to show
         limit = (page - 1) * 10
 
@@ -518,7 +522,13 @@ class Database:
             review.language = item[5]
             review.up_total = item[6]
             review.down_total = item[7]
+            try:
+                user_rating = self.premoter.get_user_ratings(review.user_display, package_name)
+                review.user_rating=user_rating[0]["rating"]
+            except:
+                review.user_rating = 0
             reviews.append(review)
+
 
         return reviews
 

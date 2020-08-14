@@ -53,6 +53,7 @@ class TaskListItemWidget(QWidget,Signals):
         self.action = action
         self.uiname = uiname
         self.finish = False
+        self.Cancel_task=0
 
         # self.ui.size.setAlignment(Qt.AlignCenter)
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
@@ -68,10 +69,13 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.progresslabel.setText("")
 
         self.ui.name.setStyleSheet("QLabel{background-color: transparent;border:0px;font-size:14px;color:#000000}")
+        # self.ui.btnCancel.setStyleSheet(
+        #     "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
 
+        # self.ui.btnCancel.setText("取消")
         #self.ui.status.setStyleSheet("QLabel{font-size:12px;font-weight:bold;background-color:#EAF0F3;}")
         self.ui.status.setStyleSheet("QLabel{font-size:12px;background-color:transparent;}")
-        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-hover.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel_1.png');border:0px;}QPushButton:hover{background:url('res/cancel_2.png');}QPushButton:pressed{background:url('res/cancel_2.png');}")
         if(Globals.MIPS64):
             self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
         else:
@@ -80,9 +84,10 @@ class TaskListItemWidget(QWidget,Signals):
 
         self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
 
-        self.ui.btnCancel.hide()
+        # self.ui.btnCancel.hide()
 
         if app.status == PkgStates.INSTALLING:#"installing":
+            self.ui.btnCancel.show()
             #self.ui.name.setText("安装 "+app.name)
             try:
                 self.ui.progressBarsmall.setValue(self.app.percent)
@@ -109,6 +114,7 @@ class TaskListItemWidget(QWidget,Signals):
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.REMOVING:#"uninstalling":
+            self.ui.btnCancel.hide()
             #self.ui.name.setText("卸载 "+app.name)
             try:
                 self.ui.progressBarsmall.setValue(self.app.percent)
@@ -118,6 +124,7 @@ class TaskListItemWidget(QWidget,Signals):
             text = setLongTextToElideFormat(self.ui.name, _("Uninstall") + app.name)
             #self.uiname = "卸载 "+app.name
             self.uiname = _("Uninstall") + app.name
+            self.ui.btnCancel.hide()
             if(Globals.MIPS64):
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
                 self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
@@ -179,7 +186,7 @@ class TaskListItemWidget(QWidget,Signals):
             # img = img.scaled(32, 32)
             self.ui.icon.setPixmap(img)
 
-            size = app.packageSize
+            size = app.installedSize
             sizek = size / 1024
             sizek = round(sizek,4)
             if(sizek == 0):
@@ -195,6 +202,7 @@ class TaskListItemWidget(QWidget,Signals):
         self.ui.progresslabel.setText("")
         #self.ui.status.setText("等待中")
         self.ui.status.setText(_("Waiting"))
+        # self.ui.btnCancel.hide()
         if(dftext):
             self.ui.status.setText(dftext)
         if(uiname):
@@ -226,16 +234,20 @@ class TaskListItemWidget(QWidget,Signals):
         if(self.finish == False):
             text = ''
             if(processtype == 'fetch'):
+                self.ui.btnCancel.show()
+                # self.ui.btnCancel.show()
                 #text = "正在下载: "
                 text = _("downloading")
                 #self.ui.name.setText( "下载 " + self.app.name)
                 self.ui.name.setText(_("download") + self.app.name)
+
                 if percent >= 100:
                     #text = "下载完成，开始安装..."
                     self.ui.progressBar.reset()
                     self.ui.progresslabel.setText("")
                     # self.ui.progressBar.hide()
                     self.ui.progresslabel.show()
+                    self.ui.btnCancel.hide()
                     self.ui.status.show()
                     #self.ui.status.setText("正在安装")
                     self.ui.status.setText(_("Installing"))
@@ -340,6 +352,7 @@ class TaskListItemWidget(QWidget,Signals):
     #
     def slot_work_finished(self, pkgname, action):
         if self.app.name == pkgname and action == self.action:
+            self.ui.btnCancel.hide()
             #self.ui.progressBar.setValue(100)
             self.ui.progressBar.setValue(0)
             self.ui.progressBarsmall.setValue(0)
@@ -358,15 +371,38 @@ class TaskListItemWidget(QWidget,Signals):
     # Function:click cancel
     #
     def slot_click_cancel(self):
+        self.ui.progressBar.hide()
+        self.ui.status.setText(_("Cancelled"))
+        Globals.TASK_LIST.append(self.app.name)
+        self.ui.btnCancel.hide()
         if(self.isdeb == True or isinstance(self.app,DebFile)):
             return
         if(self.finish == True):
             self.task_remove.emit(self.tasknumber, self.app)
         else:
+            self.cancel_apk_task()
             # if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
             #     appaction = "install"
             # elif self.app.status in (PkgStates.UPGRADING, PkgStates.UPDATE):
             #     appaction = "upgrade"
             # elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
             #     appaction = "remove"
+            # self.task_remove.emit(self.tasknumber, self.app)
+            self.ui.status.setText(_("Cancelled"))
             self.task_cancel_tliw.emit(self.app, self.action)
+            self.task_to_normocad.emit(self.app.name)
+
+    #
+    #函数名：取消安卓下载任务，发送appname
+    #
+    def cancel_apk_task(self):
+        self.apk_cancel_download.emit("download_apk",self.app)
+    #
+    #函数名:函数取消
+    #
+    def cancl_download_app(self,appname):
+        if appname==self.app.name:
+            self.ui.progressBar.hide()
+            self.ui.status.setText(_("Cancelled"))
+            self.ui.btnCancel.hide()
+

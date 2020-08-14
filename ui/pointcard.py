@@ -106,7 +106,7 @@ class PointCard(QWidget,Signals):
 
         # convert size
         # installedsize = self.app.installedSize
-        installedsize = self.app.packageSize
+        installedsize = self.app.installedSize
         installedsizek = installedsize / 1024
         if(installedsizek == 0):
             #self.ui.size.setText("未知")

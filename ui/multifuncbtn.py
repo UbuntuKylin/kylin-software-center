@@ -30,7 +30,7 @@ except AttributeError:
 class Ui_MultiFuncBtn(object):
     def setupUi(self, MultiFuncBtn):
         MultiFuncBtn.setObjectName(_fromUtf8("MultiFuncBtn"))
-        MultiFuncBtn.resize(500, 40)
+        MultiFuncBtn.resize(500, 50)
         self.btnRun = QPushButton(MultiFuncBtn)
         self.btnRun.setGeometry(QtCore.QRect(0, 0, 100, 38))
         self.btnRun.setObjectName(_fromUtf8("btnRun"))

@@ -1,4 +1,4 @@
-Source: ubuntu-kylin-software-center
+Source: kylin-software-center
 Section: misc
 Priority: optional
 Maintainer: Ubuntu Kylin Team <ubuntukylin-members@list.launchpad.net>
@@ -12,7 +12,7 @@ Homepage: https://github.com/ubuntukylin/ubuntu-kylin-software-center
 Vcs-Git: https://github.com/ubuntukylin/ubuntu-kylin-software-center.git
 Vcs-Browser: https://github.com/ubuntukylin/ubuntu-kylin-software-center
 
-Package: ubuntu-kylin-software-center
+Package: kylin-software-center
 Architecture: any
 Depends: python3,
          python3-pyqt5,

@@ -59,7 +59,7 @@ class ListItemWidget(QWidget,Signals):
             self.ui.summary.setText(self.app.orig_summary)
 
         # installedsize = app.installedSize
-        installedsize = app.packageSize
+        installedsize = app.installedSize
         installedsizek = installedsize / 1024
         if(installedsizek == 0):
             #self.ui.installedsize.setText("未知")

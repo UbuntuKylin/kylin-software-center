@@ -65,12 +65,12 @@ class Ui_TaskLIWidget(object):
         self.status.setGeometry(QtCore.QRect(280, 31, 60, 18))
         self.status.setObjectName(_fromUtf8("status"))
         self.btnCancel = QPushButton(self.baseWidget)
-        self.btnCancel.setGeometry(QtCore.QRect(278, 25, 13, 13))
+        self.btnCancel.setGeometry(QtCore.QRect(306, 33, 14, 14))
         self.btnCancel.setText(_fromUtf8(""))
         self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
         self.progresslabel = QLabel(self.baseWidget)
         #self.progresslabel.setGeometry(QtCore.QRect(240, 23, 35, 18))
-        self.progresslabel.setGeometry(QtCore.QRect(300, 31, 30, 18))  # 下载进度百分比
+        self.progresslabel.setGeometry(QtCore.QRect(260, 31, 30, 18))  # 下载进度百分比
 
         self.progresslabel.setText(_fromUtf8(""))
         self.progresslabel.setObjectName(_fromUtf8("progresslabel"))
