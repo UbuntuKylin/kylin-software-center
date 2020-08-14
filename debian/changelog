@@ -1,4 +1,4 @@
-kylin-software-center (3.8.kord) v100; urgency=medium
+kylin-software-center (3.8.1kord) v100; urgency=medium
 
   * How to deal with the lack of dependency of apt installation application before shielding.
   * The Android Software Download is changed to linear queue download as apt to solve the problem of probability deadlock and thread recovery when the thread download reaches more than 50 at the same time.
