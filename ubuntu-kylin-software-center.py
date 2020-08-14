@@ -5156,10 +5156,13 @@ def main():
             Globals.LAUNCH_MODE = 'normal'
             if(check_local_deb_file(arg)):
                 Globals.LOCAL_DEB_FILE = arg
-                MessageBox = File_window()
-                MessageBox.setText(_("Opening files is not supported"))
-                MessageBox.exec()
-                sys.exit(0)
+                try:
+                    DebPackage(str(Globals.LOCAL_DEB_FILE))
+                except:
+                    MessageBox = File_window()
+                    MessageBox.setText(_("Failed to open the file. The file format is not supported or the file is abnormal"))
+                    MessageBox.exec()
+                    sys.exit(0)
             else:
                 sys.exit(0)
     app_instance()
