@@ -48,12 +48,13 @@ class Login(QWidget,Signals):
     #strs = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
     strs = r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$'
     def __init__(self,parent=None):
-        QWidget.__init__(self,parent)
+        QWidget.__init__(self)
         self.ui_init()
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.ui.bg.lower()
-        self.move(280, 60)
+        # self.move(280, 60)
         self.ui.topWidget.raise_()
+        self.setWindowTitle(_("Login"))
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 0))
         brush.setStyle(Qt.SolidPattern)
@@ -213,6 +214,24 @@ class Login(QWidget,Signals):
             self.ui.checkBox_5.setChecked(True)
 
 
+    #
+    #函数名: 鼠标点击事件
+    #Function: Mouse click event
+    #
+    def mousePressEvent(self, event):
+        if(event.button() == Qt.LeftButton):
+            self.clickx = event.globalPos().x()
+            self.clicky = event.globalPos().y()
+            self.dragPosition = event.globalPos() - self.pos()
+            event.accept()
+    #
+    #函数名: 窗口拖动事件
+    #Function: Window drag event
+    #
+    def mouseMoveEvent(self, event):
+        if(event.buttons() == Qt.LeftButton):
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()
 
     def slot_change2(self):
         if self.ui.checkBox_6.isChecked():
@@ -671,7 +690,7 @@ def main():
     globalfont.setFamily("文泉驿微米黑")
     app.setFont(globalfont)
     a = Login()
-    a.show()
+    # a.show()
 
     sys.exit(app.exec_())
 

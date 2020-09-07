@@ -268,7 +268,6 @@ class AptDaemon():
         self.dbus_service = dbus_service
         locale.setlocale(locale.LC_ALL, "zh_CN.UTF-8")
         self.cache = apt.Cache()
-        self.cache.open()
 
     # get package by pkgName
     def get_pkg_by_name(self, pkgName):

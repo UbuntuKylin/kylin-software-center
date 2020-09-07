@@ -1,3 +1,26 @@
+kylin-software-center (3.10.5kord) focal; urgency=medium
+
+  * After the software comments, the mouse hovers to display the line by line
+  * Fix Android Software uninstall problem
+  * After clearing the comments and not submitting, return to the interface and enter the details interface again. There are still problems with comments
+  * Fix the problem of incomplete display caused by too long package name in detail interface
+  * Fix the problem of multiple progress bars stuck after installing Android Software by clicking cancel to install again
+  * Modify 4K high clear screen detection
+  * Fix translation errors in Po files
+  * Fix app store startup for more than 20 seconds (occasionally)
+  * Modify DBUS exception prompt box information
+  * Repair search support Chinese and English Search
+  * Change the installation software name in download management to Chinese name
+  * Login, settings, download management three sub windows can be changed to drag alone
+  * Fixed a problem that could cause a deadlock when the download was cancelled
+  * Fix upgrade display exception
+  * Initializing Android display perfection
+  * Repair the incomplete display of the prompt box when the installation environment is abnormal
+  * Fix login problem, Download Android Software cancel button does not display the problem.
+  * Improve the number of upgrade abnormal bugs
+
+ -- dengnan <dengnan@kylinos.cn>  Mon, 07 Sep 2020 11:04:28 +0800
+
 kylin-software-center (3.8.1kord) v100; urgency=medium
 
   * How to deal with the lack of dependency of apt installation application before shielding.

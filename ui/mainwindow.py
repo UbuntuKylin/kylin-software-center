@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import glob
 from models.enums import (UBUNTUKYLIN_CACHE_SETADS_PATH)
+from ui.taskwidget import Taskwidget
 
 import gettext
 gettext.textdomain("ubuntu-kylin-software-center")
@@ -152,6 +153,14 @@ class Ui_MainWindow(object):
         self.apkWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.apkWidget.setObjectName(_fromUtf8("apkWidget"))
         self.apkWidget.setStyleSheet("QWidget{background:#f5f5f5;}")
+
+        self.datalabel =  QLabel(self.rightWidget)
+        self.datalabel.setGeometry(QtCore.QRect(0, 440, 850, 60))
+        self.datalabel.setObjectName(_fromUtf8("apkWidget"))
+        self.datalabel.setStyleSheet("QLabel{background:transparent;font-size:16px;color:#878787}")
+        self.datalabel.setText(_("The environment is initialized, the interface is temporarily locked, please wait..."))
+        self.datalabel.setAlignment(Qt.AlignCenter)
+        self.datalabel.setVisible(False)
 
         # self.apkline = QLabel(self.apkWidget)
         # self.apkline.setGeometry(QtCore.QRect(0, 44, 860, 1))
@@ -485,9 +494,10 @@ class Ui_MainWindow(object):
         self.searchcount.setGeometry(QtCore.QRect(40, 0, 40, 20))
         self.searchcount.setText(_fromUtf8(""))
         self.searchcount.setObjectName(_fromUtf8("searchcount"))
-        self.taskWidget = QWidget(self.rightWidget)
+        self.taskWidget = Taskwidget(self.rightWidget)
+        self.taskWidget.setWindowTitle(_("DL MGT"))
       # self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
-        self.taskWidget.setGeometry(QtCore.QRect(300, 50, 370, 460))
+      #   self.taskWidget.setGeometry(QtCore.QRect(300, 50, 370, 460))
         self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
         # self.taskWidget.raise_()
 

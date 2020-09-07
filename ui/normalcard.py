@@ -136,6 +136,8 @@ class NormalCard(QWidget,Signals):
         # convert size
         # installedsize = self.app.installedSize
         installedsize = self.app.installedSize
+        if installedsize == 0:
+            installedsize=app.packageSize
         installedsizek = installedsize / 1024
         if(installedsizek == 0):
             #self.ui.size.setText("未知")
@@ -455,6 +457,10 @@ class NormalCard(QWidget,Signals):
             self.ui.btn.setEnabled(False)
             #if(self.ui.btn.text() == "安装"):
             if (self.ui.btn.text() == _("Install")):
+                if isinstance(self.app, ApkInfo):
+                    pass
+                else:
+                    self.ui.btnCancel.hide()
                 self.app.status = PkgStates.INSTALLING
                 # self.ui.btn.setText("等待安装")
                 self.ui.btn.setText(_("Waiting for installation"))
@@ -644,7 +650,7 @@ class NormalCard(QWidget,Signals):
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
         if self.app.name == pkgname:
-            self.ui.btn.setEnabled(False)
+            #self.ui.btn.setEnabled(False)
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 if self.app.percent > 0:

@@ -67,12 +67,8 @@ msgid "Initialization prompt"
 msgstr "初始化提示"
 
 #: ubuntu-kylin-software-center.py:118
-msgid ""
-"Initialization failed (DBus service)\n"
-"Please confirm whether\n"
-"it is installedcorrectly, ignore the software installation and \n"
-"other operations will not workPlease select:"
-msgstr "初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"
+msgid "DBUS service exception is detected, which may be caused by the initial exception of apt module and poor network condition.\nPlease exit and restart the software store.\n"
+msgstr "检测到dbus服务异常，通常可能是由于apt模块初始异常、网络情况不佳等原因引起。\n请退出后重新打开软件商店。\n"
 
 #: ubuntu-kylin-software-center.py:251
 msgid "Galaxy Kylin Software Store"
@@ -315,7 +311,7 @@ msgstr "移动应用源无法连接\n请检查系统网络！"
 
 #: ubuntu-kylin-software-center.py:3079
 msgid "Android environment starts abnormally, operation fails！"
-msgstr "移动应用环境启动异常，操作失败！"
+msgstr "移动应用环境启动异常\n操作失败！"
 
 #: ubuntu-kylin-software-center.py:3375 ubuntu-kylin-software-center.py:3469
 msgid ""
@@ -1388,7 +1384,7 @@ msgstr "评论字数超过150个字或者3行后会省略，鼠标悬浮评论�
 
 #:ui/confirmdialog.py
 msgid "Tips"
-msgstr "用提示"
+msgstr "提示"
 
 #:ui/confirmdialog.py
 msgid "determine"
@@ -1398,7 +1394,17 @@ msgstr "确定"
 msgid "Opening files is not supported"
 msgstr "不支持打开文件"
 
+#:ubuntu-kylin-software-center.py
+msgid "Abnormal prompt"
+msgstr "异常提示"
 
+#:ubuntu-kylin-software-center.py
+msgid "Yes"
+msgstr "确定"
+
+#: ui/mainwindow.py:172
+msgid "The environment is initialized, the interface is temporarily locked, please wait..."
+msgstr "环境初始化，暂时锁定界面，请等待..."
 
 
 
