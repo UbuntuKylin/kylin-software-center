@@ -131,6 +131,8 @@ class RcmdCard(QWidget,Signals):
         # convert size
         # installedsize = self.app.installedSize
         installedsize = self.app.installedSize
+        if installedsize == 0:
+            installedsize=app.packageSize
         installedsizek = installedsize / 1024
         if(installedsizek == 0):
             #self.ui.size.setText("未知")
@@ -476,7 +478,7 @@ class RcmdCard(QWidget,Signals):
     # kobe 1106
     def slot_change_btn_status(self, pkgname, status):
         if self.app.name == pkgname:
-            self.ui.btn.setEnabled(False)
+           # self.ui.btn.setEnabled(False)
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 if self.app.percent > 0:

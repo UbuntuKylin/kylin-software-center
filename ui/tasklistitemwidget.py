@@ -54,7 +54,6 @@ class TaskListItemWidget(QWidget,Signals):
         self.uiname = uiname
         self.finish = False
         self.Cancel_task=0
-
         # self.ui.size.setAlignment(Qt.AlignCenter)
         self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
         self.ui.status.setAlignment(Qt.AlignTop)
@@ -94,9 +93,9 @@ class TaskListItemWidget(QWidget,Signals):
             except AttributeError as e:
                 pass
             #text = setLongTextToElideFormat(self.ui.name, "安装 "+app.name)
-            text = setLongTextToElideFormat(self.ui.name, _("Install") + app.name)
+            text = setLongTextToElideFormat(self.ui.name, _("Install") +" "+ app.displayname_cn)
             #self.uiname = "安装 "+app.name
-            self.uiname = _("Install") + app.name
+            self.uiname = _("Install") + " "+app.displayname_cn
             if(Globals.MIPS64):
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
                 self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
@@ -110,7 +109,7 @@ class TaskListItemWidget(QWidget,Signals):
             self.ui.progressBar.setWindowOpacity(0.8)
             if str(text).endswith("…") is True:
                 #self.ui.name.setToolTip("安装 "+app.name)
-                self.ui.name.setToolTip(_("Install") + app.name)
+                self.ui.name.setToolTip(_("Install") + " "+app.displayname_cn)
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.REMOVING:#"uninstalling":
@@ -121,9 +120,9 @@ class TaskListItemWidget(QWidget,Signals):
             except AttributeError as e:
                 pass
                 #text = setLongTextToElideFormat(self.ui.name, "卸载 "+app.name)
-            text = setLongTextToElideFormat(self.ui.name, _("Uninstall") + app.name)
+            text = setLongTextToElideFormat(self.ui.name, _("Uninstall") + " "+app.displayname_cn)
             #self.uiname = "卸载 "+app.name
-            self.uiname = _("Uninstall") + app.name
+            self.uiname = _("Uninstall") + " "+app.displayname_cn
             self.ui.btnCancel.hide()
             if(Globals.MIPS64):
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
@@ -138,7 +137,7 @@ class TaskListItemWidget(QWidget,Signals):
 
             if str(text).endswith("…") is True:
                 #self.ui.name.setToolTip("卸载 "+app.name)
-                self.ui.name.setToolTip(_("Uninstall") + app.name)
+                self.ui.name.setToolTip(_("Uninstall") +" "+ app.displayname_cn)
             else:
                 self.ui.name.setToolTip("")
         if app.status == PkgStates.UPGRADING:#"upgrading":
@@ -148,9 +147,9 @@ class TaskListItemWidget(QWidget,Signals):
                 pass
             #self.ui.name.setText("升级 "+app.name)
             #text = setLongTextToElideFormat(self.ui.name, "升级 "+app.name)
-            text = setLongTextToElideFormat(self.ui.name, _("Upgrade") + app.name)
+            text = setLongTextToElideFormat(self.ui.name, _("Upgrade") +" "+ app.displayname_cn)
             #self.uiname = "升级 "+app.name
-            self.uiname = _("Upgrade") + app.name
+            self.uiname = _("Upgrade") + " "+app.displayname_cn
             if(Globals.MIPS64):
                 self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border-radius:0px;color:#1E66A4;}")
                 self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
@@ -164,7 +163,7 @@ class TaskListItemWidget(QWidget,Signals):
 
             if str(text).endswith("…") is True:
                 #self.ui.name.setToolTip("升级 "+app.name)
-                self.ui.name.setToolTip(_("Upgrade") + app.name)
+                self.ui.name.setToolTip(_("Upgrade") +" "+ app.displayname_cn)
             else:
                 self.ui.name.setToolTip("")
 
@@ -216,7 +215,7 @@ class TaskListItemWidget(QWidget,Signals):
         # self.ui.progressBar.hide()
         self.ui.progresslabel.hide()
         self.ui.status.show()
-   
+
     #
     # 函数名:初始化界面
     # Function:init the interface
@@ -239,7 +238,11 @@ class TaskListItemWidget(QWidget,Signals):
                 #text = "正在下载: "
                 text = _("downloading")
                 #self.ui.name.setText( "下载 " + self.app.name)
-                self.ui.name.setText(_("download") + self.app.name)
+                self.ui.name.setText(_("download") +" "+ self.app.displayname_cn)
+                if isinstance(self.app,Application):
+                    self.ui.btnCancel.hide()
+                else:
+                    self.ui.btnCancel.show()
 
                 if percent >= 100:
                     #text = "下载完成，开始安装..."
@@ -276,11 +279,11 @@ class TaskListItemWidget(QWidget,Signals):
                 #if "下载" in self.ui.name.text():
                 if _("download") in self.ui.name.text():
                     #self.ui.name.setText("安装 " + self.app.name)
-                    self.ui.name.setText(_("Install") + self.app.name)
-                    text = setLongTextToElideFormat(self.ui.name, _("Install") + self.app.name)
+                    self.ui.name.setText(_("Install") +" "+ self.app.displayname_cn)
+                    text = setLongTextToElideFormat(self.ui.name, _("Install") +" "+ self.app.displayname_cn)
                     if str(text).endswith("…") is True:
                         # self.ui.name.setToolTip("安装 "+app.name)
-                        self.ui.name.setToolTip(_("Install") + self.app.name)
+                        self.ui.name.setToolTip(_("Install") +" "+ self.app.displayname_cn)
                     else:
                         self.ui.name.setToolTip("")
 
@@ -379,8 +382,7 @@ class TaskListItemWidget(QWidget,Signals):
             return
         if(self.finish == True):
             self.task_remove.emit(self.tasknumber, self.app)
-        else:
-            self.cancel_apk_task()
+        elif isinstance(self.app, Application):
             # if self.app.status in (PkgStates.INSTALLING, PkgStates.INSTALL):
             #     appaction = "install"
             # elif self.app.status in (PkgStates.UPGRADING, PkgStates.UPDATE):
@@ -388,6 +390,11 @@ class TaskListItemWidget(QWidget,Signals):
             # elif self.app.status in (PkgStates.REMOVING, PkgStates.UNINSTALL):
             #     appaction = "remove"
             # self.task_remove.emit(self.tasknumber, self.app)
+            self.ui.status.setText(_("Cancelled"))
+            self.task_cancel_tliw.emit(self.app, self.action)
+            self.task_to_normocad.emit(self.app.name)
+        else:
+            self.cancel_apk_task()
             self.ui.status.setText(_("Cancelled"))
             self.task_cancel_tliw.emit(self.app, self.action)
             self.task_to_normocad.emit(self.app.name)
@@ -405,4 +412,6 @@ class TaskListItemWidget(QWidget,Signals):
             self.ui.progressBar.hide()
             self.ui.status.setText(_("Cancelled"))
             self.ui.btnCancel.hide()
+    def hide_cancel_btn(self):
+        self.ui.btnCancel.hide()
 

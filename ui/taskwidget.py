@@ -29,20 +29,21 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.enums import Signals
 
-#
-# class Taskwidget(QWidget,Signals):
-#
-#     itemwidth = 146
-#     spacing = 6
-#
-#     def __init__(self, parent=None):
-#         QWidget.__init__(self, parent)
-#
-#         self.setGeometry(10, 25, 340, 42)
-#         # self.setGeometry(10, 35, 302, 21)
-#         # self.tasktab = QLabel(self)
-#         # self.tasktab.setGeometry(10, 19, 149, 5)
-#         # self.tasktab.hide()
+
+class Taskwidget(QWidget,Signals):
+
+    itemwidth = 146
+    spacing = 6
+
+    def __init__(self, parent=None):
+        QWidget.__init__(self)
+
+        self.setGeometry(300, 50, 370, 460)
+        self.setWindowFlags(Qt.FramelessWindowHint)
+
+        # self.tasktab = QLabel(self)
+        # self.tasktab.setGeometry(10, 19, 149, 5)
+        # self.tasktab.hide()
 #         self.taskPanel = QWidget(self)
 #         self.btnGroup = QButtonGroup(self.taskPanel)
 #        # self.btnGroup.buttonClicked.connect(self.slot_btn_clicked)
@@ -86,3 +87,23 @@ from models.enums import Signals
 #         self.setText(self.display_name)
 #
 #         self.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+
+
+    #
+    #函数名: 鼠标点击事件
+    #Function: Mouse click event
+    #
+    def mousePressEvent(self, event):
+        if(event.button() == Qt.LeftButton):
+            self.clickx = event.globalPos().x()
+            self.clicky = event.globalPos().y()
+            self.dragPosition = event.globalPos() - self.pos()
+            event.accept()
+    #
+    #函数名: 窗口拖动事件
+    #Function: Window drag event
+    #
+    def mouseMoveEvent(self, event):
+        if(event.buttons() == Qt.LeftButton):
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()

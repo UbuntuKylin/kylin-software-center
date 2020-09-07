@@ -254,6 +254,11 @@ class SoftwarecenterDbusService(dbus.service.Object):
     def exit(self):
         self.mainloop.quit()
 
+    # lixiang: wakeup dbus with timeout
+    @dbus.service.method(INTERFACE, in_signature='', out_signature='s')
+    def wakeup(self):
+        return "kylin"
+
     # check ubuntukylin source is in /etc/apt/sources.list or not
     @dbus.service.method(INTERFACE, in_signature='', out_signature='b', sender_keyword='sender')
     def check_source_ubuntukylin(self, sender=None):

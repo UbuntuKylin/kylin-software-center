@@ -770,15 +770,23 @@ class DetailScrollWidget(QScrollArea,Signals):
 
             #self.ui.debname.setText("软件包名: " + app.name)
         self.ui.debname.setText(_("Package name :") + app.name)
+        text = setLongTextToElideFormat(self.ui.debname,_("Package name :") +app.name)
+        self.ui.debname.setToolTip(app.name)
         # self.ui.installedVersion.setText("当前版本: " + app.installed_version)
         self.ui.installedVersion.setText(_("Current version :") + app.installed_version)
+        text = setLongTextToElideFormat(self.ui.installedVersion, _("Current version :") + app.installed_version)
+        self.ui.installedVersion.setToolTip(app.installed_version)
         #self.ui.candidateVersion.setText("软件源版本: " + app.candidate_version)
         self.ui.candidateVersion.setText(_("Software source version :") + app.candidate_version)
+        text = setLongTextToElideFormat(self.ui.candidateVersion,_("Software source version :") + app.candidate_version)
+        self.ui.candidateVersion.setToolTip(app.installed_version)
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
        #add in dengnan 获取下载次数
 
         size = app.installedSize
+        if size == 0:
+            size=app.packageSize
         sizek = size / 1024
         if(sizek == 0):
             #self.ui.size.setText("下载大小: " + "未知")
@@ -1842,7 +1850,10 @@ class DetailScrollWidget(QScrollArea,Signals):
 
             elif action == AppActions.REMOVE:
                 self.app.status = PkgStates.UNINSTALL
-                self.btns.reset_btns(self.app, PkgStates.UNINSTALL)#zx 2015.02.09
+                try:
+                    self.btns.reset_btns(self.app, PkgStates.UNINSTALL)#zx 2015.02.09
+                except:
+                    pass
                 self.ui.status.show()
 
             elif action == AppActions.UPGRADE:

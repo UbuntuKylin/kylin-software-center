@@ -30,7 +30,9 @@ import dbus
 import os
 import shutil
 import locale
-
+import datetime
+import time
+from gi.repository import GObject
 import logging
 
 from PyQt5.QtCore import *
@@ -47,8 +49,7 @@ from models.enums import (UBUNTUKYLIN_SERVICE_PATH,
 
 import multiprocessing
 
-from dbus.mainloop.glib import DBusGMainLoop
-mainloop = DBusGMainLoop(set_as_default=True)
+from dbus.mainloop.glib import DBusGMainLoop, threads_init
 from models.globals import Globals
 #from dbus.mainloop.qt import DBusQtMainLoop
 #mainloop = DBusQtMainLoop()
@@ -75,7 +76,10 @@ class InstallBackend(QObject,Signals):
     #
     def init_dbus_ifaces(self):
         try:
-            bus = dbus.SystemBus(mainloop)
+            LOG.info("InstallBackend init_dbus_ifaces (" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f") + ")")
+            DBusGMainLoop(set_as_default=True)
+            threads_init()
+            bus = dbus.SystemBus()
         except Exception as e:
             if (Globals.DEBUG_DEBUG_SWITCH):
                 print("could not initiate dbus")
@@ -85,28 +89,59 @@ class InstallBackend(QObject,Signals):
             return False
 
         try:
-            obj = bus.get_object(UBUNTUKYLIN_SERVICE_PATH,
-                                 '/',
-                                 UBUNTUKYLIN_INTERFACE_PATH)
-            #proxy = dbus.ProxyObject(obj,UBUNTUKYLIN_INTERFACE_PATH)
-            self.iface = dbus.Interface(obj, UBUNTUKYLIN_INTERFACE_PATH)
+            LOG.info("InstallBackend init_dbus_ifaces call blocking (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            bus.call_blocking(UBUNTUKYLIN_SERVICE_PATH, '/', UBUNTUKYLIN_INTERFACE_PATH, 'wakeup', None, (), timeout=5)
+        except dbus.DBusException as e:
+            LOG.error("InstallBackend DBusConnection call blocking exception: %s" % str(e))
+            return False
 
-#            self.call_dbus_iface("check_source_ubuntukylin")
+        try:
+            LOG.info("InstallBackend init_dbus_ifaces bus.get_object (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            obj = bus.get_object(UBUNTUKYLIN_SERVICE_PATH, '/')
+            LOG.info("InstallBackend init_dbus_ifaces dbus.Interface (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            self.iface = dbus.Interface(obj, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            LOG.info("InstallBackend init_dbus_ifaces finished (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
 
-            self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal)
-            self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal)
-            self.iface.connect_to_signal("software_auth_signal",self._on_software_auth_signal)
+            # lixiang: Repeated starts dbus service may cause 25 seconds stuck because of bus.get_object or connect_to_signal
+            #if self.iface is not None:
+            #    LOG.info("InstallBackend start to connect signal named software_apt_signal (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            #    self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            #    LOG.info("InstallBackend start to connect signal named software_fetch_signal (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            #    self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            #    LOG.info("InstallBackend start to connect signal named software_auth_signal (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            #    self.iface.connect_to_signal("software_auth_signal",self._on_software_auth_signal, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            #    LOG.info("InstallBackend connect signals finished (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            #else:
+            #    LOG.info("InstallBackend dbus interface in none (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
         except dbus.DBusException as e:
 #            bus_name = dbus.service.BusName('com.ubuntukylin.softwarecenter', bus)
 #            self.dbusControler = SoftwarecenterDbusController(self, bus_name)
 #           self.init_models_ready.emit("fail","初始化失败!")
             self.init_models_ready.emit("fail",_("Initialization failed"))
-            LOG.error("dbus exception:%s" % str(e))
+            LOG.error("InstallBackend DBusConnection exception: %s" % str(e))
             if(Globals.DEBUG_SWITCH):
                 print("dbus.DBusException error: ",str(e))
             return False
 
+        # lixiang: QTimer no response ???
+        GObject.timeout_add(2000, self.slotTimeout)
+
         return True
+
+    #lixiang
+    def slotTimeout(self):
+        LOG.info("InstallBackend slotTimeout Responsed (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+        if self.iface is not None:
+            LOG.info("InstallBackend start to connect signal named software_apt_signal (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            self.iface.connect_to_signal("software_apt_signal",self._on_software_apt_signal, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            LOG.info("InstallBackend start to connect signal named software_fetch_signal (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            self.iface.connect_to_signal("software_fetch_signal",self._on_software_fetch_signal, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            LOG.info("InstallBackend start to connect signal named software_auth_signal (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+            self.iface.connect_to_signal("software_auth_signal",self._on_software_auth_signal, dbus_interface=UBUNTUKYLIN_INTERFACE_PATH)
+            LOG.info("InstallBackend connect signals finished (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+        else:
+            LOG.info("InstallBackend dbus interface in none (%s)" % datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f"))
+        return False
 
     #call the dbus functions by function name
     def call_dbus_iface(self, funcname, kwargs=None):

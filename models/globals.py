@@ -116,3 +116,7 @@ class Globals:
 
     LOGIN_SUCCESS=False
 
+    UPNUM = False
+
+    DATAUNUM=""
+

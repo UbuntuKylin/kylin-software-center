@@ -34,7 +34,7 @@ class SingleProcessBar(QWidget):
 
     def __init__(self, parent=None):
         QWidget.__init__(self,parent)
-        self.setGeometry(103, 220, 150, 65) #815 / 2 - 96, 417,
+        self.setGeometry(88, 220, 150, 65) #815 / 2 - 96, 417,
         self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.updatelabel = QLabel(self)

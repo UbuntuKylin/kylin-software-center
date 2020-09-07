@@ -34,7 +34,7 @@ from ui.login_ui import Ui_Login_ui
 from ui.login import Login
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+gettext.textdomain("kylin-software-center")
 _ = gettext.gettext
 
 
@@ -49,7 +49,7 @@ class ConfigWidget(QWidget,Signals):
 
     show_password=0
     def __init__(self, parent=None):
-        QWidget.__init__(self,parent)
+        QWidget.__init__(self)
         self.ui_init()
 
         self.mainw = parent
@@ -57,8 +57,8 @@ class ConfigWidget(QWidget,Signals):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
         # self.ui.bg.lower()
-        self.move(183, 100)
         #self.move(173, 138)
+        self.setWindowTitle(_("User set"))
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 0))
         brush.setStyle(Qt.SolidPattern)
@@ -278,6 +278,25 @@ class ConfigWidget(QWidget,Signals):
         self.ui.progressBar.setRange(0, 100)
 
         self.hide()
+
+    #
+    #函数名: 鼠标点击事件
+    #Function: Mouse click event
+    #
+    def mousePressEvent(self, event):
+        if(event.button() == Qt.LeftButton):
+            self.clickx = event.globalPos().x()
+            self.clicky = event.globalPos().y()
+            self.dragPosition = event.globalPos() - self.pos()
+            event.accept()
+    #
+    #函数名: 窗口拖动事件
+    #Function: Window drag event
+    #
+    def mouseMoveEvent(self, event):
+        if(event.buttons() == Qt.LeftButton):
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept()
 
     def show_setpassword(self):
         if self.show_password==0:

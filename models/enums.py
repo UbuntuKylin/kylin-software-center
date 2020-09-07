@@ -62,6 +62,7 @@ kydroid_source = {
     "kydroid3": {
         # "amd64":"http://archive.kylinos.cn/kylin/kydroid/3/x86/",
         "arm64":"http://archive.kylinos.cn/kylin/kydroid/3/arm64/",
+        "kunpeng":"http://archive.kylinos.cn/kylin/kydroid/3/kunpeng/",
         "other":"http://archive.kylinos.cn/kylin/kydroid/3/other/"  #709和景嘉微显卡源
     }
 }
@@ -82,6 +83,8 @@ try:
 
     if((os.popen("lspci -n|awk '{print $3}' |grep '0709:'").read() != '') or (os.popen("cat /proc/fb |grep -i MWV206").read() != '')): # 709和景嘉微特殊处理
         arch = "other"
+    elif(os.popen("lscpu|grep -i kunpeng").read() != ''):
+        arch = "kunpeng"
 
 
     kydroid_config.read(KYDROID_CONF_PATH)
@@ -388,6 +391,8 @@ class Signals:
 
     login_out=pyqtSignal()#退出登录时清空评分
 
+    hide_cancel=pyqtSignal()
+
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"
@@ -487,6 +492,9 @@ PKG_NAME = {
     "jingyunsd": "JingyunSd",
     "ukui-biometric-manager": "biometric-manager",
     "linuxqq":"qq",
+    "tenvideo-universal":"TencentVideo",
+    "teamviewer":"com.teamviewer.TeamViewer",
+    "retext":"me.mitya57.ReText",
 }
 
 class ErrorCode:

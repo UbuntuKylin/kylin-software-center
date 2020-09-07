@@ -22,7 +22,7 @@
 # You should have received a copy of the GNU General Public License along
 # with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import sys
 import os
 import stat
 import shutil
@@ -81,7 +81,6 @@ class DownloadManager(QObject):
         filename = apkpath.split('/')[-1]
         apklocal = os.path.join(KYDROID_DOWNLOAD_PATH, filename)
         # print("1111",apkurl,apklocal,self.download_schedule)
-
 
         try: # 防止出现下载中断的情况
             Globals.STOP_DOWNLOAD=False

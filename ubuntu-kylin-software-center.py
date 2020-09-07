@@ -249,13 +249,21 @@ class SoftwareCenter(QMainWindow,Signals):
 
         if res == False:
             # button=QMessageBox.question(self,"初始化提示",
-            #                         self.tr("初始化失败 (DBus服务)\n请确认是否正确安装,忽略将不能正常进行软件安装等操作\n请选择:"),
+            #                         self.tr("检测到Dbus服务初始化失败，软件商店将无法正常使用，请重启软件商店\n"),
             #                         QMessageBox.Retry|QMessageBox.Ignore|QMessageBox.Cancel, QMessageBox.Cancel)
+            box = QMessageBox(QMessageBox.Warning, _("Abnormal prompt"),
+                                    self.tr(_("DBUS service exception is detected, which may be caused by the initial exception of apt module and poor network condition.\n"
+                                        "Please exit and restart the software store.\n")), QMessageBox.NoButton, self)
+            yes_btn = box.addButton(self.tr(_("Yes")), QMessageBox.NoRole)
+            box.exec_()
+            if box.clickedButton() == yes_btn:
+                LOG.warning("dbus service init failed, you choose to exit.\n\n")
+                sys.exit(0)
 
-            button=QMessageBox.question(self,_("Initialization prompt"),
-                                    self.tr(_("Initialization failed (DBus service)\nPlease confirm whether\nit is installed"
-                                              "correctly, ignore the software installation and \nother operations will not workPlease select:")),
-                                    QMessageBox.Cancel, QMessageBox.Cancel)
+            #button=QMessageBox.warning(self,_("Abnormal prompt"),
+            #                        self.tr(_("DBUS service exception is detected, which may be caused by the initial exception of apt module and poor network condition.\n"
+            #                            "Please exit and restart the software store.\n")),
+            #                        QMessageBox.Yes, QMessageBox.Yes)
 
             # if button == QMessageBox.Retry:
             #     res = self.worker_thread0.backend.init_dbus_ifaces()
@@ -263,9 +271,9 @@ class SoftwareCenter(QMainWindow,Signals):
             #     LOG.warning("failed to connecting dbus service, you still choose to continue...")
             #     break
 
-            if button == QMessageBox.Cancel:
-                LOG.warning("dbus service init failed, you choose to exit.\n\n")
-                sys.exit(0)
+            #if button == QMessageBox.Yes:
+            #    LOG.warning("dbus service init failed, you choose to exit.\n\n")
+            #    sys.exit(0)
 
         #init main view
         self.init_main_view()
@@ -2122,7 +2130,8 @@ class SoftwareCenter(QMainWindow,Signals):
             card.remove_app.connect(self.slot_click_remove)
             card.normalcard_kydroid_envrun.connect(self.slot_goto_apkpage)
             card.nomol_cancel.connect(self.slot_click_cancel)
-
+            card.signale_set.connect(self.cacnel_apkname)
+            card.connct_cancel.connect(self.cacnel_wait)
             self.apt_process_finish.connect(card.slot_work_finished)
             self.apt_process_cancel.connect(card.slot_work_cancel)
             card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
@@ -2192,7 +2201,12 @@ class SoftwareCenter(QMainWindow,Signals):
                 if Globals.NOWPAGE == PageStates.UNPAGE and app.is_installed is False:
                     continue
                 all_list.append(app)
-
+            if Globals.NOWPAGE == 2:
+                if len(all_list) == 0:
+                    Globals.DATAUNUM = str(len(all_list))
+                else:
+                    Globals.UPNUM = True
+                    Globals.DATAUNUM = str(len(all_list))
             for app in all_list:
                 if count < listLen:
                     count = count + 1
@@ -2206,6 +2220,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 card.upgrade_app.connect(self.slot_click_upgrade)
                 card.remove_app.connect(self.slot_click_remove)
                 card.connct_cancel.connect(self.cacnel_wait)
+                card.signale_set.connect(self.cacnel_apkname)
                 card.set_detail_install.connect(self.detailScrollWidget.set_install_detail_func)
                 self.kylin_goto_normocad.connect(card.status_cancel)
                 self.apt_process_finish.connect(card.slot_work_finished)
@@ -2350,6 +2365,16 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: Add download tasks to the download list
     #
     def add_task_item(self, app, action, isdeb=False):
+        for i in range(self.task_number):
+            delitem = self.ui.taskListWidget.item(i)
+            try:
+                itemwidget=self.ui.taskListWidget.itemWidget(delitem)
+                if app.displayname_cn in itemwidget.uiname:
+                    remove_item=self.ui.taskListWidget.takeItem(i)
+                    self.ui.taskListWidget.removeItemWidget(remove_item)
+                    del remove_item
+            except:
+                pass
         self.task_number += 1
         if(isdeb == True):
             oneitem = QListWidgetItem()
@@ -2366,6 +2391,7 @@ class SoftwareCenter(QMainWindow,Signals):
             tliw.apk_cancel_download.connect(self.sigenal_sest)
             tliw.task_to_normocad.connect(self.task_goto_normorcard)
             self.set_cancel_wait.connect(tliw.cancl_download_app)
+            self.hide_cancel.connect(tliw.hide_cancel_btn)
             if (Globals.DEBUG_SWITCH):
                 print("add_task_item 000:",tliw.__dict__)
             self.ui.taskListWidget.insertItem(0,oneitem)
@@ -3134,6 +3160,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.detailScrollWidget.hide()
         self.ui.btnAllsoftware.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#666666;text-align:center;background-color:transparent;}QPushButton:hover{border:0px;font-size:12px;color:#ffffff;background-color:#2d8ae1;}")
         self.ui.no_search_resualt.hide()
+        self.detailScrollWidget.ui.reviewText.clear()
         self.ui.prompt1.hide()
         self.ui.prompt2.hide()
         if Globals.NOWPAGE == 7 or Globals.NOWPAGE == 8 or Globals.NOWPAGE == 9 or Globals.NOWPAGE == 10 or Globals.NOWPAGE == 11:
@@ -3304,21 +3331,24 @@ class SoftwareCenter(QMainWindow,Signals):
 
         # self.ui.allcount.setText(str(all))
         # ＝
+        if Globals.UPNUM == False:
+            Globals.DATAUNUM=str(up)
+            Globals.UPNUM = True
         self.ui.uncount.setText(str(inst))
-        self.ui.upcount.setText(str(up))
+        self.ui.upcount.setText(str( Globals.DATAUNUM))
         self.ui.apkcount.setText(str(apk))
         self.up_num = str(up)
         #add
-        if up == 0:
+        if  int(Globals.DATAUNUM) == 0:
             self.ui.btnUp_num.hide()
-        elif up < 100:
+        else :
             # self.ui.btnUp_num.hide()
-            self.ui.btnUp_num.setText(str(up))
+            self.ui.btnUp_num.setText(str( Globals.DATAUNUM))
             self.ui.btnUp_num.show()
-        else:
-            # self.ui.btnUp_num.hide()
-            self.ui.btnUp_num.setText(99)
-            self.ui.btnUp_num.show()
+       # else:
+        #    # self.ui.btnUp_num.hide()
+         #   self.ui.btnUp_num.setText(99)
+          #  self.ui.btnUp_num.show()
         #self.ui.btnUp_num.setText(str(up))
 
         # self.ui.wincountlabel.setText(str(self.winnum))
@@ -3490,6 +3520,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.specialcategoryWidget.setVisible(False)
         self.ui.allWidget.setVisible(False)
         self.ui.apkWidget.setVisible(True)
+        self.ui.datalabel.setVisible(False)
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
@@ -3507,6 +3538,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.loadingDiv.start_loading()
         if(Globals.apkpagefirst or Globals.isOnline == False):
             if not self.worker_thread0.appmgr.check_kydroid_envrun():
+                self.ui.datalabel.setVisible(True)
                 self.slot_kydroid_envrun()
             else :
                 if self.kydroid_service.hasKydroid != False:
@@ -3538,6 +3570,7 @@ class SoftwareCenter(QMainWindow,Signals):
             # Globals.apkpagefirst =False
             # self.worker_thread0.appmgr.apk_page_create()
             self.worker_thread0.appmgr.get_recommend_apps(False)
+            self.ui.datalabel.setVisible(False)
             # self.count_application_update.emit()
         else :
             #self.messageBox.alert_msg("安卓环境启动异常，操作失败！")
@@ -3703,12 +3736,13 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
     #
-    #函数名: 打卡下载界面
+    #函数名: 打开下载界面
     #Function: goto taskpage
     #
     def slot_goto_taskpage(self, ishistory=False):
         # self.reset_nav_bar_focus_one()
         if(self.ui.taskWidget.isHidden() == True):
+            self.ui.taskWidget.move(self.x() +370, self.y() + 70)
             self.ui.taskWidget.setVisible(True)
            # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
             self.ui.btnTask3.setIcon(QIcon('res/download_hover.png'))
@@ -4045,6 +4079,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: config
     #
     def slot_show_config(self):
+        self.configWidget.move(self.x() + 173, self.y() + 100)
         self.configWidget.show()
         self.configWidget.slot_soucelist()
 
@@ -4214,6 +4249,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: click install 
     #
     def slot_click_install(self, app):
+
         if (Globals.DEBUG_SWITCH):
             LOG.info("add an install task:%s",app.name)
 
@@ -4464,14 +4500,26 @@ class SoftwareCenter(QMainWindow,Signals):
                 keyword = st
             reslist = []
             count = 0
-            if(not (Globals.NOWPAGE == PageStates.APKPAGE or Globals.NOWPAGE == PageStates.SEARCHAPKPAGE)):
-                reslist = self.searchDB.search_software(st)
-                self.searchList = reslist
-                for appname in self.searchList:
-                    app = self.worker_thread0.appmgr.get_application_by_name(appname)
-                    if app is None :
-                        continue
+            # if(not (Globals.NOWPAGE == PageStates.APKPAGE or Globals.NOWPAGE == PageStates.SEARCHAPKPAGE)):
+            reslist = self.searchDB.search_software(st)
+            self.searchList = reslist
+            for appname in self.searchList:
+                app = self.worker_thread0.appmgr.get_application_by_name(appname)
+                if app is None :
+                    continue
                     count = count + 1
+
+            for appname in Globals.ALL_APPS :
+                # print(app)
+                app = self.worker_thread0.appmgr.get_application_by_name(appname)
+                if app is None :
+                    continue
+
+                if keyword in app.displayname_cn:
+                    if not appname in reslist:
+                        reslist.append(appname)
+                        count = count + 1
+                        continue
 
             for apk in self.worker_thread0.appmgr.apk_list:
                 if apk.pkgname:
@@ -4639,6 +4687,7 @@ class SoftwareCenter(QMainWindow,Signals):
                     else:
                         #self.messageBox.alert_msg(AptActionMsg[action] + "完成")
                         self.messageBox.alert_msg(AptActionMsg[action] + _("perfection"))
+                        Globals.DATAUNUM = str(int(Globals.DATAUNUM)-1)
 
                 elif percent < 0:
                     if app is not None and app.package is not None:
@@ -4755,11 +4804,13 @@ class SoftwareCenter(QMainWindow,Signals):
             if int(percent) == int(-1):
                 self.slot_cancel_for_work_filed(name, action)
                 #self.messageBox.alert_msg("安装软件出错:" )
+                self.hide_cancel.emit()
                 self.messageBox.alert_msg(_("Error installing software:"))
                 # buttom = QMessageBox.information(self, "安装APP出错", "安装APP出错:" + name + "\n", QMessageBox.Yes)
             elif int(percent) == int(-2):
                 self.slot_cancel_for_work_filed(name, action)
                 #self.messageBox.alert_msg("下载软件出错:" )
+                self.hide_cancel.emit()
                 self.messageBox.alert_msg(_("Error downloading software:"))
                 # buttom = QMessageBox.information(self, "下载APP出错", "下载APP出错:" + name + "\n", QMessageBox.Yes)
             elif int(percent) == int(-3):
@@ -4769,6 +4820,7 @@ class SoftwareCenter(QMainWindow,Signals):
             elif int(percent) == int(-11):
                 self.slot_cancel_for_work_filed(name, action)
                 #self.messageBox.alert_msg("卸载软件出错:")
+                self.hide_cancel.emit()
                 self.messageBox.alert_msg(_("Error uninstalling software:"))
                 # buttom = QMessageBox.information(self, "卸载APP出错", "卸载APP出错:" + name + "\n", QMessageBox.Yes)
             elif int(percent) == int(-20):
@@ -4873,7 +4925,9 @@ class SoftwareCenter(QMainWindow,Signals):
     # 
     def slot_do_login_ui(self):
         self.userload.start_loading()
-        self.ui.btnLogin.hide()
+        #self.ui.btnLogin.hide()
+        self.login.move(self.x() + 280, self.y() + 60)
+        self.login.raise_()
         self.login.show()
 
     #
@@ -5106,10 +5160,10 @@ def app_instance():
 #Function: main function
 # 
 def main():
+    #app = QApplication(sys.argv)
+    QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
+    QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication(sys.argv)
-    if app.desktop().width()>=2560:
-        QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-        QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
 #   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
 #   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
@@ -5156,13 +5210,10 @@ def main():
             Globals.LAUNCH_MODE = 'normal'
             if(check_local_deb_file(arg)):
                 Globals.LOCAL_DEB_FILE = arg
-                try:
-                    DebPackage(str(Globals.LOCAL_DEB_FILE))
-                except:
-                    MessageBox = File_window()
-                    MessageBox.setText(_("Failed to open the file. The file format is not supported or the file is abnormal"))
-                    MessageBox.exec()
-                    sys.exit(0)
+                MessageBox = File_window()
+                MessageBox.setText(_("Opening files is not supported"))
+                MessageBox.exec()
+                sys.exit(0)
             else:
                 sys.exit(0)
     app_instance()
