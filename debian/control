@@ -27,8 +27,8 @@ Depends: python3,
          ${misc:Depends},
          ${python3:Depends}
 Recommends: language-pack-zh-hans
-Breaks: ubuntu-kylin-software-center-common
-Replaces: ubuntu-kylin-software-center-common
+Breaks: ubuntu-kylin-software-center
+Replaces: ubuntu-kylin-software-center
 Description: Software maintenance management tools
  Ubuntu Kylin Software Center is a newly built software center client
  for Ubuntu Kylin. The aim is to improve localization experience. The

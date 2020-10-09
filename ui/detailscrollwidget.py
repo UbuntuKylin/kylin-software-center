@@ -773,9 +773,12 @@ class DetailScrollWidget(QScrollArea,Signals):
         text = setLongTextToElideFormat(self.ui.debname,_("Package name :") +app.name)
         self.ui.debname.setToolTip(app.name)
         # self.ui.installedVersion.setText("当前版本: " + app.installed_version)
-        self.ui.installedVersion.setText(_("Current version :") + app.installed_version)
-        text = setLongTextToElideFormat(self.ui.installedVersion, _("Current version :") + app.installed_version)
-        self.ui.installedVersion.setToolTip(app.installed_version)
+        self.vsion_str = app.installed_version
+        if len(app.installed_version) == 1:
+            self.vsion_str = "Not installed"
+        self.ui.installedVersion.setText(_("Current version :") +  self.vsion_str)
+        text = setLongTextToElideFormat(self.ui.installedVersion, _("Current version :") + self.vsion_str)
+        self.ui.installedVersion.setToolTip( self.vsion_str)
         #self.ui.candidateVersion.setText("软件源版本: " + app.candidate_version)
         self.ui.candidateVersion.setText(_("Software source version :") + app.candidate_version)
         text = setLongTextToElideFormat(self.ui.candidateVersion,_("Software source version :") + app.candidate_version)

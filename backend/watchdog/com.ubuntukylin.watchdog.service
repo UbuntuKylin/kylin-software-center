@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=com.ubuntukylin.watchdog
+Exec=/usr/bin/ubuntu-kylin-software-center-watchdog
+User=root

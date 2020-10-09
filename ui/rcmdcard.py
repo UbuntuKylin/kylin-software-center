@@ -30,6 +30,7 @@ from utils import commontools
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, AppActions
 from models.globals import Globals
 from models.apkinfo import ApkInfo
+from models.application import Application
 
 import gettext
 gettext.textdomain("ubuntu-kylin-software-center")
@@ -97,7 +98,7 @@ class RcmdCard(QWidget,Signals):
         # shadowe.setColor(Qt.gray)
         # shadowe.setBlurRadius(4)
         # self.setGraphicsEffect(shadowe)
-
+       # self.ui.btnCancel.hide()
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
         self.ui.progressBar_icon.setStyleSheet("QLabel{background-color:transparent;background-image:url('" + iconpath + "')}")
@@ -175,7 +176,6 @@ class RcmdCard(QWidget,Signals):
 
         if self.app.status == PkgStates.INSTALLING:
             self.ui.btn.setEnabled(False)
-            # if self.app.percent > 0:
             #     self.ui.btn.setText("正在安装")
             # else:
             #     self.ui.btn.setText("等待安装")
@@ -404,9 +404,10 @@ class RcmdCard(QWidget,Signals):
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
             if status == AppActions.INSTALL:
+                if isinstance(self.app,Application):
+                    if percent >=0:
+                        self.ui.btnCancel.hide()
                 #self.ui.btn.setText("正在安装")
-                if percent>=100:
-                    self.ui.btnCancel.hide()
                 self.ui.btn.setText(_("Waiting for installation"))
                 if(Globals.MIPS64):
                     self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")

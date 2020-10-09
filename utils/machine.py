@@ -26,6 +26,7 @@ import os
 import platform
 import locale
 from models.globals import Globals
+import linecache
 
 
 # new version no longer send dbus id
@@ -66,11 +67,26 @@ def get_distro_info():
         uf.close()
         return rtn
     else:
-        dist = platform.dist()
+        dist = get_system_name_vision()
         distname = dist[0]
         distversion = dist[1]
         distroseries = dist[2]
         return [distname, distversion, distroseries]
+
+def get_system_name_vision():
+    file_path = "/etc/os-release"
+    line_number = 3
+    dist = linecache.getline(file_path, line_number).strip()
+    dest = []
+    dest.append(dist[3:])
+    file = open("/etc/os-release", "r")
+    for line in file:
+        if "VERSION_ID=" in line:
+            str1 = line[12:].strip()
+            dest.append(str1.strip('"'))
+        if "UBUNTU_CODENAME" in line:
+            dest.append(line[16:].strip())
+    return dest
 
 # uksc version
 def get_uksc_version():

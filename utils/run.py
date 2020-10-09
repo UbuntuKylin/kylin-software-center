@@ -84,12 +84,12 @@ def get_run_command(pkgname):
     if pkgname in PKG_NAME:
         pkgname=PKG_NAME[pkgname]
 
+
     desktopfile = "/usr/share/applications/" + pkgname + ".desktop"
 
     if os.path.exists(desktopfile):
         DeskTopEntry = xdg.DesktopEntry.DesktopEntry(desktopfile)
         fullcmd = DeskTopEntry.getExec()
-
     if fullcmd == "":
         user_desktop_path = os.path.join(os.path.expanduser("~"), ".local", "share", "applications")
         if(os.path.exists(user_desktop_path) == False):

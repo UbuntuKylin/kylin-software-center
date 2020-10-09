@@ -1264,10 +1264,10 @@ class AppManager(QObject,Signals):
     #
     # 函数：登陆接口
     #
-    def ui_login(self,ui_username,ui_password):
+    def ui_login(self,list):
         #print "eeeeeeeeeeeeee",ui_username,ui_password
         try:
-            res = self.premoter.log_in_appinfo(ui_username,ui_password)
+            res = self.premoter.log_in_appinfo(list[0],list[1])
         except:
             res = False
         #print "res============",res

@@ -393,6 +393,10 @@ class Signals:
 
     hide_cancel=pyqtSignal()
 
+    ask_mainwindow = pyqtSignal()
+    ask1_mainwindow = pyqtSignal()
+    ask2_mainwindow =pyqtSignal()
+
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
     INSTALLDEPS = "install_deps"
@@ -495,6 +499,12 @@ PKG_NAME = {
     "tenvideo-universal":"TencentVideo",
     "teamviewer":"com.teamviewer.TeamViewer",
     "retext":"me.mitya57.ReText",
+    "youku-app":"YouKu",
+    "zjcakeymanager":"keymanager",
+    "foundercebreader":"CEBReader",
+    "ofdreader":"OFDReader",
+    "founderdoceditor":"DocEditor",
+
 }
 
 class ErrorCode:

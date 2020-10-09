@@ -27,6 +27,10 @@
 import dbus
 import dbus.service
 import webbrowser
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -57,7 +61,7 @@ from ui.singleprocessbar import SingleProcessBar
 from models.enums import (AD_BUTTON_STYLE,UBUNTUKYLIN_RES_AD_PATH,KYDROID_STARTAPP_ENV,UBUNTUKYLIN_CACHE_UKSCDB_PATH)
 from backend.search import *
 from backend.service.appmanager import AppManager
-from backend.installbackend import InstallBackend
+from backend.installbackend import InstallBackend, InstallWatchdog
 from backend.utildbus import UtilDbus
 #from backend.ubuntusso import get_ubuntu_sso_backend
 from backend.service.save_password import password_write, password_read
@@ -87,6 +91,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 import fcntl
 import gettext
+from ui.taskwidget import Taskwidget
 gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
 gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
@@ -101,17 +106,18 @@ LOG = logging.getLogger("uksc")
 APP_PATH=0
 
 
-pool = ThreadPoolExecutor(max_workers=3)
+pool = ThreadPoolExecutor(max_workers=4)
 class  initThread(QThread,Signals):
     def __init__(self):
         super(initThread, self).__init__()
 
     def run(self):
         # init dbus backend
+        self.watchdog = InstallWatchdog()
         self.backend = InstallBackend()
         self.appmgr = AppManager(self.backend)
 
-
+        self.watchdog.init_wathcdog_dbus()
         res = self.backend.init_dbus_ifaces()
 
         self.myinit_emit.emit(res)
@@ -312,8 +318,13 @@ class SoftwareCenter(QMainWindow,Signals):
         # category bar
         self.categoryBar = CategoryBar(self.ui.specialcategoryWidget)
         self.categoryBar.setGeometry(208, 0, 850, 22)
+
+
+        self.dowload_widget = Taskwidget(self)
+
+        # self.dowload_widget.move(0,0)
         #self.Taskwidget = Taskwidget(self.ui.taskWidget)
-        self.ui.taskWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #cccccc;border-radius:6px;}")
+        # self.ui.taskWidget.setStyleSheet(".QWidget{background-color:#f5f5f5;border:1px solid #cccccc;border-radius:6px;}")
         # point out widget
         self.pointout = PointOutWidget(self)
         self.pointListWidget = CardWidget(200, 115, 4, self.pointout.ui.contentliw)
@@ -378,9 +389,9 @@ class SoftwareCenter(QMainWindow,Signals):
         #log in/out
         self.login.messageBox = MessageBox(self)
         # config widget
-
+        self.closeEvent =self._closeEvent
         self.configWidget = ConfigWidget(self)
-        self.configWidget.messageBox = MessageBox(self)
+        #self.configWidget.messageBox = MessageBox(self)
         self.configWidget.click_update_source.connect(self.slot_click_update_source)
         self.configWidget.task_cancel.connect(self.slot_click_cancel)
 
@@ -409,10 +420,10 @@ class SoftwareCenter(QMainWindow,Signals):
         # palette.setColor(QPalette.Background, QColor(238, 237, 240))
         # self.ui.rankWidget.setPalette(palette)
 
-        self.ui.taskWidget.setAutoFillBackground(True)
+        self.dowload_widget.setAutoFillBackground(True)
         palette = QPalette()
         palette.setColor(QPalette.Background, QColor(234, 240, 243))
-        self.ui.taskWidget.setPalette(palette)
+        self.dowload_widget.setPalette(palette)
 
         self.ui.detailShellWidget.setAutoFillBackground(True)
         palette = QPalette()
@@ -423,13 +434,9 @@ class SoftwareCenter(QMainWindow,Signals):
         shadowe.setOffset(5, 5)     # direction & length
         shadowe.setColor(Qt.gray)
         shadowe.setBlurRadius(15)   # blur
-        self.ui.taskWidget.setGraphicsEffect(shadowe)
+        self.dowload_widget.setGraphicsEffect(shadowe)
 
-        shadoweb = QGraphicsDropShadowEffect(self)
-        shadoweb.setOffset(-2, -5)  # direction & length
-        shadoweb.setColor(Qt.gray)
-        shadoweb.setBlurRadius(15)  # blur
-        self.ui.taskBottomWidget.setGraphicsEffect(shadoweb)
+
         self.ui.btnLogin.setFocusPolicy(Qt.NoFocus)
         self.ui.btnReg.setFocusPolicy(Qt.NoFocus)
         # self.ui.btnAppList.setFocusPolicy(Qt.NoFocus)
@@ -453,8 +460,8 @@ class SoftwareCenter(QMainWindow,Signals):
 
         self.ui.btnTask3.setFocusPolicy(Qt.NoFocus)
 
-        self.ui.taskListWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.taskListWidget.show()
+
+        #self.ui.taskListWidget.show()
       #  self.ui.taskListWidget_complete.setFocusPolicy(Qt.NoFocus)
         # self.ui.rankView.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelectAll.setFocusPolicy(Qt.NoFocus)
@@ -480,7 +487,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.headercw1.leSearch.stackUnder(self.ui.headercw1.lebg)
 
         self.ui.detailShellWidget.raise_()
-        self.ui.taskWidget.raise_()
+        self.dowload_widget.raise_()
         # self.ui.taskWidget.mousePressEvent=self.taskwidget_pressevent
         # self.ui.taskWidget.mouseMoveEvent=self.taskwidget_moveevent
         # self.ui.virtuallabel.raise_()
@@ -725,11 +732,7 @@ class SoftwareCenter(QMainWindow,Signals):
         #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         #self.ui.btnGoto.setStyleSheet("QPushButton{font-size:14px;background:#0bc406;border:1px solid #03a603;color:white;}QPushButton:hover{background-color:#16d911;border:1px solid #03a603;color:white;}QPushButton:pressed{background-color:#07b302;border:1px solid #037800;color:white;}")
         #self.ui.btnGoto.setText("去宝库看看")
-        self.ui.notaskImg.setStyleSheet("QLabel{background-image:url('res/no-download.png');background-color:transparent}")
-        #暂无下载任务
-        #self.ui.textbox.setText("暂无下载任务")
-        self.ui.textbox.setText(_("No DL Tasks"))
-        self.ui.textbox.setStyleSheet("QLabel{border-width:0px;font-size:13px;color:#808080;text-align:center;background-color:transparent}")
+
 
         self.ui.logoImg.setStyleSheet("QLabel{background-image:url('res/logo.png')}")
         # self.ui.logoName.setText("软件商店")
@@ -744,16 +747,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.btnNormal.setStyleSheet("QPushButton{background-image:url('res/normal-1.png');border:0px;}QPushButton:hover{background:url('res/normal-2.png');}QPushButton:pressed{background:url('res/normal-3.png');}")
         self.ui.btnConf.setStyleSheet("QPushButton{background-image:url('res/conf-1.png');border:0px;}QPushButton:hover{background-color:#d0d0d0;}QPushButton:pressed{background-color:#ababab;}")
         # self.ui.rankView.setStyleSheet("QListWidget{border:0px;background-color:#EEEDF0;}QListWidget::item{height:24px;border:0px;}QListWidget::item:hover{height:52;}")
-        self.ui.taskListWidget.setStyleSheet("QListWidget{background-color:#ffffff;border:0px solid #cccccc;}QListWidget::item{height:83;margin-top:5px;border:0px;}")
-        self.ui.taskListWidget.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
-             QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
-             QScrollBar::up-arrow:vertical{subcontrol-origin:margin;background-color:blue;height:13px}\
-             QScrollBar::sub-page:vertical{background-color:#EEEDF0;}\
-             QScrollBar::handle:vertical{background-color:#D1D0D2;width:6px;} QScrollBar::handle:vertical:hover{background-color:#14ACF5;width:6px;}  QScrollBar::handle:vertical:pressed{background-color:#0B95D7;width:6px;}\
-             QScrollBar::add-page:vertical{background-color:#EEEDF0;}\
-             QScrollBar::down-arrow:vertical{background-color:yellow;}\
-             QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
-        self.ui.taskListWidget.setSpacing(1)
+
         # self.ui.taskListWidget_complete.setStyleSheet("QListWidget{background-color:#EAF0F3;border:0px;}QListWidget::item{height:64;margin-top:0px;border:0px;}")
         # self.ui.taskListWidget_complete.verticalScrollBar().setStyleSheet("QScrollBar:vertical{margin:0px 0px 0px 0px;background-color:rgb(255,255,255,100);border:0px;width:6px;}\
         #      QScrollBar::sub-line:vertical{subcontrol-origin:margin;border:1px solid red;height:13px}\
@@ -765,27 +759,12 @@ class SoftwareCenter(QMainWindow,Signals):
         #      QScrollBar::add-line:vertical{subcontrol-origin:margin;border:1px solid green;height:13px}")
         # self.ui.taskListWidget_complete.setSpacing(1)
         # self.resizeCorner.setStyleSheet("QPushButton{background-image:url('res/resize-1.png');border:0px;}QPushButton:hover{background-image:url('res/resize-2.png')}QPushButton:pressed{background-image:url('res/resize-1.png')}")
-        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');}QPushButton:pressed{background:url('res/close-3.png');}")
         # self.resizeCorner.setCursor(Qt.SizeFDiagCursor)
         #self.ui.tasklabel.setStyleSheet("QLabel{color:#777777;font-size:13px;}")
         #self.ui.tasklabel.setText("任务列表")
         # self.ui.taskhline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
         # self.ui.taskvline.setStyleSheet("QLabel{background-color:#CCCCCC;}")
-        self.ui.taskhline.setStyleSheet("QLabel{background-color:#e5e5e5;}")
-        self.ui.head_manage.setStyleSheet(".QWidget{background-color:#ffffff;border: 0px }")
 
-        self.ui.taskWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.head_manage.setFocusPolicy(Qt.NoFocus)
-        self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #2d8ae1;}")
-
-        # self.ui.taskBottomWidget.setStyleSheet("QWidget{background-color: #E1F0F7;}")
-        #elf.ui.taskBottomWidget.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnClearTask.setStyleSheet("QPushButton{background-image:url('res/clear-normal.png');border:0px;}QPushButton:hover{background:url('res/clear-hover.png');}QPushButton:pressed{background:url('res/clear-pressed.png');}")
-        self.ui.btnCloseTask.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;background-color:transparent;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}")
-        self.ui.btnClearTask.setFocusPolicy(Qt.NoFocus)
-        self.ui.btnCloseTask.clicked.connect(self.slot_close_taskpage)
-        self.ui.btnClearTask.clicked.connect(self.slot_clear_all_task_list)
         self.ui.hometext1.clicked.connect(self.slot_rec_show_recommend)
         self.ui.hometext8.clicked.connect(self.slot_rec_show_necessary)
         self.ui.hometext9.clicked.connect(self.slot_rec_show_game)
@@ -805,6 +784,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.winListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
         self.userAppListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
         self.userTransAppListWidget.verticalScrollBar().valueChanged.connect(self.set_taskwidget_visible_false)
+
 
         self.ui.btnHomepage.pressed.connect(self.slot_goto_homepage)
         self.ui.btnAll.pressed.connect(self.slot_goto_homepage)
@@ -884,20 +864,11 @@ class SoftwareCenter(QMainWindow,Signals):
         self.configWidget.rset_password.connect(self.slot_rset_password)
         self.configWidget.recover_password.connect(self.slot_recover_password)
 
-        # 清除按钮
-        self.ui.clean_button.setFocusPolicy(Qt.NoFocus)
-        #self.ui.clean_button.setText("清空已下载")
-        self.ui.clean_button.setText(_("Clean DL"))
-        self.ui.clean_button.setStyleSheet(
-            "QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
-        # 清除按钮的下划线
-       # self.ui.taskline.setStyleSheet("QLabel{background-color:#666666;} QLable:hover{background-color:#2d8ae1;} QLable:pressed{background-color:#2d8ae1;}")
-        # 清空已经下载的软件
-        self.ui.clean_button.pressed.connect(self.delete_all_finished_taskwork)
+        self.dowload_widget.ask_mainwindow.connect(self.delete_all_finished_taskwork)
+        self.dowload_widget.ask1_mainwindow.connect(self.slot_close_taskpage)
+        # self.dowload_widget.ask2_mainwindow.connect(self.slot_clear_all_task_list)
 
-        #self.ui.dow_manage.setText("下载管理")
-        self.ui.dow_manage.setText(_("DL MGT"))
-        self.ui.dow_manage.setStyleSheet("QWidget{background-color: #ffffff;border:0px;font-size:13px;color:#808080;text-align:center;}")
+
 
 
         # widget status
@@ -914,7 +885,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.searchWidget.hide()
         self.ui.userAppListWidget.hide()
         self.ui.userTransListWidget.hide()#zx 2015.01.30
-        self.ui.taskWidget.hide()
+        self.dowload_widget.hide()
         self.ui.winpageWidget.hide()
         self.ui.headerWidget.hide()
         self.ui.centralwidget.hide()
@@ -947,7 +918,7 @@ class SoftwareCenter(QMainWindow,Signals):
             path=QPainterPath()
             path.setFillRule(Qt.WindingFill)
             path.addRoundedRect(10 - i, 10 - i,self.ui.centralwidget.width() - (10 - i) * 2, self.ui.centralwidget.height() - (10 - i) * 2, 6, 6)
-            color.setAlpha(100 - math.sqrt(i) * 50)
+            color.setAlpha(100 - int(math.sqrt(i)) * 50)
             painter.setPen(color)
             painter.drawPath(path)
             i=i+1
@@ -1020,6 +991,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     def eventFilter(self,QObjcet,event):
         if QObjcet==self.ui.adWidget :
+
             if (event.type() == event.HoverEnter):
                 self.timernum.stop()
                 self.ui.leftbtn.show()
@@ -1906,6 +1878,10 @@ class SoftwareCenter(QMainWindow,Signals):
                 if(self.dragPosition != -1):
                     self.move(event.globalPos() - self.dragPosition)
                     event.accept()
+    def _closeEvent(self, event):
+        self.slot_close()
+
+
 
     #
     #函数名: 松开鼠标按键事件
@@ -1918,7 +1894,10 @@ class SoftwareCenter(QMainWindow,Signals):
                 # add by kobe 局部坐标:pos(), 全局坐标:globalPos()
                 #if event.pos().x() > 400:
                 if event.pos().x()>0:
-                    self.ui.taskWidget.setVisible(False)
+                    try:
+                        self.dowload_widget.setVisible(False)
+                    except:
+                        pass
                     self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
                     #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
@@ -2134,6 +2113,7 @@ class SoftwareCenter(QMainWindow,Signals):
             card.connct_cancel.connect(self.cacnel_wait)
             self.apt_process_finish.connect(card.slot_work_finished)
             self.apt_process_cancel.connect(card.slot_work_cancel)
+            self.kylin_goto_normocad.connect(card.status_cancel)
             card.get_card_status.connect(self.slot_get_normal_card_status)#12.02
             if app.name == "kylin-software-center":
                 card.uninstall_uksc_or_not.connect(self.slot_uninstall_uksc_or_not)
@@ -2286,6 +2266,7 @@ class SoftwareCenter(QMainWindow,Signals):
             card.upgrade_app.connect(self.slot_click_upgrade)
             card.remove_app.connect(self.slot_click_remove)
             card.signale_set.connect(self.cacnel_apkname)
+            card.nomol_cancel.connect(self.slot_click_cancel)
             self.apt_process_finish.connect(card.slot_work_finished)
             self.apt_process_cancel.connect(card.slot_work_cancel)
             card.get_card_status.connect(self.slot_get_normal_card_status)
@@ -2366,12 +2347,12 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     def add_task_item(self, app, action, isdeb=False):
         for i in range(self.task_number):
-            delitem = self.ui.taskListWidget.item(i)
+            delitem = self.dowload_widget.taskListWidget.item(i)
             try:
-                itemwidget=self.ui.taskListWidget.itemWidget(delitem)
+                itemwidget=self.dowload_widget.taskListWidget.itemWidget(delitem)
                 if app.displayname_cn in itemwidget.uiname:
-                    remove_item=self.ui.taskListWidget.takeItem(i)
-                    self.ui.taskListWidget.removeItemWidget(remove_item)
+                    remove_item=self.dowload_widget.taskListWidget.takeItem(i)
+                    self.dowload_widget.taskListWidget.removeItemWidget(remove_item)
                     del remove_item
             except:
                 pass
@@ -2381,8 +2362,8 @@ class SoftwareCenter(QMainWindow,Signals):
             tliw = TaskListItemWidget(app, action, self.task_number, self, isdeb=True)
             # self.connect(tliw, task_cancel, self.slot_click_cancel)
             #tliw.task_remove.connect(self.slot_remove_task)
-            self.ui.taskListWidget.addItem(oneitem)
-            self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+            self.dowload_widget.taskListWidget.addItem(oneitem)
+            self.dowload_widget.taskListWidget.setItemWidget(oneitem, tliw)
         else:
             oneitem = QListWidgetItem()
             tliw = TaskListItemWidget(app, action, self.task_number, self)
@@ -2394,9 +2375,9 @@ class SoftwareCenter(QMainWindow,Signals):
             self.hide_cancel.connect(tliw.hide_cancel_btn)
             if (Globals.DEBUG_SWITCH):
                 print("add_task_item 000:",tliw.__dict__)
-            self.ui.taskListWidget.insertItem(0,oneitem)
-            self.ui.taskListWidget.addItem(oneitem)
-            self.ui.taskListWidget.setItemWidget(oneitem, tliw)
+            self.dowload_widget.taskListWidget.insertItem(0,oneitem)
+            self.dowload_widget.taskListWidget.addItem(oneitem)
+            self.dowload_widget.taskListWidget.setItemWidget(oneitem, tliw)
         self.stmap[app.name] = tliw
         #self.connect(tliw, task_cancel, self.slot_click_cancel)
         #self.connect(tliw, task_remove, self.slot_remove_task)
@@ -2405,8 +2386,8 @@ class SoftwareCenter(QMainWindow,Signals):
         self.apt_process_finish.connect(tliw.slot_work_finished)
 
        # self.ui.btnGoto.setVisible(False)
-        self.ui.notaskImg.setVisible(False)
-        self.ui.textbox.setVisible(False)
+        self.dowload_widget.notaskImg.setVisible(False)
+        self.dowload_widget.textbox.setVisible(False)
 
     # def del_task_item(self, pkgname, action, iscancel=False, isfinish=False):
     #     i = 0
@@ -2629,6 +2610,7 @@ class SoftwareCenter(QMainWindow,Signals):
                 card.install_app_rcm.connect(self.slot_click_install_rcm)
                 self.apt_process_finish.connect(card.slot_work_finished)
                 self.apt_process_cancel.connect(card.slot_work_cancel)
+                card.nomol_cancel.connect(self.slot_click_cancel)
                 card.get_card_status.connect(self.slot_get_normal_card_status)#12.03
                 self.trans_card_status.connect(card.slot_change_btn_status)
             self.pointout.show_animation(True)
@@ -2710,7 +2692,10 @@ class SoftwareCenter(QMainWindow,Signals):
             self.ui.unWidget.setVisible(False)
             self.ui.winpageWidget.setVisible(False)
             self.ui.searchWidget.setVisible(False)
-            self.ui.taskWidget.setVisible(False)
+            try:
+                self.dowload_widget.setVisible(False)
+            except:
+                pass
             self.ui.userAppListWidget.setVisible(False)
             self.ui.userTransListWidget.setVisible(False)
             self.reset_nav_bar_focus_one()
@@ -2753,18 +2738,18 @@ class SoftwareCenter(QMainWindow,Signals):
        # if category == "正在处理":
          #if category == "下载管理":
          if category == _("DL MGT"):
-            self.ui.btnClearTask.hide()
-            self.ui.taskListWidget.setVisible(True)
+            self.dowload_widget.btnClearTask.hide()
+            self.dowload_widget.taskListWidget.setVisible(True)
             #self.ui.taskListWidget_complete.setVisible(False)
-            count = self.ui.taskListWidget.count()
+            count = self.dowload_widget.taskListWidget.count()
             if count == 0:
                 #self.ui.btnGoto.setVisible(True)
-                self.ui.textbox.setVisible(True)
-                self.ui.notaskImg.setVisible(True)
+                self.dowload_widget.textbox.setVisible(True)
+                self.dowload_widget.notaskImg.setVisible(True)
             else:
                 #self.ui.btnGoto.setVisible(False)
-                self.ui.textbox.setVisible(False)
-                self.ui.notaskImg.setVisible(False)
+                self.dowload_widget.textbox.setVisible(False)
+                self.dowload_widget.notaskImg.setVisible(False)
         # elif category == "处理完成":
         #     self.ui.btnClearTask.show()
         #     self.ui.taskListWidget.setVisible(False)
@@ -3080,6 +3065,7 @@ class SoftwareCenter(QMainWindow,Signals):
             recommend.show_app_detail.connect(self.slot_show_app_detail)
             recommend.install_app.connect(self.slot_click_install)
             recommend.rcmdcard_kydroid_envrun.connect(self.slot_goto_apkpage)
+            recommend.nomol_cancel.connect(self.slot_click_cancel)
 
             self.apt_process_finish.connect(recommend.slot_work_finished)
             self.apt_process_cancel.connect(recommend.slot_work_cancel)
@@ -3088,6 +3074,7 @@ class SoftwareCenter(QMainWindow,Signals):
             self.normalcard_progress_change.connect(recommend.slot_progress_change)
             self.normalcard_progress_finish.connect(recommend.slot_progress_finish)
             self.normalcard_progress_cancel.connect(recommend.slot_progress_cancel)
+
 
             recommend.remove_app.connect(self.slot_click_remove)
             recommend.signale_set.connect(self.cacnel_apkname)
@@ -3229,7 +3216,12 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: close download taskpage
     #
     def slot_close_taskpage(self):
-        self.ui.taskWidget.setVisible(False)
+        # self.dowload_widget.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;background-color:transparent;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}")
+        #self.ui.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;")
+        #self.dowload_widget.setAttribute(Qt.WA_DeleteOnClose)
+        self.dowload_widget.btnCloseTask.deleteLater()
+        self.dowload_widget.hide()
+
         self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
 
        # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
@@ -3241,7 +3233,7 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     def slot_clear_all_task_list(self):
         #count = self.ui.taskListWidget_complete.count()
-        count = self.ui.taskListWidget.count()
+        count = self.dowload_widget.taskListWidget.count()
         if (Globals.DEBUG_SWITCH):
             print(("del_task_item:",count))
 
@@ -3253,15 +3245,15 @@ class SoftwareCenter(QMainWindow,Signals):
                 break
             #item = self.ui.taskListWidget_complete.item(top)
             #taskitem = self.ui.taskListWidget_complete.itemWidget(item)
-            item = self.ui.taskListWidget.item(top)
-            taskitem = self.ui.taskListWidget.itemWidget(item)
+            item = self.dowload_widget.taskListWidget.item(top)
+            taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
             if (Globals.DEBUG_SWITCH):
                 print(("del_task_item: found an item",truecount,taskitem.app.name))
             #delitem = self.ui.taskListWidget_complete.takeItem(top)
-            delitem = self.ui.taskListWidget.takeItem(top)
+            delitem = self.dowload_widget.taskListWidget.takeItem(top)
 
             #self.ui.taskListWidget_complete.removeItemWidget(delitem)
-            self.ui.taskListWidget.removeItemWidget(delitem)
+            self.dowload_widget.taskListWidget.removeItemWidget(delitem)
             del delitem
             if taskitem.app.name in list(self.stmap.keys()):#for bug keyerror
                 del self.stmap[taskitem.app.name]
@@ -3285,21 +3277,21 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     #函数名: 删除已完成的下载任务
     #Function: Delete completed download tasks
-    #
+
     def delete_all_finished_taskwork(self):
-        count = self.ui.taskListWidget.count()
+        count = self.dowload_widget.taskListWidget.count()
         truecount = 0
         top =count-1
         for i in range(count):
         # list is empty now
             if (truecount == count):
                 break
-            item = self.ui.taskListWidget.item(top)
-            taskitem = self.ui.taskListWidget.itemWidget(item)
+            item = self.dowload_widget.taskListWidget.item(top)
+            taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
             #if (taskitem.ui.status.text() == "完成"or taskitem.ui.status.text()=="失败"):
             if (taskitem.ui.status.text() == _("perfection") or taskitem.ui.status.text() == _("failure")or taskitem.ui.status.text() == _("Cancelled")):
-                delitem = self.ui.taskListWidget.takeItem(top)
-                self.ui.taskListWidget.removeItemWidget(delitem)
+                delitem = self.dowload_widget.taskListWidget.takeItem(top)
+                self.dowload_widget.taskListWidget.removeItemWidget(delitem)
                 del delitem		
                 if top>0:
                     top=top-1
@@ -3311,15 +3303,15 @@ class SoftwareCenter(QMainWindow,Signals):
 
             else:
                 pass
-        count = self.ui.taskListWidget.count()
+        count = self.dowload_widget.taskListWidget.count()
         if (count == 0):
          # self.ui.btnGoto.setVisible(True)
-            self.ui.notaskImg.setVisible(True)
-            self.ui.textbox.setVisible(True)
+            self.dowload_widget.notaskImg.setVisible(True)
+            self.dowload_widget.textbox.setVisible(True)
         else:
          # self.ui.btnGoto.setVisible(False)
-          self.ui.notaskImg.setVisible(False)
-          self.ui.textbox.setVisible(False)
+          self.dowload_widget.notaskImg.setVisible(False)
+          self.dowload_widget.textbox.setVisible(False)
 
 
     #
@@ -3413,7 +3405,7 @@ class SoftwareCenter(QMainWindow,Signals):
         # self.ui.xpWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
@@ -3462,7 +3454,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.unWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
@@ -3525,7 +3517,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.unWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)
 
@@ -3623,7 +3615,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.unWidget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
@@ -3671,7 +3663,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.unWidget.setVisible(True)
         self.ui.winpageWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
 
@@ -3730,7 +3722,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(True)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
@@ -3740,15 +3732,47 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: goto taskpage
     #
     def slot_goto_taskpage(self, ishistory=False):
+  #      self.taskWidget = Taskwidget(self.ui.rightWidget)
+ #       self.taskWidget.exec()
         # self.reset_nav_bar_focus_one()
-        if(self.ui.taskWidget.isHidden() == True):
-            self.ui.taskWidget.move(self.x() +370, self.y() + 70)
-            self.ui.taskWidget.setVisible(True)
-           # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
-            self.ui.btnTask3.setIcon(QIcon('res/download_hover.png'))
-        else:
-            self.ui.taskWidget.setVisible(False)
-            self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
+        # if(self.ui.taskWidget.isHidden() == True):
+        #     self.ui.taskWidget =Taskwidget(self.ui.rightWidget)
+           # self.dowload_widget = Taskwidget(self)
+        self.dowload_widget.ask_mainwindow.connect(self.delete_all_finished_taskwork)
+        self.dowload_widget.ask1_mainwindow.connect(self.slot_close_taskpage)
+        # self.dowload_widget.ask2_mainwindow.connect(self.slot_clear_all_task_list)
+        self.dowload_widget.move(self.x() +370, self.y() + 70)
+        self.dowload_widget.exec()
+        # self.dowload_widget.btnCloseTask.setDisabled(True)
+
+
+        self.dowload_widget.btnCloseTask = QPushButton(self.dowload_widget)
+        self.dowload_widget.btnCloseTask.setGeometry(QtCore.QRect(332, 1, 38, 32))
+
+
+        self.dowload_widget.btnCloseTask.setFocusPolicy(Qt.NoFocus)
+        self.dowload_widget.btnCloseTask.setStyleSheet(
+            "QPushButton{background-image:url('res/close-1.png');border:0px;background-color:transparent;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}")
+
+        self.dowload_widget.btnCloseTask.clicked.connect(self.dowload_widget.slot_close_taskpage)
+        # self.btnCloseTask.setGeometry(QtCore.QRect(290, 1, 28, 36))
+
+
+        # self.dowload_widget.btnCloseTask.setStyleSheet(
+            # "QPushButton{background-image:url('res/close-1.png');border:0px;background-color:transparent;}background-color:#c75050;}")
+
+        # self.dowload_widget.btnCloseTask.setDisabled(False)
+        # self.dowload_widget.btnCloseTask.se
+       # self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-3.png');border:0px;}")
+        self.ui.btnTask3.setIcon(QIcon('res/download_hover.png'))
+
+        # self.dowload_widget.btnCloseTask.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;background-color:transparent;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}")
+
+
+  # else:
+        #     print("3333333333")
+        #     self.ui.taskWidget.setVisible(False)
+        #     self.ui.btnTask3.setIcon(QIcon('res/downlaod_defualt.png'))
             #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
         # self.prePage = "taskpage"
         # self.nowPage = 'taskpage'
@@ -3756,7 +3780,7 @@ class SoftwareCenter(QMainWindow,Signals):
 
 
     def set_taskwidget_visible_false(self):
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         #self.ui.btnTask.setStyleSheet("QPushButton{background-image:url('res/nav-task-1.png');border:0px;}QPushButton:hover{background:url('res/nav-task-2.png');}QPushButton:pressed{background:url('res/nav-task-3.png');}")
 
 
@@ -3790,7 +3814,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.winpageWidget.setVisible(True)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
@@ -3819,7 +3843,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(True)
         self.ui.userTransListWidget.setVisible(False)#ZX 2015.01.30
@@ -3853,7 +3877,7 @@ class SoftwareCenter(QMainWindow,Signals):
         self.ui.upWidget.setVisible(False)
         self.ui.unWidget.setVisible(False)
         self.ui.searchWidget.setVisible(False)
-        self.ui.taskWidget.setVisible(False)
+        self.dowload_widget.setVisible(False)
         self.ui.winpageWidget.setVisible(False)
         self.ui.userAppListWidget.setVisible(False)
         self.ui.userTransListWidget.setVisible(True)
@@ -4047,6 +4071,8 @@ class SoftwareCenter(QMainWindow,Signals):
         try:
             self.worker_thread0.backend.clear_dbus_worklist()
             self.worker_thread0.backend.exit_uksc_apt_daemon()
+            self.worker_thread0.watchdog.exit_watchdog_dbus()
+            #self.worker_thread0.backend.iface.exit()
         except Exception as e:
             if (Globals.DEBUG_SWITCH):
                 print((str(e)))
@@ -4080,9 +4106,23 @@ class SoftwareCenter(QMainWindow,Signals):
     #
     def slot_show_config(self):
         self.configWidget.move(self.x() + 173, self.y() + 100)
-        self.configWidget.show()
+        self.configWidget.exec()
+        self.configWidget.btnClose = QPushButton(self.configWidget)
+        self.configWidget.btnClose.setGeometry(QtCore.QRect(582, 0, 38, 32))
+        self.configWidget.btnClose.clicked.connect(self.btnclose_find_password)
+        self.configWidget.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
+        # self.configWidget = ConfigWidget(self)
+
         self.configWidget.slot_soucelist()
 
+
+    def btnclose_find_password(self):
+        self.configWidget.ui.lesource8.clear()
+        self.configWidget.ui.lesource9.clear()
+        self.configWidget.ui.lesource12.clear()
+        self.configWidget.ui.lesource13.clear()
+        self.configWidget.btnClose.deleteLater()
+        self.configWidget.close()
     #
     #函数名: 显示或隐藏
     #Function: show or hide
@@ -4328,7 +4368,11 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: login page
     #
     def slot_ui_login(self,ui_username,ui_password):
-        self.worker_thread0.appmgr.ui_login(ui_username,ui_password)
+        list=[]
+        list.append(ui_username)
+        list.append(ui_password)
+        #self.worker_thread0.appmgr.ui_login(ui_username,ui_password)
+        feture4 = pool.submit( self.worker_thread0.appmgr.ui_login,list)
 
     #
     #函数名: 登录成功
@@ -4458,23 +4502,23 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: remove task
     #
     def slot_remove_task(self, tasknumber, app):
-        #count = self.ui.taskListWidget_complete.count()
-        count = self.ui.taskListWidget.count()
+        #count = self.dowload_widget.taskListWidget_complete.count()
+        count = self.dowload_widget.taskListWidget.count()
         if (Globals.DEBUG_SWITCH):
             print(("del_task_item:",count))
         for i in range(count):
-            # item = self.ui.taskListWidget_complete.item(i)
-            # taskitem = self.ui.taskListWidget_complete.itemWidget(item)
-            item = self.ui.taskListWidget.item(i)
-            taskitem = self.ui.taskListWidget.itemWidget(item)
+            # item = self.dowload_widget.taskListWidget_complete.item(i)
+            # taskitem = self.dowload_widget.taskListWidget_complete.itemWidget(item)
+            item = self.dowload_widget.taskListWidget.item(i)
+            taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
 
             if taskitem.tasknumber == tasknumber:
                 if (Globals.DEBUG_SWITCH):
                     print(("del_task_item: found an item",i,app.name))
-                # delitem = self.ui.taskListWidget_complete.takeItem(i)
-                delitem = self.ui.taskListWidget.takeItem(i)
-                self.ui.taskListWidget.removeItemWidget(delitem)
-                #self.ui.taskListWidget_complete.removeItemWidget(delitem)
+                # delitem = self.dowload_widget.taskListWidget_complete.takeItem(i)
+                delitem = self.dowload_widget.taskListWidget.takeItem(i)
+                self.dowload_widget.taskListWidget.removeItemWidget(delitem)
+                #self.dowload_widget.taskListWidget_complete.removeItemWidget(delitem)
                 del delitem
                 break
 
@@ -4558,7 +4602,7 @@ class SoftwareCenter(QMainWindow,Signals):
     # name:app name ; processtype:fetch/apt ;
 
     #
-    #函数名: 安装本地包
+    #函数名: 更新软件源
     #Function: Install local packages
     #
     def slot_status_change(self, name, processtype, action, percent, msg):
@@ -4575,7 +4619,8 @@ class SoftwareCenter(QMainWindow,Signals):
         if action == AppActions.UPDATE:
             if int(percent) < 0:
                 #self.messageBox.alert_msg("软件源更新失败")
-                self.messageBox.alert_msg(_("Software source update failed"))
+                self.configWidget.messageBox.alert.raise_()
+                self.configWidget.messageBox.alert_msg(_("Software source update failed"))
                 self.configWidget.slot_update_finish()
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
             #elif int(percent) >= 100 and "下载停止" == msg:
@@ -4583,12 +4628,14 @@ class SoftwareCenter(QMainWindow,Signals):
                 self.configWidget.slot_update_status_change(percent)
                 self.configWidget.slot_update_finish()
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
-                #self.messageBox.alert_msg("更新软件源完成")
-                self.messageBox.alert_msg(_("Update software source completed"))
+               # self.messageBox.alert_msg("更新软件源完成")
+                self.configWidget.messageBox.alert.raise_()
+                self.configWidget.messageBox.alert_msg(_("Update software source completed"))
             #elif int(percent) == 0.0 and "下载停止" == msg:
             elif int(percent) == 0.0 and _("Download stopped") == msg:
                 #self.messageBox.alert_msg("软件源列表为空")
-                self.messageBox.alert_msg(_("Software source list is empty"))
+                self.configWidget.messageBox.alert.raise_()
+                self.configWidget.messageBox.alert_msg(_("Software source list is empty"))
                 self.configWidget.slot_update_finish()
                 self.worker_thread0.appmgr.update_models(AppActions.UPDATE,"")
             else:
@@ -4687,16 +4734,17 @@ class SoftwareCenter(QMainWindow,Signals):
                     else:
                         #self.messageBox.alert_msg(AptActionMsg[action] + "完成")
                         self.messageBox.alert_msg(AptActionMsg[action] + _("perfection"))
-                        Globals.DATAUNUM = str(int(Globals.DATAUNUM)-1)
+                        if action == "upgrade":
+                            Globals.DATAUNUM = str(int(Globals.DATAUNUM)-1)
 
                 elif percent < 0:
                     if app is not None and app.package is not None:
                         app.percent = 0
                     self.normalcard_progress_cancel.emit(name)
-                    count = self.ui.taskListWidget.count()
+                    count = self.dowload_widget.taskListWidget.count()
                     for i in range(count):
-                        item = self.ui.taskListWidget.item(i)
-                        taskitem = self.ui.taskListWidget.itemWidget(item)
+                        item = self.dowload_widget.taskListWidget.item(i)
+                        taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
                         #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                         if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                             taskitem.status_change(processtype, percent, msg)
@@ -4741,10 +4789,10 @@ class SoftwareCenter(QMainWindow,Signals):
                 else:
                     if app is not None and app.package is not None:
                         app.percent = percent
-                    count = self.ui.taskListWidget.count()
+                    count = self.dowload_widget.taskListWidget.count()
                     for i in range(count):
-                        item = self.ui.taskListWidget.item(i)
-                        taskitem = self.ui.taskListWidget.itemWidget(item)
+                        item = self.dowload_widget.taskListWidget.item(i)
+                        taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
                         #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                         if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                             taskitem.status_change(processtype, percent, msg)
@@ -4792,10 +4840,10 @@ class SoftwareCenter(QMainWindow,Signals):
             if app is not None:
                 app.percent = 0
             self.normalcard_progress_cancel.emit(name)
-            count = self.ui.taskListWidget.count()
+            count = self.dowload_widget.taskListWidget.count()
             for i in range(count):
-                item = self.ui.taskListWidget.item(i)
-                taskitem = self.ui.taskListWidget.itemWidget(item)
+                item = self.dowload_widget.taskListWidget.item(i)
+                taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
                 #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                 if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                     taskitem.status_change(processtype, percent, msg)
@@ -4835,10 +4883,10 @@ class SoftwareCenter(QMainWindow,Signals):
         else:
             if app is not None:
                 app.percent = percent
-            count = self.ui.taskListWidget.count()
+            count = self.dowload_widget.taskListWidget.count()
             for i in range(count):
-                item = self.ui.taskListWidget.item(i)
-                taskitem = self.ui.taskListWidget.itemWidget(item)
+                item = self.dowload_widget.taskListWidget.item(i)
+                taskitem = self.dowload_widget.taskListWidget.itemWidget(item)
                 #if taskitem.app.name == name and taskitem.ui.status.text() != "失败":
                 if taskitem.app.name == name and taskitem.ui.status.text() != _("failure"):
                     taskitem.status_change(processtype, percent, msg)
@@ -4924,11 +4972,24 @@ class SoftwareCenter(QMainWindow,Signals):
     #Function: login
     # 
     def slot_do_login_ui(self):
+        self.login.move(self.x() + 288, self.y() + 60)
+        self.login.exec()
+        self.login.btnClose = QPushButton(self.login)
+        self.login.btnClose.setGeometry(QtCore.QRect(402, 0, 38, 32))
+        self.login.btnClose.setFocusPolicy(Qt.NoFocus)
+        self.login.btnClose.clicked.connect(self.slot_click_close)
+        self.login.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');background-color:#bb3c3c;}QPushButton:pressed{background:url('res/close-2.png');background-color:#bb3c3c;}")
+        # self.login = Login(self)
         self.userload.start_loading()
         #self.ui.btnLogin.hide()
-        self.login.move(self.x() + 280, self.y() + 60)
-        self.login.raise_()
-        self.login.show()
+
+
+    def slot_click_close(self):
+        self.login.slot_click_login()
+        self.task_stop.emit("#update", "update")
+        #self.setAttribute(Qt.WA_DeleteOnClose)
+        self.login.btnClose.deleteLater()
+        self.login.close()
 
     #
     #函数名: 退出
@@ -5164,6 +5225,13 @@ def main():
     QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     QCoreApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
     app = QApplication(sys.argv)
+    translatorFileName = "qt_"
+    translatorFileName += QLocale.system().name()
+    translator = QTranslator()
+    if (translator.load(translatorFileName, QLibraryInfo.location(QLibraryInfo.TranslationsPath))):
+        app.installTranslator(translator)
+    else:
+        pass
 #   #QTextCodec.setCodecForTr(QTextCodec.codecForName("UTF-8"))
 #   #QTextCodec.setCodecForCStrings(QTextCodec.codecForName("UTF-8"))
 
@@ -5220,7 +5288,8 @@ def main():
     mw = SoftwareCenter()
     # mw.set_sources_list()
     signal.signal(signal.SIGINT, quit)
-    signal.signal(signal.SIGTERM, quit)
+    #signal.signal(signal.SIGTERM, quit)
+    #signal.signal(signal.SIGALRM,mw.slot_close)
 
     sys.exit(app.exec_())
 

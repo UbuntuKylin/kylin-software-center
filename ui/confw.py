@@ -31,6 +31,7 @@ class Ui_ConfigWidget(object):
     def setupUi(self, ConfigWidget):
         ConfigWidget.setObjectName(_fromUtf8("ConfigWidget"))
         ConfigWidget.resize(620, 430)
+        ConfigWidget.setWindowOpacity(1)
 
         self.baseWidget = QWidget(ConfigWidget)
         self.baseWidget.setGeometry(QtCore.QRect(0, 0, 620, 430))
@@ -515,7 +516,7 @@ class Ui_ConfigWidget(object):
         self.groupBox_2.setFont(font)
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.btnUpdate = QPushButton(self.groupBox_2)
-        self.btnUpdate.setGeometry(QtCore.QRect(300, 180, 150, 20))
+        self.btnUpdate.setGeometry(QtCore.QRect(290, 180, 180, 20))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         # self.processwidget = QWidget(self.groupBox_2)

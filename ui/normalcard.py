@@ -34,6 +34,7 @@ from utils import commontools
 from models.enums import Signals, setLongTextToElideFormat, PkgStates, PageStates,AppActions
 from models.globals import Globals
 from models.apkinfo import ApkInfo
+from models.application import Application
 
 import gettext
 gettext.textdomain("ubuntu-kylin-software-center")
@@ -457,10 +458,10 @@ class NormalCard(QWidget,Signals):
             self.ui.btn.setEnabled(False)
             #if(self.ui.btn.text() == "安装"):
             if (self.ui.btn.text() == _("Install")):
-                if isinstance(self.app, ApkInfo):
-                    pass
-                else:
-                    self.ui.btnCancel.hide()
+                #self.ui.btnCancel.hide()
+                # if isinstance(self.app, ApkInfo):
+                #     pass
+                # else:
                 self.app.status = PkgStates.INSTALLING
                 # self.ui.btn.setText("等待安装")
                 self.ui.btn.setText(_("Waiting for installation"))
@@ -554,7 +555,6 @@ class NormalCard(QWidget,Signals):
         self.ui.progresslabel.setText(str(0) + '%')
         self.ui.progressBar.reset()
         self.ui.progressBarsmall.reset()
-
     def slot_progress_change(self, pkgname, percent, status):
         if self.app.name == pkgname:
             self.ui.progressBar.setVisible(True)
@@ -574,8 +574,9 @@ class NormalCard(QWidget,Signals):
                 #self.ui.btn.setText("正在下载")
                 self.ui.btn.setText(_("downloading"))
             if status == AppActions.INSTALL:
-                if percent>=100:
-                    self.ui.btnCancel.hide()
+                if percent>=0:
+                    if isinstance(self.app,Application):
+                        self.ui.btnCancel.hide()
                 if(Globals.MIPS64):
                     self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
                     self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
@@ -654,6 +655,7 @@ class NormalCard(QWidget,Signals):
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 if self.app.percent > 0:
+                    self.ui.btnCancel.hide()
                     #self.ui.btn.setText("正在安装")
                     self.ui.btn.setText(_("Installing"))
                 else:

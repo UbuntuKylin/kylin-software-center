@@ -39,18 +39,19 @@ import gettext
 gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
-class Login(QWidget,Signals):
+class Login(QDialog,Signals):
         
     listadduser = ["","","",""]
     listlogin = ["",""]
     res = []
+    dragPosition = -1
 
     #strs = r'^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+){0,4}$'
-    strs = r'^[0-9a-zA-Z_]{0,19}@[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$'
+    strs = r'^[0-9a-zA-Z_]{0,19}@[t]{0,1}[j]{0,1}[.]{0,1}[0-9a-zA-Z]{1,13}\.[com,cn,net]{1,3}$'
     def __init__(self,parent=None):
-        QWidget.__init__(self)
+        super().__init__(parent)
         self.ui_init()
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint |Qt.Tool)
         self.ui.bg.lower()
         # self.move(280, 60)
         self.ui.topWidget.raise_()
@@ -180,7 +181,7 @@ class Login(QWidget,Signals):
         self.ui.bg.setStyleSheet("QLabel{border:0px solid #c0d3dd;border-radius:2px;color:#026c9e;background:#ebf2f9;}")
         #self.ui.bg.setStyleSheet("QLabel{border:0px solid #026c9e;border-radius:1px;color:#ebf2f9;font-size:13px;background-image:url('res/1.png');}")
 
-        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');background-color:#bb3c3c;}QPushButton:pressed{background:url('res/close-3.png');background-color:#bb3c3c;}")
+        self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background:url('res/close-2.png');background-color:#bb3c3c;}QPushButton:pressed{background:url('res/close-2.png');background-color:#bb3c3c;}")
         #self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/delete-normal.png');border:0px;}QPushButton:hover{background:url('res/delete-pressed.png');}QPushButton:pressed{background:url('res/delete-pressed.png');}")
         
         #self.ui.lesource.setStyleSheet("QLineEdit{border:0px solid #6BB8DD;border-radius:1px;color:#497FAB;font-size:13px;}")
@@ -213,6 +214,9 @@ class Login(QWidget,Signals):
             self.ui.lesource_2.setText(Globals.PASSWORD)
             self.ui.checkBox_5.setChecked(True)
 
+    def slot_click_close(self):
+        self.ui.btnClose.deleteLater()
+        self.close()
 
     #
     #函数名: 鼠标点击事件
@@ -230,8 +234,9 @@ class Login(QWidget,Signals):
     #
     def mouseMoveEvent(self, event):
         if(event.buttons() == Qt.LeftButton):
-            self.move(event.globalPos() - self.dragPosition)
-            event.accept()
+            if self.dragPosition != -1:
+                self.move(event.globalPos() - self.dragPosition)
+                event.accept()
 
     def slot_change2(self):
         if self.ui.checkBox_6.isChecked():
@@ -260,9 +265,7 @@ class Login(QWidget,Signals):
     # 函数名:点击关闭
     # Function:click close
     #
-    def slot_click_close(self):
-        self.slot_click_login()
-        self.task_stop.emit("#update", "update")
+
 
     #
     # 函数名:点击登录
@@ -273,6 +276,9 @@ class Login(QWidget,Signals):
         self.ui.register_newuser.hide()
         self.ui.groupBox_2.hide()
         self.ui.groupBox.show()
+        self.ui.lesource_3.clear()
+        self.ui.lesource_4.clear()
+        self.ui.lesource_5.clear()
         self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;no-repeat center left;color:#2d8ae1}QPushButton:hover{font-size:13px;color:#2d8ae1;}")
         self.ui.btnAdd_2.setStyleSheet("QPushButton{border:0px;font-size:12px;no-repeat center left;color:#2d8ae1}QPushButton:hover{font-size:13px;color:#2d8ae1;}")
    
@@ -370,6 +376,12 @@ class Login(QWidget,Signals):
         else:
             #res = self.premoter.log_in_appinfo(self.listlogin[0],self.listlogin[1])
             self.ui_login.emit(self.listlogin[0],self.listlogin[1])
+            self.ui.btnAdd_3.setText(_("Logging......"))
+            self.ui.btnAdd_3.setEnabled(False)
+            self.ui.lesource.setEnabled(False)
+            self.ui.lesource_2.setEnabled(False)
+            self.ui.btnAdd_3.setStyleSheet("QPushButton{background-color:#CCCCCC;border:0px;font-size:16px;border-radius:4px;color:#ffffff}")
+
             #self.messageBox.alert_msg("登录成功")
             #print "xxxxxxxxxxx",res
 
@@ -490,6 +502,11 @@ class Login(QWidget,Signals):
         # INO = QMessageBox()
         # INO.setWindowTitle('提示')
         # INO.addButton(QPushButton('确定'), QMessageBox.YesRole)
+        self.ui.lesource.setEnabled(True)
+        self.ui.lesource_2.setEnabled(True)
+        self.ui.btnAdd_3.setEnabled(True)
+        self.ui.btnAdd_3.setText("登录")
+        self.ui.btnAdd_3.setStyleSheet("QPushButton{background-color:#2d8ae1;border:0px;font-size:16px;border-radius:4px;color:#ffffff}QPushButton:hover{background-color:#3580c4;border:0px;border-radius:4px;font-size:16px;color:#ffffff}")
         res = res[0]['res']
         if (Globals.DEBUG_SWITCH):
             print ("11111111111",res)

@@ -1,24 +1,55 @@
 #!/bin/sh
-
-if [ $# = 0 ]; then
-	echo "normal start"
-	cd /usr/share/ubuntu-kylin-software-center
-	exec ./ubuntu-kylin-software-center.py
-elif [ $1 = "restart" ]; then
-        echo "restart"
-        sleep 1
-        cd /usr/share/ubuntu-kylin-software-center
-        exec ./ubuntu-kylin-software-center.py
+echo $0
+count=$(ps -ef |grep python3|grep -w ubuntu-kylin-software-center.py |grep -v grep | wc -l)
+if  [ $count -eq 1 ];then
+    ID=$(ps -ef |grep python3|grep -w ubuntu-kylin-software-center.py |grep -v grep | awk '{print $2}')
+    for id in $ID
+    do
+    kill -9 $id
+    done
+    if [ $# = 0 ]; then
+   	    echo "normal start"
+	    cd /usr/share/ubuntu-kylin-software-center
+	    exec ./ubuntu-kylin-software-center.py
+    elif [ $1 = "restart" ]; then
+            echo "restart"
+            sleep 1
+            cd /usr/share/ubuntu-kylin-software-center
+            exec ./ubuntu-kylin-software-center.py
+    else
+	    if [ $1 = "-quiet" ]; then
+	            echo "quiet start"
+		    cd /usr/share/ubuntu-kylin-software-center
+		    exec ./ubuntu-kylin-software-center.py -quiet
+            elif [ $1 = "-remove" ]; then
+                    cd /usr/share/ubuntu-kylin-software-center
+                    exec ./ubuntu-kylin-software-center.py $1 $2
+	    else
+		    cd /usr/share/ubuntu-kylin-software-center
+		    exec ./ubuntu-kylin-software-center.py $1
+	    fi
+    fi
 else
-	if [ $1 = "-quiet" ]; then
-		echo "quiet start"
-		cd /usr/share/ubuntu-kylin-software-center
-		exec ./ubuntu-kylin-software-center.py -quiet
-        elif [ $1 = "-remove" ]; then
-                cd /usr/share/ubuntu-kylin-software-center
-                exec ./ubuntu-kylin-software-center.py $1 $2
-	else
-		cd /usr/share/ubuntu-kylin-software-center
-		exec ./ubuntu-kylin-software-center.py $1
-	fi
+    if [ $# = 0 ]; then
+   	    echo "normal start"
+	    cd /usr/share/ubuntu-kylin-software-center
+	    exec ./ubuntu-kylin-software-center.py
+    elif [ $1 = "restart" ]; then
+            echo "restart"
+            sleep 1
+            cd /usr/share/ubuntu-kylin-software-center
+            exec ./ubuntu-kylin-software-center.py
+    else
+	    if [ $1 = "-quiet" ]; then
+	            echo "quiet start"
+		    cd /usr/share/ubuntu-kylin-software-center
+		    exec ./ubuntu-kylin-software-center.py -quiet
+            elif [ $1 = "-remove" ]; then
+                    cd /usr/share/ubuntu-kylin-software-center
+                    exec ./ubuntu-kylin-software-center.py $1 $2
+	    else
+		    cd /usr/share/ubuntu-kylin-software-center
+		    exec ./ubuntu-kylin-software-center.py $1
+	    fi
+    fi
 fi

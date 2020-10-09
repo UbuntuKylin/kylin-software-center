@@ -1,3 +1,15 @@
+kylin-software-center (3.11.4kord) focal; urgency=medium
+
+  * Fix the problem that the update software source prompt cannot be set to the top, and add the current version prompt
+  * Add watchdog DBUS background
+  * All the sub windows are modified to modal windows with modular code.
+  * Fixed a problem where the taskbar was closed and the app store background could not exit
+  * Download cancel button problem repair
+  * Fix Android Software Download failure
+  * Fixed a crash caused by clicking close button in child window
+
+ -- wenbo <wenbo@ubuntukylin.com>  Fri, 09 Oct 2020 14:22:43 +0800
+
 kylin-software-center (3.10.5kord) focal; urgency=medium
 
   * After the software comments, the mouse hovers to display the line by line

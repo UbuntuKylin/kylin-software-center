@@ -1406,5 +1406,17 @@ msgstr "确定"
 msgid "The environment is initialized, the interface is temporarily locked, please wait..."
 msgstr "环境初始化，暂时锁定界面，请等待..."
 
+#: ui/detailscrollwidget.py
+msgid "Not installed"
+msgstr "未安装"
+
+#: ui/confwidget.py
+msgid "Source update in progress"
+msgstr "源更新中......"
+
+#: ui/login.py
+msgid "Logging......"
+msgstr "登录中......"
+
 
 

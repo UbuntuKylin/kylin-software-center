@@ -30,7 +30,7 @@ from models.enums import Signals
 from ui.loadingdiv import MiniLoadingDiv
 from models.globals import Globals
 from ui.login_ui import Ui_Login_ui
-
+from ui.messagebox import MessageBox
 from ui.login import Login
 
 import gettext
@@ -38,7 +38,7 @@ gettext.textdomain("kylin-software-center")
 _ = gettext.gettext
 
 
-class ConfigWidget(QWidget,Signals):
+class ConfigWidget(QDialog,Signals):
     mainw = ''
     iscanceled = ''
     listset = ["","",'']
@@ -46,18 +46,20 @@ class ConfigWidget(QWidget,Signals):
     listuser = ""
     flag = []
     desk=0
+    dragPosition =-1
 
     show_password=0
     def __init__(self, parent=None):
-        QWidget.__init__(self)
+        super().__init__(parent)
         self.ui_init()
 
         self.mainw = parent
         self.backend = parent.worker_thread0.backend
 
-        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.FramelessWindowHint |Qt.Tool)
         # self.ui.bg.lower()
         #self.move(173, 138)
+        self.messageBox= MessageBox(self)
         self.setWindowTitle(_("User set"))
         palette = QPalette()
         brush = QBrush(QColor(0, 0, 0, 0))
@@ -92,6 +94,7 @@ class ConfigWidget(QWidget,Signals):
         self.ui.btnAdd_4.setFocusPolicy(Qt.NoFocus)
         self.ui.show_password.setFocusPolicy(Qt.NoFocus)
         self.ui.delete_sourcelist.setFocusPolicy(Qt.NoFocus)
+        self.ui.suc_land.setFocusPolicy(Qt.NoFocus)
         self.ui.checkBox.setChecked(True)
         self.ui.checkBox_2.setChecked(False)
         self.ui.checkBox_3.setChecked(True)
@@ -295,8 +298,9 @@ class ConfigWidget(QWidget,Signals):
     #
     def mouseMoveEvent(self, event):
         if(event.buttons() == Qt.LeftButton):
-            self.move(event.globalPos() - self.dragPosition)
-            event.accept()
+            if self.dragPosition != -1:
+                self.move(event.globalPos() - self.dragPosition)
+                event.accept()
 
     def show_setpassword(self):
         if self.show_password==0:
@@ -315,7 +319,9 @@ class ConfigWidget(QWidget,Signals):
         self.ui.lesource9.clear()
         self.ui.lesource12.clear()
         self.ui.lesource13.clear()
-        self.hide()
+        # self.setAttribute(Qt.WA_DeleteOnClose)
+        self.ui.btnClose.deleteLater()
+        self.close()
 
     def change1(self):
         # self.ui.up_chk.setTristate(False)
@@ -704,6 +710,8 @@ class ConfigWidget(QWidget,Signals):
             # self.ui.processwidget.setVisible(False)
             self.ui.btnUpdate.setVisible(True)
             self.ui.btnReset.setVisible(False)
+            self.ui.btnUpdate.setEnabled(True)
+            self.ui.btnUpdate.setText(_("Update software source"))
             self.ui.cbhideubuntu.setVisible(False)
             # self.ui.label_2.setVisible(True)
             # self.ui.label_3.setVisible(True)
@@ -714,6 +722,9 @@ class ConfigWidget(QWidget,Signals):
         self.task_cancel.emit("#update", "update")
 
     def slot_click_update(self):
+        #self.ui.btnUpdate.setText("源更新中......")
+        self.ui.btnUpdate.setText(_("Source update in progress"))
+        self.ui.btnUpdate.setEnabled(False)
         self.ui.btnUpdate.show()
         self.iscanceled = False
         # self.ui.progressBar.reset()
@@ -727,9 +738,11 @@ class ConfigWidget(QWidget,Signals):
 
     def slot_update_finish(self):
         self.ui.up_chk.setCheckState(Qt.Unchecked)
+        self.ui.btnUpdate.setText(_("Update software source"))
         self.fill_sourcelist()
         self.set_process_visiable(False)
         self.ui.progressBar.setValue(0)
+        self.ui.btnUpdate.setEnabled(True)
         # self.ui.progressBar.hide()
 
 

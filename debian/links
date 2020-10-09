@@ -1,1 +1,2 @@
 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/start_systemdbus.py  /usr/bin/ubuntu-kylin-software-center-daemon
+/usr/lib/python3/dist-packages/ubuntu_kylin_software_center_watchdog/start_watchdog_dbus.py  /usr/bin/ubuntu-kylin-software-center-watchdog

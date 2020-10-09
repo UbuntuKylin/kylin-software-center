@@ -60,6 +60,64 @@ _ = gettext.gettext
 
 LOG = logging.getLogger("uksc")
 
+#lijiang
+# 类：初始化watchdog dbus
+#
+class InstallWatchdog(QObject, Signals):
+
+    def __init__(self):
+        super(InstallWatchdog, self).__init__()
+        self.monitoriface = None
+    #
+    # 函数：初始化watchdog dbus接口
+    #
+    def init_wathcdog_dbus(self):
+        try:
+            self.bus = dbus.SystemBus()
+        except Exception as e:
+            # if (Globals.DEBUG_DEBUG_SWITCH):
+            print("could not initiate dbus")
+            LOG.error("dbus exception:%s" % str(e))
+            return
+        try:
+            obj = self.bus.get_object("com.ubuntukylin.watchdog", '/')
+            self.monitoriface = dbus.Interface(obj, dbus_interface="com.ubuntukylin.watchdog")
+            #self.monitoriface.connect_to_signal("sendResult", self.onSendResult)
+            self.monitoriface.startWatchDog()
+        except dbus.DBusException as e:
+            LOG.error("dbus exception:%s" % str(e))
+            # if (Globals.DEBUG_SWITCH):
+            print("dbus.DBusException error: ", str(e))
+
+    def onSendResult(self, result):
+        print("WathchDog result:", result)
+
+    #
+    # 函数：调用watchdog dbus接口
+    #
+    def call_watchdog_dbus_iface(self, funcname, kwargs = None):
+        if self.monitoriface is None:
+            return None
+
+        func = getattr(self.monitoriface,funcname)
+        if func is None:
+            return None
+
+        res = None
+        try:
+            res = func(kwargs)
+        except dbus.DBusException as e:
+            if (Globals.DEBUG_SWITCH):
+                print("DBusException from uksc dbus",e)
+            LOG.error("watchdog dbus exception:%s" % str(e))
+            return None
+        return res
+
+    #
+    # 函数：退出watchdog dbus
+    #
+    def exit_watchdog_dbus(self):
+        self.call_watchdog_dbus_iface("exit")
 
 class InstallBackend(QObject,Signals):
 

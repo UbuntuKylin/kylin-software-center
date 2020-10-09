@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QFrame(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.centralwidget.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.centralwidget.setGeometry(QtCore.QRect(10, 10, 980, 690))
+        self.centralwidget.setGeometry(QtCore.QRect(10, 10, 980, 695))
         #add dengnan 设置边框阴影
         # Qffect = QGraphicsDropShadowEffect(MainWindow)
         # Qffect.setOffset(0, 0)
@@ -119,6 +119,7 @@ class Ui_MainWindow(object):
         self.rightWidget.setGeometry(QtCore.QRect(120, 10, 870, 690))
         self.rightWidget.setObjectName(_fromUtf8("rightWidget"))
         self.rightWidget.setStyleSheet("QWidget#rightWidget{background-color:#f5f5f5;border-top-right-radius:6px;border-bottom-right-radius:6px;}")
+        #self.rightWidget.setWindowFlag(Qt.FramelessWindowHint)
         # self.rightWidget.setStyleSheet("QWidget{background-color:#f5f5f5;}")
 
         # self.centralwidget.setStyleSheet("QWidget#centralwidget{border-top-left-radius:10px;border-bottom-left-radius:10px;border-top-right-radius:0px;border-bottom-right-radius:0px;}")
@@ -494,11 +495,11 @@ class Ui_MainWindow(object):
         self.searchcount.setGeometry(QtCore.QRect(40, 0, 40, 20))
         self.searchcount.setText(_fromUtf8(""))
         self.searchcount.setObjectName(_fromUtf8("searchcount"))
-        self.taskWidget = Taskwidget(self.rightWidget)
-        self.taskWidget.setWindowTitle(_("DL MGT"))
+        # self.taskWidget = Taskwidget(self.rightWidget)
+        # self.taskWidget.setWindowTitle(_("DL MGT"))
       # self.taskWidget.setGeometry(QtCore.QRect(0, 0, 320, 608))
       #   self.taskWidget.setGeometry(QtCore.QRect(300, 50, 370, 460))
-        self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
+      #   self.taskWidget.setObjectName(_fromUtf8("taskWidget"))
         # self.taskWidget.raise_()
 
         self.no_search_resualt = QWidget(self.rightWidget)
@@ -524,93 +525,93 @@ class Ui_MainWindow(object):
         self.prompt2.hide()
 
 
-        self.head_manage=QWidget(self.taskWidget)
-        self.head_manage.setGeometry(QtCore.QRect(1, 1,368,42))
-        self.head_manage.setObjectName(_fromUtf8("head_manage"))
+       #  self.head_manage=QWidget(self.taskWidget)
+       #  self.head_manage.setGeometry(QtCore.QRect(1, 1,368,42))
+       #  self.head_manage.setObjectName(_fromUtf8("head_manage"))
+       #
+       #  self.dow_manage = QLabel(self.taskWidget)
+       #  self.dow_manage.setGeometry(QtCore.QRect(157,10,100,20))
+       #  self.dow_manage.setText(_fromUtf8(""))
+       #  self.dow_manage.setObjectName(_fromUtf8("dow_mannage"))
+       #
+       #  self.taskListWidget = QListWidget(self.taskWidget)
+       #  #self.taskListWidget.setGeometry(QtCore.QRect(10, 65, 300, 475))
+       #  self.taskListWidget.setGeometry(QtCore.QRect(1, 42, 368, 378))
+       #  self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
+       #  # self.taskListWidget_complete = QListWidget(self.taskWidget)
+       #  # self.taskListWidget_complete.setGeometry(QtCore.QRect(10, 65, 300, 475))
+       #  # self.taskListWidget_complete.setObjectName(_fromUtf8("taskListWidget_complete"))
+       #  # self.taskListWidget_complete.setVisible(False)
+       #  self.btnCloseTask = QPushButton(self.taskWidget)
+       #  self.btnCloseTask.setGeometry(QtCore.QRect(332, 1, 38, 32))
+       #  #self.btnCloseTask.setGeometry(QtCore.QRect(290, 1, 28, 36))
+       #  self.btnCloseTask.setText(_fromUtf8(""))
+       #  self.btnCloseTask.setObjectName(_fromUtf8("btnCloseTask"))
+       #  self.taskhline = QLabel(self.taskWidget)
+       #  self.taskhline.setGeometry(QtCore.QRect(0, 420, 370, 1))
+       # #self.taskhline.setGeometry(QtCore.QRect(10, 55, 300, 1))
+       #  self.taskhline.setText(_fromUtf8(""))
+       #  self.taskhline.setObjectName(_fromUtf8("taskhline"))
+       #
+       #  # 下划线
+       # #  self.taskline = QLabel(self.taskWidget)
+       # #  self.taskline.setGeometry(QtCore.QRect(275, 451, 70, 1))
+       # # # self.taskhline.setGeometry(QtCore.QRect(10, 42, 370, 1))
+       # #  self.taskline.setText(_fromUtf8(""))
+       # #  self.taskline.setObjectName(_fromUtf8("taskline"))
+       #
+       #  self.tasklabel = QLabel(self.taskWidget)
+       #  self.tasklabel.setGeometry(QtCore.QRect(120, 35, 151, 42))
+       #  #self.tasklabel.setGeometry(QtCore.QRect(10, 35, 151, 16))
+       #  self.tasklabel.setText(_fromUtf8(""))
+       #  self.tasklabel.setAlignment(QtCore.Qt.AlignCenter)
+       #  self.tasklabel.setObjectName(_fromUtf8("tasklabel"))
+       #  self.tasklabel.setVisible(False)
+       #  # self.taskvline = QLabel(self.taskWidget)
+       #  # self.taskvline.setGeometry(QtCore.QRect(160, 37, 1, 14))
+       #  # self.taskvline.setText(_fromUtf8(""))
+       #  # self.taskvline.setAlignment(QtCore.Qt.AlignCenter)
+       #  # self.taskvline.setObjectName(_fromUtf8("taskvline"))
+       #  self.taskBottomWidget = QWidget(self.taskWidget)
+       #  self.taskBottomWidget.setGeometry(QtCore.QRect(0, 544, 320, 64))
+       #  self.taskBottomWidget.setObjectName(_fromUtf8("taskBottomWidget"))
+       #
+       #  # 清除按钮
+       #  self.clean_button = QPushButton(self.taskWidget)
+       #  self.clean_button.setGeometry(QtCore.QRect(260, 430, 100, 20))
+       #  self.clean_button.setText(_fromUtf8(""))
+       #  self.clean_button.setObjectName(_fromUtf8("clean_button"))
+       #
+       #  # #历史安装
+       #  # self.Historical_installation=QPushButton(self.taskWidget)
+       #  # self.Historical_installation.setGeometry(QtCore.QRect(1, 430, 100, 20))
+       #  # self.Historical_installation.setText(_fromUtf8(""))
+       #  # self.Historical_installation.setObjectName(_fromUtf8("Historical_installation"))
+       #  # self.Historical_installation.setText("历史安装")
+       #
+       #
+       #  # self.btnGoto = QPushButton(self.taskWidget)
+       #  # self.btnGoto.setGeometry(QtCore.QRect(85, 400, 148, 40))
+       #  # self.btnGoto.setText(_fromUtf8(""))
+       #  # self.btnGoto.setObjectName(_fromUtf8("btnGoto"))
+       #  self.notaskImg = QLabel(self.taskWidget)
+       #  self.notaskImg.setGeometry(QtCore.QRect(130, 110, 110, 150))
+       #  #self.notaskImg.setGeometry(QtCore.QRect(105, 180, 110, 150))
+       #  self.notaskImg.setText(_fromUtf8(""))
+       #  self.notaskImg.setObjectName(_fromUtf8("notaskImg"))
+       #
+       #  self.textbox = QLabel(self.taskWidget)
+       #  self.textbox.setGeometry(QtCore.QRect(145, 270, 90, 30))
+       #  self.textbox.setText(_fromUtf8(""))
+       #  self.textbox.setObjectName(_fromUtf8("testbox"))
+       #
+       #  self.btnClearTask = QPushButton(self.taskBottomWidget)
+       #  #self.btnClearTask.setGeometry(QtCore.QRect(146, 17, 28, 28))
+       #  self.btnClearTask.setGeometry(QtCore.QRect(330, 410, 28, 28))
 
-        self.dow_manage = QLabel(self.taskWidget)
-        self.dow_manage.setGeometry(QtCore.QRect(157,10,100,20))
-        self.dow_manage.setText(_fromUtf8(""))
-        self.dow_manage.setObjectName(_fromUtf8("dow_mannage"))
-
-        self.taskListWidget = QListWidget(self.taskWidget)
-        #self.taskListWidget.setGeometry(QtCore.QRect(10, 65, 300, 475))
-        self.taskListWidget.setGeometry(QtCore.QRect(1, 42, 368, 378))
-        self.taskListWidget.setObjectName(_fromUtf8("taskListWidget"))
-        # self.taskListWidget_complete = QListWidget(self.taskWidget)
-        # self.taskListWidget_complete.setGeometry(QtCore.QRect(10, 65, 300, 475))
-        # self.taskListWidget_complete.setObjectName(_fromUtf8("taskListWidget_complete"))
-        # self.taskListWidget_complete.setVisible(False)
-        self.btnCloseTask = QPushButton(self.taskWidget)
-        self.btnCloseTask.setGeometry(QtCore.QRect(332, 1, 38, 32))
-        #self.btnCloseTask.setGeometry(QtCore.QRect(290, 1, 28, 36))
-        self.btnCloseTask.setText(_fromUtf8(""))
-        self.btnCloseTask.setObjectName(_fromUtf8("btnCloseTask"))
-        self.taskhline = QLabel(self.taskWidget)
-        self.taskhline.setGeometry(QtCore.QRect(0, 420, 370, 1))
-       #self.taskhline.setGeometry(QtCore.QRect(10, 55, 300, 1))
-        self.taskhline.setText(_fromUtf8(""))
-        self.taskhline.setObjectName(_fromUtf8("taskhline"))
-
-        # 下划线
-       #  self.taskline = QLabel(self.taskWidget)
-       #  self.taskline.setGeometry(QtCore.QRect(275, 451, 70, 1))
-       # # self.taskhline.setGeometry(QtCore.QRect(10, 42, 370, 1))
-       #  self.taskline.setText(_fromUtf8(""))
-       #  self.taskline.setObjectName(_fromUtf8("taskline"))
-
-        self.tasklabel = QLabel(self.taskWidget)
-        self.tasklabel.setGeometry(QtCore.QRect(120, 35, 151, 42))
-        #self.tasklabel.setGeometry(QtCore.QRect(10, 35, 151, 16))
-        self.tasklabel.setText(_fromUtf8(""))
-        self.tasklabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.tasklabel.setObjectName(_fromUtf8("tasklabel"))
-        self.tasklabel.setVisible(False)
-        # self.taskvline = QLabel(self.taskWidget)
-        # self.taskvline.setGeometry(QtCore.QRect(160, 37, 1, 14))
-        # self.taskvline.setText(_fromUtf8(""))
-        # self.taskvline.setAlignment(QtCore.Qt.AlignCenter)
-        # self.taskvline.setObjectName(_fromUtf8("taskvline"))
-        self.taskBottomWidget = QWidget(self.taskWidget)
-        self.taskBottomWidget.setGeometry(QtCore.QRect(0, 544, 320, 64))
-        self.taskBottomWidget.setObjectName(_fromUtf8("taskBottomWidget"))
-
-        # 清除按钮
-        self.clean_button = QPushButton(self.taskWidget)
-        self.clean_button.setGeometry(QtCore.QRect(260, 430, 100, 20))
-        self.clean_button.setText(_fromUtf8(""))
-        self.clean_button.setObjectName(_fromUtf8("clean_button"))
-
-        # #历史安装
-        # self.Historical_installation=QPushButton(self.taskWidget)
-        # self.Historical_installation.setGeometry(QtCore.QRect(1, 430, 100, 20))
-        # self.Historical_installation.setText(_fromUtf8(""))
-        # self.Historical_installation.setObjectName(_fromUtf8("Historical_installation"))
-        # self.Historical_installation.setText("历史安装")
-
-
-        # self.btnGoto = QPushButton(self.taskWidget)
-        # self.btnGoto.setGeometry(QtCore.QRect(85, 400, 148, 40))
-        # self.btnGoto.setText(_fromUtf8(""))
-        # self.btnGoto.setObjectName(_fromUtf8("btnGoto"))
-        self.notaskImg = QLabel(self.taskWidget)
-        self.notaskImg.setGeometry(QtCore.QRect(130, 110, 110, 150))
-        #self.notaskImg.setGeometry(QtCore.QRect(105, 180, 110, 150))
-        self.notaskImg.setText(_fromUtf8(""))
-        self.notaskImg.setObjectName(_fromUtf8("notaskImg"))
-
-        self.textbox = QLabel(self.taskWidget)
-        self.textbox.setGeometry(QtCore.QRect(145, 270, 90, 30))
-        self.textbox.setText(_fromUtf8(""))
-        self.textbox.setObjectName(_fromUtf8("testbox"))
-
-        self.btnClearTask = QPushButton(self.taskBottomWidget)
-        #self.btnClearTask.setGeometry(QtCore.QRect(146, 17, 28, 28))
-        self.btnClearTask.setGeometry(QtCore.QRect(330, 410, 28, 28))
-
-        self.btnClearTask.setText(_fromUtf8(""))
-        self.btnClearTask.setObjectName(_fromUtf8("btnClearTask"))
-        self.btnClearTask.hide()
+        # self.btnClearTask.setText(_fromUtf8(""))
+        # self.btnClearTask.setObjectName(_fromUtf8("btnClearTask"))
+        # self.btnClearTask.hide()
         self.upWidget = QWidget(self.rightWidget)
         self.upWidget.setGeometry(QtCore.QRect(20, 64, 850, 610))
         self.upWidget.setObjectName(_fromUtf8("upWidget"))
@@ -811,7 +812,6 @@ class Ui_MainWindow(object):
             test=test+1
             flag=flag-1
 
-
         # self.varlist = []
         # print("ooooooooooooooooooo", num)
         # cont=num
@@ -842,7 +842,6 @@ class Ui_MainWindow(object):
         self.cbSelectAll.setText(_translate("MainWindow", _("Select All / Unselect All"), None))
 
 class Searchcw1(QWidget):
-
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.combox_search=QWidget(self)

@@ -41,9 +41,11 @@ class MessageBox(QObject):
     ao = ''
     # alert y
     ay = ''
+    sesion_cat=0
 
     def __init__(self, parent=None):
         QObject.__init__(self, parent)
+        self.parent = parent
         self.alertTimer = QTimer(self)
         self.alertTimer.timeout.connect(self.slot_alert_step)
         self.alertDelayTimer = QTimer(self)
@@ -52,7 +54,12 @@ class MessageBox(QObject):
         self.statu = "success"
 
         self.alert = QPushButton(parent)
-        self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2, Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
+        if self.parent.width() !=0 and self.parent.height() !=0:
+            self.sesion_cat =200
+            self.alert.setGeometry( self.parent.width() / 2 - 203 / 2, self.parent.height()/ 2 - 56 / 2, 203, 56)
+        else:
+            self.sesion_cat =280
+            self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2,Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
         self.alert.setFocusPolicy(Qt.NoFocus)
         self.alert.setGraphicsEffect(self.alertGOE)
         self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:4px;color:white;font-size:16px;}")
@@ -89,7 +96,7 @@ class MessageBox(QObject):
         if(self.ao < 1):
             self.ao += 0.015
             self.alertGOE.setOpacity(self.ao)
-        if(self.ay <= 280):
+        if(self.ay <= self.sesion_cat):
             self.alertTimer.stop()
             # close after * second
             if self.statu == "success":
