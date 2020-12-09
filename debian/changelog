@@ -1,3 +1,9 @@
+kylin-software-center (3.13.3kord) focal; urgency=medium
+
+  * Modify conflicting dependencies
+
+ -- dengnan <dengnan@kylinos.cn>  Wed, 09 Dec 2020 16:19:01 +0800
+
 kylin-software-center (3.13.2kord) focal; urgency=medium
 
   * Solve the problem of incomplete display of all introduction.
