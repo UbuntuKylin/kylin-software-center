@@ -11,7 +11,14 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtWidgets import *
 from models.globals import Globals
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 try:
@@ -88,7 +95,7 @@ class Ui_DetailWidget(object):
         self.summary.setGeometry(QtCore.QRect(0, 25, 810, 30))
         self.summary.setObjectName(_fromUtf8("summary"))
         self.description = QTextEdit(self.description_summary)
-        self.description.setGeometry(QtCore.QRect(0, 28, 810, 130))
+        self.description.setGeometry(QtCore.QRect(0, 28, 810, 110))
         self.description.setObjectName(_fromUtf8("description"))
 
         # self.des_ip=QLabel(self.description_summary)
@@ -97,13 +104,13 @@ class Ui_DetailWidget(object):
         # self.des_ip.setStyleSheet("QLabel{border:1px solid red;}")
         # self.des_ip.setWordWrap(t)
         self.expand_all= QPushButton(self.description_summary)
-        self.expand_all.setGeometry(QtCore.QRect(729, 135, 80, 25))
+        self.expand_all.setGeometry(QtCore.QRect(729, 115, 80, 25))
         self.expand_all.setObjectName(_fromUtf8("expand_all"))
         self.expand_all.setText(_("Expand all"))
         self.expand_all.hide()
 
         self.retract=QPushButton(self.description_summary)
-        self.retract.setGeometry(QtCore.QRect(729, 148, 80, 30))
+        self.retract.setGeometry(QtCore.QRect(729, 128, 80, 30))
         self.retract.setObjectName(_fromUtf8("expand_all"))
         self.retract.setText(_("Retract"))
         self.retract.hide()

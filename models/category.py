@@ -31,7 +31,14 @@ from .application import Application
 
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 #This class is the abstraction of a 
 class Category:

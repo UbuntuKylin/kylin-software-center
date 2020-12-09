@@ -74,6 +74,12 @@ class Ui_Ukliw(object):
         self.btn.setText(_fromUtf8(""))
         self.btn.setObjectName(_fromUtf8("btn"))
 
+        self.btnCancel = QPushButton(self.baseWidget)
+        self.btnCancel.setGeometry(QtCore.QRect(810, 68, 14, 14))
+        self.btnCancel.setText(_fromUtf8(""))
+        self.btnCancel.setObjectName(_fromUtf8("btncancel"))
+        self.btnCancel.hide()
+
         self.progressBar = QProgressBar(self.baseWidget)
         # self.progressBar.setGeometry(QtCore.QRect(0, 0, 300, 64))
         self.progressBar.setGeometry(QtCore.QRect(1, 1, 828, 86))

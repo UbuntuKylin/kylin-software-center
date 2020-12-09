@@ -37,7 +37,13 @@ from models.apkinfo import ApkInfo
 from models.application import Application
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 class NormalCard(QWidget,Signals):
@@ -136,9 +142,9 @@ class NormalCard(QWidget,Signals):
 
         # convert size
         # installedsize = self.app.installedSize
-        installedsize = self.app.installedSize
+        installedsize = self.app.packageSize
         if installedsize == 0:
-            installedsize=app.packageSize
+            installedsize=app.installedSize
         installedsizek = installedsize / 1024
         if(installedsizek == 0):
             #self.ui.size.setText("未知")
@@ -153,10 +159,20 @@ class NormalCard(QWidget,Signals):
             setLongTextToElideFormat(self.ui.name, self.app.displayname_cn)
             setLongTextToElideFormat(self.ui.progressBarname, self.app.displayname_cn)
             # setLongTextToElideFormat(self.ui.named, self.app.displayname_cn)
+        if self.app.displayname != '' and self.app.displayname is not None and self.app.displayname != 'None':
+            text = setLongTextToElideFormat(self.ui.name, self.app.displayname_cn)
+            # self.ui.name.setText(self.app.displayname_cn)
+            if str(text).endswith("…") is True:
+                self.ui.name.raise_()
+                self.ui.name.setToolTip(self.app.displayname_cn)
+            else:
+                self.ui.name.setToolTip("")
         else:
             setLongTextToElideFormat(self.ui.name, self.app.displayname)
             setLongTextToElideFormat(self.ui.progressBarname, self.app.displayname)
             # setLongTextToElideFormat(self.ui.named, self.app.displayname)
+
+
 
         # if self.app.summary is not None and self.app.summary != 'None' and self.app.summary != '':
             # self.ui.description.setText(self.app.summary)
@@ -691,6 +707,17 @@ class NormalCard(QWidget,Signals):
             if not Globals.APK_EVNRUN:
                 self.normalcard_kydroid_envrun.emit()
                 return
+            else:
+                if  Globals.DEFT == True:
+                    if self.ui.btn.text() == _("Install"):
+                        self.app.status = PkgStates.INSTALL
+                        Globals.DEFT = False
+                    elif self.ui.btn.text() == _("Uninstall"):
+                        self.app.status = PkgStates.UNINSTALL
+                        Globals.DEFT = False
+                    else:
+                        self.app.status = PkgStates.UPDATE
+                        Globals.DEFT = False
         self.show_app_detail.emit(self.app)
 
     def slot_work_finished(self, pkgname, action):
@@ -965,6 +992,7 @@ class NormalCard(QWidget,Signals):
         self.connct_cancel.emit(self.app.name)
         self.signale_set.emit("download_apk",self.app)
         self.set_detail_install.emit()
+        self.history_install.emit(self.app.name)
 
         # self.apk_nocard_cancel.emit()
 

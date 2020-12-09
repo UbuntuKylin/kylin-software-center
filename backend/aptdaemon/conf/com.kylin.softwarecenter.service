@@ -1,4 +1,4 @@
 [D-BUS Service]
-Name=com.ubuntukylin.softwarecenter
+Name=com.kylin.softwarecenter
 Exec=/usr/bin/ubuntu-kylin-software-center-daemon
 User=root

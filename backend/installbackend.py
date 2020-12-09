@@ -80,8 +80,8 @@ class InstallWatchdog(QObject, Signals):
             LOG.error("dbus exception:%s" % str(e))
             return
         try:
-            obj = self.bus.get_object("com.ubuntukylin.watchdog", '/')
-            self.monitoriface = dbus.Interface(obj, dbus_interface="com.ubuntukylin.watchdog")
+            obj = self.bus.get_object("com.kylin.watchdog", '/')
+            self.monitoriface = dbus.Interface(obj, dbus_interface="com.kylin.watchdog")
             #self.monitoriface.connect_to_signal("sendResult", self.onSendResult)
             self.monitoriface.startWatchDog()
         except dbus.DBusException as e:

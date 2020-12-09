@@ -53,12 +53,12 @@ import threading
 log = logging.getLogger('Daemon')
 
 
-INTERFACE = 'com.ubuntukylin.softwarecenter'
+INTERFACE = 'com.kylin.softwarecenter'
 UKPATH = '/'
 
 HTTP_SOURCE_UBUNTUKYLIN = "http://archive.ubuntukylin.com:10006/ubuntukylin" 
 DEB_SOURCE_UBUNTUKYLIN = "deb " + HTTP_SOURCE_UBUNTUKYLIN
-UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.ubuntukylin.softwarecenter.action'
+UBUNTUKYLIN_SOFTWARECENTER_ACTION = 'com.kylin.softwarecenter.action'
 
 LIB_PATH = "/var/lib/"
 DPKG_PATH = "dpkg/lock"

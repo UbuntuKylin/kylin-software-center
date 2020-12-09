@@ -40,8 +40,14 @@ fi
 chmod 775 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_daemon/start_systemdbus.py
 chmod 775 /usr/lib/python3/dist-packages/ubuntu_kylin_software_center_watchdog/start_watchdog_dbus.py
 chmod 777 /usr/share/ubuntu-kylin-software-center/backend/service/password.txt
-chmod 777 /usr/share/ubuntu-kylin-software-center/ubuntu-kylin-software-center.py
-
+chmod 755 /usr/share/ubuntu-kylin-software-center/ubuntu-kylin-software-center.py
+files="/usr/bin/ubuntu-kylin-software-center"
+if [ -f $files ];then
+    rm -f /usr/bin/ubuntu-kylin-software-center
+    ln -s /usr/bin/kylin-software-center /usr/bin/ubuntu-kylin-software-center
+else
+    ln -s /usr/bin/kylin-software-center /usr/bin/ubuntu-kylin-software-center
+fi
 #DEBHELPER#
 
 exit 0

@@ -36,7 +36,14 @@ import re
 from PyQt5.QtCore import QTimer
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 class Login(QDialog,Signals):
@@ -249,7 +256,9 @@ class Login(QDialog,Signals):
     # Function:find password
     #
     def find_password_suc(self):
+
         self.find_password.emit()
+        self.show_config.emit()
 
 
     #
@@ -587,9 +596,11 @@ class Login(QDialog,Signals):
             except:
                 ree = False
             if ree == True:
+
                 self.ui_login_success.emit()
                 # self.messageBox.alert_msg("登录成功")
                 self.messageBox.alert_msg(_("login successful"))
+
                 if Globals.LOGIN_SUCCESS==True:
                     self.login_sucess_goto_star.emit()
 

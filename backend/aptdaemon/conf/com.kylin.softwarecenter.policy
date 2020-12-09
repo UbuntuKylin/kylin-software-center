@@ -8,7 +8,7 @@
   <vendor_url>http://ubuntukylin.com</vendor_url>
   <icon_name>uksoftwarecenter</icon_name>
 
-  <action id="com.ubuntukylin.softwarecenter.action">
+  <action id="com.kylin.softwarecenter.action">
     <_description>
       authorization for package management
     </_description>

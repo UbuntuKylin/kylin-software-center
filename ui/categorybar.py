@@ -27,9 +27,15 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from models.enums import Signals
+import os
 import gettext
-gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
-gettext.textdomain("ubuntu-kylin-software-center")
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 set_num=0
 class CategoryBar(QWidget,Signals):

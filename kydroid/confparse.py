@@ -24,6 +24,7 @@
 
 import configparser
 from models.apkinfo import ApkInfo
+from models.globals import Globals
 import os
 
 #FT1500 添加不能使用的安卓应用黑名单
@@ -33,7 +34,8 @@ if os.popen("cat /proc/cpuinfo  |grep -i 'ft.*1500'").read() != '':
 
 blacklist = [
     "com.tencent.tmgp.speedmobile",
-    "com.smile.gifmaker"
+    "com.smile.gifmaker",
+    "com.xingin.xhs",
 ]
 
 
@@ -49,13 +51,21 @@ def getApks():
     for pkgname in lists_header:
         if FT1500CPU and pkgname in blacklist :
             continue
-        apkinfo = ApkInfo(pkgname, config[pkgname]['name'], config[pkgname]['version'], config[pkgname]['size'], config[pkgname]['file'], config[pkgname]['summary'])
-        apkinfo.from_ukscdb = False
-        apklist.append(apkinfo)
+       # print("999999999",pkgname, config[pkgname]['name'], config[pkgname]['version'], config[pkgname]['size'], config[pkgname]['file'], config[pkgname]['summary'])
+        if Globals.KYDSOFT == True:
+            for name in Globals.installed_list_fat:
+                if pkgname == name["package_name"]:
+                    apkinfo = ApkInfo(pkgname, config[pkgname]['name'], config[pkgname]['version'], config[pkgname]['size'], config[pkgname]['file'], config[pkgname]['summary'])
+                    apkinfo.from_ukscdb = False
+                    apkinfo.is_installed =True
+                    apklist.append(apkinfo)
+        else:
+            apkinfo = ApkInfo(pkgname, config[pkgname]['name'], config[pkgname]['version'], config[pkgname]['size'],config[pkgname]['file'], config[pkgname]['summary'])
+            apkinfo.from_ukscdb = False
+            apklist.append(apkinfo)
 
     # for apk in apklist:
     #     print(apk.pkg_name, apk.display_name, apk.version, apk.size, apk.file_path)
-
     return apklist
 
 

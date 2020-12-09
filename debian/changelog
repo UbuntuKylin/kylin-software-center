@@ -1,3 +1,20 @@
+kylin-software-center (3.13.2kord) focal; urgency=medium
+
+  * Solve the problem of incomplete display of all introduction.
+  * Update the settings interface, repair the historical installation, and do not cancel the download function.
+  * Fix the problem that the button in the detail interface disappears when the authorization of the main interface of the software store fails.
+  * Judge QT version and improve 4K detection.
+  * Check whether the Android environment exists. If not, remove the mobile phone module. Remove developer options.
+  * Modify the network judgment and display the Android content after the judgment is enabled.
+  * Fix upgrade display problem, DBUS name change.
+  * Compatible with old version, update database.
+  * Add Tibetan version.
+  * Fix login issues and add installation dependencies.
+  * Delete software source every startup reminder
+  * Software store Tibetan version judgment and Android video card judgment. 
+
+ -- dengnan <dengnan@kylinos.cn>  Wed, 09 Dec 2020 14:39:08 +0800
+
 kylin-software-center (3.11.4kord) focal; urgency=medium
 
   * Fix the problem that the update software source prompt cannot be set to the top, and add the current version prompt

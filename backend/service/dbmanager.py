@@ -39,7 +39,7 @@ from models.globals import Globals
 QUERY_CATEGORY = "select * from category where name='%s'"
 QUERY_APP = "select display_name, summary,description,rating_avg,rating_total,review_total,rank,download_total \
                from application where app_name='%s'"
-QUERY_APPS = "select display_name_cn, app_name from application"
+QUERY_APPS = "select display_name_cn, app_name from application order by rating_total DESC"
 UPDATE_APP_RNR = "update application set rating_average=%d,rating_total=%d, review_total=%d, \
         download_total=%d where app_name='%s'"
 QUERY_CATEGORY_APPS = "select app_name,display_name,first_cat_name,secondary_cat_name,third_cat_name,rating_total,rank from application where first_cat_name='%s' or secondary_cat_name='%s' or third_cat_name='%s' order by rating_total DESC"
@@ -341,7 +341,7 @@ class Database:
             review_total = item[0]
             if(review_total == None):
                 review_total = 0
-            return review_total / 10 + 1
+            return review_total
 
     #
     # 函数：获取软件某页的所有评论

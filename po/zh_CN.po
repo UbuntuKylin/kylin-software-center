@@ -1138,7 +1138,7 @@ msgstr "软件评分"
 msgid "Ft"
 msgstr "分"
 
-#: ui/detailscrollwidget.py:528 ui/detailscrollwidget.py:646
+#: ui/detailscrollwidget.py:528 ui/detailscrollwidget.py:646 ui/confw.py
 msgid "Package name :"
 msgstr "软件包名 : "
 
@@ -1158,11 +1158,11 @@ msgstr "需要安装的依赖包"
 msgid "Unable to install the package"
 msgstr "无法安装该软件包"
 
-#: ui/detailscrollwidget.py:648
+#: ui/detailscrollwidget.py:648 ui/confw.py
 msgid "Current version :"
 msgstr "当前版本 : "
 
-#: ui/detailscrollwidget.py:650
+#: ui/detailscrollwidget.py:650 ui/confw.py
 msgid "Software source version :"
 msgstr "软件源版本 : "
 
@@ -1417,6 +1417,24 @@ msgstr "源更新中......"
 #: ui/login.py
 msgid "Logging......"
 msgstr "登录中......"
+
+#: ui/confw.py ui/confwidget.py
+msgid "About us"
+msgstr "关于我们"
+
+#: ui/confw.py
+msgid "Kirin software store is a tool software for Kirin operating system developed by Kirin team. Its main functions include downloading, unloading and upgrading software. Various functions in the continuous improvement, please look forward to"
+msgstr "麒麟软件商店是是由麒麟团队开发的一款用于麒麟操作系统的工具软件，主要功能有，下载，卸载，升级软件等功能。各项功能在不断完善中，敬请期待..."
+
+#: ui/confw.py
+msgid "Kylin software store"
+msgstr "麒麟软件商店"
+
+#: ui/confw.py
+msgid "Contributor email:"
+msgstr "贡献者邮箱"
+
+
 
 
 

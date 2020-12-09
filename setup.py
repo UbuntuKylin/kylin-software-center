@@ -36,12 +36,12 @@ cmdclass ={
 
 
 data_files=[
-    ('bin/', ['ubuntu-kylin-software-center']),
-    ('../etc/dbus-1/system.d/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.conf']),
-    ('share/dbus-1/system-services/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.service']),
-    ('share/polkit-1/actions/', ['backend/aptdaemon/conf/com.ubuntukylin.softwarecenter.policy']),
-    ('../etc/dbus-1/system.d/', ['backend/watchdog/com.ubuntukylin.watchdog.conf']),
-    ('share/dbus-1/system-services/', ['backend/watchdog/com.ubuntukylin.watchdog.service']),
+    ('bin/', ['kylin-software-center']),
+    ('../etc/dbus-1/system.d/', ['backend/aptdaemon/conf/com.kylin.softwarecenter.conf']),
+    ('share/dbus-1/system-services/', ['backend/aptdaemon/conf/com.kylin.softwarecenter.service']),
+    ('share/polkit-1/actions/', ['backend/aptdaemon/conf/com.kylin.softwarecenter.policy']),
+    ('../etc/dbus-1/system.d/', ['backend/watchdog/com.kylin.watchdog.conf']),
+    ('share/dbus-1/system-services/', ['backend/watchdog/com.kylin.watchdog.service']),
 #    ('lib/python3/dist-packages/ubuntu-kylin-software-center-daemon/', glob.glob('backend/aptdaemon/dbus_service')),
     ('share/applications/',['ubuntu-kylin-software-center.desktop']),
     ('share/pixmaps/',['ubuntu-kylin-software-center.svg']),

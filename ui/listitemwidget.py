@@ -36,7 +36,14 @@ from models.enums import (AppActions,
 from models.globals import Globals
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 class ListItemWidget(QWidget,Signals):
@@ -62,6 +69,11 @@ class ListItemWidget(QWidget,Signals):
         self.ui.installedsize.setAlignment(Qt.AlignCenter)
         self.ui.btn.setFocusPolicy(Qt.NoFocus)
         self.ui.cbSelect.setFocusPolicy(Qt.NoFocus)
+
+        self.ui.btnCancel.setFocusPolicy(Qt.NoFocus)
+        self.ui.btnCancel.setStyleSheet("QPushButton{background-image:url('res/cancel_1.png');border:0px;}QPushButton:hover{background:url('res/cancel_2.png');}QPushButton:pressed{background:url('res/cancel_2.png');}")
+        self.ui.btnCancel.raise_()
+        self.ui.btnCancel.clicked.connect(self.slot_click_cancel)
 
         iconpath = commontools.get_icon_path(self.app.name)
         self.ui.icon.setStyleSheet("QLabel{background-color: transparent;background-image:url('" + iconpath + "');background-color:transparent;}")
@@ -113,10 +125,12 @@ class ListItemWidget(QWidget,Signals):
             if self.app.status == PkgStates.INSTALLING:
                 if self.app.percent > 0:
                     #self.ui.btn.setText("正在安装")
-                    self.ui.btn.setText(_("Installing"))
+                    self.ui.btn.setText(_("Waiting for installation"))
+                    self.ui.btn.hide()
                 else:
                     #self.ui.btn.setText("等待安装")
                     self.ui.btn.setText(_("Waiting for installation"))
+                    self.ui.btn.show()
                 self.ui.btn.setEnabled(False)
                 self.ui.cbSelect.setEnabled(False)
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
@@ -205,9 +219,10 @@ class ListItemWidget(QWidget,Signals):
             if(self.workType == 'ins'):
                 self.app.status = PkgStates.INSTALLING #zx11.27 add for bug #1396051
                 #self.ui.btn.setText("正在安装")
-                self.ui.btn.setText(_("Installing"))
+                self.ui.btn.setText(_("Waiting for installation"))
+                self.ui.btnCancel.show()
 
-                self.ui.btn.hide()
+                #self.ui.btn.hide()
                 self.install_app.emit(self.app)
                 self.get_card_status.emit(self.app.name, PkgStates.INSTALLING)
             elif(self.workType == 'up'):
@@ -222,7 +237,7 @@ class ListItemWidget(QWidget,Signals):
                 self.remove_app.emit(self.app)
                 #self.ui.btn.setText("正在卸载")
                 self.ui.btn.setText(_("Uninstalling"))
-                self.ui.btn.hide()
+                #self.ui.btn.hide()
                 self.get_card_status.emit(self.app.name, PkgStates.REMOVING)
 
 
@@ -245,7 +260,7 @@ class ListItemWidget(QWidget,Signals):
                 if(run.get_run_command(self.app.name) == ""):
                     #self.ui.btn.setText("卸载")
                     self.ui.btn.setText(_("Uninstall"))
-                    self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+                    self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:transparent;}.QWidget:hover{border:1px solid #2d8ae1}")
                     self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     #self.ui.progressBarsmall.hide()
@@ -258,7 +273,7 @@ class ListItemWidget(QWidget,Signals):
                 else:
                     #self.ui.btn.setText("启动")
                     self.ui.btn.setText(_("Start"))
-                    self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+                    self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:transparent;}.QWidget:hover{border:1px solid #2d8ae1}")
                     self.ui.progressBar.hide()
                     self.ui.progresslabel.hide()
                     #self.ui.progressBarsmall.hide()
@@ -273,7 +288,7 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.status.hide()
                 #self.ui.btn.setText("安装")
                 self.ui.btn.setText(_("Install"))
-                self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:#ffffff;}.QWidget:hover{border:1px solid #2d8ae1}")
+                self.ui.baseWidget.setStyleSheet(".QWidget{border:1px solid #e5e5e5;background-color:transparent;}.QWidget:hover{border:1px solid #2d8ae1}")
                 self.ui.progressBar.hide()
                 self.ui.progresslabel.hide()
                 #self.ui.progressBarsmall.hide()
@@ -330,7 +345,7 @@ class ListItemWidget(QWidget,Signals):
             if status == PkgStates.INSTALLING:
                 self.app.status = PkgStates.INSTALLING
                 #self.ui.btn.setText("正在安装")
-                self.ui.btn.setText(_("Installing"))
+                self.ui.btn.setText(_("Waiting for installation"))
                 self.ui.btn.setStyleSheet("QPushButton{font-size:12px;color:#000000;border:1px solid #d5d5d5;background-color:#ffffff;}QPushButton:hover{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}QPushButton:pressed{font-size:12px;color:#ffffff;border:1px solid #d5d5d5;background-color:#2d8ae1;}")
 
             elif status == PkgStates.REMOVING:
@@ -370,6 +385,9 @@ class ListItemWidget(QWidget,Signals):
                 #self.ui.btn.setText("正在下载")
                 self.ui.btn.setText(_("downloading"))
             if status == AppActions.INSTALL:
+                if percent > 0:
+                    self.ui.btn.hide()
+                    self.ui.btnCancel.hide()
                 if(Globals.MIPS64):
                     self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
                     self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
@@ -381,7 +399,7 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.progresslabel.setStyleSheet(
                     "QLabel{font-size:12px;color:#2d8ae1;background-color:transparent;}")
                 #self.ui.btn.setText("正在安装")
-                self.ui.btn.setText(_("Installing"))
+                self.ui.btn.setText(_("Waiting for installation"))
             elif status == AppActions.UPGRADE:
                 if(Globals.MIPS64):
                     self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
@@ -396,6 +414,8 @@ class ListItemWidget(QWidget,Signals):
                 # self.ui.btn.setText("正在升级")
                 self.ui.btn.setText(_("Upgrading"))
             elif status == AppActions.REMOVE:
+                if percent > 0:
+                    self.ui.btn.hide()
                 if(Globals.MIPS64):
                     self.ui.progressBar.setStyleSheet("QProgressBar{background-color:#ffffff;border:0px;border-radius:0px;}")
                     self.ui.progressBarsmall.setStyleSheet("QProgressBar{background-color:#e5e5e5;border:0px;border-radius:0px;}")
@@ -421,4 +441,25 @@ class ListItemWidget(QWidget,Signals):
                 self.ui.btn.show()
             else:
                 self.ui.progresslabel.setText(str('%.0f' % percent) + '%')
+    def slot_click_cancel(self):
+        Globals.TASK_LIST.append(self.app.name)
+        self.ui.progresslabel.setVisible(False)
+        #self.ui.progressBar_icon.setVisible(False)
+        self.ui.progressBar.setVisible(False)
+        self.ui.btn.setEnabled(True)
+        if self.ui.btn.text()==(_("Waiting for installation")):
+            self.nomol_cancel.emit(self.app, "install")
+            self.hide_btncancel(self.app.name)
+        else:
+            self.nomol_cancel.emit(self.app, "upgrade")
+
+        # self.cancel_task_list()
+        self.connct_cancel.emit(self.app.name)
+        self.signale_set.emit("download_apk",self.app)
+        self.set_detail_install.emit()
+
+        # self.apk_nocard_cancel.emit()
+    def hide_btncancel(self,appname):
+        if appname == self.app.name:
+            self.ui.btnCancel.hide()
 

@@ -17,7 +17,14 @@ from models.enums import (UBUNTUKYLIN_CACHE_SETADS_PATH)
 from ui.taskwidget import Taskwidget
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -53,8 +60,15 @@ class Ui_MainWindow(object):
         self.navWidget.setGeometry(QtCore.QRect(10, 10, 110, 690))
         self.navWidget.setObjectName(_fromUtf8("navWidget"))
         # self.navWidget.setStyleSheet("QWidget{border-top-right-radius:0px;border-bottom-right-radius:0px;}")
-        self.logoImg = QLabel(self.navWidget)
-        self.logoImg.setGeometry(QtCore.QRect(39, 20, 32, 32))
+
+        self.logo_butn = QPushButton(self.navWidget)
+        self.logo_butn.setGeometry(QtCore.QRect(38, 19, 33, 33))
+        self.logo_butn.setText(_fromUtf8(""))
+        self.logo_butn.setObjectName(_fromUtf8("logoImg"))
+        self.logo_butn.setStyleSheet("QPushbutton{background-color:transparent;border:0px;}")
+
+        self.logoImg = QLabel(self.logo_butn)
+        self.logoImg.setGeometry(QtCore.QRect(0, 0, 32, 32))
         self.logoImg.setText(_fromUtf8(""))
         self.logoImg.setObjectName(_fromUtf8("logoImg"))
 
@@ -738,7 +752,7 @@ class Ui_MainWindow(object):
         self.ualine.setObjectName(_fromUtf8("ualine"))
 
         self.set_lindit = QLabel(self.rightWidget)
-        self.set_lindit.setGeometry(QtCore.QRect(20, 39, 800,20))
+        self.set_lindit.setGeometry(QtCore.QRect(20, 39, 800,25))
         self.set_lindit.setObjectName(_fromUtf8("rightWidget"))
         #self.set_lindit.setText("全局搜索:是在软件源下搜索全部应用软件，搜索到软件可能会有不可用或者其他质量问题")
         self.set_lindit.setText(_("Global search: It searches all application software under the software source. The search software may be unavailable or other quality problems."))
@@ -752,7 +766,7 @@ class Ui_MainWindow(object):
         self.cbSelectAll.setGeometry(QtCore.QRect(10, 574, 120, 15))
         self.cbSelectAll.setObjectName(_fromUtf8("cbSelectAll"))
         self.uatitle = QLabel(self.userAppListWidget)
-        self.uatitle.setGeometry(QtCore.QRect(0, 5, 300, 15))
+        self.uatitle.setGeometry(QtCore.QRect(0, 0, 300, 20))
         self.uatitle.setText(_fromUtf8(""))
         self.uatitle.setObjectName(_fromUtf8("uatitle"))
         self.btnInstallAll = QPushButton(self.userAppListWidget)

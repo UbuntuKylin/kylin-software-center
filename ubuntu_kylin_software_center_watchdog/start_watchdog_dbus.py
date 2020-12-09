@@ -26,7 +26,7 @@ import dbus.mainloop.glib
 from gi.repository import GLib, GObject
 DBUS_PROCESS = 'ubuntu-kylin-software-center-daemon'
 DBUS_PATH = '/usr/bin/ubuntu-kylin-software-center-daemon'
-INTERFACE = "com.ubuntukylin.watchdog"
+INTERFACE = "com.kylin.watchdog"
 PATH = "/"
 
 class Worker(object):
@@ -52,8 +52,8 @@ class Worker(object):
             self.interface.sendResult("failed")
             return True
         try:
-            obj = bus.get_object("com.ubuntukylin.softwarecenter", '/')
-            self.iface = dbus.Interface(obj, dbus_interface="com.ubuntukylin.softwarecenter")
+            obj = bus.get_object("com.kylin.softwarecenter", '/')
+            self.iface = dbus.Interface(obj, dbus_interface="com.kylin.softwarecenter")
             print("connect success!")
         except dbus.DBusException as e:
             print("### test failed 222 ###")

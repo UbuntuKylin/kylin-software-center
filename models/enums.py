@@ -25,18 +25,29 @@
 
 import os
 import pwd
-
+import dbus
+import sys
+import json
+import dbus.service
 from xdg import BaseDirectory as xdg
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from backend.ubuntu_sw import safe_makedirs
-
+from models.globals import Globals
 from models.baseinfo import BaseInfo
 from utils.debfile import DebFile
 import configparser
+import getpass
+
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 
@@ -48,10 +59,12 @@ _ = gettext.gettext
 
 ########################################网址类###########################
 
-UBUNTUKYLIN_SERVICE_PATH = "com.ubuntukylin.softwarecenter"
-UBUNTUKYLIN_INTERFACE_PATH = "com.ubuntukylin.softwarecenter"
+UBUNTUKYLIN_SERVICE_PATH = "com.kylin.softwarecenter"
+UBUNTUKYLIN_INTERFACE_PATH = "com.kylin.softwarecenter"
 
 UBUNTUKYLIN_SERVER = "http://service.ubuntukylin.com:8001/uksc/"
+
+SOFTWARE_BLACK ="/home/"+getpass.getuser()+"/"+".config/kylin-software-center-security-config.json"
 
 # 安卓兼容源自动判断
 kydroid_source = {
@@ -60,10 +73,12 @@ kydroid_source = {
         "arm64":"http://archive.kylinos.cn/kylin/kydroid/2/arm64/"
     },
     "kydroid3": {
-        # "amd64":"http://archive.kylinos.cn/kylin/kydroid/3/x86/",
         "arm64":"http://archive.kylinos.cn/kylin/kydroid/3/arm64/",
         "kunpeng":"http://archive.kylinos.cn/kylin/kydroid/3/kunpeng/",
         "other":"http://archive.kylinos.cn/kylin/kydroid/3/other/"  #709和景嘉微显卡源
+    },
+    "kydroid4":{
+        "amd64":"http://archive.kylinos.cn/kylin/kydroid/4/x86/"
     }
 }
 
@@ -78,15 +93,29 @@ else:
     KYDROID_CONF_PATH = "/usr/share/kydroid2/kydroid2.conf"
 
 try:
+    try:
+        bus = dbus.SessionBus()
+    except:
+        sys.exit(0)
+    proxy_obj = bus.get_object('com.kylin.kydroid', '/com/kylin/kydroid')
+    iface = dbus.Interface(proxy_obj, 'com.kylin.kydroid')
+    dest = iface.getDisplayInformation()
+    adev=json.loads(dest)
     arch = os.popen("dpkg --print-architecture").readline().splitlines()[0]
     kydroid_config = configparser.ConfigParser()
-
+    if arch == "amd64":
+        pass
+    else:
+        if adev["gpu_vendor"] == "AMD" or adev["gpu_vendor"] == "NVIDIA":
+            arch = "arm64"
+        elif adev["gpu_vendor"] == "GP101" or adev["gpu_vendor"] == "JJM" or adev["gpu_vendor"] == "MALI":
+            arch = "other"
     if((os.popen("lspci -n|awk '{print $3}' |grep '0709:'").read() != '') or (os.popen("cat /proc/fb |grep -i MWV206").read() != '')): # 709和景嘉微特殊处理
         arch = "other"
     elif(os.popen("lscpu|grep -i kunpeng").read() != ''):
         arch = "kunpeng"
 
-
+    
     kydroid_config.read(KYDROID_CONF_PATH)
     kydroid_version = kydroid_config['image']['repo']
     KYDROID_SOURCE_SERVER = kydroid_source[kydroid_version][arch]
@@ -241,7 +270,7 @@ class TransactionTypes:
     APPLY = "apply_changes"
     REPAIR = "repair_dependencies"
 
-
+System_software=[""]
 
 class Signals:
     # from models.application import Application
@@ -356,6 +385,7 @@ class Signals:
     goto_login = pyqtSignal()
 
     find_password= pyqtSignal()
+    show_config = pyqtSignal()
 
     return_db=pyqtSignal()
 
@@ -385,17 +415,22 @@ class Signals:
 
     set_detail_install=pyqtSignal()#界面按钮修改详情界面按钮的状态
 
-    # cancel_btncancel=pyqtSignal()#授权时取消后对“取消下载”的处理
+    #cancel_btncancel=pyqtSignal()#授权时取消后对“取消下载”的处理
     login_sucess_goto_star=pyqtSignal()#
     reset_star_ft=pyqtSignal()
 
     login_out=pyqtSignal()#退出登录时清空评分
+
+    history_install = pyqtSignal(str)
+
+    mainsingnal =pyqtSignal(str)
 
     hide_cancel=pyqtSignal()
 
     ask_mainwindow = pyqtSignal()
     ask1_mainwindow = pyqtSignal()
     ask2_mainwindow =pyqtSignal()
+    wait_apk_source = pyqtSignal()
 
 # application actions, this should sync with definition in apt_dbus_service
 class AppActions:
@@ -504,6 +539,9 @@ PKG_NAME = {
     "foundercebreader":"CEBReader",
     "ofdreader":"OFDReader",
     "founderdoceditor":"DocEditor",
+    "qaxbrowser-pioneer-stable":"qaxbrowser-pioneer",
+    "dianjureader":"DianjuReader",
+    "cn.lanxin":"lanxin"
 
 }
 
@@ -556,3 +594,4 @@ def CheckChineseWordsForUnicode(uniSrc):
         return True
     else:
         return False
+

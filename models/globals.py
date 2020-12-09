@@ -58,6 +58,7 @@ class Globals:
     # open with local deb file
     LOCAL_DEB_FILE = None
 
+    CLOSE_SOFTWARE = None
     #LOG.debug and print Switch
     DEBUG_SWITCH = False
 
@@ -119,4 +120,19 @@ class Globals:
     UPNUM = False
 
     DATAUNUM=""
+
+    DEFT = False
+
+    SYSTEM = False
+
+    DADET = False
+
+    KYDSOFT = False
+
+    installed_list_fat = []
+
+    BLACKLIST= []
+
+    KYDROID ={}
+
 

@@ -24,6 +24,7 @@
 
 
 import sip
+import os
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -36,8 +37,13 @@ try:
 except AttributeError:
     def _fromUtf8(s):
         return s
-gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
-gettext.textdomain("ubuntu-kylin-software-center")
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 class Taskwidget(QDialog,Signals):
 

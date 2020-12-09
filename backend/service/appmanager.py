@@ -37,7 +37,6 @@ from utils.silentprocess import *
 from utils.machine import *
 from models.globals import Globals
 from models.enums import (UBUNTUKYLIN_SERVER, UBUNTUKYLIN_RES_PATH,Signals, KYDROID_SOURCE_SERVER)
-
 #from backend.remote.piston_remoter import PistonRemoterAuth
 
 import aptsources.sourceslist
@@ -53,7 +52,14 @@ LOG = logging.getLogger("uksc")
 
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 class WorkerItem:
@@ -570,9 +576,12 @@ class AppManager(QObject,Signals):
             for catName,catItem in list(self.cat_list.items()):
                 if len(apps) == 0:
                     apps = dict(list(catItem.apps.items()))
+
                 else:
                     apps = dict(list(apps.items()) + list(catItem.apps.items()))
+
         else:
+           #print("wwwwwwwwww",self.cat_list[cat].apps.items())
             #get the apps from category list
             if not load:
                 if cat in self.cat_list.keys():
@@ -701,6 +710,8 @@ class AppManager(QObject,Signals):
             for item in applist:
                 #pkgname = UnicodeToAscii(item[1])
                 pkgname = item[1]
+                if pkgname == "kylin-software-center":
+                    continue
                 package = self.get_package_by_name(pkgname)
                 if package is None:
                     continue
@@ -1150,11 +1161,13 @@ class AppManager(QObject,Signals):
     # 函数：提交评分
     #
     def submit_rating(self, app_name, rating):
+        print("mmmmmmmmmmmm", rating)
         try:
             res = self.premoter.submit_rating(app_name, rating, Globals.USER, Globals.USER_DISPLAY)
         except:
             res = False
         res = [{'res':res}]
+
         self.submit_rating_over.emit(res)
 
     #
@@ -1475,7 +1488,6 @@ class AppManager(QObject,Signals):
             # kydroid_appstream = len(os.popen('ps aux | grep "kydroid-appstream" | grep -v grep').readlines())
 
             res = self.backend.get_kydroid_evnrun(pwd.getpwuid(os.getuid())[0], os.getuid(),'sys.kydroid.boot_completed')
-
             # if kydroid_dri3_desktop and kydroid_appstream:
             if res:
                 Globals.APK_EVNRUN = 1
@@ -1520,10 +1532,28 @@ class AppManager(QObject,Signals):
             Globals.isOnline = False
 
         if Globals.isOnline == False:
-            if (Globals.DEBUG_SWITCH):
-                print('bad apk source   ')
+            #if (Globals.DEBUG_SWITCH):
+            installed_list = self.kydroid_service.get_installed_applist()
+            Globals.installed_list_fat = installed_list
+            if Globals.installed_list_fat:
+                Globals.KYDSOFT = True
+                self.apk_list = confparse.getApks()
+                self.dbapk_list = self.db.query_apk_applications()
+                for app in installed_list:
+                    self.merge_apk_list(app)
+                for apk in self.apk_list:
+                    apk.kydroid_service = self.kydroid_service
+                    for dbapk in self.dbapk_list:
+                        if (apk.pkgname == dbapk[0]):
+                            apk.summary_init = apk.orig_summary = dbapk[2]
+                            apk.description_init = apk.orig_description = dbapk[3]
+                            apk.ratings_average = dbapk[4]
+                            apk.ratings_total = dbapk[5]
+                            apk.review_total = dbapk[6]
+                            apk.from_ukscdb = True
             #self.download_apk_source_over.emit(False)
         else:
+            Globals.KYDSOFT = False
             downloadmanager.download_sourcelist()
             self.apk_list = confparse.getApks()
             self.dbapk_list = self.db.query_apk_applications()

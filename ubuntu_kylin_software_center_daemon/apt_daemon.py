@@ -81,7 +81,8 @@ class FetchProcess(apb.AcquireProgress):
                  "action":str(self.action),
                  }
 #        print "$$$$fectchprocess####fail:",kwarg
-        self.dbus_service.software_fetch_signal("down_fail", kwarg)
+        self.dbus_service.software_fetch_signal(""
+                                                "", kwarg)
 
     def fetch(self, item):
 #        print 'one item download finished:',item

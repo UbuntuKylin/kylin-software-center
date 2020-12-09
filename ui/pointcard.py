@@ -34,7 +34,13 @@ from models.enums import Signals, setLongTextToElideFormat, PkgStates,AppActions
 
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 
@@ -133,6 +139,14 @@ class PointCard(QWidget,Signals):
             self.ui.description.setText(self.app.summary)
         else:
             self.ui.description.setText(self.app.orig_summary)
+        if self.app.displayname != '' and self.app.displayname is not None and self.app.displayname != 'None':
+            text = setLongTextToElideFormat(self.ui.name, self.app.displayname_cn)
+            # self.ui.name.setText(self.app.displayname_cn)
+            if str(text).endswith("…") is True:
+                self.ui.name.raise_()
+                self.ui.name.setToolTip(self.app.displayname_cn)
+            else:
+                self.ui.name.setToolTip("")
 
         # rating star
         star = StarWidget("small", self.app.ratings_average, self.ui.baseWidget)

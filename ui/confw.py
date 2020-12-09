@@ -24,7 +24,14 @@ except AttributeError:
 
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 class Ui_ConfigWidget(object):
@@ -53,6 +60,8 @@ class Ui_ConfigWidget(object):
         self.passwordWidget.setGeometry(QtCore.QRect(100, 1, 479, 428))
         self.passwordWidget.setObjectName(_fromUtf8("passwordWidget"))
         self.passwordWidget.setStyleSheet("QWidget{border:0px}")
+
+
 
         self.groupBox_password = QGroupBox(self.passwordWidget)
         self.groupBox_password.setGeometry(QtCore.QRect(1, 1, 519, 428))
@@ -245,6 +254,110 @@ class Ui_ConfigWidget(object):
         #self.text10.setText("找回密码")
         self.text10.setText(_("Rpwd"))
         self.text10.setStyleSheet("QLabel{font-size:14px;color:#000000;}")
+
+        #关于我们界面
+        self.About_us_widget = QWidget(self.baseWidget)
+        self.About_us_widget.setGeometry(QtCore.QRect(100, 1, 479, 428))
+        self.About_us_widget.setObjectName(_fromUtf8("passwordWidget"))
+        self.About_us_widget.setStyleSheet("QWidget{border:0px;}")
+        self.About_us_widget.hide()
+
+        #关于我们
+        self.About_us = QLabel( self.About_us_widget)
+        self.About_us.setGeometry(QtCore.QRect(30, 30, 63, 25))
+        self.About_us.setObjectName(_fromUtf8("passwordWidget"))
+        self.About_us.setStyleSheet("QLabel{border:0px;color:#666666;}")
+        self.About_us.setText(_("About us"))
+
+        #介绍
+        self.About_vesion = QLabel( self.About_us_widget)
+        self.About_vesion.setGeometry(QtCore.QRect(30, 80, 448, 40))
+        self.About_vesion.setObjectName(_fromUtf8("passwordWidget"))
+        self.About_vesion.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        self.About_vesion.setText(_("Kirin software store is a tool software for Kirin operating system developed by Kirin team. Its main functions include downloading, unloading and upgrading software. Various functions in the continuous improvement, please look forward to"))
+        self.About_vesion.setWordWrap(True)
+        #self.About_vesion.setAlignment(Qt.AlignTop)
+
+        #麒麟软件商店
+        self.About_name = QLabel( self.About_us_widget)
+        self.About_name.setGeometry(QtCore.QRect(30, 155, 120, 35))
+        self.About_name.setObjectName(_fromUtf8("passwordWidget"))
+        self.About_name.setStyleSheet("QLabel{border:0px;}")
+        self.About_name.setText(_("Kylin software store"))
+        self.About_name.setStyleSheet("QLabel{font-size:18px;color:#0576d2;}")
+
+        #软件包名
+        self.About_pkgname = QLabel( self.About_us_widget)
+        self.About_pkgname.setGeometry(QtCore.QRect(30, 195, 70, 25))
+        self.About_pkgname.setObjectName(_fromUtf8("passwordWidget"))
+        self.About_pkgname.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        self.About_pkgname.setText(_("Package name :"))
+
+        #获取包名
+        self.get_pkgname = QLabel(self.About_us_widget)
+        self.get_pkgname.setGeometry(QtCore.QRect(105, 195, 200, 25))
+        self.get_pkgname.setObjectName(_fromUtf8("passwordWidget"))
+        self.get_pkgname.setStyleSheet("QLabel{border:0px;color:#666666;}")
+        #self.get_pkgname.setText("kylin-software-center")
+
+        #当前版本
+        self.vesion_pkgname = QLabel( self.About_us_widget)
+        self.vesion_pkgname.setGeometry(QtCore.QRect(30, 220, 70, 25))
+        self.vesion_pkgname.setObjectName(_fromUtf8("passwordWidget"))
+        self.vesion_pkgname.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        self.vesion_pkgname.setText(_("Current version :"))
+
+        #获取当前版本
+        self.get_pkgname_vesion = QLabel(self.About_us_widget)
+        self.get_pkgname_vesion.setGeometry(QtCore.QRect(105, 220, 200, 25))
+        self.get_pkgname_vesion.setObjectName(_fromUtf8("passwordWidget"))
+        self.get_pkgname_vesion.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        #self.get_pkgname_vesion.setText("3.11.8kord")
+
+        #软件源版本
+        self.software_source = QLabel( self.About_us_widget)
+        self.software_source.setGeometry(QtCore.QRect(30, 245, 80, 25))
+        self.software_source.setObjectName(_fromUtf8("passwordWidget"))
+        self.software_source.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        self.software_source.setText(_("Software source version :"))
+
+        #获取软件源版本
+        self.get_software_source = QLabel(self.About_us_widget)
+        self.get_software_source.setGeometry(QtCore.QRect(115, 245, 170, 25))
+        self.get_software_source.setObjectName(_fromUtf8("passwordWidget"))
+        self.get_software_source.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        #self.get_software_source.setText("3.11.8kord")
+
+        #贡献者邮箱
+        self.Contributor_email = QLabel( self.About_us_widget)
+        self.Contributor_email.setGeometry(QtCore.QRect(30, 295, 150, 25))
+        self.Contributor_email.setObjectName(_fromUtf8("passwordWidget"))
+        self.Contributor_email.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        self.Contributor_email.setText(_("Contributor email:"))
+
+        #贡献者
+        self.Contributor_email_1 = QLabel( self.About_us_widget)
+        self.Contributor_email_1.setGeometry(QtCore.QRect(30, 330, 448, 25))
+        self.Contributor_email_1.setObjectName(_fromUtf8("passwordWidget"))
+        self.Contributor_email_1.setStyleSheet("QLabel{border:0px;font-size:13px;color:#666666;}")
+        self.Contributor_email_1.setText("wenbo@Kylinos.cn、dengnan@kylinos.cn、lijiang@kylinos.cn")
+
+        self.software_icon = QWidget( self.About_us_widget)
+        self.software_icon.setGeometry(QtCore.QRect(350, 150, 128, 128))
+        self.software_icon.setObjectName(_fromUtf8("passwordWidget"))
+        self.software_icon.setStyleSheet("QWidget{background-image:url('res/dislable.png');border:0px;}")
+
+        # self.Contributor_email_2 = QLabel( self.About_us_widget)
+        # self.Contributor_email_2.setGeometry(QtCore.QRect(30, 310, 80, 25))
+        # self.Contributor_email_2.setObjectName(_fromUtf8("passwordWidget"))
+        # self.Contributor_email_2.setStyleSheet("QWidget{border:1px solid red;}")
+        # self.Contributor_email_2.setText("贡献者邮箱:")
+        #
+        # self.Contributor_email_3 = QLabel( self.About_us_widget)
+        # self.Contributor_email_3.setGeometry(QtCore.QRect(30, 310, 80, 25))
+        # self.Contributor_email_3.setObjectName(_fromUtf8("passwordWidget"))
+        # self.Contributor_email_3.setStyleSheet("QWidget{border:1px solid red;}")
+        # self.Contributor_email_3.setText("贡献者邮箱:")
 
 
         #您的新密码设置成功
@@ -499,7 +612,7 @@ class Ui_ConfigWidget(object):
         self.btnAdd.setObjectName(_fromUtf8("btnAdd"))
 
         self.groupBox_2 = QGroupBox(self.sourceWidget)
-        self.groupBox_2.setGeometry(QtCore.QRect(0, 183, 460, 231))
+        self.groupBox_2.setGeometry(QtCore.QRect(0, 165, 460, 231))
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(148, 144, 255))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -516,7 +629,7 @@ class Ui_ConfigWidget(object):
         self.groupBox_2.setFont(font)
         self.groupBox_2.setObjectName(_fromUtf8("groupBox_2"))
         self.btnUpdate = QPushButton(self.groupBox_2)
-        self.btnUpdate.setGeometry(QtCore.QRect(290, 180, 180, 20))
+        self.btnUpdate.setGeometry(QtCore.QRect(2, 185, 100, 25))
         self.btnUpdate.setText(_fromUtf8(""))
         self.btnUpdate.setObjectName(_fromUtf8("btnUpdate"))
         # self.processwidget = QWidget(self.groupBox_2)
@@ -527,7 +640,7 @@ class Ui_ConfigWidget(object):
         # self.btnCancel.setText(_fromUtf8(""))
         # self.btnCancel.setObjectName(_fromUtf8("btnCancel"))
         self.progressBar = QProgressBar(self.groupBox_2)
-        self.progressBar.setGeometry(QtCore.QRect(0, 200, 460,8))
+        self.progressBar.setGeometry(QtCore.QRect(0, 220, 460,8))
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName(_fromUtf8("progressBar"))
         self.progressBar.setTextVisible(False)
@@ -556,8 +669,8 @@ class Ui_ConfigWidget(object):
         self.delete_sourcelist=QPushButton(self.select_Qwidget)
         # self.delete_sourcelist.setText("删除")
         self.delete_sourcelist.setText(_("delete"))
-        self.delete_sourcelist.setGeometry(385,2,45,25)
-        self.delete_sourcelist.setStyleSheet("QPushButton{border:0px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{border:0px;font-size:14px;color:#0396DC;} QPushButton:pressed{border:0px;font-size:14px;color:#0F84BC;}")
+        self.delete_sourcelist.setGeometry(80,2,45,25)
+        self.delete_sourcelist.setStyleSheet("QPushButton{background-color:#dddddd;border:0px;border-radius:2px;font-size:13px;color:#666666;text-align:center;} QPushButton:hover{background-color:#eeeeee;border:px;border-radius:2px;font-size:14px;color:#666666;} QPushButton:pressed{background-color:#d5d5d5;border-radius:2px;border:0px;font-size:14px;color:#666666;}")
 
 
 

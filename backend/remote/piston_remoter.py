@@ -100,7 +100,7 @@ class PistonRemoter(PistonAPI):
     default_service_forecast3d = 'forecast3d'
     default_content_type = 'application/x-www-form-urlencoded'
     default_service_root = UBUNTUKYLIN_SERVER
-    default_timeout = 2
+    default_timeout = 5
 
     #
     # 函数：获取所有评分接口
@@ -473,6 +473,7 @@ class PistonRemoter(PistonAPI):
             print("submit_rating")
         if (isinstance(gets,bytes)):
             gets = gets.decode(encoding='utf-8')
+
         return gets
 
 

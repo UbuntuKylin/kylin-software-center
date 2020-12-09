@@ -33,7 +33,14 @@ from utils import run
 from utils.debfile import DebFile
 
 import gettext
-gettext.textdomain("ubuntu-kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 # class WorkType:
@@ -679,7 +686,6 @@ class MultiFunctionBtn(QWidget,Signals):
             self.ui.btnUpdate.show()
         if self.ui.btnUninstall.isEnabled():
             self.ui.btnUninstall.show()
-
         self.loading.stop_loading()
 
     #

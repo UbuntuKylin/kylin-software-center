@@ -1,0 +1,2 @@
+ubuntu_kylin_software_center_daemon
+ubuntu_kylin_software_center_watchdog

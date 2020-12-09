@@ -43,7 +43,8 @@ from models.enums import (UBUNTUKYLIN_RES_ICON_PATH,
                         setLongTextToElideFormat,
                         PkgStates,
                         PageStates,
-                        UBUNTUKYLIN_SERVER)
+                        UBUNTUKYLIN_SERVER,
+                          System_software)
 from PyQt5 import QtGui
 from utils import run
 from utils import commontools
@@ -52,9 +53,13 @@ from models.globals import Globals
 from backend.remote.piston_remoter import PistonRemoter
 import requests
 import gettext
-
-
-gettext.textdomain("ubuntu-kylin-software-center")
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 # class  My_Thread(QThread,Signals):
 #     def __init__(self):
@@ -83,6 +88,8 @@ class DetailScrollWidget(QScrollArea,Signals):
     is_clean_star=0
     add_revieheight=0
     Line_height=0
+    text_lidit= ""
+    dest_str = ""
     SET_ISNTALL=False
     def __init__(self,messageBox,parent=None):
         QScrollArea.__init__(self,parent.ui.detailShellWidget)
@@ -168,6 +175,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.free_registration.setFocusPolicy(Qt.NoFocus)
         self.ui.expand_all.setFocusPolicy(Qt.NoFocus)
         self.ui.Load_all.setFocusPolicy(Qt.NoFocus)
+        self.ui.retract.setFocusPolicy(Qt.NoFocus)
         self.ui.pushButton.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
         self.ui.pushButton_2.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
         self.ui.pushButton_3.setStyleSheet("QPushButton{border:0px;background-image:url('res/sshot2.png')}")
@@ -707,11 +715,16 @@ class DetailScrollWidget(QScrollArea,Signals):
         if Globals.LINDIT==1:
             self.ui.description.move(0,28)
             Globals.LINDIT=0
+        count = 0
         # clear reviews
         self.scrollToTop()
         self.reviewpage = 1
+        self.ui.thumbnail_4.clear()
+        self.ui.thumbnail_1.clear()
         self.currentreviewready = False
         self.ui.reviewListWidget.clear()
+        self.ui.btnSshotBack.hide()
+        self.ui.btnSshotNext.hide()
         # self.detailWidget.resize(805, 790)
         # self.ui.reviewListWidget.resize(805, 0)
         self.detailWidget.resize(873, 790+182)
@@ -787,9 +800,9 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.icon.setStyleSheet("QLabel{background-image:url('" + iconpath + "');background-color:transparent;}")
        #add in dengnan 获取下载次数
 
-        size = app.installedSize
+        size = app.packageSize
         if size == 0:
-            size=app.packageSize
+            size=app.installedSize
         sizek = size / 1024
         if(sizek == 0):
             #self.ui.size.setText("下载大小: " + "未知")
@@ -986,20 +999,32 @@ class DetailScrollWidget(QScrollArea,Signals):
             if self.app.description is not None and self.app.description != 'None' and self.app.description != '':
                 self.ui.summary.hide()
                 if app.summary  not in app.description:
-                   app.description=app.summary + "\n" + app.description
+                   app.description =app.summary + "\n" + app.description
+                   #app.description = app.description.replace("\n", "")
                 else:
                     pass
+                app.description = app.description.replace('\n', '').replace('\r', '')
+                for item in app.description:
+                    if 0x4E00 <= ord(item) <= 0x9FA5:
+                        count += 1
                 self.ui.description.setText(app.description)
+                #print("bbbbbbbb",count,len(app.description))
+               # text = setLongTextToElideFormat( self.ui.description, app.description)
                 self.ui.description.setStyleSheet("QTextEdit{background-color:transparent; border:0px;font-size:13px;color:#666666;}")
-                tc=self.ui.description.textCursor()
-                tc.movePosition(QTextCursor.End)
-                lay=tc.block().layout()
-                curpos=tc.position()-tc.block().position()
-                textline=lay.lineForTextPosition(curpos).lineNumber()+tc.block().firstLineNumber()
-                if textline>=4:
-                    textline=textline+2
-                self.Row_er=textline-5
-                if textline >5:
+                # tc=self.ui.description.textCursor()
+                # tc.movePosition(QTextCursor.End)
+                # lay=tc.block().layout()
+                # curpos=tc.position()-tc.block().position()
+                # textline=lay.lineForTextPosition(curpos).lineNumber()+tc.block().firstLineNumber()
+                # if textline>=4:
+                #     textline=textline+2
+                # self.Row_er=textline-5
+                if len(app.description) > 300 and count >= int(len(app.description)/2 +int(len(app.description)/10)):
+                    self.ui.description.clear()
+                    self.dest_str= app.description[0:290] + "......"
+                    self.text_lidit = app.description
+                    self.ui.description.setText(self.dest_str)
+                    self.Row_er = len(app.description)
                     self.Coordinate_change(0)
                     self.ui.retract.hide()
                     self.ui.expand_all.show()
@@ -1053,6 +1078,9 @@ class DetailScrollWidget(QScrollArea,Signals):
                 self.ui.grade1.setText('')
             else:
                 self.reset_ratings(my_rating)
+        if app.name in System_software:
+            self.btns.ui.btnUninstall.setEnabled(False)
+            self.btns.ui.btnUninstall.hide()
 
 
     #
@@ -1086,11 +1114,21 @@ class DetailScrollWidget(QScrollArea,Signals):
     # Function: expand alltext
     #
     def expand_alltext(self):
-        ROW_ER = self.Row_er * 23
+        # if self.Row_er >=400 and self.Row_er <=600:
+        #     ROW_ER = 50
+        # if self.Row_er >600 and self.Row_er <=800:
+        #     ROW_ER = 100
+        # else:
+        if self.Row_er >=300:
+            ROW_ER = (int(self.Row_er - 300) / 60) * 18+18
+        else:
+            ROW_ER =0
         self.Expand_height=ROW_ER
         self.Line_height=ROW_ER
         self.Coordinate_change(ROW_ER)
         self.ui.expand_all.hide()
+        self.ui.description.clear()
+        self.ui.description.setText(self.text_lidit)
         self.ui.retract.show()
         self.detailWidget.resize(self.detailWidget.width(),self.detailWidget.height()+ROW_ER)
 
@@ -1102,6 +1140,8 @@ class DetailScrollWidget(QScrollArea,Signals):
         ROW_ER=0
         self.Coordinate_change(ROW_ER)
         self.ui.expand_all.show()
+        self.ui.description.clear()
+        self.ui.description.setText(self.dest_str)
         self.ui.retract.hide()
         self.detailWidget.resize(self.detailWidget.width(),self.detailWidget.height()-self.Line_height)
         self.Expand_height=0
@@ -1112,7 +1152,7 @@ class DetailScrollWidget(QScrollArea,Signals):
     #
     def Coordinate_change(self,ROW_ER):
         self.ui.description_summary.resize(810, 180 + ROW_ER)
-        self.ui.description.resize(810, 130 + ROW_ER)
+        self.ui.description.resize(810, 110 + ROW_ER)
         self.ui.splitText2.move(25, 612 + ROW_ER)
         self.ui.gradeBG.move(25, 644 + ROW_ER)
         self.ui.splitText3.move(25, 826 + ROW_ER)
@@ -1123,7 +1163,7 @@ class DetailScrollWidget(QScrollArea,Signals):
         self.ui.reviewListWidget.move(25, 980 + ROW_ER)
         self.ratingstar.move(612, 701+ ROW_ER)
         self.star.move(109, 730 + ROW_ER)
-        self.ui.retract.move(729, 148 + ROW_ER)
+        self.ui.retract.move(729, 128 + ROW_ER)
 
 
     #
@@ -1132,7 +1172,7 @@ class DetailScrollWidget(QScrollArea,Signals):
     #
     def screen_select_path(self):
         if os.path.exists(UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH):
-            scre=self.app.name+"_thumbnail1.GIF"
+            scre=self.app.name+"_thumbnail3.GIF"
             set=os.path.exists(UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH+scre)
             if set:
                 return UBUNTUKYLIN_CACHE_SETSCREENSHOTS_PATH
@@ -1180,6 +1220,7 @@ class DetailScrollWidget(QScrollArea,Signals):
     def add_review(self, reviewlist):
         # get maxpage
         self.maxpage = self.mainwindow.worker_thread0.appmgr.db.get_pagecount_by_pkgname(self.app.pkgname)
+
 
         # lengthen ui
         add = len(reviewlist)
@@ -1690,6 +1731,7 @@ class DetailScrollWidget(QScrollArea,Signals):
             else:
                 pass
 
+
             self.mainwindow.worker_thread0.appmgr.update_app_ratingavg(self.app.name, ratingavg, ratingtotal)
             self.reset_rating_text(ratingavg, ratingtotal)
             #self.mainwindow.messageBox.alert_msg("评分已提交")
@@ -1767,7 +1809,6 @@ class DetailScrollWidget(QScrollArea,Signals):
     def reset_rating_text(self, ratingavg, ratingtotal):
         self.app.ratings_average = ratingavg
         self.app.ratings_total = ratingtotal
-
         ratingavg = float('%.1f' % ratingavg)
         # self.smallstar.changeGrade(ratingavg)
         self.star.changeGrade(ratingavg)

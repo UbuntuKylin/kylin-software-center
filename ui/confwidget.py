@@ -32,9 +32,17 @@ from models.globals import Globals
 from ui.login_ui import Ui_Login_ui
 from ui.messagebox import MessageBox
 from ui.login import Login
+import os
 
 import gettext
-gettext.textdomain("kylin-software-center")
+import os
+LOCALE = os.getenv("LANG")
+if "bo" in LOCALE:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale-langpack")
+    gettext.textdomain("kylin-software-center")
+else:
+    gettext.bindtextdomain("ubuntu-kylin-software-center", "/usr/share/locale")
+    gettext.textdomain("ubuntu-kylin-software-center")
 _ = gettext.gettext
 
 
@@ -179,13 +187,15 @@ class ConfigWidget(QDialog,Signals):
         sourceitem1 = QListWidgetItem(_("User set"))
         #sourceitem2 = QListWidgetItem("密码修改找回")
         sourceitem2 = QListWidgetItem(_("PWD   CR"))
-        #sourceitem3 = QListWidgetItem("应用设置")
+        sourceitem3 = QListWidgetItem(_("About us"))
         #icon = QIcon()
         #icon.addFile("res/pageList.png", QSize(), QIcon.Normal, QIcon.Off)
         #sourceitem.setIcon(icon)
         self.ui.pageListWidget.addItem(sourceitem)
         #self.ui.pageListWidget.addItem(sourceitem1)
         self.ui.pageListWidget.addItem(sourceitem2)
+
+        self.ui.pageListWidget.addItem(sourceitem3)
         #self.ui.pageListWidget.addItem(sourceitem3)
         # pointoutitem = QListWidgetItem("软件推荐页")
         # pointoutitem.setWhatsThis('pointout')
@@ -217,8 +227,8 @@ class ConfigWidget(QDialog,Signals):
         self.ui.sourceWidget.setStyleSheet(".QListWidget{border:0px;color::#0fa2e8;font-size:13px}")
         # self.ui.lesource.setStyleSheet("QLineEdit{border-radius:1px;color:#497FAB;font-size:13px;}")
         self.ui.lesource.setStyleSheet("QLineEdit{background-color:#ffffff;border:1px solid #cccccc;}QLineEdit:hover{border:1px solid #2d8ae1;}QLineEdit:pressed{border:1px solid #2d8ae1;}")
-        self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;}QPushButton:hover{color:#0fa2e8}")
-        self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
+        self.ui.btnUpdate.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:hover{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:pressed{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}")
+        self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:hover{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:pressed{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}")
         self.ui.btnReset.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/btnreset.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}")
         self.ui.btnClose.setStyleSheet("QPushButton{background-image:url('res/close-1.png');border:0px;}QPushButton:hover{background-image:url('res/close-2.png');background-color:#c75050;}QPushButton:pressed{background-image:url('res/close-2.png');background-color:#bb3c3c;}")
         self.ui.cbhideubuntu.setStyleSheet("QPushButton{border:0px;color:#666666;font-size:13px;background:url('res/cbhideubuntuon.png') no-repeat center left;}QPushButton:hover{color:#0fa2e8}QPushButton:Checked{background:url('res/cbhideubuntuoff.png') no-repeat center left;}")
@@ -408,13 +418,14 @@ class ConfigWidget(QDialog,Signals):
         self.ui.pageListWidget.item(1).setSelected(False)
 
     def slot_show_ui(self):
-
-        self.show()
         #item=QListWidgetItem("密码修改找回")
         item = QListWidgetItem(_("PWD   CR"))
         self.slot_item_clicked(item)
         self.ui.pageListWidget.item(1).setSelected(True)
         self.ui.pageListWidget.item(0).setSelected(False)
+        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Tool)
+        self.exec()
+
 
 
     def slot_click_changeidentity(self):
@@ -827,12 +838,13 @@ class ConfigWidget(QDialog,Signals):
         if(sourcetext.strip() == ""):
             # self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:gray;font-size:14px;}")
             self.ui.btnAdd.setStyleSheet(
-                "QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
+                "QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:hover{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:pressed{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}")
             self.ui.btnAdd.setEnabled(False)
         else:
             # self.ui.btnAdd.setStyleSheet("QPushButton{border:0px;color:#1E66A4;font-size:14px;}")
             self.ui.btnAdd.setStyleSheet(
-                "QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:2px;background-color:#2d8ae1;}QPushButton:pressed{background-color:#2d8ae1;}")
+                "QPushButton{border:0px;font-size:12px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:hover{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}QPushButton:pressed{border:0px;font-size:13px;color:#ffffff;text-align:center;border-radius:3px;background-color:#2d8ae1;}")
+
             self.ui.btnAdd.setEnabled(True)
 
     def slot_checkstate_changed(self):
@@ -843,6 +855,7 @@ class ConfigWidget(QDialog,Signals):
         #print "ccccccccccccccc",itis
         #if itis == "用户设置":
         if itis == _("User set"):
+            self.ui.About_us_widget.hide()
             self.ui.sourceWidget.hide()
             self.ui.userWidget.show()
             self.ui.passwordWidget.hide()
@@ -875,6 +888,7 @@ class ConfigWidget(QDialog,Signals):
                 self.ui.text21.setText(_("Mailbox:   ") + str(Globals.EMAIL))
         #elif itis == "密码修改找回":
         elif itis == _("PWD   CR"):
+            self.ui.About_us_widget.hide()
             self.ui.sourceWidget.hide()
             self.ui.userWidget.hide()
             self.ui.passwordWidget.show()
@@ -952,10 +966,17 @@ class ConfigWidget(QDialog,Signals):
         #    self.ui.passwordWidget.hide()
         #elif itis == "软件源设置":
         elif itis == _("SWS SET"):
+            self.ui.About_us_widget.hide()
             self.ui.userWidget.hide()
             self.ui.passwordWidget.hide()
             self.ui.sourceWidget.show()
-        
+        else:
+            self.ui.About_us_widget.show()
+            self.ui.userWidget.hide()
+            self.ui.passwordWidget.hide()
+            self.ui.sourceWidget.hide()
+            self.get_pkgname()
+
         #if(item.whatsThis() == 'pointout'):
             # add by kobe
             #if (self.mainw.get_pointout_apps_num()) == 0:
@@ -963,6 +984,24 @@ class ConfigWidget(QDialog,Signals):
             #    # self.mainw.pointout.show_animation(False)
             #else:
             #    self.mainw.pointout.show_animation(True)
+    def get_pkgname(self):
+        try:
+            val = os.popen("dpkg -l | grep kylin-software-center").read()
+            val = ' '.join(val.split())
+            list=val.split(" ")
+            self.ui.get_pkgname.setText(list[1])
+            self.ui.get_pkgname_vesion.setText(list[2])
+            dest = os.popen("apt-cache show kylin-software-center").read()
+            dest= str(dest).replace("\n","~")
+            list = dest.split("~")
+            list2= list[7].split(" ")
+            if list2[1] != "":
+                self.ui.get_software_source.setText(list2[1])
+            else:
+                self.ui.get_software_source.setText("暂无")
+
+        except:
+            pass
 
 
 class SourceItemWidget(QWidget):
