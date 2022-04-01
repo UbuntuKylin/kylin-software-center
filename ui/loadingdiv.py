@@ -58,15 +58,15 @@ class LoadingDiv(QWidget):
             self.dheight = desktopw.screenGeometry().height()
             self.px = self.dwidth / 2 - Globals.MAIN_WIDTH / 2
             self.py = self.dheight / 2 - Globals.MAIN_HEIGHT / 2
-            self.setGeometry(self.px, self.py, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+            self.setGeometry(int(self.px), int(self.py),int(Globals.MAIN_WIDTH), int(Globals.MAIN_HEIGHT))
         # normal loading
         else:
-            self.setGeometry(0, 0, Globals.MAIN_WIDTH, Globals.MAIN_HEIGHT)
+            self.setGeometry(0, 0, int(Globals.MAIN_WIDTH), int(Globals.MAIN_HEIGHT))
 
 
         self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loadgif.gif")
         self.loadinggif = QLabel(self)
-        self.loadinggif.setGeometry(Globals.MAIN_WIDTH / 2 - 350 / 2, Globals.MAIN_HEIGHT / 2 - 350 / 2, 350, 350)
+        self.loadinggif.setGeometry(int(Globals.MAIN_WIDTH / 2 - 350 / 2),int(Globals.MAIN_HEIGHT / 2 - 350 / 2), 350, 350)
         self.loadinggif.setMovie(self.gif)
 
 
@@ -126,11 +126,11 @@ class MiniLoadingDiv(QWidget):
         self.width_ = onwhich.width()
         self.height_ = onwhich.height()
 
-        self.setGeometry(self.x_, self.y_, self.width_, self.height_)
+        self.setGeometry(int(self.x_), int(self.y_), int(self.width_), int(self.height_))
 
         self.gif = QMovie(UBUNTUKYLIN_RES_PATH + "loading.gif")
         self.loadinggif = QLabel(self)
-        self.loadinggif.setGeometry(self.width_ / 2 - 50 + offsetx, self.height_ / 2 - 25 + offsety, 50, 50)
+        self.loadinggif.setGeometry(int(self.width_ / 2 - 50) + int(offsetx), int(self.height_ / 2 - 25) + int(offsety), 50, 50)
         self.loadinggif.setMovie(self.gif)
         # self.loadingtext = QLabel(self)
         # self.loadingtext.setGeometry(self.loadinggif.x() + 25 - 150, self.loadinggif.y() + 55, 300, 20)

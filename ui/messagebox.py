@@ -52,7 +52,7 @@ class MessageBox(QObject):
         self.statu = "success"
 
         self.alert = QPushButton(parent)
-        self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2, Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
+        self.alert.setGeometry(int(Globals.MAIN_WIDTH / 2 - 203 / 2),int(Globals.MAIN_HEIGHT / 2 - 56 / 2), 203, 56)
         self.alert.setFocusPolicy(Qt.NoFocus)
         self.alert.setGraphicsEffect(self.alertGOE)
         self.alert.setStyleSheet("QPushButton{background-image:url('" + UBUNTUKYLIN_RES_PATH + "alert.png');border:0px;padding-bottom:4px;color:white;font-size:16px;}")
@@ -60,7 +60,7 @@ class MessageBox(QObject):
         self.alert.hide()
 
     def re_move(self):
-        self.alert.setGeometry(Globals.MAIN_WIDTH / 2 - 203 / 2, Globals.MAIN_HEIGHT / 2 - 56 / 2, 203, 56)
+        self.alert.setGeometry(int(Globals.MAIN_WIDTH / 2 - 203 / 2), int(Globals.MAIN_HEIGHT / 2 - 56 / 2), 203, 56)
 
     def alert_msg(self, alertText, statu = "success"):
         self.statu = statu

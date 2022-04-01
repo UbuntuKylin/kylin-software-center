@@ -166,8 +166,8 @@ class NormalCard(QWidget,Signals):
             self.ui.progressBar.setVisible(True)
             self.ui.progresslabel.setVisible(True)
             self.ui.progressBar_icon.setVisible(True)
-            self.ui.progressBar.setValue(self.app.percent)
-            self.ui.progressBarsmall.setValue(self.app.percent)
+            self.ui.progressBar.setValue(int(self.app.percent))
+            self.ui.progressBarsmall.setValue(int(self.app.percent))
             self.ui.progresslabel.setText(str('%.0f' % self.app.percent) + '%')
 
             if self.app.status == PkgStates.INSTALLING:
@@ -598,8 +598,8 @@ class NormalCard(QWidget,Signals):
                 #self.ui.btn.setText("正在卸载")
                 self.ui.btn.setText(_("Uninstalling"))
             self.ui.progressBar.hide()
-            self.ui.progressBar.setValue(percent)
-            self.ui.progressBarsmall.setValue(percent)
+            self.ui.progressBar.setValue(int(percent))
+            self.ui.progressBarsmall.setValue(int(percent))
             self.ui.progressBar.show()
             if percent < float(0.0):
                 self.ui.progressBar.setValue(0)

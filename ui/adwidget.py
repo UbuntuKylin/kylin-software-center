@@ -70,7 +70,7 @@ class ADWidget(QMainWindow):
 
         self.resize(self.adwidth, self.adheight)
         self.adContentWidget = QWidget(self)
-        self.adContentWidget.setGeometry(QRect(0, 0, self.adwidth, self.adheight))
+        self.adContentWidget.setGeometry(QRect(0, 0, int(self.adwidth), int(self.adheight)))
         self.adContentWidget.setObjectName("adContentWidget")
 
         self.adBtnWidget = QWidget(self)
@@ -78,7 +78,7 @@ class ADWidget(QMainWindow):
         self.adBtnWidget.setGeometry(210, 180, 100, 40)
 #下边框渐隐
         self.adsshadow = QLabel(self.adContentWidget)
-        self.adsshadow.setGeometry(0, 202, self.adheight, 18)
+        self.adsshadow.setGeometry(0, 202,int(self.adheight), 18)
         #self.adsshadow.setStyleSheet("QLabel{background-image:url('res/ads-shadow.png')}")
 
         #self.btnground = QLabel(self)
@@ -168,7 +168,7 @@ class ADWidget(QMainWindow):
         #martix.scale((200+wkg)/400,(200+wkg)/400)
         self.image=self.image.transformed(martix);
         self.imageLabel.setPixmap(QPixmap.fromImage(self.image))
-        self.imageLabel.setGeometry(QRect(self.spe, 0,self.image.width(),self.image.height()))
+        self.imageLabel.setGeometry(QRect(int(self.spe), 0,int(self.image.width()),int(self.image.height())))
         #if 180 <= wkg < 680:
         #if self.spe == 200:
         #    spe = 0
@@ -211,7 +211,7 @@ class ADWidget(QMainWindow):
         #    self.adBtnWidget.move(0, self.adBtnWidget.y())
         #else:
         #    self.adBtnWidget.move(760, self.adBtnWidget.y())
-        self.adBtnWidget.move(self.adwidth-self.adBtnWidget.width()-10, self.adBtnWidget.y())
+        self.adBtnWidget.move(int(self.adwidth-self.adBtnWidget.width()-10), int(self.adBtnWidget.y()))
 
 #    def add_advertisements(self, addata):
 #        self.adl = len(addata)
