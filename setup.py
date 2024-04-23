@@ -4,7 +4,7 @@
 import os
 import sys
 import glob
-from setuptools import setup
+from setuptools import setup, Command
 import DistUtilsExtra.command.build_extra
 import DistUtilsExtra.command.build_i18n
 import DistUtilsExtra.command.clean_i18n
@@ -15,6 +15,15 @@ from subprocess import call
 
 PO_DIR = 'po'
 
+
+class CleanCommand(DistUtilsExtra.command.clean_i18n.clean_i18n):
+    user_options = [('all', None, '(Compatibility with original clean command)')]
+
+    def initialize_options(self):
+        self.all = False
+        super().initialize_options()
+
+
 for po in glob.glob(os.path.join(PO_DIR, '*.po')):
     lang = os.path.basename(po[:-3])
     mo = os.path.join(PO_DIR, 'ubuntu-kylin-software-center.mo')
@@ -24,14 +33,14 @@ for po in glob.glob(os.path.join(PO_DIR, '*.po')):
     try:
         return_code = call(['msgfmt', '-o', mo, po])
     except OSError:
-        print('Translation not available, please install gettext')
+        raise Warning('Translation not available, please install gettext')
         break
     if return_code:
         raise Warning('Error when building locales')
 cmdclass ={
             "build" : DistUtilsExtra.command.build_extra.build_extra,
             "build_i18n" :  DistUtilsExtra.command.build_i18n.build_i18n,
-            "clean": DistUtilsExtra.command.clean_i18n.clean_i18n,
+            "clean": CleanCommand,
 }
 
 
